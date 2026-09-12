@@ -1,4 +1,4 @@
-# LionSafari V1 — Prototype
+# Mama Lion hub — Prototype
 
 A mobile/tablet/PC-friendly PWA prototype for Mama Lion operations.
 
