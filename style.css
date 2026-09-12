@@ -1,0 +1,40 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial;background:#f3f4f6;color:#111827}
+header{background:#111827;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+header b{font-size:20px}
+header small{display:block;color:#d1d5db;margin-top:2px}
+nav{display:flex;gap:6px;overflow:auto;background:white;padding:9px;position:sticky;top:0;box-shadow:0 1px 4px #0002;z-index:5}
+button{border:0;border-radius:9px;padding:10px 12px;cursor:pointer;background:#e5e7eb;position:relative}
+button:disabled{opacity:.45;cursor:not-allowed}
+nav button{white-space:nowrap}
+nav button.active,.primary{background:#111827;color:#fff}
+main{max-width:1100px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.card{background:white;border-radius:14px;padding:16px;box-shadow:0 2px 10px #0001}
+.card.empty{text-align:center;color:#6b7280;padding:28px}
+.metric{font-size:28px;font-weight:750}
+.muted{color:#6b7280}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:9px;margin:5px 0 10px}
+label{font-size:13px;font-weight:650}
+.tag{padding:5px 8px;border-radius:999px;background:#f3f4f6;font-size:12px}
+.tag.ok{background:#dcfce7}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #e5e7eb;font-size:14px}
+.danger{background:#fee2e2}
+.warn{background:#fef3c7}
+.ok{background:#dcfce7}
+.err{color:#b91c1c;font-size:13px;min-height:18px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+footer{text-align:center;color:#6b7280;padding:25px}
+.bigbtn{padding:16px;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badge{position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;font-size:11px;line-height:1;padding:4px 6px;border-radius:999px}
+.synctag{font-size:12px;padding:5px 9px;border-radius:999px;background:#1f2937;color:#d1d5db}
+.synctag.ok{background:#14532d;color:#bbf7d0}
+.synctag.warn{background:#78350f;color:#fde68a}
+@media(max-width:650px){
+  .two{grid-template-columns:1fr}
+  header{align-items:flex-start;gap:8px}
+  .hide-mobile{display:none}
+}
