@@ -1,4 +1,4 @@
-# Mama Lion hub — Prototype
+# LionSafari V1 — Prototype
 
 A mobile/tablet/PC-friendly PWA prototype for Mama Lion operations.
 
@@ -12,10 +12,12 @@ Included in this prototype:
 - Shift opening
 - Restricted Music Control
 - Local browser persistence via localStorage
+- Cloud sync across devices (Firebase Firestore)
+- Staff login with role-based tab access (Management / Cashier / Storekeeper)
 
 Planned production modules:
-- Role-based access: Management, Cashier, Reception, Washing Bay, Drying Bay, QC, Storekeeper
-- Real database + cloud sync + offline sync
+- Reception, Washing Bay, Drying Bay, QC as separate roles (currently folded into Cashier/Storekeeper)
+- Offline sync (works today via Firestore's built-in offline cache; needs testing under real shop WiFi drops)
 - Branch separation (Mama Lion / Lion King)
 - Customer/vehicle history and loyalty
 - QC checklist and before/after photos
@@ -41,4 +43,40 @@ To sync data live across every till/tablet/phone in the shop:
 
 Two branches (Mama Lion / Lion King) can be kept separate by giving each deployment a different `BRANCH_ID` in `firebase-config.js` — each ID gets its own document in Firestore.
 
-Before going live with real staff, tighten the Firestore security rules (test mode is open to anyone with the project config) and add Firebase Authentication for role-based login.
+## Staff login & roles (Firebase Authentication)
+
+The app now requires login once cloud sync is enabled. Roles and what they can see:
+- **Management** — every tab (full access)
+- **Cashier** — Dashboard, New Order, Queue, Payment, Music
+- **Storekeeper** — Dashboard, Inventory, Shift
+
+### One-time setup (per staff member), done entirely in the Firebase Console
+1. **Enable the sign-in method**: Build → Authentication → Sign-in method → enable **Email/Password**
+2. **Create the login**: Authentication → Users → Add user → enter their email + a password (share it with them, they can't self-register)
+3. **Assign their role**: Build → Firestore Database → Data → open (or create) the **`staff`** collection → Add document (auto-ID) with fields:
+   - `email` (string) — same email as step 2, all lowercase
+   - `name` (string) — display name, e.g. `Alam`
+   - `role` (string) — exactly `Management`, `Cashier`, or `Storekeeper`
+4. Repeat step 2–3 for every staff member.
+
+Logging in checks the `staff` collection by email to find the role — no code changes needed to add more staff, just repeat the console steps above.
+
+### Security rules (already tightened)
+Firestore rules now require a logged-in account for any read/write, and the `staff` collection is read-only from the app (only editable by you in the console):
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /branches/{branchId} {
+      allow read, write: if request.auth != null;
+    }
+    match /staff/{staffId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
+```
+Paste this into Firestore → Rules → Publish (replacing the `if true` demo rule).
+
+Two branches (Mama Lion / Lion King) can be kept separate by giving each deployment a different `BRANCH_ID` in `firebase-config.js` — each ID gets its own document in Firestore.

@@ -20,25 +20,89 @@ const DEFAULT_DB={
   nextId:3
 };
 
-// ---------- Cloud sync layer ----------
+// ---------- Role-based access ----------
+// Management can see everything. Others are limited to what their job needs.
+const ALL_TABS=['Dashboard','New Order','Queue','Payment','Petty Cash','Inventory','Shift','Music'];
+const ROLE_TABS={
+  Management:  ALL_TABS,
+  Cashier:     ['Dashboard','New Order','Queue','Payment','Music'],
+  Storekeeper: ['Dashboard','Inventory','Shift']
+};
+function visibleTabs(){
+  if(!CLOUD_ENABLED) return ALL_TABS; // local-only demo mode: no login required
+  return ROLE_TABS[currentRole] || ['Dashboard'];
+}
+
+// ---------- Cloud sync + auth layer ----------
 // If firebase-config.js still has placeholder values, run in local-only mode
-// (same behaviour as before: data stays on this device/browser only).
+// (same behaviour as before: no login, data stays on this device/browser only).
 const CLOUD_ENABLED = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'PASTE_API_KEY_HERE';
 let db = JSON.parse(localStorage.getItem('lsv1')||'null') || structuredClone(DEFAULT_DB);
 let firestoreDoc=null, firestoreSetDoc=null, firestoreOnSnapshot=null, syncing=false;
+let authInstance=null, currentUser=null, currentRole=null, currentStaffName='';
+let loginError='';
 
 async function initCloud(){
-  if(!CLOUD_ENABLED) return;
+  if(!CLOUD_ENABLED){ render(); return; }
+
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
-  const { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence } =
+  const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } =
+    await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js');
+  const { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence, collection, query, where, getDocs } =
     await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js');
+
   const app=initializeApp(firebaseConfig);
   const store=getFirestore(app);
   try{ await enableIndexedDbPersistence(store); }catch(e){ /* multi-tab or unsupported, ignore */ }
+  authInstance=getAuth(app);
+
+  window.doLogin=async function(){
+    const email=$('#loginEmail').value.trim();
+    const pass=$('#loginPass').value;
+    loginError='';
+    if(!email||!pass){ loginError='Sila isi email dan kata laluan.'; render(); return; }
+    try{
+      await signInWithEmailAndPassword(authInstance,email,pass);
+    }catch(e){
+      loginError = e.code==='auth/invalid-credential' ? 'Email atau kata laluan salah.' : ('Ralat log masuk: '+e.message);
+      render();
+    }
+  };
+  window.doLogout=function(){ signOut(authInstance); };
+
+  onAuthStateChanged(authInstance, async user=>{
+    if(user){
+      currentUser=user;
+      try{
+        const q=query(collection(store,'staff'), where('email','==',user.email.toLowerCase()));
+        const snap=await getDocs(q);
+        if(snap.empty){
+          loginError='Akaun ini belum didaftarkan sebagai staff. Hubungi Management untuk ditambah dalam senarai "staff" di Firestore.';
+          currentUser=null; currentRole=null;
+          signOut(authInstance);
+          render();
+          return;
+        }
+        const staff=snap.docs[0].data();
+        currentRole=staff.role;
+        currentStaffName=staff.name||user.email;
+        if(!visibleTabs().includes(tab)) tab=visibleTabs()[0];
+        setupDataSync(store,doc,setDoc,onSnapshot);
+      }catch(e){
+        loginError='Ralat menyemak peranan staff: '+e.message;
+        render();
+      }
+    } else {
+      currentUser=null; currentRole=null; currentStaffName='';
+      render();
+    }
+  });
+}
+
+function setupDataSync(store,doc,setDoc,onSnapshot){
   firestoreDoc=doc(store,'branches',BRANCH_ID);
   firestoreSetDoc=setDoc;
   firestoreOnSnapshot=onSnapshot;
-
   firestoreOnSnapshot(firestoreDoc, snap=>{
     if(snap.exists()){
       syncing=true;
@@ -47,14 +111,14 @@ async function initCloud(){
       render();
       syncing=false;
     } else {
-      // first run for this branch: seed cloud with current local data
       firestoreSetDoc(firestoreDoc, db);
     }
+    setStatus('☁ Cloud sync aktif','ok');
+    render();
   }, err=>{
     console.error('Firestore sync error:', err);
-    setStatus('⚠ Sync error — jalan mod offline sahaja','warn');
+    setStatus('⚠ Sync error — semak internet','warn');
   });
-  setStatus('☁ Cloud sync aktif','ok');
 }
 
 function setStatus(msg,cls){
@@ -74,13 +138,14 @@ function save(){
 
 const rm=n=>'RM '+(+n||0).toFixed(2);
 
-const tabs=['Dashboard','New Order','Queue','Payment','Petty Cash','Inventory','Shift','Music'];
 let tab='Dashboard', q='';
 
 function nav(){
+  const navEl=$('#nav');
+  if(!navEl)return;
   const low=db.stock.filter(s=>s.qty<=s.min).length;
   const unpaid=db.orders.filter(o=>!o.paid).length;
-  $('#nav').innerHTML=tabs.map(x=>{
+  navEl.innerHTML=visibleTabs().map(x=>{
     let badge='';
     if(x==='Inventory'&&low) badge=`<span class='badge'>${low}</span>`;
     if(x==='Payment'&&unpaid) badge=`<span class='badge'>${unpaid}</span>`;
@@ -88,12 +153,41 @@ function nav(){
   }).join('');
 }
 
+function staffBox(){
+  const el=$('#staffBox');
+  if(!el)return;
+  if(CLOUD_ENABLED && currentUser){
+    el.innerHTML=`👤 ${currentStaffName} <span class='muted'>(${currentRole})</span> <button style='padding:3px 8px;margin-left:6px' onclick='doLogout()'>Log Keluar</button>`;
+  } else {
+    el.innerHTML='';
+  }
+}
+
 function render(){
+  // Gate: cloud mode requires login before showing any operational screen
+  if(CLOUD_ENABLED && !currentUser){
+    $('#nav').innerHTML='';
+    $('#staffBox').innerHTML='';
+    $('#app').innerHTML=loginScreen();
+    return;
+  }
   nav();
-  const f={Dashboard:dash,'New Order':newOrder,Queue:queue,Payment:payment,'Petty Cash':petty,Inventory:inventory,Shift:shift,Music:music}[tab];
+  staffBox();
+  const f={Dashboard:dash,'New Order':newOrder,Queue:queue,Payment:payment,'Petty Cash':petty,Inventory:inventory,Shift:shift,Music:music}[tab] || dash;
   $('#app').innerHTML=f();
 }
 window.render=render; // exposed for onclick handlers
+
+function loginScreen(){
+  return `<div class='card' style='max-width:380px;margin:40px auto'>
+    <h2>🦁 Log Masuk Staff</h2>
+    <label>Email</label><input id='loginEmail' type='email' placeholder='nama@mamalion.com'>
+    <label>Kata Laluan</label><input id='loginPass' type='password'>
+    <button class='primary bigbtn' onclick='doLogin()' style='width:100%'>Log Masuk</button>
+    <div class='err'>${loginError||''}</div>
+    <p class='muted' style='font-size:12px;margin-top:12px'>Akaun staff didaftarkan oleh Management melalui Firebase Console (Authentication + koleksi "staff").</p>
+  </div>`;
+}
 
 function dash(){
   const sales=db.orders.filter(o=>o.paid).reduce((a,b)=>a+b.total,0);
@@ -157,7 +251,8 @@ function addOrder(){
     bay:$('#bay').value,
     status:'Waiting',
     total:+p.value + +a.value,
-    time:new Date().toLocaleString()
+    time:new Date().toLocaleString(),
+    takenBy:currentStaffName||''
   });
   save(); tab='Queue'; render();
 }
@@ -205,7 +300,7 @@ function payment(){
 function pay(p,m){
   const o=db.orders.find(x=>x.plate===p && !x.paid);
   if(!o)return;
-  o.paid=m; o.status='Completed'; o.paidAt=new Date().toLocaleString();
+  o.paid=m; o.status='Completed'; o.paidAt=new Date().toLocaleString(); o.paidBy=currentStaffName||'';
   save(); render();
   alert(`Payment recorded: ${m} — ${rm(o.total)}`);
 }
@@ -221,7 +316,7 @@ function petty(){
     </div>
     <div class='card'>
       <div class='row' style='justify-content:space-between'><h3 style='margin:0'>Rekod</h3><span class='tag'>Net: ${rm(net)}</span></div>
-      ${db.petty.length?db.petty.map(p=>`<p><b>${p.type}</b> ${rm(p.amt)} — ${p.reason||'-'}<br><small class='muted'>${p.time}</small></p>`).join(''):`<span class='muted'>Belum ada rekod</span>`}
+      ${db.petty.length?db.petty.map(p=>`<p><b>${p.type}</b> ${rm(p.amt)} — ${p.reason||'-'}<br><small class='muted'>${p.time}${p.by?` · ${p.by}`:''}</small></p>`).join(''):`<span class='muted'>Belum ada rekod</span>`}
     </div>
   </div>`;
 }
@@ -229,7 +324,7 @@ function petty(){
 function addPetty(){
   const amt=+$('#pamt').value;
   if(!amt||amt<=0)return alert('Masukkan jumlah yang sah.');
-  db.petty.unshift({type:$('#ptype').value,amt,reason:$('#preason').value.trim(),time:new Date().toLocaleString()});
+  db.petty.unshift({type:$('#ptype').value,amt,reason:$('#preason').value.trim(),time:new Date().toLocaleString(),by:currentStaffName||''});
   save(); render();
 }
 
@@ -252,7 +347,7 @@ function inventory(){
     </div>
     <button class='primary' onclick='addStockItem()'>Tambah</button>
   </div>
-  <p class='muted'>V1 demo: setiap perubahan direkod secara tempatan. Production akan tambah staff ID, shift, bay, quantity sebenar, bukti gambar dan approval Storekeeper.</p>`;
+  <p class='muted'>Setiap perubahan stok disimpan dalam data cawangan (sync ke semua peranti). Bukti gambar & approval belum tersedia dalam versi ini.</p>`;
 }
 
 function stock(i,n){db.stock[i].qty=Math.max(0,db.stock[i].qty+n);save();render()}
@@ -272,9 +367,9 @@ function shift(){
     <p class='muted' style='margin-top:8px'>Dibuka: ${db.shift.openedAt||'-'}</p>
     <hr>
     <p>Closing nanti akan reconcile: Cash sales + QR + Petty Cash + variance.</p>
-    <div class='card warn'><b>Reset Demo Data</b><p class='muted'>Padam semua order/petty/stock demo dan mula semula (peranti ini sahaja; cloud tidak disentuh).</p>
-      <button onclick='resetData()'>Reset (local)</button>
-    </div>
+    ${currentRole==='Management'||!CLOUD_ENABLED?`<div class='card warn'><b>Reset Demo Data</b><p class='muted'>Padam semua order/petty/stok dan mula semula (semua peranti — data cloud turut disentuh).</p>
+      <button onclick='resetData()'>Reset</button>
+    </div>`:''}
   </div>`;
 }
 
@@ -284,7 +379,7 @@ function saveShift(){
 }
 
 function resetData(){
-  if(!confirm('Padam semua data demo dan mula semula?'))return;
+  if(!confirm('Padam semua data dan mula semula?'))return;
   db=structuredClone(DEFAULT_DB);
   save(); render();
 }
@@ -292,7 +387,7 @@ function resetData(){
 function music(){
   return `<div class='card'><h2>Music Control</h2>
     <p>Playlist ditetapkan oleh Management. Cashier hanya kawalan asas.</p>
-    <div class='row'><button class='primary bigbtn' onclick='toggleMusic()'>${db.music.playing?'Pause':'Play'}</button><button class='bigbtn'>Next</button></div>
+    <div class='row'><button class='primary bigbtn' onclick='toggleMusic()'>${db.music.playing?'Pause':'Play'}</button></div>
     <label>Volume (maksimum 60%)</label>
     <input type='range' min='0' max='60' value='${db.music.vol}' oninput='setVol(this.value)'>
     <p>Volume: <b>${db.music.vol}%</b></p>
