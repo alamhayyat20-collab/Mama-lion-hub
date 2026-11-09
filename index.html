@@ -1,1 +1,663 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><meta name='theme-color' content='#111827'><title>LionSafari V1</title><link rel='manifest' href='manifest.json'><link rel='stylesheet' href='style.css'></head><body><header><div><b>🦁 LionSafari V1</b><small>Mama Lion Smart Car Wash Operating System</small></div><div class='row' style='flex-wrap:wrap;justify-content:flex-end'><span id='staffBox' class='synctag'></span><span id='syncStatus' class='synctag'></span><div id='clock'></div></div></header><nav id='nav'></nav><main id='app'></main><footer>Prototype V1 • <span id='dataMode'>Local demo data</span> • PWA-ready</footer><script type='module' src='app.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12301f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Carian Lot Bukit Goh</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--forest:#12301f;--leaf:#1f5a3d;--gold:#b08a3e;--goldlt:#e0b56a;--ink:#17231d;--muted:#5a6a60;--line:#d6e0d9;--bg:#f4f7f5;--card:#ffffff;--pale:#eef3ef;--warn:#c25b14;
+--z1:#c0392b;--z2:#1f6fb2;--z3:#7d3c98;--z4:#1e8449;--z5:#b9770e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6eee9;--muted:#9fb2a6;--line:#2c3b33;--bg:#0f1713;--card:#17221c;--pale:#1d2b23}}
+:root[data-theme="dark"]{--ink:#e6eee9;--muted:#9fb2a6;--line:#2c3b33;--bg:#0f1713;--card:#17221c;--pale:#1d2b23}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+#top{position:fixed;inset:0 0 auto 0;z-index:30;background:var(--forest);color:#fff;padding:calc(env(safe-area-inset-top) + 6px) 12px 8px}
+#naung{font-size:9.5px;letter-spacing:.06em;color:var(--goldlt);text-align:center;font-weight:700}
+#brand{display:flex;align-items:center;justify-content:space-between;margin:4px 0 6px}
+#brand b{font-size:15px}#brand span{font-size:10.5px;color:var(--goldlt);font-weight:700;letter-spacing:.05em}
+#sbox{display:flex;gap:6px}
+#q{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px;background:#fff;color:#17231d}
+#gpsBtn,#calBtn{border:0;border-radius:10px;background:var(--leaf);color:#fff;padding:0 11px;font-size:13px;font-weight:600;white-space:nowrap}
+#chips{display:flex;gap:6px;overflow-x:auto;padding-top:7px;scrollbar-width:none}
+#chips::-webkit-scrollbar{display:none}
+#tabs{display:flex;gap:4px;margin-top:7px}
+#tabs button{flex:1;border:0;border-radius:9px;padding:7px 4px;font-size:13px;font-weight:700;background:rgba(255,255,255,.1);color:#fff;position:relative}
+#tabs button.on{background:#fff;color:#12301f}
+#tabs .bd{position:absolute;top:-4px;right:6px;min-width:18px;height:18px;border-radius:9px;background:#e53935;color:#fff;font-size:11px;line-height:18px;padding:0 5px}
+#pane{position:fixed;left:0;right:0;bottom:0;z-index:26;background:var(--bg);overflow-y:auto;display:none;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
+#pane h3{margin:14px 2px 8px;font-size:15px}
+.card{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.stb{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);margin:6px 0 4px}
+.bar i{display:block;height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--muted)}
+.leg span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;background:var(--c)}
+.big{font-size:28px;font-weight:800}
+.fd{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;color:var(--ink)}
+.fd small{color:var(--muted);display:block}
+.post{cursor:pointer}.post h4{margin:4px 0 2px;font-size:15px}
+.post .meta{font-size:11.5px;color:var(--muted)}
+.cat{font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;background:var(--pale)}
+.md h4{margin:14px 0 4px;font-size:14.5px}.md p{margin:6px 0}.md ul{margin:4px 0;padding-left:20px}.md li{margin:3px 0}
+#ann{position:fixed;left:10px;right:10px;z-index:40;background:#b08a3e;color:#12301f;border-radius:12px;padding:10px 38px 10px 12px;font-size:13.5px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.3);display:none;cursor:pointer}
+#ann b{display:block;font-size:11px;letter-spacing:.06em}
+#ann .x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:18px;color:#12301f}
+.stopt{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+#dlg .stopt input{width:auto}
+.chip{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;white-space:nowrap}
+.chip.on{background:var(--goldlt);border-color:var(--goldlt);color:#12301f;font-weight:700}
+#map{position:fixed;inset:0;overflow:hidden;touch-action:none;background:#e9ece8;cursor:grab}
+#layer{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#layer img{display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
+#zsvg{position:absolute;left:0;top:0;pointer-events:none}
+#marks{position:absolute;inset:0;pointer-events:none}
+.mk{position:absolute;transform:translate(-50%,-50%);pointer-events:auto}
+.pin{width:22px;height:22px;border-radius:50%;background:var(--warn);border:3px solid #fff;box-shadow:0 0 0 2px var(--warn),0 2px 8px rgba(0,0,0,.4)}
+.pin::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:3px solid var(--warn);animation:pulse 1.6s infinite}
+@keyframes pulse{from{transform:scale(.5);opacity:1}to{transform:scale(1.5);opacity:0}}
+.tag{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);background:var(--forest);color:#fff;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.sib{width:14px;height:14px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.sib .tag{background:var(--gold);bottom:14px;font-size:11px;padding:2px 6px}
+.res{width:9px;height:9px;border-radius:50%;background:var(--leaf);border:1.5px solid #fff;opacity:.85}
+.me{width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 6px rgba(26,115,232,.25)}
+.cal{width:16px;height:16px;border-radius:3px;background:#e91e63;border:2px solid #fff;transform:translate(-50%,-50%) rotate(45deg)}
+.cal span{position:absolute;transform:rotate(-45deg);left:16px;top:-14px;color:#e91e63;font-weight:800;font-size:13px;text-shadow:0 0 3px #fff}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.18);max-height:52vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom);transition:max-height .2s}
+#sheet.min{max-height:76px}
+#grab{padding:8px 14px 6px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+#grab::before{content:"";position:absolute;left:50%;top:5px;width:38px;height:4px;border-radius:2px;background:var(--line);transform:translateX(-50%)}
+#stat{flex:1;font-size:13px;color:var(--muted);padding-top:4px}
+#tog{border:0;background:var(--pale);border-radius:8px;padding:5px 10px;font-size:12.5px}
+#body{overflow-y:auto;flex:1}
+.row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0}
+.row:active{background:var(--pale)}
+.ln{font-weight:800;font-variant-numeric:tabular-nums;min-width:58px}
+.nm{flex:1;min-width:0;font-size:13.5px}
+.nm small{display:block;color:var(--muted);font-size:11.5px}
+.zb{font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:2px 6px}
+.det{padding:12px 14px 16px}
+.det h2{margin:0 0 2px;font-size:22px}
+.det .own{font-size:16px;font-weight:600;margin-bottom:8px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13.5px;margin:6px 0 10px}
+.kv dt{color:var(--muted)}.kv dd{margin:0}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn{border:0;border-radius:10px;padding:11px 8px;font-weight:700;font-size:14px;background:var(--pale);text-align:center;text-decoration:none;color:var(--ink);display:block}
+.btn.p{background:var(--leaf);color:#fff}.btn.w{background:#33ccff;color:#06283d}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.note{font-size:12px;color:var(--muted);background:var(--pale);border-radius:8px;padding:8px 10px;margin-top:10px}
+.note.warn{color:#7a3a07;background:#fdebd8}
+.sibs{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sibs button{border:1px solid var(--gold);background:none;border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:700}
+#zoomc{position:fixed;right:10px;z-index:20;display:flex;flex-direction:column;gap:6px}
+#zoomc #lay.on{background:#1f5a3d;color:#fff}
+#zoomc button{width:40px;height:40px;border-radius:10px;border:0;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.2);font-size:20px;font-weight:700}
+#calbar{position:fixed;left:10px;right:60px;z-index:22;background:#e91e63;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;display:none;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#calbar b{display:block}
+#dlg{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px}
+#dlg .box{background:var(--card);border-radius:14px;max-width:440px;width:100%;padding:16px;max-height:86vh;overflow:auto}
+#dlg h3{margin:0 0 8px}
+#dlg input,#dlg textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)}
+#dlg textarea{font-family:ui-monospace,monospace;font-size:12px;height:80px}
+.cpl{font-size:13px;border-bottom:1px solid var(--line);padding:6px 0;display:flex;justify-content:space-between;gap:8px}
+.cpl button{border:0;background:none;color:var(--warn);font-weight:700}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#17231d;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;display:none}
+@media (min-width:900px){#sheet{left:12px;bottom:12px;top:auto;width:390px;right:auto;border-radius:14px;max-height:calc(100vh - 190px)}#sheet.min{max-height:76px}}
+#lock{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 80% at 50% 0%,#1f5a3d 0%,#12301f 60%);color:#fff;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#lock.gone{display:none}
+.lk{max-width:360px;width:100%;text-align:center}
+.lk-n{font-size:13px;letter-spacing:.18em;color:#e0b56a;font-weight:700;margin-bottom:18px}
+.lk-hero{width:190px;height:190px;display:block;margin:0 auto;border-radius:34px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.lk h1{font-size:24px;line-height:1.2;margin:14px 0 6px}
+.lk-s{font-size:13px;color:#cfe0d5;margin:0 0 18px}
+#lki,#lkc{width:100%;border:0;border-radius:12px;padding:13px 14px;font-size:17px;text-align:center;color:#17231d;background:#fff}
+.lk-r{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:#cfe0d5;margin:10px 0}
+#lkb{width:100%;border:0;border-radius:12px;padding:13px;font-size:16px;font-weight:800;background:#e0b56a;color:#12301f}
+#lkb:disabled{opacity:.6}
+#lke{min-height:20px;font-size:13px;color:#ffb38a;margin-top:10px}
+#lkinst{margin-top:6px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600}
+#lkios{font-size:12.5px;color:#cfe0d5;margin-top:8px}
+.lk-f{font-size:11px;color:#9fbfac;margin-top:26px}
+#ver{font-size:10px;color:var(--muted)}
+
+.lk-pw{position:relative;margin-top:8px}
+.lk-pw #lkc{padding-left:52px;padding-right:52px}
+#lkeye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;background:transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#lkeye:active{background:#eef3ef}
+
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lk">
+    <div class="lk-n">THE KEY · BKTGOH 2.0</div>
+    <img class="lk-hero" src="logo.jpg" alt="Carian Lot FELDA Bukit Goh · Alam Hayyat Group">
+    <h1>Carian Lot<br>FELDA Bukit Goh 2.0</h1>
+    <p class="lk-s">Untuk kegunaan IGFWK dan syarikat usahasama sahaja. Data peneroka adalah SULIT.</p>
+    <form id="lkf" autocomplete="off">
+      <input id="lki" type="text" placeholder="ID pengguna" autocapitalize="none" autocomplete="username" spellcheck="false">
+      <div class="lk-pw"><input id="lkc" type="password" placeholder="Kata laluan" autocomplete="current-password" spellcheck="false"><button type="button" id="lkeye" aria-label="Tunjuk kata laluan" title="Tunjuk / sembunyi kata laluan"><svg id="eyeOn" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#1f4d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg id="eyeOff" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#1f4d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.8 10.8 0 0 1 12 19c-7 0-11-7-11-7a19.8 19.8 0 0 1 5.1-5.9M9.9 4.2A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a19.9 19.9 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M1 1l22 22"/></svg></button></div>
+      <label class="lk-r"><input id="lkm" type="checkbox" checked> Ingat peranti ini</label>
+      <button id="lkb" type="submit">Log masuk</button>
+    </form>
+    <div id="lke"></div>
+    <button id="lkinst" type="button" hidden>⤓ Pasang aplikasi</button>
+    <div id="lkios" hidden>iPhone: tekan <b>Kongsi</b> → <b>Add to Home Screen</b> untuk memasang.</div>
+    <div class="lk-f">IGFWK · Alam Hayyat Group · Menjaga ALAM agar HAYYAT yang berterusan</div>
+  </div>
+</div>
+
+<div id="map"><div id="layer"><img id="img" alt="Pelan Rancangan FELDA Bukit Goh" src=""><svg id="zsvg"></svg></div><div id="marks"></div></div>
+<div id="top">
+  <div id="naung">THE KEY · BKTGOH 2.0</div>
+  <div id="brand"><b>Carian Lot · FELDA Bukit Goh 2.0</b><span style="text-align:right">SULIT · IGFWK<br><i id="ver" style="font-style:normal;font-weight:400;color:#cfe0d5"></i></span></div>
+  <div id="sbox"><input id="q" type="search" placeholder="Cari nombor lot atau nama peneroka…" autocomplete="off" enterkeyhint="search"><button id="gpsBtn" title="Lokasi saya">◎ Saya</button><button id="calBtn" title="Tetapan">⚙</button></div>
+  <div id="chips"></div>
+  <div id="tabs"><button data-v="peta" class="on">🗺 Peta</button><button data-v="sum">📊 Ringkasan</button><button data-v="info">📢 Info<span class="bd" id="infobd" hidden></span></button></div>
+</div>
+<div id="calbar"><b>Mod kalibrasi</b>Ketik satu titik yang dikenali pada pelan (cth. simpang jalan, sudut lot), kemudian masukkan koordinat GPS titik itu. <u id="calDone">Selesai</u></div>
+<div id="zoomc"><button id="lay" title="Lapisan satelit" style="font-size:18px">🛰</button><button id="zin">+</button><button id="zout">−</button><button id="zfit" style="font-size:14px">⤢</button></div>
+<div id="sheet"><div id="grab"><div id="stat"></div><button id="tog">Kecilkan</button></div><div id="body"></div></div>
+<div id="dlg"><div class="box" id="dlgbox"></div></div>
+<div id="toast"></div>
+<div id="pane"></div>
+<div id="ann"><button class="x" id="annx">×</button><b>📌 PENGUMUMAN</b><span id="annt"></span></div>
+<script>
+function start(P){
+let W=P.W,H=P.H;const S=P.S;
+const ZN={1:'Utara',2:'Timur (Jabor)',3:'Tengah',4:'Barat Daya (Bukit Kuin)',5:'Barat Laut'};
+const ZC={1:'#c0392b',2:'#1f6fb2',3:'#7d3c98',4:'#1e8449',5:'#b9770e'};
+const WN=['-','Biru','Kuning','Hijau','Merah jambu'];
+const RAW=P.lots;            // [lot,nama,zon,warna,felda,x,y]
+const ZONES=P.zones;
+const BAKED_CAL=P.cal;
+const L=RAW.map(r=>({lot:r[0],nama:r[1],zon:r[2],warna:r[3],felda:!!r[4],x:r[5]*S,y:r[6]*S,blok:r[7]||'',fasa:r[8]||'',dmg:r[9]==null?-1:r[9],ll:r[10]||null}));
+const dmgN=p=>p>=15?'Teruk':p>=5?'Sederhana':p>=1?'Ringan':'Tiada / minimum';
+const dmgC=p=>p>=15?'#c62828':p>=5?'#ef6c00':p>=1?'#c9a400':'#5a6a60';
+const STS=['Belum mula','Ukur & data','Pelan diluluskan','Bebas','Pulih','Tanam','Serah'];
+const STC=['#9aa69f','#5b84b1','#7d3c98','#c25b14','#b9770e','#1e8449','#12301f'];
+const FC={A:'#c0392b',B:'#d68910',C:'#1f6fb2',D:'#1e8449'};
+let ST={};try{ST=JSON.parse(localStorage.getItem('bg_st')||'{}')}catch(e){}
+const stOf=l=>ST[l.lot]?ST[l.lot].s:0;
+const stb=s=>`<span class="stb" style="background:${STC[s]}">${STS[s]}</span>`;
+const norm=s=>s.toUpperCase().replace(/[^A-Z0-9@ ]/g,' ').replace(/\bBT\b|\bBTE\b/g,'BINTI').replace(/\bB\b/g,'BIN').replace(/\s+/g,' ').trim();
+L.forEach(l=>l.key=norm(l.nama));
+const byName={};L.forEach(l=>{if(l.nama)(byName[l.nama]=byName[l.nama]||[]).push(l)});
+const byLot={};L.forEach(l=>byLot[l.lot]=l);
+const $=id=>document.getElementById(id);
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2200)}
+// ---------- zon svg ----------
+const zs=$('zsvg');zs.setAttribute('width',W);zs.setAttribute('height',H);zs.setAttribute('viewBox',`0 0 ${W} ${H}`);
+let ZD={z:ZONES,s:S};
+function drawZones(){zs.setAttribute('width',W);zs.setAttribute('height',H);zs.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  zs.innerHTML=Object.entries(ZD.z).map(([z,p])=>`<polygon points="${p.map(q=>q[0]*ZD.s+','+q[1]*ZD.s).join(' ')}" fill="${ZC[z]}" fill-opacity=".05" stroke="${ZC[z]}" stroke-width="3" stroke-dasharray="14 8" vector-effect="non-scaling-stroke"/>`).join('')}
+drawZones();
+// ---------- pan/zoom ----------
+const map=$('map'),layer=$('layer'),marks=$('marks');
+let sc=1,tx=0,ty=0;
+function topH(){return $('top').offsetHeight}
+function apply(){layer.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;drawMarks()}
+function fit(){$('zoomc').style.top=(topH()+70)+'px';const w=map.clientWidth,h=map.clientHeight-topH()-80;sc=Math.min(w/W,h/H);tx=(w-W*sc)/2;ty=topH()+(h-H*sc)/2;apply()}
+function zoomAt(f,cx,cy){const ns=Math.max(minS(),Math.min(4,sc*f));tx=cx-(cx-tx)*ns/sc;ty=cy-(cy-ty)*ns/sc;sc=ns;apply()}
+function minS(){return Math.min(map.clientWidth/W,map.clientHeight/H)*0.6}
+function centerOn(x,y,s){sc=s||Math.max(sc,1.1);const w=map.clientWidth,h=map.clientHeight;const sheetH=$('sheet').classList.contains('min')?80:$('sheet').offsetHeight;
+  const cy=window.innerWidth>=900?(topH()+h)/2:topH()+(h-topH()-sheetH)/2;const cx=window.innerWidth>=900?(w+400)/2:w/2;tx=cx-x*sc;ty=cy-y*sc;apply()}
+const PT=new Map();let last=null,moved=0,downT=0;
+map.addEventListener('pointerdown',e=>{if(e.target.closest('.mk'))return;map.setPointerCapture(e.pointerId);PT.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=0;downT=Date.now();last=null});
+map.addEventListener('pointermove',e=>{if(!PT.has(e.pointerId))return;const p=PT.get(e.pointerId);const pts=[...PT.values()];
+  if(PT.size===1){tx+=e.clientX-p.x;ty+=e.clientY-p.y;moved+=Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y)}
+  else if(PT.size===2){const o=pts.find(q=>q!==p);const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(e.clientX-o.x,e.clientY-o.y);zoomAt(d1/d0,(e.clientX+o.x)/2,(e.clientY+o.y)/2);moved+=99}
+  PT.set(e.pointerId,{x:e.clientX,y:e.clientY});apply()});
+const up=e=>{if(PT.has(e.pointerId)&&PT.size===1&&moved<8&&Date.now()-downT<500)tap(e.clientX,e.clientY);PT.delete(e.pointerId)};
+map.addEventListener('pointerup',up);map.addEventListener('pointercancel',e=>PT.delete(e.pointerId));
+map.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
+$('zin').onclick=()=>zoomAt(1.5,map.clientWidth/2,map.clientHeight/2);$('zout').onclick=()=>zoomAt(1/1.5,map.clientWidth/2,map.clientHeight/2);$('zfit').onclick=fit;
+const toImg=(cx,cy)=>[(cx-tx)/sc,(cy-ty)/sc],toScr=(x,y)=>[x*sc+tx,y*sc+ty];
+// ---------- state ----------
+let zone=0,cat='',sel=null,results=[],me=null,calMode=false;
+let CAL={pts:[]};try{const loc=JSON.parse(store('bg_cal')||'null');CAL=(loc&&loc.pts&&loc.pts.length)?loc:(BAKED_CAL?{pts:BAKED_CAL.map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}))}:{pts:[]})}catch(e){CAL={pts:[]}}
+// ---------- marks ----------
+function drawMarks(){let h='';
+  if(!sel&&results.length&&results.length<=200&&$('q').value.trim())results.forEach(l=>{const[x,y]=toScr(l.x,l.y);h+=`<div class="mk res" style="left:${x}px;top:${y}px" data-lot="${l.lot}"></div>`});
+  if(sel){(sel.nama?byName[sel.nama]:[]).filter(l=>l!==sel).forEach(l=>{const[x,y]=toScr(l.x,l.y);h+=`<div class="mk sib" style="left:${x}px;top:${y}px" data-lot="${l.lot}"><div class="tag">${l.lot}</div></div>`});
+    const[x,y]=toScr(sel.x,sel.y);h+=`<div class="mk pin" style="left:${x}px;top:${y}px"><div class="tag">Lot ${sel.lot}</div></div>`}
+  if(calMode)CAL.pts.forEach((p,i)=>{const[x,y]=toScr(p.x,p.y);h+=`<div class="mk cal" style="left:${x}px;top:${y}px"><span>${i+1}</span></div>`});
+  if(me&&me.xy){const[x,y]=toScr(me.xy[0],me.xy[1]);h+=`<div class="mk me" style="left:${x}px;top:${y}px"></div>`}
+  marks.innerHTML=h}
+marks.addEventListener('click',e=>{const m=e.target.closest('[data-lot]');if(m)select(byLot[m.dataset.lot])});
+// ---------- chips ----------
+const CH=[['Semua',0,''],['Zon 1',1,''],['Zon 2',2,''],['Zon 3',3,''],['Zon 4',4,''],['Zon 5',5,''],['Fasa A',0,'fA'],['Fasa B',0,'fB'],['Fasa C',0,'fC'],['Fasa D',0,'fD'],['Terjejas (satelit)',0,'dmg'],['Lot FELDA',0,'felda'],['Tiada nama',0,'none'],['Pegangan >1 lot',0,'multi']];
+$('chips').innerHTML=CH.map((c,i)=>`<button class="chip${i?'':' on'}" data-i="${i}">${c[0]}</button>`).join('');
+$('chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const c=CH[+b.dataset.i];
+  if(c[1]){zone=zone===c[1]?0:c[1];}else if(c[2]){cat=cat===c[2]?'':c[2]}else{zone=0;cat=''}
+  [...$('chips').children].forEach((x,i)=>x.classList.toggle('on',i===0?!zone&&!cat:(CH[i][1]?CH[i][1]===zone:CH[i][2]===cat)));sel=null;search()};
+// ---------- search ----------
+function search(){const raw=$('q').value.trim();const q=norm(raw);const toks=q.split(' ').filter(Boolean);
+  results=L.filter(l=>(!zone||l.zon===zone)&&(!cat||(cat[0]==='f'&&cat.length===2?l.fasa===cat[1]:cat==='dmg'?l.dmg>=5:cat==='felda'?l.felda:cat==='none'?(!l.nama&&!l.felda):(l.nama&&byName[l.nama].length>1))));
+  if(toks.length){const num=/^\d+$/.test(q.replace(/ /g,''));
+    if(num){const d=q.replace(/ /g,'');results=results.filter(l=>l.lot.includes(d)).sort((a,b)=>(b.lot.startsWith(d))-(a.lot.startsWith(d))||a.lot.localeCompare(b.lot))}
+    else{const fq=toks.includes('FELDA');results=results.filter(l=>toks.every(t=>l.key.split(' ').some(w=>w.startsWith(t)))||(fq&&l.felda&&toks.length===1)).sort((a,b)=>a.key.localeCompare(b.key)||a.lot.localeCompare(b.lot))}
+  }else results.sort((a,b)=>a.zon-b.zon||a.lot.localeCompare(b.lot,undefined,{numeric:true}));
+  if(results.length===1&&toks.length&&raw.length>=5){select(results[0]);return}
+  list()}
+$('q').addEventListener('input',()=>{sel=null;search()});
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){$('q').blur();if(results.length)select(results[0])}});
+const zb=z=>`<span class="zb" style="background:${ZC[z]}">Z${z}</span>`;
+const ownerTxt=l=>l.felda?'<b>FELDA</b> <small>Berdaftar atas nama FELDA pada geran</small>':(l.nama||'<span style="color:var(--muted)">[tiada nama pada pelan]</span>');
+function list(){sheetOpen(true);const n=results.length;const owners=new Set(results.filter(l=>l.nama).map(l=>l.nama)).size;
+  $('stat').innerHTML=`<b style="color:var(--ink)">${n} lot</b> · ${owners} peneroka${zone?' · Zon '+zone+' '+ZN[zone]:''}`;
+  $('body').innerHTML=results.slice(0,300).map(l=>`<button class="row" data-lot="${l.lot}"><span class="ln">${l.lot}</span><span class="nm">${ownerTxt(l)}${l.nama&&byName[l.nama].length>1?`<small>Pegangan ${byName[l.nama].length} lot</small>`:''}</span>${stOf(l)?stb(stOf(l))+' ':''}${zb(l.zon)}</button>`).join('')+(n>300?`<div class="note" style="margin:10px 14px">Menunjukkan 300 daripada ${n}. Taip lebih spesifik.</div>`:'')+(n===0?`<div class="note" style="margin:14px">Tiada padanan. Cuba nombor lot penuh (5–6 digit) atau sebahagian nama.</div>`:'');
+  drawMarks()}
+$('body').addEventListener('click',e=>{const r=e.target.closest('[data-lot]');if(r)select(byLot[r.dataset.lot]);const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
+// ---------- detail ----------
+function select(l){if(!l)return;sel=l;const sibs=l.nama?byName[l.nama]:[l];
+  const ll=l.ll||geo(l.x,l.y);const ok=!!ll;
+  $('stat').innerHTML=`<b style="color:var(--ink)">Lot ${l.lot}</b> · Zon ${l.zon}`;
+  $('body').innerHTML=`<div class="det"><h2>Lot ${l.lot}</h2><div class="own">${ownerTxt(l)}</div>
+  <dl class="kv"><dt>Status</dt><dd>${stb(stOf(l))}${ST[l.lot]?`<small style="display:block;color:var(--muted)">${escH(ST[l.lot].by||"")} · ${ago(ST[l.lot].at)}${ST[l.lot].note?" · "+escH(ST[l.lot].note):""}</small>`:""}</dd><dt>Zon</dt><dd>${zb(l.zon)} ${ZN[l.zon]}</dd>${l.blok?`<dt>Blok · Fasa</dt><dd>${l.blok} · <span class="stb" style="background:${FC[l.fasa]}">Fasa ${l.fasa}</span> <small style="color:var(--muted)">(cadangan simulasi)</small></dd>`:""}${l.dmg>=0?`<dt>Tanah terdedah</dt><dd><span class="stb" style="background:${dmgC(l.dmg)}">${l.dmg}% · ${dmgN(l.dmg)}</span> <small style="color:var(--muted)">(analisis imej satelit)</small></dd>`:""}<dt>Warna kawasan</dt><dd>${l.felda?'Jingga':WN[l.warna]}</dd>
+  ${l.nama?`<dt>Pegangan</dt><dd>${sibs.length>1?`${sibs.length} lot (gabungan pegangan 10 ekar)`:'1 lot'}</dd>`:''}
+  ${ok?`<dt>Koordinat</dt><dd style="font-variant-numeric:tabular-nums">${ll[0].toFixed(6)}, ${ll[1].toFixed(6)}</dd>`:''}
+  ${ok&&me&&me.ll?`<dt>Jarak dari anda</dt><dd>${fmtD(dist(me.ll,ll))}</dd>`:''}</dl>
+  ${sibs.length>1?`<div style="font-size:12.5px;color:var(--muted)">Lot lain dalam pegangan ini:</div><div class="sibs">${sibs.filter(s=>s!==l).map(s=>`<button data-lot="${s.lot}">${s.lot} · Z${s.zon}</button>`).join('')}</div>`:''}
+  <div class="btns"><a class="btn p" ${ok?`href="https://www.google.com/maps/dir/?api=1&destination=${ll[0]},${ll[1]}&travelmode=driving" target="_blank" rel="noopener"`:'aria-disabled="true"'}>▶ Google Maps</a>
+  <a class="btn w" ${ok?`href="https://waze.com/ul?ll=${ll[0]},${ll[1]}&navigate=yes" target="_blank" rel="noopener"`:'aria-disabled="true"'}>▶ Waze</a>
+  ${canEdit()?`<button class="btn p" data-act="st" style="grid-column:1/-1;background:#b08a3e;color:#12301f">✎ Kemas kini status lot</button>`:""}<button class="btn" data-act="copy">Salin maklumat</button><button class="btn" data-act="back">← Senarai</button></div>
+  ${ok?(CAL.err>60?`<div class="note warn">Ketepatan kalibrasi ±${Math.round(CAL.err)} m. Tambah titik kalibrasi untuk navigasi lebih tepat.</div>`:`<div class="note">Navigasi ke titik dalam lot berdasarkan imej satelit (anggaran ±20 m). Sahkan sempadan dengan batu sempadan di lapangan.</div>`)
+   :`<div class="note warn"><b>Navigasi GPS belum aktif.</b> Pelan ini belum dikalibrasi dengan koordinat GPS. Tekan ⚙ dan tandakan sekurang-kurangnya 3 titik yang dikenali. <a href="https://www.google.com/maps/search/?api=1&query=FELDA+Bukit+Goh+Kuantan" target="_blank" rel="noopener">Navigasi ke Perkampungan FELDA Bukit Goh</a></div>`}
+  </div>`;
+  sheetOpen(true);centerOn(l.x,l.y,Math.max(sc,1.2))}
+function act(a){if(a==='back'){sel=null;list();return}
+  if(a==='st'&&sel){stDlg(sel);return}
+  if(a==='copy'&&sel){const ll=sel.ll||geo(sel.x,sel.y);const t=`Lot ${sel.lot} · ${sel.felda?'FELDA':(sel.nama||'-')} · Zon ${sel.zon} ${ZN[sel.zon]}`+(ll?` · https://www.google.com/maps?q=${ll[0].toFixed(6)},${ll[1].toFixed(6)}`:'');
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Disalin'),()=>prompt('Salin:',t))}}
+function sheetOpen(o){$('sheet').classList.toggle('min',!o);$('tog').textContent=o?'Kecilkan':'Senarai'}
+$('tog').onclick=()=>sheetOpen($('sheet').classList.contains('min'));
+// ---------- georujukan (affine kuasa dua terkecil) ----------
+function solve(A,b){const n=A[0].length,M=A.map((r,i)=>[...r,b[i]]);
+  const N=[...Array(n)].map((_,i)=>[...Array(n+1)].map((_,j)=>M.reduce((s,r)=>s+r[i]*r[j],0)));
+  for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<n;k++)if(Math.abs(N[k][i])>Math.abs(N[p][i]))p=k;[N[i],N[p]]=[N[p],N[i]];if(Math.abs(N[i][i])<1e-12)return null;
+    for(let k=0;k<n;k++)if(k!==i){const f=N[k][i]/N[i][i];for(let j=i;j<=n;j++)N[k][j]-=f*N[i][j]}}
+  return N.map((r,i)=>r[n]/r[i])}
+function fitCal(){const p=CAL.pts;CAL.A=null;CAL.err=null;if(p.length<3)return;
+  const A=p.map(q=>[q.x,q.y,1]);const a=solve(A,p.map(q=>q.lat)),b=solve(A,p.map(q=>q.lng));if(!a||!b)return;
+  CAL.A=[a,b];const det=a[0]*b[1]-a[1]*b[0];if(Math.abs(det)<1e-20){CAL.A=null;return}
+  CAL.err=p.length>3?Math.sqrt(p.reduce((s,q)=>{const g=geo(q.x,q.y);return s+dist(g,[q.lat,q.lng])**2},0)/p.length):null}
+function geo(x,y){if(!CAL.A)return null;const[a,b]=CAL.A;return[a[0]*x+a[1]*y+a[2],b[0]*x+b[1]*y+b[2]]}
+function ungeo(lat,lng){if(!CAL.A)return null;const[a,b]=CAL.A;const d=a[0]*b[1]-a[1]*b[0];const u=lat-a[2],v=lng-b[2];return[(u*b[1]-a[1]*v)/d,(a[0]*v-u*b[0])/d]}
+function dist(p,q){const R=6371000,r=Math.PI/180,dl=(q[0]-p[0])*r,dg=(q[1]-p[1])*r;const h=Math.sin(dl/2)**2+Math.cos(p[0]*r)*Math.cos(q[0]*r)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const fmtD=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(2)+' km';
+fitCal();
+// ---------- lapisan satelit ----------
+let LAYER='pelan';const BASE={W,H,img:null,cal:CAL};L.forEach(l=>{l.bx=l.x;l.by=l.y});
+async function setLayer(v){
+  if(v==='sat'){if(!window.bgSat){toast('Lapisan satelit tidak tersedia');return}
+    toast('Memuatkan imej satelit…');let d;try{d=await window.bgSat()}catch(e){toast('Gagal memuat: '+e.message);return}
+    if(!BASE.img)BASE.img=$('img').getAttribute('src');BASE.cal=CAL;
+    W=d.W;H=d.H;L.forEach(l=>{const p=d.pos[l.lot];l.x=p?p[0]:-9999;l.y=p?p[1]:-9999});ZD={z:d.zones,s:1};
+    CAL={pts:d.cal.map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}))};$('img').src=d.img}
+  else{W=BASE.W;H=BASE.H;L.forEach(l=>{l.x=l.bx;l.y=l.by});ZD={z:ZONES,s:S};CAL=BASE.cal;if(BASE.img)$('img').src=BASE.img}
+  LAYER=v;fitCal();if(v==='sat')CAL.err=20;drawZones();if(me&&me.ll)me.xy=ungeo(me.ll[0],me.ll[1]);$('lay').classList.toggle('on',v==='sat');
+  try{localStorage.setItem('bg_layer',v)}catch(e){}
+  if(sel)select(sel);else{fit();drawMarks()}}
+$('lay').onclick=()=>setLayer(LAYER==='sat'?'pelan':'sat');
+setTimeout(()=>{let v=null;try{v=localStorage.getItem('bg_layer')}catch(e){}if(v==='sat')setLayer('sat')},300);
+// ---------- GPS ----------
+let watch=null;
+$('gpsBtn').onclick=()=>{if(!navigator.geolocation){toast('GPS tidak disokong');return}
+  if(!CAL.A){toast('Kalibrasi diperlukan untuk menunjuk lokasi anda pada pelan')}
+  if(watch===null)watch=navigator.geolocation.watchPosition(p=>{const first=!me;me={ll:[p.coords.latitude,p.coords.longitude],acc:p.coords.accuracy};me.xy=ungeo(me.ll[0],me.ll[1]);
+    if(first&&me.xy){if(me.xy[0]<-200||me.xy[0]>W+200||me.xy[1]<-200||me.xy[1]>H+200)toast('Anda berada di luar kawasan pelan');else centerOn(me.xy[0],me.xy[1],Math.max(sc,1))}
+    drawMarks();if(sel)select(sel)},e=>toast('GPS: '+e.message),{enableHighAccuracy:true,maximumAge:5000});
+  else if(me&&me.xy)centerOn(me.xy[0],me.xy[1])};
+// ---------- kalibrasi ----------
+$('calBtn').onclick=()=>calMenu();
+$('calDone').onclick=()=>{calMode=false;$('calbar').style.display='none';drawMarks();calMenu()};
+function tap(cx,cy){if(cy<topH())return;if(calMode){const[x,y]=toImg(cx,cy);if(x<0||y<0||x>W||y>H)return;calPoint(x,y);return}
+  const[x,y]=toImg(cx,cy);let best=null,bd=1e9;L.forEach(l=>{const d=Math.hypot(l.x-x,l.y-y);if(d<bd){bd=d;best=l}});if(best&&bd*sc<40)select(best)}
+function dlg(html){$('dlgbox').innerHTML=html;$('dlg').style.display='flex'}
+function closeDlg(){$('dlg').style.display='none'}
+$('dlg').onclick=e=>{if(e.target.id==='dlg')closeDlg()};
+function save(){fitCal();if(LAYER!=='sat')store('bg_cal',JSON.stringify({pts:CAL.pts}));if(me)me.xy=ungeo(me.ll[0],me.ll[1]);drawMarks()}
+function calMenu(){const p=CAL.pts;dlg(`<h3>Kalibrasi GPS pelan</h3>
+  <p style="font-size:13.5px;margin:0 0 8px">Pelan asal tiada koordinat GPS. Tandakan <b>sekurang-kurangnya 3 titik</b> (lebih baik 4–6, berselerak di seluruh kawasan) yang anda tahu koordinatnya, cth. simpang jalan, jambatan, sudut lot. Koordinat boleh disalin dari Google Maps (tekan lama pada peta) atau guna GPS telefon semasa berdiri di titik itu.</p>
+  <div style="margin:8px 0">${p.length?p.map((q,i)=>`<div class="cpl"><span><b>${i+1}.</b> ${q.lat.toFixed(6)}, ${q.lng.toFixed(6)}${q.n?' · '+q.n:''}</span><button data-del="${i}">Padam</button></div>`).join(''):'<div class="cpl">Belum ada titik.</div>'}</div>
+  <div class="note ${CAL.A?'':'warn'}">${CAL.A?(CAL.err!=null?`Aktif · anggaran ralat ±${Math.round(CAL.err)} m`:'Aktif (3 titik, ralat belum dapat dianggar. Tambah titik ke-4 untuk semakan.)'):`Belum aktif · perlu ${Math.max(0,3-p.length)} titik lagi`}</div>
+  <div class="btns"><button class="btn p" data-c="add">+ Tanda titik</button><button class="btn" data-c="close">Tutup</button>
+  <button class="btn" data-c="exp">Eksport kod</button><button class="btn" data-c="imp">Import kod</button></div>
+  ${window.BG_ROLE==='admin'?'<button class="btn p" style="width:100%;margin-top:8px;background:#b08a3e;color:#12301f" onclick="bgAdmin()">👤 Pengurusan pengguna (Admin)</button>':''}<button class="btn" style="width:100%;margin-top:8px;color:#b23c17" onclick="bgForget()">🔒 Log keluar &amp; lupakan peranti ini</button><p style="font-size:12px;color:var(--muted);margin:10px 0 0">Kalibrasi disimpan dalam pelayar peranti ini sahaja. Guna "Eksport kod" untuk berkongsi dengan pasukan lain.</p>`);
+  $('dlgbox').onclick=e=>{const d=e.target.dataset;
+    if(d.del!==undefined){CAL.pts.splice(+d.del,1);save();calMenu()}
+    if(d.c==='close')closeDlg();
+    if(d.c==='add'){closeDlg();calMode=true;$('calbar').style.display='block';$('calbar').style.top=(topH()+8)+'px';sheetOpen(false);drawMarks()}
+    if(d.c==='exp'){const c=btoa(JSON.stringify(CAL.pts.map(q=>[+q.x.toFixed(1),+q.y.toFixed(1),q.lat,q.lng,q.n||''])));dlg(`<h3>Kod kalibrasi</h3><textarea readonly>${c}</textarea><div class="btns"><button class="btn p" onclick="navigator.clipboard&&navigator.clipboard.writeText('${c}').then(()=>toast('Disalin'))">Salin</button><button class="btn" onclick="calMenu()">Kembali</button></div>`)}
+    if(d.c==='imp'){dlg(`<h3>Import kod kalibrasi</h3><textarea id="impT" placeholder="Tampal kod di sini"></textarea><div class="btns"><button class="btn p" id="impGo">Import</button><button class="btn" onclick="calMenu()">Batal</button></div>`);
+      $('impGo').onclick=()=>{try{CAL.pts=JSON.parse(atob($('impT').value.trim())).map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}));save();toast('Kalibrasi diimport');calMenu()}catch(e){toast('Kod tidak sah')}}}}}
+function calPoint(x,y){CAL.pts.push({x,y,lat:NaN,lng:NaN});drawMarks();const i=CAL.pts.length-1;
+  dlg(`<h3>Titik ${i+1}: koordinat GPS</h3><p style="font-size:13px;margin:0 0 8px">Tampal koordinat dari Google Maps (cth. <code>3.8765, 103.2345</code>) atau guna GPS jika anda sedang berdiri di titik ini.</p>
+  <input id="llIn" placeholder="latitud, longitud" inputmode="decimal"><input id="nIn" placeholder="Nama titik (pilihan), cth. simpang jalan masuk" style="margin-top:6px">
+  <div class="btns"><button class="btn p" id="llOk">Simpan</button><button class="btn" id="llGps">◎ Guna GPS saya</button><button class="btn" id="llNo">Batal</button></div>`);
+  const done=(lat,lng)=>{if(!isFinite(lat)||!isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180){toast('Koordinat tidak sah');return}
+    Object.assign(CAL.pts[i],{lat,lng,n:$('nIn').value.trim()});save();closeDlg();toast(CAL.A?'Kalibrasi dikemas kini':`Titik disimpan · perlu ${3-CAL.pts.length} lagi`)};
+  $('llOk').onclick=()=>{const m=$('llIn').value.match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);if(!m){toast('Format: lat, lng');return}done(+m[1],+m[2])};
+  $('llGps').onclick=()=>{toast('Mendapatkan GPS…');navigator.geolocation.getCurrentPosition(p=>{if(p.coords.accuracy>30)toast(`Ketepatan GPS ±${Math.round(p.coords.accuracy)} m`);done(p.coords.latitude,p.coords.longitude)},e=>toast('GPS: '+e.message),{enableHighAccuracy:true,timeout:20000})};
+  $('llNo').onclick=()=>{CAL.pts.splice(i,1);closeDlg();drawMarks()}}
+// ---------- status, ringkasan dan info projek ----------
+const escH=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const canEdit=()=>['admin','penyelia'].includes(window.BG_ROLE);
+const isAdm=()=>window.BG_ROLE==='admin';
+function ago(t){if(!t)return'';const d=(Date.now()-new Date(t))/1000;if(d<60)return'baru sahaja';if(d<3600)return Math.round(d/60)+' min lalu';if(d<86400)return Math.round(d/3600)+' jam lalu';if(d<86400*7)return Math.round(d/86400)+' hari lalu';
+  return new Date(t).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'})}
+const DB=()=>window.BGDB;
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function lsGet(k,d){try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
+// --- status lot ---
+async function loadStatus(){try{const a=await DB().list('lotstatus');if(!a)return;const m={};a.forEach(o=>{if(o&&o.lot)m[o.lot]=o});ST=m;lsSet('bg_st',ST);if(view==='sum')renderSum();if(!sel)list();else select(sel)}catch(e){}}
+function stDlg(l){const cur=stOf(l);dlg(`<h3>Status Lot ${l.lot}</h3><p style="font-size:12.5px;color:var(--muted);margin:0 0 6px">${escH(l.nama||(l.felda?'FELDA':''))} · Zon ${l.zon}${l.blok?' · Blok '+l.blok+' · Fasa '+l.fasa:''}</p>
+  ${STS.map((n,i)=>`<label class="stopt"><input type="radio" name="sts" value="${i}"${i===cur?' checked':''}> ${stb(i)}</label>`).join('')}
+  <input id="stNote" placeholder="Catatan (pilihan), cth. tanah atas disimpan di hujung blok" style="margin-top:10px">
+  <div class="btns"><button class="btn p" id="stOk">Simpan</button><button class="btn" id="stNo">Batal</button></div>
+  <p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">Kemas kini direkod dengan nama anda dan masa, dan dipaparkan dalam Ringkasan → Terkini.</p>`);
+  $('stNo').onclick=closeDlg;
+  $('stOk').onclick=async()=>{const v=document.querySelector('input[name=sts]:checked');if(!v)return;const s=+v.value;
+    $('stOk').disabled=true;$('stOk').textContent='Menyimpan…';
+    try{const o=await DB().setStatus(l.lot,s,$('stNote').value.trim());ST[l.lot]=o;lsSet('bg_st',ST);closeDlg();toast('Status Lot '+l.lot+': '+STS[s]);select(l)}
+    catch(x){if(x.message!=='batal')toast('Gagal: '+x.message);$('stOk').disabled=false;$('stOk').textContent='Simpan'}}}
+// --- tab ---
+let view='peta';
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(b)showView(b.dataset.v)};
+function showView(v){view=v;[...$('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  const p=$('pane');if(v==='peta'){p.style.display='none';$('sheet').style.display='';return}
+  p.style.top=topH()+'px';p.style.display='block';$('sheet').style.display='none';p.scrollTop=0;
+  if(v==='sum'){renderSum();loadStatus();loadFeed()}if(v==='info'){renderInfo();markSeen()}}
+window.addEventListener('resize',()=>{if(view!=='peta')$('pane').style.top=topH()+'px'});
+// --- ringkasan ---
+let FEED=lsGet('bg_feed',[]);
+async function loadFeed(){try{const a=await DB().feed(40);if(!a)return;FEED=a;lsSet('bg_feed',FEED);if(view==='sum')renderSum()}catch(e){}}
+function barOf(ls){const c=STS.map(()=>0);ls.forEach(l=>c[stOf(l)]++);const n=ls.length||1;
+  return `<div class="bar">${c.map((k,i)=>k?`<i style="width:${k/n*100}%;background:${STC[i]}" title="${STS[i]}: ${k}"></i>`:'').join('')}</div>`+
+    `<div class="leg">${c.map((k,i)=>k?`<span style="--c:${STC[i]}">${STS[i]} ${k}</span>`:'').join('')}</div>`}
+function renderSum(){const P=L.filter(l=>l.blok);const done=P.filter(l=>stOf(l)===6).length,tan=P.filter(l=>stOf(l)>=5).length,mula=P.filter(l=>stOf(l)>=3).length;
+  const fb=window.BGDB&&window.BGDB.on;
+  $('pane').innerHTML=`<div class="card"><div style="font-size:12.5px;color:var(--muted)">Kemajuan keseluruhan · ${P.length} lot</div>
+    <div style="display:flex;gap:14px;margin:6px 0"><div><div class="big">${tan}</div><small>ditanam / serah</small></div><div><div class="big">${mula}</div><small>kerja bermula</small></div><div><div class="big">${Math.round(done/(P.length||1)*100)}%</div><small>diserah</small></div></div>${barOf(P)}</div>
+  <h3>Mengikut fasa</h3>${['A','B','C','D'].map(f=>{const ls=P.filter(l=>l.fasa===f);return `<div class="card"><b><span class="stb" style="background:${FC[f]}">Fasa ${f}</span> ${ls.length} lot · ${new Set(ls.map(l=>l.blok)).size} blok</b>${barOf(ls)}</div>`}).join('')}
+  <h3>Mengikut zon</h3>${[1,2,3,4,5].map(z=>{const ls=P.filter(l=>l.zon===z);return `<div class="card"><b>${zb(z)} ${ZN[z]} · ${ls.length} lot</b>${barOf(ls)}</div>`}).join('')}
+  <h3>Terkini</h3><div class="card" style="padding:4px 14px">${FEED.length?FEED.map(f=>f.t==='post'?`<div class="fd"><span>📢</span><span><b>${escH(f.title||'')}</b><small>${CATN[f.cat]||'Info'} · ${escH(f.by||'')} · ${ago(f.at)}</small></span></div>`:
+     `<button class="fd" data-lot="${f.lot}"><span>📍</span><span><b>Lot ${f.lot}</b> → ${stb(f.s)}${f.note?` <small style="display:inline">${escH(f.note)}</small>`:''}<small>${escH(f.by||'')} · ${ago(f.at)}</small></span></button>`).join(''):
+     `<p style="font-size:13px;color:var(--muted)">${fb?'Belum ada kemas kini status.':'Firebase belum disambung.'}</p>`}</div>
+  <p style="font-size:11.5px;color:var(--muted);margin:8px 2px">Blok dan fasa ialah cadangan simulasi berdasarkan pelan 5 zon; pembahagian muktamad mengikut Pakej Keputusan Lot Lembaga Projek.</p>`}
+$('pane').addEventListener('click',e=>{const r=e.target.closest('[data-lot]');if(r&&byLot[r.dataset.lot]){showView('peta');select(byLot[r.dataset.lot])}});
+// --- info projek ---
+const CATN={umum:'📌 Pengumuman',info:'📰 Info Projek',sop:'📋 SOP Kerja'};
+let POSTS=[],icat='';
+function mergePosts(remote){const m={};(P.posts||[]).forEach(p=>m[p.id]=p);(remote||[]).forEach(p=>{if(p&&p.id)m[p.id]=p});
+  POSTS=Object.values(m).filter(p=>!p.del).sort((a,b)=>(b.pin-a.pin)||String(b.at).localeCompare(String(a.at)))}
+mergePosts(lsGet('bg_posts',[]));
+async function loadPosts(){try{const a=await DB().list('posts');if(!a)return;lsSet('bg_posts',a);mergePosts(a);badge();if(view==='info'&&!openPost)renderInfo();annCheck()}catch(e){}}
+function md(t){const out=[];let ul=false;escH(t).split('\n').forEach(line=>{const x=line.trim();
+    if(/^- /.test(x)){if(!ul){out.push('<ul>');ul=true}out.push('<li>'+x.slice(2)+'</li>');return}
+    if(ul){out.push('</ul>');ul=false}
+    if(/^## /.test(x))out.push('<h4>'+x.slice(3)+'</h4>');else if(x)out.push('<p>'+x+'</p>')});
+  if(ul)out.push('</ul>');return out.join('').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}
+const seen=()=>lsGet('bg_seen','');
+function unread(){const s=seen();return POSTS.filter(p=>String(p.at)>s).length}
+function badge(){const n=unread(),b=$('infobd');b.hidden=!n;b.textContent=n}
+function markSeen(){const m=POSTS.reduce((a,p)=>String(p.at)>a?String(p.at):a,seen());lsSet('bg_seen',m);badge();$('ann').style.display='none'}
+let openPost=null;
+function renderInfo(){openPost=null;const ls=POSTS.filter(p=>!icat||p.cat===icat);
+  $('pane').innerHTML=`<div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:10px">${[['','Semua'],['umum',CATN.umum],['info',CATN.info],['sop',CATN.sop]].map(([k,n])=>`<button class="chip" data-ic="${k}" style="color:var(--ink);border-color:var(--line);${icat===k?'background:var(--leaf);color:#fff;border-color:var(--leaf)':''}">${n}</button>`).join('')}</div>
+  ${isAdm()?`<button class="btn p" data-pa="new" style="width:100%;margin-bottom:10px">+ Hantaran baharu</button>`:''}
+  ${ls.map(p=>`<div class="card post" data-pid="${p.id}">${p.pin?'<span class="cat" style="background:#b08a3e;color:#12301f">PENTING</span> ':''}<span class="cat">${CATN[p.cat]||''}</span>${String(p.at)>seen()?' <span class="cat" style="background:#e53935;color:#fff">BAHARU</span>':''}
+    <h4>${escH(p.title)}</h4><div class="meta">${p.ver?escH(p.ver)+' · ':''}${ago(p.at)}${p.by?' · '+escH(p.by):''}</div></div>`).join('')||'<p style="color:var(--muted)">Tiada hantaran.</p>'}`}
+function readPost(p){openPost=p;$('pane').innerHTML=`<button class="btn" data-pa="back" style="margin-bottom:10px">← Semua info</button>
+  <div class="card"><span class="cat">${CATN[p.cat]||''}</span>${p.pin?' <span class="cat" style="background:#b08a3e;color:#12301f">PENTING</span>':''}
+  <h2 style="margin:8px 0 4px;font-size:19px">${escH(p.title)}</h2><div class="meta" style="font-size:12px;color:var(--muted)">${p.ver?escH(p.ver)+' · ':''}${p.eff?'Berkuat kuasa: '+escH(p.eff)+' · ':''}${ago(p.at)}${p.by?' · '+escH(p.by):''}</div>
+  <div class="md">${md(p.body||'')}</div></div>
+  ${isAdm()?`<div class="btns"><button class="btn p" data-pa="edit">✎ Ubah</button><button class="btn" data-pa="del" style="color:#b23c17">Padam</button></div>`:''}`;$('pane').scrollTop=0}
+function editPost(p){const n=!p;p=p||{id:'p'+Date.now().toString(36),cat:'umum',title:'',body:'',pin:false};
+  dlg(`<h3>${n?'Hantaran baharu':'Ubah hantaran'}</h3>
+  <select id="ePc" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)">${Object.entries(CATN).map(([k,v])=>`<option value="${k}"${p.cat===k?' selected':''}>${v}</option>`).join('')}</select>
+  <input id="ePt" placeholder="Tajuk" value="${escH(p.title)}" style="margin-top:6px">
+  <textarea id="ePb" placeholder="Isi. Guna '## ' untuk tajuk kecil, '- ' untuk senarai, **tebal**." style="height:220px;margin-top:6px;font-family:inherit;font-size:14px">${escH(p.body)}</textarea>
+  <input id="ePv" placeholder="Versi (SOP), cth. v1.1" value="${escH(p.ver||'')}" style="margin-top:6px"><input id="ePe" placeholder="Tarikh berkuat kuasa (SOP)" value="${escH(p.eff||'')}" style="margin-top:6px">
+  <label class="stopt" style="border:0"><input type="checkbox" id="ePp"${p.pin?' checked':''}> Penting: sematkan di atas dan papar sebagai pengumuman</label>
+  <div class="btns"><button class="btn p" id="ePok">Terbitkan</button><button class="btn" id="ePno">Batal</button></div>`);
+  $('ePno').onclick=closeDlg;
+  $('ePok').onclick=async()=>{const q={...p,cat:$('ePc').value,title:$('ePt').value.trim(),body:$('ePb').value,ver:$('ePv').value.trim(),eff:$('ePe').value.trim(),pin:$('ePp').checked,at:new Date().toISOString()};
+    if(!q.title){toast('Tajuk diperlukan');return}$('ePok').disabled=true;$('ePok').textContent='Menerbitkan…';
+    try{await DB().savePost(q);closeDlg();toast('Diterbitkan');const r=lsGet('bg_posts',[]).filter(x=>x.id!==q.id);r.push(q);lsSet('bg_posts',r);mergePosts(r);readPost(q);markSeen()}
+    catch(x){if(x.message!=='batal')toast('Gagal: '+x.message);$('ePok').disabled=false;$('ePok').textContent='Terbitkan'}}}
+$('pane').addEventListener('click',async e=>{const c=e.target.closest('[data-ic]');if(c){icat=c.dataset.ic;renderInfo();return}
+  const pp=e.target.closest('[data-pid]');if(pp){readPost(POSTS.find(p=>p.id===pp.dataset.pid));return}
+  const a=e.target.closest('[data-pa]');if(!a)return;const k=a.dataset.pa;
+  if(k==='back')renderInfo();if(k==='new')editPost(null);if(k==='edit')editPost(openPost);
+  if(k==='del'&&openPost){dlg(`<h3>Padam hantaran?</h3><p>${escH(openPost.title)}</p><div class="btns"><button class="btn p" id="dOk" style="background:#b23c17">Padam</button><button class="btn" id="dNo">Batal</button></div>`);
+    $('dNo').onclick=closeDlg;$('dOk').onclick=async()=>{try{const q={...openPost,del:true,at:new Date().toISOString()};await DB().savePost(q,true);const r=lsGet('bg_posts',[]).filter(x=>x.id!==q.id);r.push(q);lsSet('bg_posts',r);mergePosts(r);closeDlg();renderInfo();toast('Dipadam')}catch(x){if(x.message!=='batal')toast('Gagal: '+x.message)}}}});
+function annCheck(){const p=POSTS.find(p=>p.pin&&String(p.at)>seen());if(!p)return;$('annt').textContent=p.title;const a=$('ann');a.style.top=(topH()+8)+'px';a.style.display='block';a.onclick=e=>{if(e.target.id==='annx'){a.style.display='none';e.stopPropagation();return}showView('info');readPost(p)}}
+badge();setTimeout(annCheck,600);
+if(window.BGDB){loadPosts();loadStatus();loadFeed()}
+
+// ---------- mula ----------
+window.addEventListener('resize',()=>drawMarks());
+$('img').onload=fit;$('img').src=P.img;fit();search();sheetOpen(false);window.calMenu=calMenu;window.toast=toast;
+const h=decodeURIComponent(location.hash.slice(1));if(h&&byLot[h])select(byLot[h]);
+}
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const te=new TextEncoder(),td=new TextDecoder();
+const b64=u=>{const a=new Uint8Array(u);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s)};
+const ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+const cat=(...a)=>{const o=new Uint8Array(a.reduce((s,x)=>s+x.length,0));let p=0;a.forEach(x=>{o.set(x,p);p+=x.length});return o};
+const normId=s=>(s||'').trim().toLowerCase();
+const sha=async s=>b64(await crypto.subtle.digest('SHA-256',te.encode(s)));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+// ---------- pasang ----------
+let deferred=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('lkinst').hidden=false});
+$('lkinst').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('lkinst').hidden=true};
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!standalone)$('lkios').hidden=false;
+$('lkeye').onclick=()=>{const i=$('lkc'),show=i.type==='password';i.type=show?'text':'password';$('eyeOn').style.display=show?'none':'';$('eyeOff').style.display=show?'':'none';$('lkeye').setAttribute('aria-label',show?'Sembunyi kata laluan':'Tunjuk kata laluan');i.focus()};
+// ---------- simpanan peranti ----------
+function idb(){return new Promise((ok,no)=>{const r=indexedDB.open('bglot',2);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('k'))r.result.createObjectStore('k')};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function kget(){try{const db=await idb();return await new Promise(ok=>{const q=db.transaction('k').objectStore('k').get('sess');q.onsuccess=()=>ok(q.result||null);q.onerror=()=>ok(null)})}catch(e){return null}}
+async function kput(v){try{const db=await idb();await new Promise(ok=>{const t=db.transaction('k','readwrite');v?t.objectStore('k').put(v,'sess'):t.objectStore('k').delete('sess');t.oncomplete=ok;t.onerror=ok})}catch(e){}}
+window.bgForget=async()=>{await kput(null);location.reload()};
+// ---------- kripto ----------
+async function kek(id,pw,salt){const k=await crypto.subtle.importKey('raw',te.encode(normId(id)+'\n'+pw),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['wrapKey','unwrapKey'])}
+async function enc(key,bytes){const iv=rnd(12);return cat(iv,new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,bytes)))}
+async function dec(key,blob){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:blob.slice(0,12)},key,blob.slice(12)))}
+async function makeEntry(dek,meta,pw){const salt=rnd(16),k=await kek(meta.id,pw,salt),iv=rnd(12);
+  const w=new Uint8Array(await crypto.subtle.wrapKey('raw',dek,k,{name:'AES-GCM',iv}));
+  return{h:await sha(normId(meta.id)),s:b64(salt),w:b64(cat(iv,w)),m:b64(await enc(dek,te.encode(JSON.stringify(meta))))}}
+async function readMeta(dek,e){return JSON.parse(td.decode(await dec(dek,ub64(e.m))))}
+// ---------- data ----------
+// ---------- Firebase (pilihan): senarai pengguna dalam Firestore, dikemas kini terus oleh admin ----------
+let FBC;
+async function fbConf(){if(FBC!==undefined)return FBC;try{const r=await fetch('firebase.json',{cache:'no-store'});FBC=r.ok?await r.json():null}catch(e){FBC=null}
+  if(FBC&&!(FBC.projectId&&FBC.apiKey))FBC=null;return FBC}
+const fsUrl=c=>`https://firestore.googleapis.com/v1/projects/${c.projectId}/databases/(default)/documents/config/keys`;
+const lsGet=()=>{try{return JSON.parse(localStorage.getItem('bg_keys')||'null')}catch(e){return null}};
+const lsPut=j=>{try{localStorage.setItem('bg_keys',JSON.stringify(j))}catch(e){}};
+async function getKeys(){const c=await fbConf();
+  if(c){try{const r=await fetch(fsUrl(c)+'?key='+encodeURIComponent(c.apiKey),{cache:'no-store'});
+      if(r.ok){const d=await r.json();const j=JSON.parse(d.fields.json.stringValue);lsPut(j);j._src='firebase';return j}}catch(e){}}
+  let r=null;try{r=await fetch('keys.json',{cache:'no-store'})}catch(e){}
+  if(r&&r.ok){const j=await r.json();const l=lsGet();if(c&&l&&l.updated>j.updated)return l;return j}
+  const l=lsGet();if(l)return l;
+  try{r=await caches.match('keys.json',{ignoreSearch:true})}catch(e){r=null}
+  if(!r)throw new Error('Senarai pengguna tidak dapat dimuat. Sambung ke internet dan cuba lagi.');return r.json()}
+async function fbSign(c,email,password){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email,password,returnSecureToken:true})});const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||'gagal');BG.fbTok=d.idToken;BG.fbExp=Date.now()+(+d.expiresIn-60)*1000;return d.idToken}
+async function fbLogin(){const c=await fbConf();if(BG.fbTok&&BG.fbExp>Date.now())return BG.fbTok;
+  if(BG.meta.fe&&BG.pw){try{return await fbSign(c,BG.meta.fe,BG.pw)}catch(e){}}
+  return new Promise((ok,no)=>{let em=BG.meta.fe||'';try{em=em||localStorage.getItem('bg_fbmail')||''}catch(e){}
+    box(`<h3>Sahkan admin Firebase</h3><p style="font-size:13px;margin:0 0 8px;color:var(--muted)">Masukkan e-mel dan kata laluan akaun admin Firebase (bukan kata laluan aplikasi). Diminta sekali bagi setiap sesi.</p>
+    <input id="fbE" type="email" placeholder="E-mel admin" value="${esc(em)}" autocapitalize="none"><input id="fbP" type="password" placeholder="Kata laluan Firebase" style="margin-top:6px">
+    <div class="btns"><button class="btn p" id="fbOk">Sahkan</button><button class="btn" id="fbNo">Batal</button></div>`);
+    $('fbNo').onclick=()=>{$('dlg').style.display='none';no(new Error('batal'))};
+    $('fbOk').onclick=async()=>{$('fbOk').disabled=true;$('fbOk').textContent='Mengesahkan…';
+      try{const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:$('fbE').value.trim(),password:$('fbP').value,returnSecureToken:true})});const d=await r.json();
+        if(!r.ok)throw new Error(d.error&&d.error.message||'gagal');
+        try{localStorage.setItem('bg_fbmail',$('fbE').value.trim())}catch(e){}
+        BG.fbTok=d.idToken;BG.fbExp=Date.now()+(+d.expiresIn-60)*1000;ok(d.idToken)}
+      catch(x){$('fbOk').disabled=false;$('fbOk').textContent='Sahkan';tst('Log masuk Firebase gagal: '+x.message)}}})}
+async function fbSave(json){const c=await fbConf();const tok=await fbLogin();
+  const r=await fetch(fsUrl(c)+'?key='+encodeURIComponent(c.apiKey),{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},
+    body:JSON.stringify({fields:{json:{stringValue:json},updated:{timestampValue:new Date().toISOString()}}})});
+  if(!r.ok){const d=await r.json().catch(()=>({}));if(r.status===401||r.status===403)BG.fbTok=null;throw new Error((d.error&&d.error.message)||('HTTP '+r.status))}
+  lsPut(JSON.parse(json));BG.keys=JSON.parse(json)}
+let SATP=null;
+window.bgSat=async()=>{if(SATP)return SATP;if(!window.BG)throw new Error('belum log masuk');
+  const r=await fetch('sat.txt');if(!r.ok)throw new Error('sat.txt ('+r.status+')');const buf=ub64((await r.text()).trim());
+  if(td.decode(buf.slice(0,4))!=='BG02')throw new Error('format');const pt=await dec(BG.dek,buf.slice(4));
+  const n=new DataView(pt.buffer).getUint32(0);const m=JSON.parse(td.decode(pt.slice(4,4+n)));
+  m.img=URL.createObjectURL(new Blob([pt.slice(4+n)],{type:'image/jpeg'}));SATP=m;return m};
+let BUF=null;
+async function getData(){if(BUF)return BUF;const r=await fetch('data.txt');if(!r.ok)throw new Error('Data tidak dapat dimuat ('+r.status+')');
+  BUF=ub64((await r.text()).trim());if(td.decode(BUF.slice(0,4))!=='BG02')throw new Error('Fail data versi lama. Muat naik data.txt terkini.');return BUF}
+async function openData(dek){const pt=await dec(dek,(await getData()).slice(4));const n=new DataView(pt.buffer).getUint32(0);
+  const P=JSON.parse(td.decode(pt.slice(4,4+n)));P.img=URL.createObjectURL(new Blob([pt.slice(4+n)],{type:'image/jpeg'}));return{P,pt}}
+async function enter(dek,keys,meta,pw){const {P,pt}=await openData(dek);
+  window.BG={dek,keys,meta,pw,role:meta.role,pt:meta.role==='admin'?pt:null};window.BG_ROLE=meta.role;window.BGDB=(await fbConf())?DBAPI:null;
+  $('lock').classList.add('gone');start(P);const u=$('ver');if(u)u.textContent=meta.id+' · '+(RN[meta.role]||'Pengguna')+' · data '+P.ver}
+// ---------- pangkalan data projek (Firestore; kandungan disulitkan dengan kunci data) ----------
+const RN={admin:'Admin',penyelia:'Penyelia',user:'Pengguna'};
+const FSB=c=>`https://firestore.googleapis.com/v1/projects/${c.projectId}/databases/(default)/documents`;
+async function encObj(o){return b64(await enc(BG.dek,te.encode(JSON.stringify(o))))}
+async function decObj(s){return JSON.parse(td.decode(await dec(BG.dek,ub64(s))))}
+async function fsList(col){const c=await fbConf();if(!c)return null;const out=[];let tok='';
+  do{const r=await fetch(`${FSB(c)}/${col}?pageSize=300&key=${encodeURIComponent(c.apiKey)}${tok?'&pageToken='+encodeURIComponent(tok):''}`,{cache:'no-store'});
+    if(!r.ok){if(r.status===404)break;throw new Error('HTTP '+r.status)}const d=await r.json();
+    for(const doc of d.documents||[]){try{out.push(await decObj(doc.fields.e.stringValue))}catch(e){}}tok=d.nextPageToken||''}while(tok);return out}
+async function fsFeed(n){const c=await fbConf();if(!c)return null;
+  const r=await fetch(`${FSB(c)}:runQuery?key=${encodeURIComponent(c.apiKey)}`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({structuredQuery:{from:[{collectionId:'feed'}],orderBy:[{field:{fieldPath:'at'},direction:'DESCENDING'}],limit:n}})});
+  if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();const out=[];
+  for(const x of d){if(x.document){try{out.push(await decObj(x.document.fields.e.stringValue))}catch(e){}}}return out}
+async function fsWrite(path,obj,create){const c=await fbConf();if(!c)throw new Error('Firebase belum disambung');const tok=await fbLogin();
+  const body=JSON.stringify({fields:{e:{stringValue:await encObj(obj)},at:{timestampValue:obj.at||new Date().toISOString()}}});
+  const r=await fetch(`${FSB(c)}/${path}?key=${encodeURIComponent(c.apiKey)}`,{method:create?'POST':'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body});
+  if(!r.ok){const d=await r.json().catch(()=>({}));if(r.status===401)BG.fbTok=null;
+    throw new Error(r.status===403?'Tiada kebenaran. Akaun Firebase anda belum diberi peranan Penyelia/Admin.':(d.error&&d.error.message)||('HTTP '+r.status))}}
+const DBAPI={on:true,list:fsList,feed:fsFeed,
+  async setStatus(lot,s,note){const at=new Date().toISOString();const o={lot,s,note,by:BG.meta.id,at};
+    await fsWrite('lotstatus/'+encodeURIComponent(lot),o);try{await fsWrite('feed',{t:'status',lot,s,note,by:o.by,at},true)}catch(e){}return o},
+  async savePost(p,silent){p.by=BG.meta.id;await fsWrite('posts/'+encodeURIComponent(p.id),p);
+    if(!silent&&!p.del){try{await fsWrite('feed',{t:'post',title:p.title,cat:p.cat,by:p.by,at:p.at},true)}catch(e){}}return p}};
+async function fbSignUp(c,email,password){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email,password,returnSecureToken:false})});const d=await r.json();if(!r.ok&&!(d.error&&d.error.message==='EMAIL_EXISTS'))throw new Error(d.error&&d.error.message||'gagal');return true}
+async function fbSaveRoles(){const c=await fbConf();const tok=await fbLogin();const f={};
+  U.forEach(u=>{if(u.m.fe&&(u.m.role==='admin'||u.m.role==='penyelia'))f[u.m.fe.toLowerCase()]={stringValue:u.m.role}});
+  const r=await fetch(`${FSB(c)}/config/roles?key=${encodeURIComponent(c.apiKey)}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},
+    body:JSON.stringify({fields:{r:{mapValue:{fields:f}}}})});if(!r.ok)throw new Error('peranan Firebase tidak disimpan (HTTP '+r.status+')')}
+// ---------- log masuk ----------
+const busy=(on,t)=>{$('lkb').disabled=on;$('lkb').textContent=on?(t||'Membuka…'):'Log masuk'};
+$('lkf').onsubmit=async e=>{e.preventDefault();const id=$('lki').value,pw=$('lkc').value.trim();if(!id.trim()||!pw)return;
+  busy(true);$('lke').textContent='';
+  try{if(!crypto.subtle)throw new Error('Pelayar ini tidak menyokong penyulitan. Buka melalui pautan https.');
+    const keys=await getKeys();const h=await sha(normId(id));const u=keys.users.find(x=>x.h===h);if(!u)throw new Error('ID pengguna atau kata laluan salah');
+    let dek;try{const w=ub64(u.w);dek=await crypto.subtle.unwrapKey('raw',w.slice(12),await kek(id,pw,ub64(u.s)),{name:'AES-GCM',iv:w.slice(0,12)},{name:'AES-GCM'},true,['encrypt','decrypt'])}
+    catch(x){throw new Error('ID pengguna atau kata laluan salah')}
+    const meta=await readMeta(dek,u);if($('lkm').checked)await kput({dek,h});await enter(dek,keys,meta,pw)}
+  catch(x){$('lke').textContent=x.message;busy(false)}};
+(async()=>{const s=await kget();if(!s)return;busy(true);
+  try{const keys=await getKeys();const u=keys.users.find(x=>x.h===s.h);
+    if(!u){await kput(null);throw new Error('Akses peranti ini telah ditarik balik oleh admin.')}
+    await enter(s.dek,keys,await readMeta(s.dek,u))}
+  catch(x){await kput(null);busy(false);$('lke').textContent=/OperationError/.test(x.name)?'Kunci telah ditukar oleh admin. Sila log masuk semula.':x.message}})();
+// ---------- pentadbir ----------
+const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const genPw=()=>{const g=()=>Array.from(rnd(5),b=>A[b%A.length]).join('');return 'BG-'+g()+'-'+g()};
+let U=null,NEW=[];
+function box(h){$('dlgbox').innerHTML=h;$('dlg').style.display='flex'}
+function close(){$('dlg').style.display='none'}
+function tst(t){if(window.toast)window.toast(t)}
+async function load(){U=[];for(const e of BG.keys.users){let m;try{m=await readMeta(BG.dek,e)}catch(x){m={id:'(tidak dapat dibaca)',nama:'',role:'?'}}U.push({e,m})}NEW=[]}
+window.bgAdmin=async()=>{if(BG.role!=='admin')return;await fbConf();if(!U)await load();render()};
+function render(){const me=normId(BG.meta.id);
+  box(`<h3>Pengurusan pengguna</h3>
+  <p style="font-size:13px;margin:0 0 8px;color:var(--muted)">Tambah, padam atau tukar ID dan kata laluan. ${FBC?'Perubahan disimpan terus ke Firebase dan berkuat kuasa serta-merta.':'Perubahan hanya berkuat kuasa selepas fail <b>keys.json</b> baharu dimuat naik ke GitHub.'}</p>
+  ${U.map((u,i)=>`<div class="cpl"><span><b>${esc(u.m.id)}</b>${u.m.nama?' · '+esc(u.m.nama):''} <span class="zb" style="background:${u.m.role==='admin'?'#b08a3e':u.m.role==='penyelia'?'#5b84b1':'#1f5a3d'}">${RN[u.m.role]||'Pengguna'}</span>${u.dirty?' <i style="color:#c25b14">· diubah</i>':''}</span>
+    <span style="white-space:nowrap"><button data-ed="${i}" style="color:var(--leaf)">Ubah</button>${normId(u.m.id)===me?'':`<button data-del="${i}">Padam</button>`}</span></div>`).join('')}
+  <div class="btns"><button class="btn p" data-a="add">+ Pengguna baharu</button><button class="btn" data-a="close">Tutup</button></div>
+  <button class="btn p" style="width:100%;margin-top:8px;background:#b08a3e;color:#12301f" data-a="save">${FBC?'💾 Simpan perubahan':'Jana keys.json'}${NEW.length||U.some(u=>u.dirty)||U.removed?' (ada perubahan)':''}</button>
+  <details style="margin-top:12px;font-size:13px"><summary style="cursor:pointer;color:var(--muted)">Lanjutan: sekat penuh</summary>
+  <p style="margin:6px 0">Memadam pengguna menghalang log masuk baharu. Tetapi telefon yang pernah membuka aplikasi masih menyimpan kunci data. Untuk menyekat sepenuhnya, tukar kunci data: semua pengguna akan diberi kata laluan baharu dan perlu log masuk semula.</p>
+  <button class="btn" style="width:100%;color:#b23c17" data-a="rekey">Tukar kunci data &amp; semua kata laluan</button></details>`);
+  $('dlgbox').onclick=async e=>{const d=e.target.dataset;
+    if(d.a==='close')close();if(d.a==='add')form(null);if(d.ed!==undefined)form(+d.ed);
+    if(d.del!==undefined){const u=U[+d.del];if(u.m.role==='admin'&&U.filter(x=>x.m.role==='admin').length<2){tst('Mesti ada sekurang-kurangnya seorang admin');return}
+      U.splice(+d.del,1);U.removed=true;render()}
+    if(d.a==='save')save();if(d.a==='rekey')rekeyAsk()}}
+function form(i){const u=i===null?null:U[i];const pw=genPw();
+  box(`<h3>${u?'Ubah pengguna':'Pengguna baharu'}</h3>
+  <label style="font-size:12.5px;color:var(--muted)">ID log masuk</label><input id="fId" value="${u?esc(u.m.id):''}" placeholder="cth. liannex01" autocapitalize="none">
+  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Nama / organisasi</label><input id="fNm" value="${u?esc(u.m.nama||''):''}" placeholder="cth. Liannex – Encik Ali">
+  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Peranan</label>
+  <select id="fRl" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)"><option value="user">Pengguna (carian &amp; navigasi)</option><option value="penyelia"${u&&u.m.role==='penyelia'?' selected':''}>Penyelia (kemas kini status lot)</option><option value="admin"${u&&u.m.role==='admin'?' selected':''}>Admin (urus pengguna & info)</option></select>
+  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Kata laluan ${u?'baharu':''}</label><input id="fPw" value="${pw}" style="font-family:ui-monospace,monospace">
+  <p style="font-size:12px;color:var(--muted);margin:6px 0 0">Kata laluan dijana secara rawak. Tuan boleh menukarnya (sekurang-kurangnya 8 aksara). ${u?'Setiap perubahan pada ID memerlukan kata laluan baharu.':''}</p>
+  <div class="btns"><button class="btn p" id="fOk">Simpan</button><button class="btn" id="fNo">Batal</button></div>`);
+  $('fNo').onclick=render;
+  $('fOk').onclick=async()=>{const id=$('fId').value.trim(),nm=$('fNm').value.trim(),rl=$('fRl').value,p=$('fPw').value.trim();
+    if(!/^[A-Za-z0-9._@-]{3,40}$/.test(id)){tst('ID: 3–40 aksara (huruf, nombor, . _ - @)');return}
+    if(p.length<8){tst('Kata laluan sekurang-kurangnya 8 aksara');return}
+    const h=await sha(normId(id));if(U.some((x,j)=>j!==i&&x.e.h===h)){tst('ID ini sudah wujud');return}
+    if(u&&u.m.role==='admin'&&rl!=='admin'&&U.filter(x=>x.m.role==='admin').length<2){tst('Mesti ada sekurang-kurangnya seorang admin');return}
+    $('fOk').disabled=true;$('fOk').textContent='Menyulitkan…';
+    const m={id,nama:nm,role:rl};const c=await fbConf();
+    if(u&&u.m.fe&&!/@bukitgoh-lot\.app$/.test(u.m.fe))m.fe=u.m.fe;
+    else if(c&&rl!=='user'){m.fe=normId(id).replace(/[^a-z0-9._-]/g,'')+'.'+Array.from(rnd(3),b=>b.toString(36)).join('')+'@bukitgoh-lot.app';
+      try{await fbSignUp(c,m.fe,p.length>=6?p:p+'000000')}catch(x){tst('Akaun Firebase tidak dicipta: '+x.message);delete m.fe}}
+    const e=await makeEntry(BG.dek,m,p);
+    if(u){if(normId(u.m.id)===normId(BG.meta.id))BG.selfChanged=true;U[i]={e,m,dirty:true}}else U.push({e,m,dirty:true});
+    NEW=NEW.filter(x=>normId(x.id)!==normId(id)&&(!u||normId(x.id)!==normId(u.m.id)));NEW.push({id,nama:nm,role:rl,pw:p});render()}}
+function dl(name,text){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/octet-stream'}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){tst('Muat turun tidak disokong di sini')}}
+function cp(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>tst('Disalin'),()=>tst('Salin secara manual'))}
+function creds(){return NEW.length?`<h4 style="margin:12px 0 4px">Maklumat log masuk untuk diedarkan</h4><p style="font-size:12px;color:#b23c17;margin:0 0 6px">Kata laluan hanya dipaparkan sekali. Salin dan hantar kepada setiap pengguna secara peribadi.</p>
+  <textarea id="cr" readonly style="height:${40+NEW.length*20}px">${esc(NEW.map(n=>`${n.nama||n.id} (${n.role==='admin'?'Admin':'Pengguna'})\nID: ${n.id}\nKata laluan: ${n.pw}\n`).join('\n'))}</textarea><button class="btn" style="width:100%;margin-top:6px" onclick="(${cp.toString()})(document.getElementById('cr').value)">Salin maklumat log masuk</button>`:''}
+async function save(){const json=JSON.stringify({v:2,updated:new Date().toISOString(),users:U.map(u=>u.e)});BG.lastKeys=json;
+  if(await fbConf()){try{await fbSave(json);try{await fbSaveRoles()}catch(e){tst(e.message)}U.forEach(u=>u.dirty=false);U.removed=false;
+      box(`<h3>✓ Disimpan terus</h3><p style="font-size:13.5px">Senarai pengguna telah dikemas kini dalam Firebase dan <b>berkuat kuasa serta-merta</b> untuk semua pengguna. Tiada muat naik ke GitHub diperlukan.</p>${creds()}<button class="btn p" style="width:100%;margin-top:10px" id="sBk">← Kembali</button>`);
+      $('sBk').onclick=()=>{NEW=[];render()};return}
+    catch(x){if(x.message==='batal')return;tst('Gagal simpan ke Firebase: '+x.message+'. Guna muat turun.')}}
+  saveFile(json)}
+function saveFile(json){
+  box(`<h3>keys.json baharu sedia</h3>
+  <ol style="font-size:13px;padding-left:18px;margin:0 0 8px"><li>Tekan <b>Muat turun keys.json</b> (atau Salin).</li>
+  <li>Di GitHub, buka repo <b>bukitgoh-lot</b> → fail <b>keys.json</b> → ikon ✏️ <b>Edit</b> → padam semua → tampal → <b>Commit changes</b>. Atau ganti fail dalam folder repo melalui GitHub Desktop → Commit → Push.</li>
+  <li>Dalam 1–2 minit, perubahan berkuat kuasa untuk semua pengguna.</li></ol>
+  <div class="btns"><button class="btn p" id="sDl">Muat turun keys.json</button><button class="btn" id="sCp">Salin teks</button></div>
+  ${creds()}
+  <button class="btn" style="width:100%;margin-top:10px" id="sBk">← Kembali</button>`);
+  $('sDl').onclick=()=>dl('keys.json',json);$('sCp').onclick=()=>cp(json);$('sBk').onclick=render}
+function rekeyAsk(){box(`<h3>Tukar kunci data?</h3><p style="font-size:13.5px">Semua ${U.length} pengguna (termasuk tuan) akan diberi <b>kata laluan baharu</b>. Peranti yang pernah membuka aplikasi tidak lagi boleh membaca data selepas fail baharu dimuat naik. Tuan perlu memuat naik <b>dua fail</b>: data.txt dan keys.json.</p>
+  <div class="btns"><button class="btn p" style="background:#b23c17" id="rkGo">Teruskan</button><button class="btn" id="rkNo">Batal</button></div>`);
+  $('rkNo').onclick=render;$('rkGo').onclick=rekey}
+async function rekey(){if(!BG.pt){tst('Hanya admin');return}$('rkGo').disabled=true;$('rkGo').textContent='Menyulitkan semula…';
+  const dek=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+  const data=b64(cat(te.encode('BG02'),await enc(dek,BG.pt)));NEW=[];const nu=[];
+  for(const u of U){const p=genPw();nu.push({e:await makeEntry(dek,u.m,p),m:u.m});NEW.push({...u.m,pw:p})}
+  U=nu;BG.dek=dek;const json=JSON.stringify({v:2,updated:new Date().toISOString(),users:U.map(u=>u.e)});
+  box(`<h3>Kunci data baharu sedia</h3><p style="font-size:13px">Muat turun kedua-dua fail dan gantikan dalam repo GitHub (GitHub Desktop → Commit → Push). Selepas itu, edarkan kata laluan baharu.</p>
+  <div class="btns"><button class="btn p" id="r1">Muat turun data.txt</button><button class="btn p" id="r2">Muat turun keys.json</button></div>${creds()}
+  <button class="btn" style="width:100%;margin-top:10px" onclick="document.getElementById('dlg').style.display='none'">Tutup</button>`);
+  $('r1').onclick=()=>dl('data.txt',data);$('r2').onclick=()=>dl('keys.json',json)}
+})();
+
+</script>
+</body>
+</html>
