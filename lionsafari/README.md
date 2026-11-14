@@ -19,6 +19,7 @@ Sistem kaunter carwash (versi baru, menggantikan Lion Safari V1.7).
 | Bayaran | Tunai (kira baki), QR/eWallet, Kad, Transfer + rujukan & gambar bukti, diskaun, resit 58mm |
 | Petty Cash | Belanja & top-up, baki automatik |
 | Stok | Terima / guna stok, amaran stok rendah, log pergerakan |
+| Pekerja | Admin/Manager/Supervisor: kehadiran harian (selfie + GPS dari Apps Pekerja), lulus/tolak advance, claim & OT, susun duty roster |
 | Laporan | Harian & Bulanan, CSV Excel, PDF |
 | Tetapan | **Admin sahaja**: pakej, servis tambahan & jenis kenderaan (nama, harga, gambar, keterangan, anggaran masa, aktif, susunan), maklumat kedai/resit, bay, kategori petty cash, had kelulusan |
 

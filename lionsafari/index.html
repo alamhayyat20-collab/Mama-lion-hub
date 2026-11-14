@@ -135,6 +135,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/fireba
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { modulPengurusan, CSS_MODUL } from '../pekerja-lib.js';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -159,9 +160,9 @@ const KAT_PETTY = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','B
 // Peranan & tab yang boleh dibuka. Tetapan = Admin sahaja.
 // ID staf, peranan & PIN diberi oleh pemilik dalam apps Akaun (tab Pekerja).
 const PERANAN = {
-  'Admin':      ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan','Tetapan'],
-  'Manager':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan'],
-  'Supervisor': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan'],
+  'Admin':      ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan','Tetapan'],
+  'Manager':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan'],
+  'Supervisor': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan'],
   'Cashier':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok'],
   'Pekerja':    ['Queue','Stok']
 };
@@ -218,6 +219,12 @@ const col = n => collection(store, 'lionsafari', cawangan, n);
 const akaunCol = () => collection(store, 'akaun', cawangan, 'entri');
 const tetapanRef = () => doc(store, 'lionsafari', cawangan, 'tetapan', 'umum');
 const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
+// Modul pekerja (kehadiran, kelulusan, roster) — dikongsi dengan Apps Pekerja & Akaun
+const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
+  cawangan: () => cawangan, pengguna: () => staf ? `${staf.nama}${staf.idStaf ? ' (' + staf.idStaf + ')' : ''}` : '',
+  esc, RM, toast, refresh: () => { if(staf) refreshLive(); }});
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}</style>`);
+let pkMod = 'Kehadiran';
 
 // =====================================================================
 // KEADAAN
@@ -254,14 +261,14 @@ const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 // =====================================================================
 onAuthStateChanged(auth, u => {
   dev = u;
-  if(!u){ stopAll(unsubAsas); stopAll(unsubHari); staf = null; stafLoaded = false; dataError = ''; setHeader(); return renderDeviceLogin(); }
+  if(!u){ stopAll(unsubAsas); stopAll(unsubHari); modulPK.henti(); staf = null; stafLoaded = false; dataError = ''; setHeader(); return renderDeviceLogin(); }
   if(!cawangan) return renderPilihCawangan();
   mulaCawangan();
 });
 
 // Mula / tukar cawangan: langgan senarai staf & tetapan cawangan ini sahaja
 function mulaCawangan(){
-  stopAll(unsubAsas); stopAll(unsubHari);
+  stopAll(unsubAsas); stopAll(unsubHari); modulPK.henti();
   staf = null; stafLoaded = false; stafList = []; dataError = '';
   aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = [];
   T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {};
@@ -401,9 +408,10 @@ function masukStaf(s){
   try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now()})); }catch(_){}
   if(!PERANAN[s.peranan]?.includes(tab)) tab = PERANAN[s.peranan]?.[0] || 'Queue';
   langganHari();
+  if(PERANAN[s.peranan]?.includes('Pekerja')) modulPK.mula(); else modulPK.henti();
   renderShell();
 }
-function kunci(){ staf = null; try{ localStorage.removeItem('ls_staf'); }catch(_){} stopAll(unsubHari); closeModal(); renderPinScreen(); }
+function kunci(){ modulPK.henti(); staf = null; try{ localStorage.removeItem('ls_staf'); }catch(_){} stopAll(unsubHari); closeModal(); renderPinScreen(); }
 
 function langganHari(){
   stopAll(unsubHari);
@@ -448,6 +456,7 @@ $('#modal').addEventListener('click', e => { if(e.target.id === 'modal') closeMo
 function badge(t){
   if(t === 'Queue' && aktif.length) return aktif.length;
   if(t === 'Bayaran'){ const n = aktif.filter(o => o.status === 'Siap').length; if(n) return n; }
+  if(t === 'Pekerja' && modulPK.st.menunggu.length) return modulPK.st.menunggu.length;
   if(t === 'Stok'){ const n = stok.filter(s => (s.baki||0) <= (s.min||0)).length; if(n) return n; }
   return 0;
 }
@@ -1032,6 +1041,12 @@ function borangStaf(s){
     }catch(e){ onErr(e); }
   };
 }
+
+// ---------- PEKERJA (kehadiran, kelulusan advance/claim/OT, roster) ----------
+VIEWS['Pekerja'] = {
+  live: () => modulPK.html(pkMod, ['Kehadiran','Permohonan','Roster']),
+  pasangLive: () => modulPK.pasang(m => { pkMod = m; refreshLive(); })
+};
 
 // ---------- TETAPAN ----------
 VIEWS['Tetapan'] = {
