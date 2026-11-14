@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14532d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pekerja ML">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>Apps Pekerja — Mama Lion & Lion King</title>
+<style>
+:root{--hijau:#14532d;--hijau2:#dcfce7;--emas:#f59e0b;--emas2:#fef3c7;--merah:#b91c1c;--muted:#64748b;--line:#e5e7eb}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f1f5f9;color:#0f172a}
+header{background:var(--hijau);color:#fff;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
+header b{font-size:17px}header small{display:block;color:#bbf7d0;font-size:12px}
+.hlogo{width:40px;height:40px;border-radius:9px;background:#fff;object-fit:contain}
+nav{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
+nav button{border:0;background:none;padding:10px 4px;font-size:12px;color:var(--muted);font-family:inherit;position:relative}
+nav button b{display:block;font-size:20px;margin-bottom:2px}
+nav button.on{color:var(--hijau);font-weight:700;box-shadow:inset 0 -3px var(--hijau)}
+main{max-width:640px;margin:auto;padding:12px;padding-bottom:50px}
+.card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px #0000000d;margin-bottom:12px}
+h3{margin:0 0 10px;font-size:17px}
+button{font-family:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:#e2e8f0;font-size:15px;cursor:pointer}
+.btn.pri{background:var(--hijau);color:#fff;font-weight:700}.btn.emas{background:var(--emas);color:#111;font-weight:700}.btn.bad{background:#fee2e2;color:#991b1b}
+.big{width:100%;padding:16px;font-size:17px}
+.punch{width:100%;padding:28px 10px;font-size:24px;font-weight:800;border-radius:20px;border:0;color:#fff;letter-spacing:1px;box-shadow:0 6px 18px #0002}
+.punch.masuk{background:linear-gradient(135deg,#15803d,#14532d)}.punch.keluar{background:linear-gradient(135deg,#dc2626,#991b1b)}
+.punch small{display:block;font-size:13px;font-weight:400;letter-spacing:0;margin-top:6px;opacity:.9}
+.jam{font-size:40px;font-weight:800;text-align:center;letter-spacing:1px}
+.muted{color:var(--muted);font-size:13px}
+.center{text-align:center}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;margin:4px 0 10px;font-size:16px;background:#fff;font-family:inherit}
+label{font-size:13px;font-weight:650}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:#f1f5f9;font-size:12px;white-space:nowrap}
+.tag.ok{background:var(--hijau2);color:var(--hijau)}.tag.warn{background:var(--emas2)}.tag.bad{background:#fee2e2;color:#991b1b}
+.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item b{display:block}.item small{color:var(--muted);font-size:12px}
+.pics{display:flex;gap:8px;margin-top:8px}.pics img{width:86px;height:86px;object-fit:cover;border-radius:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{font-size:22px;font-weight:800}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.seg button{border:2px solid #e2e8f0;background:#fff;border-radius:12px;padding:10px 4px;font-size:13px}
+.seg button.on{border-color:var(--hijau);background:var(--hijau2);font-weight:700}
+.seg button b{display:block;font-size:20px}
+.notice{background:var(--emas2);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px}.notice.bad{background:#fee2e2}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;margin:10px auto}
+.keypad button{padding:16px;font-size:22px;font-weight:700;background:#f1f5f9;border:0;border-radius:12px}
+.pindots{display:flex;gap:10px;justify-content:center;margin:10px 0}
+.pindots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--hijau);display:block}.pindots i.f{background:var(--hijau)}
+.syif{font-size:20px;font-weight:800}
+.rost{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.rost.today{background:#fefce8;margin:0 -14px;padding:9px 14px}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90%;text-align:center;display:none}
+.prev{width:100%;border-radius:14px;margin:8px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="row" style="flex-wrap:nowrap;gap:10px"><img id="hLogo" class="hlogo hidden" alt=""><div><b>👷 Apps Pekerja</b><small id="hSub">Mama Lion & Lion King</small></div></div>
+  <div id="hKanan"></div>
+</header>
+<nav id="nav" class="hidden"></nav>
+<main id="app"><div class="card muted">Memuatkan…</div></main>
+<input id="kamera" type="file" accept="image/*" capture="user" class="hidden">
+<div id="toast"></div>
+
+<script type="module">
+import { firebaseConfig } from '../firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar } from '../pekerja-lib.js';
+
+// Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
+const EMAIL_PEKERJA = 'pekerja@mamalion.app';
+const CAWANGAN = [
+  {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
+  {id:'lion-king', nama:'Lion King', logo:'logo-lionking.jpg'}
+];
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const RM = n => 'RM ' + (Number(n)||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = id => { const v = parseFloat(String($(id)?.value||'').replace(',','.')); return isNaN(v) ? 0 : Math.round(v*100)/100; };
+const val = id => String($(id)?.value || '').trim();
+function toast(m){ const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3200); }
+const simpanLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(_){} };
+const bacaLS = k => { try{ return JSON.parse(localStorage.getItem(k) || 'null'); }catch(_){ return null; } };
+async function hashPin(id, pin){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`lionsafari:${id}:${pin}`));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const store = getFirestore(fbApp);
+const K = (c, n) => collection(store, 'kakitangan', c, n);
+
+let dev = null, stafSemua = {}, sesi = null, saya = null, tab = 'Kehadiran';
+let unsubAsas = [], unsubSaya = [];
+let rosterBulan = {}, hadirHariIni = [], tetapan = {}, roster = {}, mohonSaya = [], hadirBulan = [], bulanRekod = hariIni().slice(0,7), mohonJenis = 'advance';
+const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
+const infoCaw = () => CAWANGAN.find(c => c.id === sesi?.c) || CAWANGAN[0];
+
+// ---------------- Log masuk telefon (sekali sahaja, oleh pemilik) ----------------
+onAuthStateChanged(auth, u => {
+  stopAll(unsubAsas); stopAll(unsubSaya); dev = u; saya = null;
+  if(!u) return skrinDaftarTelefon();
+  stafSemua = {};
+  for(const c of CAWANGAN) unsubAsas.push(onSnapshot(collection(store, 'lionsafari', c.id, 'staf'), s => {
+    stafSemua[c.id] = s.docs.map(d => ({id:d.id, c:c.id, ...d.data()}));
+    const ss = bacaLS('pk_sesi');
+    if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
+    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else saya = baru; }
+    else skrinLogin();
+  }, e => { $('#app').innerHTML = `<div class="card notice bad">⚠ ${esc(e.code === 'permission-denied' ? 'Akses ditolak. Firestore Rules untuk Apps Pekerja belum dikemas kini.' : e.message)}</div>`; }));
+  skrinLogin();
+});
+
+function skrinDaftarTelefon(ralat=''){
+  $('#nav').classList.add('hidden'); $('#hKanan').innerHTML = '';
+  $('#app').innerHTML = `<div class="card"><h3>📱 Sediakan telefon ini</h3>
+    <p class="muted">Dibuat <b>sekali sahaja</b> pada setiap telefon pekerja, oleh pemilik / pengurus. Selepas itu pekerja hanya guna <b>ID + PIN</b>.</p>
+    <label>Email akaun Apps Pekerja</label><input id="em" type="email" value="${EMAIL_PEKERJA}" autocomplete="username">
+    <label>Kata laluan</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="notice bad ${ralat?'':'hidden'}">${esc(ralat)}</div>
+    <button class="btn pri big" id="btnDev">Sediakan telefon</button></div>`;
+  const go = async () => {
+    if(!val('#em') || !$('#pw').value) return skrinDaftarTelefon('Sila isi email dan kata laluan.');
+    $('#btnDev').disabled = true; $('#btnDev').textContent = 'Sedang log masuk…';
+    try{ await signInWithEmailAndPassword(auth, val('#em'), $('#pw').value); }
+    catch(e){ skrinDaftarTelefon(e.code === 'auth/invalid-credential' ? 'Email atau kata laluan salah.' : 'Ralat: ' + e.message); }
+  };
+  $('#btnDev').onclick = go; $('#pw').onkeydown = e => { if(e.key === 'Enter') go(); };
+}
+
+// ---------------- Log masuk pekerja (ID + PIN) ----------------
+function skrinLogin(msg=''){
+  saya = null; $('#nav').classList.add('hidden'); $('#hLogo').classList.add('hidden'); $('#hSub').textContent = 'Mama Lion & Lion King';
+  $('#hKanan').innerHTML = '';
+  $('#app').innerHTML = `<div class="card"><h3>🔑 Log masuk pekerja</h3>
+    <label>ID Staf</label><input id="lId" autocapitalize="characters" autocomplete="off" placeholder="cth ML001 / LK001" style="text-transform:uppercase;font-size:24px;font-weight:800;letter-spacing:1px">
+    <div class="notice bad ${msg?'':'hidden'}">${esc(msg)}</div>
+    <button class="btn pri big" id="btnId">SETERUSNYA → PIN</button>
+    <p class="muted">ID & PIN diberi oleh pihak pengurusan. Lupa PIN? Hubungi pengurus.</p></div>
+    ${kadPasang()}
+    <div class="center"><button class="btn" id="btnTelOut" style="font-size:12px;padding:8px 12px">Tetapan telefon: log keluar akaun Apps Pekerja</button></div>`;
+  const cari = () => {
+    const id = val('#lId').toUpperCase().replace(/\s+/g,''); if(!id) return toast('Sila masukkan ID');
+    const st = Object.values(stafSemua).flat().find(x => String(x.idStaf||'').toUpperCase() === id && x.aktif !== false);
+    if(!st) return skrinLogin(Object.keys(stafSemua).length < CAWANGAN.length ? 'Senarai staf belum dimuatkan, cuba lagi sebentar.' : `ID ${id} tidak dijumpai atau tidak aktif.`);
+    skrinPin(st);
+  };
+  $('#btnId').onclick = cari; $('#lId').onkeydown = e => { if(e.key === 'Enter') cari(); };
+  $('#btnTelOut').onclick = () => { if(confirm('Log keluar akaun Apps Pekerja dari telefon ini? Pengurus perlu sediakan semula.')){ simpanLS('pk_sesi', null); signOut(auth); } };
+  pasangKadPasang();
+}
+function skrinPin(st){
+  let pin = '';
+  const caw = CAWANGAN.find(c => c.id === st.c);
+  const draw = (m='') => {
+    $('#app').innerHTML = `<div class="card center"><img src="${caw.logo}" style="width:70px;height:70px;object-fit:contain"><h3 style="margin:6px 0 2px">${esc(st.nama)}</h3>
+      <div class="muted">${esc(st.idStaf)} · ${esc(caw.nama)}</div>
+      <div class="pindots">${[0,1,2,3,4,5].map(i => `<i class="${i < pin.length ? 'f' : ''}"></i>`).join('')}</div>
+      <div style="color:var(--merah);font-size:13px;min-height:18px">${esc(m)}</div>
+      <div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="del">⌫</button><button data-k="0">0</button><button data-k="ok" style="background:var(--hijau);color:#fff">OK</button></div>
+      <button class="btn" id="btnBalik">← Tukar ID</button></div>`;
+    $('#btnBalik').onclick = () => skrinLogin();
+    $$('[data-k]').forEach(b => b.onclick = async () => {
+      const k = b.dataset.k;
+      if(k === 'del') pin = pin.slice(0,-1);
+      else if(k === 'ok'){ if(pin.length < 4) return draw('PIN 4–6 digit'); const p = pin; pin = ''; if(await hashPin(st.id, p) !== st.pinHash) return draw('PIN salah'); simpanLS('pk_sesi', {c:st.c, id:st.id, t:Date.now()}); return masuk(st); }
+      else if(pin.length < 6) pin += k;
+      draw();
+    });
+  };
+  draw();
+}
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); $('#app').dataset.sibuk = ''; skrinLogin(); }
+
+// ---------------- Selepas log masuk ----------------
+function masuk(st){
+  saya = st; sesi = {c: st.c, id: st.id};
+  stopAll(unsubSaya);
+  const c = st.c, t = hariIni();
+  unsubSaya.push(onSnapshot(doc(K(c,'tetapan'), 'umum'), s => { tetapan = s.exists() ? s.data() : {}; render(); }, () => {}));
+  unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr));
+  unsubSaya.push(onSnapshot(query(K(c,'roster'), where('tarikh','>=',t), where('tarikh','<=',tambahHari(t,13))), s => { roster = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr));
+  unsubSaya.push(onSnapshot(query(K(c,'permohonan'), where('stafId','==',st.id)), s => { mohonSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); render(); }, onErr));
+  langganBulan();
+  const caw = infoCaw();
+  $('#hLogo').src = caw.logo; $('#hLogo').classList.remove('hidden');
+  $('#hSub').textContent = `${st.idStaf} · ${st.nama} · ${caw.nama}`;
+  $('#hKanan').innerHTML = `<button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>`;
+  $('#btnKeluar').onclick = () => { if(confirm('Log keluar?')) keluar(); };
+  renderNav(); render();
+}
+function langganBulan(){
+  if(unsubSaya.bulan) unsubSaya.bulan();
+  const f = onSnapshot(query(K(saya.c,'kehadiran'), where('stafId','==',saya.id), where('bulan','==',bulanRekod)), s => { hadirBulan = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr);
+  const g = onSnapshot(query(K(saya.c,'roster'), where('bulan','==',bulanRekod)), s => { rosterBulan = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr);
+  if(unsubSaya.bulanR) unsubSaya.bulanR();
+  unsubSaya.bulan = f; unsubSaya.bulanR = g; unsubSaya.push(f, g);
+}
+function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
+
+const TABS = [['Kehadiran','🕘'],['Mohon','📝'],['Roster','📅'],['Rekod','📊']];
+function renderNav(){
+  $('#nav').classList.remove('hidden');
+  const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length;
+  $('#nav').innerHTML = TABS.map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}</button>`).join('');
+  $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
+}
+function render(){
+  if(!saya) return;
+  if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
+  ({Kehadiran:viewKehadiran, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod})[tab]();
+}
+
+// ---------------- KEHADIRAN (punch in / out) ----------------
+const syifHari = t => syifDari(tetapan, roster[t]?.syif?.[saya.id] || '');
+function viewKehadiran(){
+  const k = jamKerja(hadirHariIni), seterus = k.masihMasuk ? 'keluar' : 'masuk', sy = syifHari(hariIni());
+  const lw = minitLewat(k.masuk, hariIni(), sy);
+  $('#app').innerHTML = `<div class="card center"><div class="muted">${fTarikhPendek(hariIni())} ${hariIni().slice(0,4)}</div><div class="jam" id="jamBesar"></div>
+      <div class="muted">Syif hari ini: <b>${sy ? esc(sy.nama) + (sy.mula ? ` ${sy.mula}–${sy.tamat}` : '') : 'tiada dalam roster'}</b></div></div>
+    <button class="punch ${seterus}" id="btnPunch">${seterus === 'masuk' ? '📸 PUNCH IN' : '📸 PUNCH OUT'}<small>Ambil gambar selfie — masa & lokasi direkod</small></button>
+    <div class="card" style="margin-top:12px"><div class="between"><h3 style="margin:0">Hari ini</h3>${k.rekod.length ? `<span class="tag ok">${fMinit(k.minit)}${k.masihMasuk ? ' + sedang bekerja' : ''}</span>` : ''}</div>
+      ${lw > 5 ? `<div class="notice" style="margin-top:8px">Lewat ${lw} minit</div>` : ''}
+      ${k.rekod.map(r => `<div class="item"><div><b>${r.jenis === 'masuk' ? '🟢 MASUK' : '🔴 KELUAR'} ${fJam(masaMs(r))}</b><small>${r.gps ? `📍 ${r.jarak != null ? r.jarak + 'm dari kedai' : 'lokasi direkod'} (±${r.gps.acc}m)` : '📍 tiada GPS'}${r.luarKawasan ? ' · <b style="color:var(--merah)">luar kawasan</b>' : ''}</small></div></div>`).join('') || '<p class="muted">Belum punch in hari ini.</p>'}</div>`;
+  const tick = () => { const j = $('#jamBesar'); if(j) j.textContent = new Date().toLocaleTimeString('en-GB'); };
+  tick(); clearInterval(window._jam); window._jam = setInterval(tick, 1000);
+  $('#btnPunch').onclick = () => mulaPunch(seterus);
+}
+
+let gpsJanji = null;
+function dapatGPS(){
+  return new Promise(res => {
+    if(!navigator.geolocation) return res({ralat:'GPS tidak disokong'});
+    navigator.geolocation.getCurrentPosition(p => res({lat:+p.coords.latitude.toFixed(6), lng:+p.coords.longitude.toFixed(6), acc:Math.round(p.coords.accuracy)}),
+      e => res({ralat: e.code === 1 ? 'Kebenaran lokasi ditolak' : 'Lokasi tidak dapat dikesan'}), {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+  });
+}
+function mulaPunch(jenis){
+  if(!navigator.onLine) return toast('⚠ Tiada internet. Punch perlu online supaya masa server direkod.');
+  gpsJanji = dapatGPS();                 // mula cari lokasi serentak
+  const inp = $('#kamera'); inp.value = '';
+  inp.onchange = () => { const f = inp.files[0]; if(f) prosesPunch(jenis, f); };
+  inp.click();                           // buka kamera depan
+}
+async function prosesPunch(jenis, fail){
+  // gambar mesti baru diambil (bukan dari galeri lama)
+  if(fail.lastModified && Date.now() - fail.lastModified > 3*60*1000) return toast('⚠ Gambar mesti diambil sekarang dengan kamera, bukan dari galeri.');
+  $('#app').dataset.sibuk = '1';
+  $('#app').innerHTML = `<div class="card center"><h3>${jenis === 'masuk' ? 'PUNCH IN' : 'PUNCH OUT'}</h3><p class="muted" id="stat">📍 Mendapatkan lokasi…</p></div>`;
+  try{
+    const g = await gpsJanji;
+    const gps = g && !g.ralat ? g : null;
+    const kedai = tetapan.lokasi, jarak = gps && kedai ? jarakMeter(gps, kedai) : null;
+    const luar = jarak != null && jarak > (Number(tetapan.radius)||200);
+    if(!gps && !confirm(`${g?.ralat || 'Lokasi tidak dapat dikesan'}.\nTeruskan tanpa GPS? Rekod akan ditanda "tiada GPS".`)) throw 'batal';
+    if(luar && !confirm(`Anda berada kira-kira ${jarak}m dari kedai.\nTeruskan? Rekod akan ditanda "luar kawasan".`)) throw 'batal';
+    $('#stat').textContent = '📷 Menyediakan gambar…';
+    const sekarang = new Date(), caw = infoCaw();
+    const gambar = await capGambar(fail, [
+      `${jenis === 'masuk' ? 'MASUK' : 'KELUAR'}  ${sekarang.toLocaleDateString('en-GB')} ${sekarang.toLocaleTimeString('en-GB')}`,
+      `${saya.idStaf} ${saya.nama} · ${caw.nama}`,
+      gps ? `GPS ${gps.lat}, ${gps.lng} ±${gps.acc}m${jarak != null ? ` · ${jarak}m dari kedai` : ''}` : 'GPS: tiada'
+    ]);
+    $('#stat').textContent = '☁ Menghantar…';
+    const t = hariIni(), ref = doc(K(saya.c,'kehadiran'));
+    const d = {stafId:saya.id, idStaf:saya.idStaf||'', nama:saya.nama, cawangan:saya.c, jenis, tarikh:t, bulan:t.slice(0,7),
+      masa: serverTimestamp(), masaPeranti: sekarang.getTime(), gps, luarKawasan: luar, peranti: navigator.userAgent.slice(0,120)};
+    if(jarak != null) d.jarak = jarak;
+    await setDoc(ref, d);
+    await setDoc(doc(K(saya.c,'kehadiran_gambar'), ref.id), {data:gambar, stafId:saya.id, tarikh:t, masa: serverTimestamp()});
+    $('#app').innerHTML = `<div class="card center"><h3>✅ ${jenis === 'masuk' ? 'Punch in' : 'Punch out'} berjaya</h3><img class="prev" src="${gambar}"><button class="btn pri big" id="btnOk">OK</button></div>`;
+    $('#btnOk').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  }catch(e){
+    $('#app').dataset.sibuk = '';
+    if(e !== 'batal'){ console.error(e); toast('⚠ Gagal: ' + (e.code === 'permission-denied' ? 'akses ditolak (rules)' : e.message || e)); }
+    render();
+  }
+}
+
+// ---------------- MOHON (advance / claim / OT) ----------------
+function viewMohon(){
+  const J = JENIS_MOHON[mohonJenis];
+  $('#app').innerHTML = `<div class="card"><h3>📝 Permohonan baru</h3>
+    <div class="seg">${Object.entries(JENIS_MOHON).map(([k,v]) => `<button class="${k===mohonJenis?'on':''}" data-j="${k}"><b>${v.ikon}</b>${v.label}</button>`).join('')}</div>
+    <div class="muted" style="margin-bottom:8px">${J.ket}</div>
+    ${mohonJenis === 'ot' ? `<div class="grid2"><div><label>Tarikh OT</label><input id="mTarikh" type="date" value="${hariIni()}"></div><div><label>Jam OT</label><input id="mJam" type="number" inputmode="decimal" step="0.5" placeholder="cth 2"></div></div>`
+      : `<div class="grid2"><div><label>Tarikh</label><input id="mTarikh" type="date" value="${hariIni()}"></div><div><label>Amaun (RM)</label><input id="mAmaun" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div></div>`}
+    ${mohonJenis === 'claim' ? `<label>Jenis claim</label><select id="mKat">${['Minyak / Tol','Barang kedai','Makan (tugasan)','Perubatan','Lain-lain'].map(x => `<option>${x}</option>`).join('')}</select>
+      <label>Gambar resit</label><input id="mResit" type="file" accept="image/*"><img id="mPrev" class="prev hidden">` : ''}
+    <label>${mohonJenis === 'ot' ? 'Kerja yang dibuat' : 'Sebab'}</label><textarea id="mSebab" rows="2" placeholder="${mohonJenis === 'advance' ? 'cth: kecemasan keluarga' : mohonJenis === 'ot' ? 'cth: cuci 3 kereta selepas tutup' : 'cth: beli sabun di kedai ABC'}"></textarea>
+    <button class="btn pri big" id="mHantar">HANTAR PERMOHONAN</button></div>
+    <div class="card"><h3>Permohonan saya</h3>${mohonSaya.map(m => { const v = JENIS_MOHON[m.jenis] || {}; return `<div class="item"><div><b>${v.ikon||''} ${v.label||m.jenis} · ${m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam` : RM(m.amaunLulus ?? m.amaun)}</b>
+      <small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' · ' : ''}${esc(m.sebab||'')}${m.catatanLulus ? ' · ' + esc(m.catatanLulus) : ''}</small></div>
+      <span class="tag ${m.status==='lulus'?'ok':m.status==='tolak'?'bad':'warn'}">${STATUS_MOHON[m.status]||m.status}</span></div>`; }).join('') || '<p class="muted">Belum ada permohonan.</p>'}</div>`;
+  $$('[data-j]').forEach(b => b.onclick = () => { mohonJenis = b.dataset.j; viewMohon(); });
+  let resit = '';
+  if($('#mResit')) $('#mResit').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ resit = await capGambar(f, null, 800, 0.6); $('#mPrev').src = resit; $('#mPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
+  // jangan lukis semula borang ketika sedang menaip
+  $$('#app input, #app textarea, #app select').forEach(x => { x.onfocus = () => $('#app').dataset.sibuk = '1'; });
+  $('#mHantar').onclick = async () => {
+    const tarikh = val('#mTarikh'); if(!tarikh) return toast('Sila pilih tarikh');
+    const d = {stafId:saya.id, idStaf:saya.idStaf||'', nama:saya.nama, cawangan:saya.c, jenis:mohonJenis, tarikh, bulan:tarikh.slice(0,7), sebab:val('#mSebab'), status:'menunggu', masa: serverTimestamp()};
+    if(mohonJenis === 'ot'){ d.jam = num('#mJam'); if(!(d.jam > 0)) return toast('Sila isi jam OT'); }
+    else { d.amaun = num('#mAmaun'); if(!(d.amaun > 0)) return toast('Sila isi amaun'); }
+    if(mohonJenis === 'claim'){ d.kategori = val('#mKat'); if(!resit) return toast('Sila sertakan gambar resit'); d.resit = resit; }
+    if(!d.sebab) return toast('Sila isi sebab / keterangan');
+    $('#mHantar').disabled = true;
+    try{ await setDoc(doc(K(saya.c,'permohonan')), d); $('#app').dataset.sibuk = ''; toast('✅ Permohonan dihantar'); viewMohon(); }
+    catch(e){ $('#mHantar').disabled = false; onErr(e); }
+  };
+}
+
+// ---------------- ROSTER ----------------
+function viewRoster(){
+  const hari = Array.from({length:14}, (_,i) => tambahHari(hariIni(), i));
+  const rakan = t => { const sy = roster[t]?.syif || {}, kod = sy[saya.id]; if(!kod) return [];
+    return Object.entries(sy).filter(([id,k]) => id !== saya.id && k === kod).map(([id]) => (stafSemua[saya.c]||[]).find(x => x.id === id)?.nama).filter(Boolean); };
+  $('#app').innerHTML = `<div class="card"><h3>📅 Roster saya — 14 hari</h3>
+    ${hari.map(t => { const sy = syifHari(t), r = rakan(t); return `<div class="rost ${t===hariIni()?'today':''}"><div><b>${fTarikhPendek(t)}</b>${t===hariIni()?' <span class="tag ok">Hari ini</span>':''}${r.length ? `<br><small class="muted">Bersama: ${r.map(esc).join(', ')}</small>` : ''}</div>
+      <div style="text-align:right">${sy ? `<div class="syif">${esc(sy.nama)}</div><small class="muted">${sy.mula ? `${sy.mula} – ${sy.tamat}` : ''}</small>` : '<span class="muted">—</span>'}</div></div>`; }).join('')}
+    <p class="muted">Roster disusun oleh pengurus. Hubungi pengurus untuk sebarang pertukaran.</p></div>`;
+}
+
+// ---------------- REKOD SAYA ----------------
+function viewRekod(){
+  const hari = {}; hadirBulan.forEach(r => (hari[r.tarikh] ||= []).push(r));
+  const baris = Object.entries(hari).sort(([a],[b]) => b.localeCompare(a)).map(([t,l]) => ({t, k: jamKerja(l), lw: minitLewat(jamKerja(l).masuk, t, syifDari(tetapan, (rosterBulan[t] || roster[t])?.syif?.[saya.id] || ''))}));
+  const jumMinit = baris.reduce((s,b) => s + b.k.minit, 0);
+  const lulus = mohonSaya.filter(m => m.status === 'lulus' && m.bulan === bulanRekod);
+  const j = k => lulus.filter(m => m.jenis === k).reduce((s,m) => s + (Number(k === 'ot' ? (m.jamLulus ?? m.jam) : (m.amaunLulus ?? m.amaun))||0), 0);
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">📊 Rekod saya</h3><input type="month" id="rBulan" value="${bulanRekod}" style="width:auto;margin:0"></div></div>
+    <div class="grid2"><div class="card"><div class="muted">Hari hadir</div><div class="metric">${baris.length}</div></div><div class="card"><div class="muted">Jam kerja</div><div class="metric">${fMinit(jumMinit)}</div></div>
+      <div class="card"><div class="muted">OT diluluskan</div><div class="metric">${j('ot')} jam</div></div><div class="card"><div class="muted">Advance diluluskan</div><div class="metric">${RM(j('advance'))}</div></div></div>
+    ${j('claim') ? `<div class="card"><div class="muted">Claim diluluskan</div><div class="metric">${RM(j('claim'))}</div></div>` : ''}
+    <div class="card"><h3>Kehadiran harian</h3>${baris.map(b => `<div class="item"><div><b>${fTarikhPendek(b.t)}</b><small>${fJam(masaMs(b.k.masuk))} – ${b.k.keluar ? fJam(masaMs(b.k.keluar)) : '…'}${b.lw > 5 ? ` · <b style="color:var(--merah)">lewat ${b.lw} min</b>` : ''}</small></div><b>${fMinit(b.k.minit)}</b></div>`).join('') || '<p class="muted">Tiada rekod bulan ini.</p>'}</div>`;
+  $('#rBulan').onchange = e => { if(e.target.value){ bulanRekod = e.target.value; langganBulan(); } };
+}
+
+// ---------------- Pasang apps ----------------
+let pasangPrompt = null;
+const iOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; });
+function kadPasang(){
+  if(standalone()) return '';
+  return `<div class="card"><div class="between"><b>📲 Pasang Apps Pekerja</b><button class="btn emas" id="btnPasang" style="padding:9px 12px;font-size:13px">PASANG</button></div>
+    <div class="muted" id="pasangInfo" style="margin-top:6px">${iOS ? 'iPhone: buka dalam Safari → Kongsi ⬆ → "Add to Home Screen".' : 'Android: tekan PASANG, atau menu ⋮ → "Install app".'}</div></div>`;
+}
+function pasangKadPasang(){
+  if($('#btnPasang')) $('#btnPasang').onclick = async () => {
+    if(pasangPrompt){ pasangPrompt.prompt(); await pasangPrompt.userChoice; pasangPrompt = null; }
+    else $('#pasangInfo').innerHTML = iOS ? '<b>iPhone:</b> Safari → butang Kongsi ⬆ → <b>Add to Home Screen</b>.' : '<b>Android (Chrome):</b> menu ⋮ → <b>Install app</b>.';
+  };
+}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
