@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
-<title>Lion Safari V2 — Mama Lion Premium Carwash</title>
+<title>Lion Safari V2 — Kaunter Mama Lion & Lion King</title>
 <style>
 :root{--navy:#0f172a;--navy2:#1e293b;--gold:#f59e0b;--gold2:#fef3c7;--ok:#15803d;--bad:#b91c1c;--line:#e5e7eb;--muted:#64748b}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,6 +79,27 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 .stafgrid button small{display:block;font-weight:400;color:var(--muted);margin-top:3px}
 .bars{display:flex;align-items:flex-end;gap:2px;height:110px;border-bottom:1px solid #cbd5e1}
 .bars div{flex:1;background:var(--gold);border-radius:3px 3px 0 0;min-height:1px}
+.hlogo{width:40px;height:40px;border-radius:9px;background:#fff;object-fit:contain;flex:none}
+.cawgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cawgrid button{background:#fff;border:3px solid #e2e8f0;border-radius:16px;padding:14px 8px;text-align:center;box-shadow:0 2px 10px #0001}
+.cawgrid button img{width:100%;max-width:150px;aspect-ratio:1;object-fit:contain;display:block;margin:0 auto 8px}
+.cawgrid button b{display:block;font-size:16px}.cawgrid button span{font-size:12px;color:var(--muted)}
+.cawgrid button.sel{border-color:var(--gold);background:var(--gold2)}
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.menu .m{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;display:flex;flex-direction:column}
+.menu .m .img,.choice .img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:34px}
+.menu .m .isi{padding:9px 10px}
+.menu .m b{display:block;font-size:14px}.menu .m .h{color:var(--ok);font-weight:800;font-size:16px;margin-top:2px}
+.menu .m small{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.35}
+.menu.kecil{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.menu.kecil .m .h{font-size:14px}
+.choice .img{aspect-ratio:16/10;border-radius:7px;margin-bottom:6px;font-size:24px}
+.item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.item .th{width:58px;height:58px;border-radius:10px;object-fit:cover;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.item .nm{flex:1;min-width:0}.item .nm b{display:block}.item .nm small{color:var(--muted);font-size:12px}
+.item .bt{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.item.off{opacity:.5}
+.prev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin:4px 0 8px;background:#f1f5f9}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:99;max-width:90%;text-align:center;display:none}
 .thumb{max-width:100%;max-height:180px;border-radius:8px;margin:4px 0 10px}
 #resit{display:none}
@@ -98,7 +119,7 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 </head>
 <body>
 <header>
-  <div><b>🦁 Lion Safari V2</b><small>Mama Lion Premium Carwash</small></div>
+  <div class="row" style="flex-wrap:nowrap;gap:10px"><img id="hLogo" class="hlogo hidden" alt=""><div><b>🦁 Lion Safari V2</b><small id="hCaw">Kaunter carwash</small></div></div>
   <div class="hright"><span id="who"></span><span id="net" class="pill"></span><span id="jam" class="pill"></span></div>
 </header>
 <nav id="nav"></nav>
@@ -116,7 +137,7 @@ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 // =====================================================================
-// TETAPAN ASAS (Pengurus boleh ubah dalam tab Tetapan)
+// TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
 // =====================================================================
 const TETAPAN_ASAL = {
   namaKedai: 'Mama Lion Premium Carwash', alamat: '', telefon: '', notaResit: 'Terima kasih! Jumpa lagi 🦁',
@@ -124,16 +145,37 @@ const TETAPAN_ASAL = {
   kenderaan: [{nama:'Kereta / Sedan',harga:0},{nama:'SUV / MPV',harga:5},{nama:'4x4 / Van',harga:10},{nama:'Motosikal',harga:-5}],
   addon: [{nama:'Tyre Shine',harga:5},{nama:'Air Freshener',harga:5},{nama:'Engine Wash',harga:20},{nama:'Wax Spray',harga:10}],
   bay: ['Bay 1','Bay 2','Bay 3'],
-  floatTunai: 100, hadPetty: 50, hadDiskaun: 0
+  floatTunai: 100, hadPetty: 50, hadDiskaun: 0,
+  katPetty: ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','Barang Kecil / Runcit','Penyelenggaraan Kecil','Lain-lain']
 };
+// Cawangan yang dikongsi satu apps. id = laluan data di Firestore (lionsafari/{id}, akaun/{id}).
+const CAWANGAN = [
+  {id:'mama-lion', nama:'Mama Lion', kedai:'Mama Lion Premium Carwash', logo:'logo-mamalion.jpg'},
+  {id:'lion-king', nama:'Lion King', kedai:'Lion King Premium Carwash', logo:'logo-lionking.jpg'}
+];
 const STATUS = ['Menunggu','Cuci','Kering','QC','Siap'];
 const KAEDAH = ['Tunai','QR / eWallet','Kad','Transfer'];
 const KAT_PETTY = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','Barang Kecil / Runcit','Penyelenggaraan Kecil','Lain-lain'];
+// Peranan & tab yang boleh dibuka. Tetapan = Admin sahaja.
+// ID staf, peranan & PIN diberi oleh pemilik dalam apps Akaun (tab Pekerja).
 const PERANAN = {
-  'Pengurus': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan','Staf','Tetapan'],
-  'Juruwang': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok'],
-  'Pekerja':  ['Queue','Stok']
+  'Admin':      ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan','Tetapan'],
+  'Manager':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan'],
+  'Supervisor': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Laporan'],
+  'Cashier':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok'],
+  'Pekerja':    ['Queue','Stok']
 };
+const KETERANGAN_PERANAN = {
+  'Admin': 'semua tab termasuk Tetapan (harga, pakej, servis), urus semua staf, kelulusan',
+  'Manager': 'semua kecuali Tetapan; urus staf (bukan Admin), urus stok, kelulusan',
+  'Supervisor': 'kaunter + laporan; boleh luluskan batal, diskaun & petty cash',
+  'Cashier': 'order, queue, bayaran, petty cash, stok (masuk/guna)',
+  'Pekerja': 'queue & stok sahaja (staf bay cucian)'
+};
+const PERANAN_LAMA = {'Pengurus':'Admin', 'Juruwang':'Cashier'};   // data staf versi lama
+const PELULUS = ['Admin','Manager','Supervisor'];                    // boleh beri kelulusan PIN
+const PENGURUS_STOK = ['Admin','Manager'];                           // tambah/ubah/laras item stok
+const tahap = r => ({Admin:4, Manager:3, Supervisor:2, Cashier:1, Pekerja:0})[r] ?? 0;
 
 // =====================================================================
 // UTILITI
@@ -169,9 +211,13 @@ const teksKeSenarai = t => t.split('\n').map(s => s.trim()).filter(Boolean).map(
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const store = initializeFirestore(fbApp, {localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})});
-const col = n => collection(store, 'lionsafari', BRANCH_ID, n);
-const AKAUN = collection(store, 'akaun', BRANCH_ID, 'entri');
-const TETAPAN_REF = doc(store, 'lionsafari', BRANCH_ID, 'tetapan', 'umum');
+// Cawangan peranti ini (dipilih sekali pada setiap telefon/tablet kaunter)
+let cawangan = (() => { try{ const c = localStorage.getItem('ls_cawangan'); return CAWANGAN.some(x => x.id === c) ? c : null; }catch(_){ return null; } })();
+const infoCaw = () => CAWANGAN.find(x => x.id === cawangan) || {id:cawangan, nama:cawangan, kedai:'Premium Carwash', logo:''};
+const col = n => collection(store, 'lionsafari', cawangan, n);
+const akaunCol = () => collection(store, 'akaun', cawangan, 'entri');
+const tetapanRef = () => doc(store, 'lionsafari', cawangan, 'tetapan', 'umum');
+const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
 
 // =====================================================================
 // KEADAAN
@@ -181,6 +227,17 @@ let tab = 'Ringkasan', hari = today();
 let aktif = [], dibuatHari = [], bayarHari = [], stok = [], petty = [];
 let unsubAsas = [], unsubHari = [], dataError = '';
 let pasangPrompt = null;
+let GAMBAR = {};   // id item -> gambar (data URL), dari koleksi lionsafari/{cawangan}/gambar
+// Senarai pakej / kenderaan / add-on dengan id tetap (untuk gambar & susunan)
+const JENIS_ITEM = {
+  pakej: {label:'Pakej Cucian', satu:'pakej', ikon:'🚿', gambar:true, ket:true, minit:true},
+  addon: {label:'Servis Tambahan (Add-on)', satu:'servis tambahan', ikon:'✨', gambar:true, ket:true, minit:false},
+  kenderaan: {label:'Jenis Kenderaan', satu:'jenis kenderaan', ikon:'🚗', gambar:false, ket:false, minit:false}
+};
+const senarai = j => (T[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, aktif: x.aktif !== false, harga: Number(x.harga)||0}));
+const aktifSahaja = j => senarai(j).filter(x => x.aktif);
+const imgItem = (x, kelas='img', ikon='🚗') => GAMBAR[x.id] ? `<img class="${kelas}" src="${GAMBAR[x.id]}" alt="">` : `<div class="${kelas}">${ikon}</div>`;
+let pilihPakejAwal = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; });
 
 function onErr(e){
@@ -196,15 +253,25 @@ const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 // LOG MASUK PERANTI (sekali sahaja setiap telefon)
 // =====================================================================
 onAuthStateChanged(auth, u => {
+  dev = u;
+  if(!u){ stopAll(unsubAsas); stopAll(unsubHari); staf = null; stafLoaded = false; dataError = ''; setHeader(); return renderDeviceLogin(); }
+  if(!cawangan) return renderPilihCawangan();
+  mulaCawangan();
+});
+
+// Mula / tukar cawangan: langgan senarai staf & tetapan cawangan ini sahaja
+function mulaCawangan(){
   stopAll(unsubAsas); stopAll(unsubHari);
-  dev = u; staf = null; stafLoaded = false; dataError = '';
-  if(!u) return renderDeviceLogin();
+  staf = null; stafLoaded = false; stafList = []; dataError = '';
+  aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = [];
+  T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {};
+  setHeader();
   unsubAsas.push(onSnapshot(col('staf'), s => {
-    stafList = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => a.nama.localeCompare(b.nama));
+    stafList = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; if(!PERANAN[x.peranan]) x.peranan = 'Pekerja'; return x; }).sort((a,b) => tahap(b.peranan) - tahap(a.peranan) || a.nama.localeCompare(b.nama));
     stafLoaded = true;
     if(!staf){
-      const simpan = JSON.parse(localStorage.getItem('ls_staf') || 'null');
-      const st = simpan && Date.now() - simpan.t < 12*3600e3 && stafList.find(x => x.id === simpan.id && x.aktif !== false);
+      let simpan = null; try{ simpan = JSON.parse(localStorage.getItem('ls_staf') || 'null'); }catch(_){}
+      const st = simpan && simpan.c === cawangan && Date.now() - simpan.t < 12*3600e3 && stafList.find(x => x.id === simpan.id && x.aktif !== false);
       if(st) masukStaf(st); else renderPinScreen();
     } else {
       const baru = stafList.find(x => x.id === staf.id);
@@ -212,15 +279,42 @@ onAuthStateChanged(auth, u => {
       staf = baru; refreshLive();
     }
   }, onErr));
-  unsubAsas.push(onSnapshot(TETAPAN_REF, s => { T = {...TETAPAN_ASAL, ...(s.exists() ? s.data() : {})}; if(staf) refreshLive(); }, onErr));
+  unsubAsas.push(onSnapshot(col('gambar'), s => { GAMBAR = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); if(staf) refreshLive(); }, onErr));
+  unsubAsas.push(onSnapshot(tetapanRef(), s => { T = {...asalCaw(), ...(s.exists() ? s.data() : {})}; if(staf) refreshLive(); }, onErr));
   renderPinScreen();
-});
+}
+
+function setHeader(){
+  const c = cawangan && infoCaw();
+  $('#hCaw').textContent = c ? `${c.nama} Premium Carwash` : 'Kaunter carwash';
+  if(c && c.logo){ $('#hLogo').src = c.logo; $('#hLogo').classList.remove('hidden'); } else $('#hLogo').classList.add('hidden');
+}
+
+function renderPilihCawangan(bolehBatal=false){
+  stopAll(unsubAsas); stopAll(unsubHari); staf = null;
+  $('#nav').innerHTML = ''; $('#who').innerHTML = `<button class="small" id="btnDevOut">Log keluar peranti</button>`;
+  $('#btnDevOut').onclick = () => { if(confirm('Log keluar peranti ini? Akaun Firebase perlu dimasukkan semula.')) signOut(auth); };
+  setHeader();
+  $('#app').innerHTML = `<div class="card" style="max-width:520px;margin:14px auto"><h3>🏪 Peranti ini untuk cawangan mana?</h3>
+    <p class="muted">Dipilih <b>sekali sahaja</b> pada setiap telefon/tablet kaunter. Order, queue, stok, petty cash, staf & harga diasingkan ikut cawangan, dan jualan masuk ke Akaun cawangan itu.</p>
+    <div class="cawgrid">${CAWANGAN.map(c => `<button data-caw="${c.id}" class="${c.id===cawangan?'sel':''}"><img src="${c.logo}" alt="${esc(c.nama)}"><b>${esc(c.nama)}</b><span>${c.id===cawangan?'✓ Cawangan semasa':'Pilih'}</span></button>`).join('')}</div>
+    ${bolehBatal ? '<button class="small" id="btnBatalCaw" style="margin-top:12px">← Batal</button>' : ''}</div>`;
+  $$('[data-caw]').forEach(b => b.onclick = () => {
+    const c = CAWANGAN.find(x => x.id === b.dataset.caw);
+    if(cawangan && c.id !== cawangan && !confirm(`Tukar peranti ini ke cawangan ${c.nama}? Staf perlu log masuk semula dengan PIN cawangan ${c.nama}.`)) return;
+    cawangan = c.id;
+    try{ localStorage.setItem('ls_cawangan', c.id); localStorage.removeItem('ls_staf'); }catch(_){}
+    toast(`🏪 Peranti ini: ${c.nama}`);
+    mulaCawangan();
+  });
+  if($('#btnBatalCaw')) $('#btnBatalCaw').onclick = mulaCawangan;
+}
 
 function renderDeviceLogin(err=''){
   $('#nav').innerHTML = ''; $('#who').innerHTML = '';
   $('#app').innerHTML = `<div class="card" style="max-width:400px;margin:24px auto">
     <h3>📱 Daftar peranti kaunter</h3>
-    <p class="muted">Langkah ini dibuat <b>sekali sahaja</b> pada setiap telefon/tablet. Guna akaun Firebase Mama Lion (email & kata laluan). Selepas itu staf hanya perlu pilih nama & masukkan PIN.</p>
+    <p class="muted">Langkah ini dibuat <b>sekali sahaja</b> pada setiap telefon/tablet. Guna akaun Firebase syarikat (email & kata laluan). Selepas itu staf hanya perlu pilih nama & masukkan PIN.</p>
     <label>Email</label><input id="em" type="email" autocomplete="username">
     <label>Kata laluan</label><input id="pw" type="password" autocomplete="current-password">
     <div class="neg" style="font-size:13px;min-height:18px">${esc(err)}</div>
@@ -257,55 +351,59 @@ function keypad(boxSel, onDone, label=''){
 }
 
 function renderPinScreen(){
-  $('#nav').innerHTML = ''; $('#who').innerHTML = `<button class="small" id="btnDevOut">Log keluar peranti</button>`;
+  $('#nav').innerHTML = ''; $('#who').innerHTML = `<button class="small" id="btnTukarCaw">🏪 Tukar cawangan</button><button class="small" id="btnDevOut">Log keluar peranti</button>`;
+  $('#btnTukarCaw').onclick = () => renderPilihCawangan(true);
   $('#btnDevOut').onclick = () => { if(confirm('Log keluar peranti ini? Akaun Firebase perlu dimasukkan semula.')) signOut(auth); };
   const err = dataError ? `<div class="notice bad">⚠ ${esc(dataError)}</div>` : '';
   if(!stafLoaded){ $('#app').innerHTML = err + '<div class="card muted">Memuatkan senarai staf…</div>'; return; }
   const aktifStaf = stafList.filter(s => s.aktif !== false);
   if(!aktifStaf.length) return renderSetupPertama(err);
-  $('#app').innerHTML = `${err}<div class="card" style="max-width:640px;margin:10px auto"><h3>👋 Siapa yang bertugas?</h3>
-    <div class="stafgrid">${aktifStaf.map(s => `<button data-id="${s.id}">${esc(s.nama)}<small>${esc(s.peranan)}</small></button>`).join('')}</div></div>
+  const tanpaId = aktifStaf.filter(s => !s.idStaf);
+  $('#app').innerHTML = `${err}<div class="card" style="max-width:420px;margin:10px auto"><h3>🔑 Log masuk staf — ${esc(infoCaw().nama)}</h3>
+    <label>ID Staf</label><input id="lId" autocapitalize="characters" autocomplete="off" placeholder="cth: ${cawangan==='lion-king'?'LK':'ML'}001" style="text-transform:uppercase;font-size:22px;font-weight:800;letter-spacing:1px">
+    <button class="btn-gold big" id="btnId">SETERUSNYA → PIN</button>
+    <div class="muted" style="margin-top:8px">ID & PIN diberi oleh pihak pengurusan (apps Akaun → Pekerja).</div></div>
+    ${tanpaId.length ? `<div class="card" style="max-width:420px;margin:10px auto"><div class="muted" style="margin-bottom:6px">Staf belum ada ID (sementara):</div><div class="stafgrid">${tanpaId.map(s => `<button data-id="${s.id}">${esc(s.nama)}<small>${esc(s.peranan)}</small></button>`).join('')}</div></div>` : ''}
     ${kadPasang()}`;
-  $$('.stafgrid button').forEach(b => b.onclick = () => {
-    const s = stafList.find(x => x.id === b.dataset.id);
+  const mintaPin = s => {
     $('#app').innerHTML = `<div class="card" style="max-width:380px;margin:10px auto;text-align:center">
-      <h3>${esc(s.nama)}</h3><div class="muted">Masukkan PIN anda</div><div id="kp"></div>
-      <button class="small" id="btnBalik">← Tukar staf</button></div>`;
+      <h3>${esc(s.nama)}</h3><div class="muted">${esc(s.idStaf||'')} · ${esc(s.peranan)} — masukkan PIN</div><div id="kp"></div>
+      <button class="small" id="btnBalik">← Tukar ID</button></div>`;
     $('#btnBalik').onclick = renderPinScreen;
     keypad('#kp', async pin => {
       if(await hashPin(s.id, pin) !== s.pinHash) return 'PIN salah';
       masukStaf(s);
     });
-  });
+  };
+  const cariId = () => {
+    const id = val('#lId').toUpperCase().replace(/\s+/g,'');
+    if(!id) return toast('Sila masukkan ID staf');
+    const st = aktifStaf.find(x => String(x.idStaf||'').toUpperCase() === id);
+    if(!st) return toast(`ID ${id} tiada / tidak aktif di ${infoCaw().nama}`);
+    mintaPin(st);
+  };
+  $('#btnId').onclick = cariId;
+  $('#lId').onkeydown = e => { if(e.key === 'Enter') cariId(); };
+  $$('.stafgrid button').forEach(b => b.onclick = () => mintaPin(stafList.find(x => x.id === b.dataset.id)));
   pasangKadPasang();
 }
 
 function renderSetupPertama(err){
-  $('#app').innerHTML = `${err}<div class="card" style="max-width:420px;margin:16px auto"><h3>🦁 Selamat datang ke Lion Safari V2</h3>
-    <p class="muted">Belum ada staf. Daftar <b>Pengurus</b> pertama (Dato' / Madam). Staf lain boleh ditambah kemudian dalam tab <b>Staf</b>.</p>
-    <label>Nama</label><input id="sNama" placeholder="cth: Dato' Aris">
-    <label>PIN (4–6 digit)</label><input id="sPin" type="password" inputmode="numeric" maxlength="6">
-    <label>Ulang PIN</label><input id="sPin2" type="password" inputmode="numeric" maxlength="6">
-    <button class="btn-gold big" id="btnSetup">Daftar Pengurus</button></div>`;
-  $('#btnSetup').onclick = async () => {
-    const nama = val('#sNama'), p = val('#sPin');
-    if(!nama) return toast('Sila isi nama');
-    if(!/^\d{4,6}$/.test(p)) return toast('PIN mesti 4–6 digit');
-    if(p !== val('#sPin2')) return toast('PIN tidak sama');
-    const ref = doc(col('staf'));
-    try{ await setDoc(ref, {nama, peranan:'Pengurus', pinHash: await hashPin(ref.id, p), aktif:true, dicipta:serverTimestamp()}); toast('✅ Pengurus didaftarkan. Sila log masuk.'); }
-    catch(e){ onErr(e); }
-  };
+  $('#app').innerHTML = `${err}<div class="card" style="max-width:460px;margin:16px auto"><h3>🦁 Lion Safari V2 — ${esc(infoCaw().nama)}</h3>
+    <p>Belum ada staf untuk cawangan <b>${esc(infoCaw().nama)}</b>.</p>
+    <p class="muted">ID staf, peranan (Admin / Manager / Supervisor / Cashier / Pekerja) dan PIN didaftarkan oleh pemilik dalam <b>apps Akaun → tab Pekerja</b> (pilih logo ${esc(infoCaw().nama)} dahulu). Sekurang-kurangnya seorang <b>Admin</b> diperlukan untuk Tetapan kaunter.</p>
+    <a href="../akaun/" class="btn-gold big" style="display:block;text-align:center;text-decoration:none;border-radius:10px;color:#111">Buka apps Akaun</a>
+    <div class="muted" style="margin-top:8px">Skrin ini akan bertukar sendiri sebaik sahaja staf didaftarkan.</div></div>`;
 }
 
 function masukStaf(s){
   staf = s;
-  localStorage.setItem('ls_staf', JSON.stringify({id:s.id, t:Date.now()}));
+  try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now()})); }catch(_){}
   if(!PERANAN[s.peranan]?.includes(tab)) tab = PERANAN[s.peranan]?.[0] || 'Queue';
   langganHari();
   renderShell();
 }
-function kunci(){ staf = null; localStorage.removeItem('ls_staf'); stopAll(unsubHari); closeModal(); renderPinScreen(); }
+function kunci(){ staf = null; try{ localStorage.removeItem('ls_staf'); }catch(_){} stopAll(unsubHari); closeModal(); renderPinScreen(); }
 
 function langganHari(){
   stopAll(unsubHari);
@@ -325,17 +423,17 @@ function mintaLulus(sebab){
     const ov = $('#lulus');
     ov.classList.remove('hidden');
     $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>🔐 KELULUSAN DIPERLUKAN</h3><div class="notice">${esc(sebab)}</div>
-      <div class="muted">PIN Pengurus</div><div id="kpL"></div><button class="small" id="btnTolak">Batal</button></div>`;
+      <div class="muted">PIN Supervisor / Manager / Admin</div><div id="kpL"></div><button class="small" id="btnTolak">Batal</button></div>`;
     const tutup = v => { ov.classList.add('hidden'); resolve(v); };
     $('#btnTolak').onclick = () => tutup(null);
     keypad('#kpL', async pin => {
-      for(const s of stafList.filter(x => x.peranan === 'Pengurus' && x.aktif !== false))
+      for(const s of stafList.filter(x => PELULUS.includes(x.peranan) && x.aktif !== false))
         if(await hashPin(s.id, pin) === s.pinHash){ tutup(s.nama); return; }
-      return 'PIN Pengurus tidak sah';
+      return 'PIN tidak sah / tiada kuasa kelulusan';
     });
   });
 }
-const perluLulus = async sebab => staf.peranan === 'Pengurus' ? staf.nama : await mintaLulus(sebab);
+const perluLulus = async sebab => PELULUS.includes(staf.peranan) ? staf.nama : await mintaLulus(sebab);
 
 // =====================================================================
 // MODAL
@@ -358,7 +456,7 @@ function renderNav(){
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; renderShell(); window.scrollTo(0,0); });
 }
 function renderShell(){
-  $('#who').innerHTML = `<span class="pill">👤 ${esc(staf.nama)} · ${esc(staf.peranan)}</span><button class="small" id="btnKunci">🔒 Kunci</button>`;
+  $('#who').innerHTML = `<span class="pill">👤 ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}</span><button class="small" id="btnKunci">🔒 Kunci</button>`;
   $('#btnKunci').onclick = kunci;
   renderNav();
   const v = VIEWS[tab];
@@ -381,21 +479,21 @@ async function kemaskiniAkaunHari(tarikh){
   try{
     const s = await getDocs(query(col('order'), where('tarikhBayar','==',tarikh)));
     const paid = s.docs.map(d => d.data()).filter(o => o.status !== 'Batal' && o.bayar);
-    const ref = doc(AKAUN, 'ls-' + tarikh);
+    const ref = doc(akaunCol(), 'ls-' + tarikh);
     if(!paid.length){ await deleteDoc(ref).catch(() => {}); return; }
     const by = k => r2(sum(paid.filter(o => o.bayar.kaedah === k), o => o.jumlah));
     const tunai = by('Tunai'), qr = by('QR / eWallet'), kad = by('Kad'), lain = by('Transfer');
-    await setDoc(ref, {jenis:'jualan', tarikh, bulan:tarikh.slice(0,7), cawangan:BRANCH_ID, tunai, qr, kad, ewallet:0, lain,
+    await setDoc(ref, {jenis:'jualan', tarikh, bulan:tarikh.slice(0,7), cawangan, tunai, qr, kad, ewallet:0, lain,
       kereta: paid.length, amaun: r2(tunai+qr+kad+lain), catatan:`Auto dari Lion Safari V2 (${paid.length} order${lain?`, Transfer ${RM(lain)}`:''})`,
       sumber:'lionsafari', auto:true, guna_petty:false, hutang:false, oleh:'Lion Safari V2', dikemaskini: serverTimestamp()});
   }catch(e){ console.error(e); toast('⚠ Jualan disimpan, tetapi gagal dihantar ke Akaun: ' + (e.code || e.message)); }
 }
 async function cerminPetty(id, p){
-  const ref = doc(AKAUN, 'lsp-' + id);
+  const ref = doc(akaunCol(), 'lsp-' + id);
   try{
     if(!p) return await deleteDoc(ref);
     const masuk = p.jenis === 'Top-up';
-    await setDoc(ref, {jenis:'petty', tarikh:p.tarikh, bulan:p.tarikh.slice(0,7), cawangan:BRANCH_ID, petty_arah: masuk ? 'masuk' : 'keluar',
+    await setDoc(ref, {jenis:'petty', tarikh:p.tarikh, bulan:p.tarikh.slice(0,7), cawangan, petty_arah: masuk ? 'masuk' : 'keluar',
       kategori: masuk ? 'Top-up' : p.kategori, perkara: p.perkara, amaun: p.amaun, bayar:'Petty Cash', guna_petty:true, hutang:false,
       sumber:'lionsafari', auto:true, oleh: p.oleh, dikemaskini: serverTimestamp()});
   }catch(e){ console.error(e); toast('⚠ Petty cash disimpan, tetapi gagal dihantar ke Akaun: ' + (e.code || e.message)); }
@@ -414,7 +512,7 @@ function cetakResit(o){
     <tr><td>${esc(b.kaedah||'')}</td><td style="text-align:right">${b.diterima ? (+b.diterima).toFixed(2) : ''}</td></tr>
     ${b.baki ? `<tr><td>Baki</td><td style="text-align:right">${(+b.baki).toFixed(2)}</td></tr>` : ''}
     ${b.rujukan ? `<tr><td colspan="2">Ruj: ${esc(b.rujukan)}</td></tr>` : ''}</table><hr>
-    <div>Juruwang: ${esc(o.dibayarOleh||'')}</div><div class="c" style="margin-top:6px">${esc(T.notaResit)}</div>`;
+    <div>Cashier: ${esc(o.dibayarOleh||'')}</div><div class="c" style="margin-top:6px">${esc(T.notaResit)}</div>`;
   document.body.classList.add('cetak-resit');
   setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove('cetak-resit'), 500); }, 50);
 }
@@ -438,7 +536,7 @@ function pasangKadPasang(){
   };
   if($('#btnKongsi')) $('#btnKongsi').onclick = async () => {
     const url = location.href.split('#')[0];
-    try{ if(navigator.share) await navigator.share({title:'Lion Safari — Mama Lion', text:'Apps kaunter Mama Lion Premium Carwash', url}); else { await navigator.clipboard.writeText(url); toast('🔗 Link disalin'); } }
+    try{ if(navigator.share) await navigator.share({title:'Lion Safari V2', text:'Apps kaunter Mama Lion & Lion King Premium Carwash', url}); else { await navigator.clipboard.writeText(url); toast('🔗 Link disalin'); } }
     catch(e){ /* dibatalkan */ }
   };
 }
@@ -465,24 +563,45 @@ VIEWS['Ringkasan'] = {
       <div class="card"><div class="muted">Purata / kenderaan</div><div class="metric">${RM(sah.length ? jum/sah.length : 0)}</div></div>
       <div class="card"><div class="muted">Baki petty cash</div><div class="metric ${baki<0?'neg':''}">${RM(baki)}</div></div>
     </div>
+    ${kadMenu()}
     <div class="card"><h3>Ikut cara bayar — ${fTarikh(hari)}</h3><table>${ikut.map(([k,v]) => `<tr><td>${k}</td><td class="r">${RM(v)}</td></tr>`).join('')}<tr class="tot"><td>Jumlah</td><td class="r">${RM(jum)}</td></tr></table>
       <div class="muted" style="margin-top:6px">✅ Jualan ini masuk terus ke apps Akaun.</div></div>
     ${rendah.length ? `<div class="card"><h3>⚠ Stok rendah</h3>${rendah.map(s => `<div class="between" style="padding:4px 0"><span>${esc(s.nama)}</span><span class="tag bad">${s.baki} ${esc(s.unit||'')} (min ${s.min})</span></div>`).join('')}</div>` : ''}
     <div class="card"><h3>Bayaran terkini</h3>${bayarHari.length ? `<table>${bayarHari.slice(0,8).map(o => `<tr><td>${fMasa(o.masaBayar)}</td><td><b>${esc(o.plat)}</b><br><span class="muted">${esc(o.pakej)}</span></td><td>${o.status==='Batal'?'<span class="tag bad">Batal</span>':`<span class="tag">${esc(o.bayar?.kaedah)}</span>`}</td><td class="r">${RM(o.jumlah)}</td></tr>`).join('')}</table>` : '<p class="muted">Belum ada bayaran hari ini.</p>'}</div>`;
+  },
+  pasangLive(){
+    $$('[data-menu]').forEach(b => b.onclick = () => {
+      if(!PERANAN[staf.peranan].includes('Order Baru')) return;
+      pilihPakejAwal = b.dataset.menu; tab = 'Order Baru'; renderShell(); window.scrollTo(0,0);
+    });
   }
 };
+function kadMenu(){
+  const pk = aktifSahaja('pakej'), ad = aktifSahaja('addon');
+  const boleh = PERANAN[staf.peranan].includes('Order Baru');
+  return `<div class="card"><div class="between"><h3 style="margin:0">🧽 Menu Pakej & Servis</h3>${staf.peranan==='Admin'?'<span class="muted">Ubah di tab Tetapan</span>':''}</div>
+    ${boleh?'<div class="muted" style="margin:4px 0 8px">Tekan pakej untuk terus buat order.</div>':''}
+    <div class="menu">${pk.map(p => `<button class="m" data-menu="${p.id}">${imgItem(p,'img','🚿')}<div class="isi"><b>${esc(p.nama)}</b><div class="h">${RM(p.harga)}</div>${p.minit?`<small>⏱ ~${p.minit} min</small>`:''}${p.ket?`<small>${esc(p.ket)}</small>`:''}</div></button>`).join('') || '<p class="muted">Belum ada pakej.</p>'}</div>
+    ${ad.length ? `<h3 style="margin:14px 0 8px">✨ Servis Tambahan</h3><div class="menu kecil">${ad.map(a => `<div class="m">${imgItem(a,'img','✨')}<div class="isi"><b>${esc(a.nama)}</b><div class="h">+${RM(a.harga)}</div>${a.ket?`<small>${esc(a.ket)}</small>`:''}</div></div>`).join('')}</div>` : ''}
+    ${aktifSahaja('kenderaan').some(k => k.harga) ? `<div class="muted" style="margin-top:10px">Harga ikut kenderaan: ${aktifSahaja('kenderaan').map(k => `${esc(k.nama)} ${k.harga>0?'+':''}${k.harga?RM(k.harga):'(asas)'}`).join(' · ')}</div>` : ''}
+  </div>`;
+}
 
 // ---------- ORDER BARU ----------
-let draf = {pakej:null, kenderaan:0, addon:new Set()};
+let draf = {pakej:null, kenderaan:0, addon:new Set(), L:null};
 VIEWS['Order Baru'] = {
   statik(){
-    draf = {pakej:null, kenderaan:0, addon:new Set()};
+    const L = {pakej: aktifSahaja('pakej'), kenderaan: aktifSahaja('kenderaan'), addon: aktifSahaja('addon')};
+    if(!L.kenderaan.length) L.kenderaan = [{id:'k0', nama:'Kereta', harga:0}];
+    const awal = pilihPakejAwal ? L.pakej.findIndex(p => p.id === pilihPakejAwal) : -1;
+    pilihPakejAwal = null;
+    draf = {pakej: awal >= 0 ? awal : null, kenderaan:0, addon:new Set(), L};
     return `<div class="card"><h3>➕ Order Baru</h3>
       <div class="two"><div><label>No. Plat *</label><input id="oPlat" autocapitalize="characters" placeholder="cth: VAB 1234" style="text-transform:uppercase;font-size:20px;font-weight:700"></div>
       <div><label>No. Telefon (pilihan)</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
-      <label>Jenis kenderaan</label><div class="choices" id="cKend">${T.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga>0?'+':''}${k.harga?RM(k.harga):'harga asas'}</span></button>`).join('')}</div>
-      <label>Pakej *</label><div class="choices" id="cPakej">${T.pakej.map((p,i) => `<button class="choice" data-i="${i}"><b>${esc(p.nama)}</b><span>${RM(p.harga)}</span></button>`).join('')}</div>
-      <label>Add-on</label><div class="choices" id="cAddon">${T.addon.map((a,i) => `<button class="choice" data-i="${i}"><b>${esc(a.nama)}</b><span>+${RM(a.harga)}</span></button>`).join('')}</div>
+      <label>Jenis kenderaan</label><div class="choices" id="cKend">${L.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga>0?'+':''}${k.harga?RM(k.harga):'harga asas'}</span></button>`).join('')}</div>
+      <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice ${i===draf.pakej?'sel':''}" data-i="${i}">${GAMBAR[p.id]?imgItem(p,'img'):''}<b>${esc(p.nama)}</b><span>${RM(p.harga)}${p.minit?` · ~${p.minit} min`:''}</span></button>`).join('')}</div>
+      <label>Add-on</label><div class="choices" id="cAddon">${L.addon.map((a,i) => `<button class="choice" data-i="${i}">${GAMBAR[a.id]?imgItem(a,'img'):''}<b>${esc(a.nama)}</b><span>+${RM(a.harga)}</span></button>`).join('')}</div>
       <div class="two"><div><label>Bay</label><select id="oBay">${T.bay.map(b => `<option>${esc(b)}</option>`).join('')}</select></div>
       <div><label>Catatan</label><input id="oCat" placeholder="cth: calar pintu kiri"></div></div>
       <div class="totalbar"><span>Jumlah</span><b id="oJum">RM 0.00</b></div>
@@ -490,8 +609,8 @@ VIEWS['Order Baru'] = {
   },
   pasang(){
     const kira = () => {
-      const p = T.pakej[draf.pakej], k = T.kenderaan[draf.kenderaan];
-      const j = p ? Math.max(0, p.harga + (k?.harga||0)) + sum([...draf.addon], i => T.addon[i].harga) : 0;
+      const L = draf.L, p = L.pakej[draf.pakej], k = L.kenderaan[draf.kenderaan];
+      const j = p ? Math.max(0, p.harga + (k?.harga||0)) + sum([...draf.addon], i => L.addon[i].harga) : 0;
       $('#oJum').textContent = RM(j); return j;
     };
     const pilih = (box, key, multi) => $$(`${box} .choice`).forEach(b => b.onclick = () => {
@@ -501,13 +620,14 @@ VIEWS['Order Baru'] = {
       kira();
     });
     pilih('#cKend','kenderaan'); pilih('#cPakej','pakej'); pilih('#cAddon',null,true);
+    kira();
     $('#btnOrder').onclick = async () => {
       const plat = val('#oPlat').toUpperCase().replace(/\s+/g,' ');
       if(!plat) return toast('Sila masukkan no. plat');
       if(draf.pakej === null) return toast('Sila pilih pakej');
       if(aktif.some(o => o.plat.replace(/\s/g,'') === plat.replace(/\s/g,'')) && !confirm(`${plat} sudah ada dalam queue. Tambah order kedua?`)) return;
-      const p = T.pakej[draf.pakej], k = T.kenderaan[draf.kenderaan] || {nama:'',harga:0};
-      const addon = [...draf.addon].map(i => T.addon[i]);
+      const L = draf.L, p = L.pakej[draf.pakej], k = L.kenderaan[draf.kenderaan] || {nama:'',harga:0};
+      const addon = [...draf.addon].map(i => ({nama: L.addon[i].nama, harga: L.addon[i].harga}));
       const tambah = p.harga + k.harga < 0 ? -p.harga : k.harga;
       const kasar = r2(p.harga + tambah + sum(addon, a => a.harga));
       const t = today();
@@ -594,12 +714,12 @@ VIEWS['Bayaran'] = {
   }
 };
 
-async function kecilkanGambar(fail){
+async function kecilkanGambar(fail, maks=900, kualiti=0.6){
   const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(fail); });
-  const s = Math.min(1, 900 / Math.max(img.width, img.height));
+  const s = Math.min(1, maks / Math.max(img.width, img.height));
   const c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
   c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL('image/jpeg', 0.6);
+  return c.toDataURL('image/jpeg', kualiti);
 }
 
 function bukaBayar(o){
@@ -672,9 +792,9 @@ VIEWS['Petty Cash'] = {
     return `<div class="card"><h3>💵 Petty Cash</h3>
       <div class="row" style="margin-bottom:8px"><button id="pjB" class="btn-dark">➖ Belanja</button><button id="pjT">➕ Top-up</button></div>
       <div class="two"><div><label>Amaun (RM)</label><input id="pcAmt" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
-      <div id="pcKatBox"><label>Kategori</label><select id="pcKat">${KAT_PETTY.map(k => `<option>${k}</option>`).join('')}</select></div></div>
+      <div id="pcKatBox"><label>Kategori</label><select id="pcKat">${(T.katPetty?.length ? T.katPetty : KAT_PETTY).map(k => `<option>${esc(k)}</option>`).join('')}</select></div></div>
       <label>Tujuan / Perkara *</label><input id="pcPerkara" placeholder="cth: Beli ais & air mineral">
-      <div class="muted" style="margin:-4px 0 10px">Belanja melebihi ${RM(T.hadPetty)} perlu kelulusan Pengurus.</div>
+      <div class="muted" style="margin:-4px 0 10px">Belanja melebihi ${RM(T.hadPetty)} perlu kelulusan Supervisor / Manager / Admin.</div>
       <button class="btn-gold big" id="pcSimpan">SIMPAN</button></div>`;
   },
   pasang(){
@@ -716,15 +836,15 @@ VIEWS['Petty Cash'] = {
 
 // ---------- STOK ----------
 VIEWS['Stok'] = {
-  statik: () => staf.peranan === 'Pengurus' ? `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">📦 Kawalan Stok</h3><button class="btn-dark" id="btnItem">+ Item baru</button></div>` : `<h3>📦 Kawalan Stok</h3>`,
+  statik: () => PENGURUS_STOK.includes(staf.peranan) ? `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">📦 Kawalan Stok</h3><button class="btn-dark" id="btnItem">+ Item baru</button></div>` : `<h3>📦 Kawalan Stok</h3>`,
   pasang(){ if($('#btnItem')) $('#btnItem').onclick = () => borangItem(); },
   live(){
-    if(!stok.length) return `<div class="card muted" style="text-align:center;padding:26px">Belum ada item stok.${staf.peranan==='Pengurus'?' Tekan "+ Item baru".':''}</div>`;
+    if(!stok.length) return `<div class="card muted" style="text-align:center;padding:26px">Belum ada item stok.${PENGURUS_STOK.includes(staf.peranan)?' Tekan "+ Item baru".':''}</div>`;
     return `<div class="card"><table>${stok.map(s => { const rendah = (s.baki||0) <= (s.min||0); return `<tr>
       <td><b>${esc(s.nama)}</b><br><span class="muted">${esc(s.kawasan||'')} · min ${s.min} ${esc(s.unit)}</span></td>
       <td class="r"><span class="tag ${rendah?'bad':'ok'}" style="font-size:13px">${s.baki} ${esc(s.unit)}</span></td>
       <td class="r"><button class="small btn-ok" data-gerak="${s.id}|Masuk">+ Masuk</button><br><button class="small" data-gerak="${s.id}|Guna" style="margin-top:4px">− Guna</button>
-      ${staf.peranan==='Pengurus'?`<br><button class="small" data-gerak="${s.id}|Laras" style="margin-top:4px">Laras</button> <button class="small" data-edit="${s.id}" style="margin-top:4px">Edit</button>`:''}</td></tr>`; }).join('')}</table></div>
+      ${PENGURUS_STOK.includes(staf.peranan)?`<br><button class="small" data-gerak="${s.id}|Laras" style="margin-top:4px">Laras</button> <button class="small" data-edit="${s.id}" style="margin-top:4px">Edit</button>`:''}</td></tr>`; }).join('')}</table></div>
       <div class="card"><h3>Pergerakan terkini</h3><div id="stokLog" class="muted">Memuatkan…</div></div>`;
   },
   pasangLive(){
@@ -865,31 +985,47 @@ function csvBulanan(){
 }
 
 // ---------- STAF ----------
+const awalanId = () => cawangan === 'lion-king' ? 'LK' : 'ML';
+function idSeterus(){
+  const a = awalanId(), n = Math.max(0, ...stafList.map(x => { const m = String(x.idStaf||'').match(new RegExp('^' + a + '-?(\\d+)$', 'i')); return m ? +m[1] : 0; }));
+  return `${a}${pad(n + 1, 3)}`;
+}
+// Admin urus semua; Manager urus Supervisor/Cashier/Pekerja sahaja
+const bolehUrus = x => staf.peranan === 'Admin' || (staf.peranan === 'Manager' && tahap(x?.peranan || 'Pekerja') < tahap('Manager'));
+const perananBoleh = () => Object.keys(PERANAN).filter(r => staf.peranan === 'Admin' || tahap(r) < tahap('Manager'));
 VIEWS['Staf'] = {
-  statik: () => `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">👥 Pengurusan Staf & PIN</h3><button class="btn-dark" id="btnStaf">+ Staf baru</button></div>
-    <div class="notice">Peranan: <b>Pengurus</b> — semua tab & kelulusan · <b>Juruwang</b> — order, queue, bayaran, petty cash, stok · <b>Pekerja</b> — queue & stok sahaja.</div>`,
+  statik: () => `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">👥 Staf, ID & Peranan</h3><button class="btn-dark" id="btnStaf">+ Staf baru</button></div>
+    <div class="notice">${Object.entries(KETERANGAN_PERANAN).map(([r,k]) => `<b>${r}</b> — ${k}`).join('<br>')}</div>`,
   pasang(){ $('#btnStaf').onclick = () => borangStaf(); },
-  live: () => `<div class="card"><table>${stafList.map(s => `<tr><td><b>${esc(s.nama)}</b>${s.id===staf.id?' <span class="tag gold">anda</span>':''}<br><span class="muted">${esc(s.peranan)}</span></td>
-      <td>${s.aktif===false?'<span class="tag bad">Tidak aktif</span>':'<span class="tag ok">Aktif</span>'}</td><td class="r"><button class="small" data-staf="${s.id}">Urus</button></td></tr>`).join('')}</table></div>`,
+  live: () => `<div class="card"><table><tr><th>ID</th><th>Nama / Peranan</th><th>Status</th><th></th></tr>${stafList.map(s => `<tr><td><b>${esc(s.idStaf||'—')}</b></td><td><b>${esc(s.nama)}</b>${s.id===staf.id?' <span class="tag gold">anda</span>':''}<br><span class="muted">${esc(s.peranan)}</span></td>
+      <td>${s.aktif===false?'<span class="tag bad">Tidak aktif</span>':'<span class="tag ok">Aktif</span>'}</td><td class="r">${bolehUrus(s) || s.id===staf.id ? `<button class="small" data-staf="${s.id}">Urus</button>` : ''}</td></tr>`).join('')}</table></div>`,
   pasangLive(){ $$('[data-staf]').forEach(b => b.onclick = () => borangStaf(stafList.find(s => s.id === b.dataset.staf))); }
 };
 function borangStaf(s){
+  const diri = s && s.id === staf.id && !bolehUrus(s);   // Manager urus diri sendiri: tukar PIN sahaja
+  const pilihan = diri ? [s.peranan] : perananBoleh();
   openModal(`<div class="between"><h3 style="margin:0">${s?'Urus staf':'Staf baru'}</h3><button class="small" id="mTutup">✕</button></div>
-    <label>Nama</label><input id="fNama" value="${esc(s?.nama||'')}">
-    <label>Peranan</label><select id="fPeranan">${Object.keys(PERANAN).map(p => `<option ${p===(s?.peranan||'Juruwang')?'selected':''}>${p}</option>`).join('')}</select>
+    <div class="two"><div><label>ID Staf</label><input id="fId" value="${esc(s?.idStaf || idSeterus())}" autocapitalize="characters" style="text-transform:uppercase" ${diri?'disabled':''}></div>
+    <div><label>Peranan</label><select id="fPeranan" ${diri?'disabled':''}>${pilihan.map(p => `<option ${p===(s?.peranan||'Cashier')?'selected':''}>${p}</option>`).join('')}</select></div></div>
+    <label>Nama</label><input id="fNama" value="${esc(s?.nama||'')}" ${diri?'disabled':''}>
     <label>${s?'PIN baru (biar kosong jika tidak tukar)':'PIN (4–6 digit)'}</label><input id="fPin" type="password" inputmode="numeric" maxlength="6">
-    ${s?`<label class="row" style="font-weight:400;margin-bottom:10px"><input type="checkbox" id="fAktif" ${s.aktif!==false?'checked':''} style="width:22px;height:22px;margin:0"> Aktif (boleh log masuk)</label>`:''}
+    ${s && !diri ?`<label class="row" style="font-weight:400;margin-bottom:10px"><input type="checkbox" id="fAktif" ${s.aktif!==false?'checked':''} style="width:22px;height:22px;margin:0"> Aktif (boleh log masuk)</label>`:''}
     <button class="btn-gold big" id="fSimpan">SIMPAN</button>`);
   $('#mTutup').onclick = closeModal;
   $('#fSimpan').onclick = async () => {
-    const nama = val('#fNama'), peranan = val('#fPeranan'), pin = val('#fPin'), aktifF = s ? $('#fAktif').checked : true;
-    if(!nama) return toast('Sila isi nama');
+    const pin = val('#fPin');
     if((!s || pin) && !/^\d{4,6}$/.test(pin)) return toast('PIN mesti 4–6 digit');
-    const pengurusLain = stafList.filter(x => x.peranan === 'Pengurus' && x.aktif !== false && x.id !== s?.id).length;
-    if(s && s.peranan === 'Pengurus' && (peranan !== 'Pengurus' || !aktifF) && !pengurusLain) return toast('Mesti ada sekurang-kurangnya seorang Pengurus aktif');
+    const ref = s ? doc(col('staf'), s.id) : doc(col('staf'));
     try{
-      const ref = s ? doc(col('staf'), s.id) : doc(col('staf'));
-      const d = {nama, peranan, aktif: aktifF};
+      if(diri){ if(!pin) return closeModal(); await updateDoc(ref, {pinHash: await hashPin(ref.id, pin)}); closeModal(); return toast('✅ PIN ditukar'); }
+      const nama = val('#fNama'), peranan = val('#fPeranan'), idStaf = val('#fId').toUpperCase().replace(/\s+/g,''), aktifF = s ? $('#fAktif').checked : true;
+      if(!nama) return toast('Sila isi nama');
+      if(!idStaf) return toast('Sila isi ID staf');
+      if(stafList.some(x => x.id !== s?.id && String(x.idStaf||'').toUpperCase() === idStaf)) return toast(`ID ${idStaf} sudah digunakan`);
+      if(!perananBoleh().includes(peranan)) return toast('Anda tiada kuasa memberi peranan ini');
+      const adminLain = stafList.filter(x => x.peranan === 'Admin' && x.aktif !== false && x.id !== s?.id).length;
+      if(s && s.peranan === 'Admin' && (peranan !== 'Admin' || !aktifF) && !adminLain) return toast('Mesti ada sekurang-kurangnya seorang Admin aktif');
+      const d = {nama, idStaf, peranan, aktif: aktifF};
       if(pin) d.pinHash = await hashPin(ref.id, pin);
       if(s) await updateDoc(ref, d); else await setDoc(ref, {...d, dicipta: serverTimestamp()});
       closeModal(); toast('✅ Staf disimpan');
@@ -899,36 +1035,114 @@ function borangStaf(s){
 
 // ---------- TETAPAN ----------
 VIEWS['Tetapan'] = {
-  statik: () => `<div class="card"><h3>🏪 Maklumat kedai (untuk resit)</h3>
+  statik: () => staf.peranan !== 'Admin' ? '<div class="notice bad">⛔ Tetapan hanya untuk Admin.</div>' : `<div class="card"><h3>⚙️ Tetapan — ${esc(infoCaw().nama)}</h3>
+      <div class="muted">Perubahan pakej, servis & harga di bawah disimpan <b>serta-merta</b> dan terus dipakai di semua peranti kaunter cawangan ini. Harga order yang sudah dibuat tidak berubah.</div></div>
+    <div id="live"></div>
+    <div class="card"><h3>🏪 Maklumat kedai (untuk resit)</h3>
       <label>Nama kedai</label><input id="tNama" value="${esc(T.namaKedai)}">
       <label>Alamat</label><input id="tAlamat" value="${esc(T.alamat)}">
       <label>Telefon</label><input id="tTel" value="${esc(T.telefon)}">
       <label>Nota bawah resit</label><input id="tNota" value="${esc(T.notaResit)}"></div>
-    <div class="card"><h3>💲 Harga</h3><div class="muted">Satu baris setiap item: <b>Nama | Harga</b></div>
-      <label>Pakej</label><textarea id="tPakej" rows="6">${esc(senaraiKeTeks(T.pakej))}</textarea>
-      <label>Jenis kenderaan (tambahan harga, boleh negatif)</label><textarea id="tKend" rows="4">${esc(senaraiKeTeks(T.kenderaan))}</textarea>
-      <label>Add-on</label><textarea id="tAddon" rows="4">${esc(senaraiKeTeks(T.addon))}</textarea>
-      <label>Bay (satu setiap baris)</label><textarea id="tBay" rows="3">${esc(T.bay.join('\n'))}</textarea></div>
-    <div class="card"><h3>🔐 Kawalan</h3><div class="two">
+    <div class="card"><h3>🅿️ Bay & kategori</h3>
+      <label>Bay cucian (satu setiap baris)</label><textarea id="tBay" rows="3">${esc(T.bay.join('\n'))}</textarea>
+      <label>Kategori petty cash (satu setiap baris)</label><textarea id="tKatPetty" rows="5">${esc((T.katPetty?.length ? T.katPetty : KAT_PETTY).join('\n'))}</textarea></div>
+    <div class="card"><h3>🔐 Kawalan & kelulusan</h3><div class="two">
       <div><label>Float tunai laci (RM)</label><input id="tFloat" type="number" inputmode="decimal" value="${T.floatTunai}"></div>
       <div><label>Had belanja petty cash tanpa kelulusan (RM)</label><input id="tPetty" type="number" inputmode="decimal" value="${T.hadPetty}"></div>
-      <div><label>Had diskaun tanpa kelulusan (RM)</label><input id="tDis" type="number" inputmode="decimal" value="${T.hadDiskaun}"></div></div></div>
-    <button class="btn-gold big" id="tSimpan">SIMPAN TETAPAN</button>
-    <div class="card" style="margin-top:12px"><h3>📱 Peranti ini</h3><div class="muted">Log masuk sebagai ${esc(dev?.email||'')}</div><button class="btn-bad" id="tDevOut" style="margin-top:8px">Log keluar peranti</button></div>`,
+      <div><label>Had diskaun tanpa kelulusan (RM)</label><input id="tDis" type="number" inputmode="decimal" value="${T.hadDiskaun}"></div></div>
+      <div class="muted">0 = setiap diskaun perlu PIN Supervisor / Manager / Admin.</div></div>
+    <button class="btn-gold big" id="tSimpan">SIMPAN MAKLUMAT KEDAI, BAY & KAWALAN</button>
+    <div class="card" style="margin-top:12px"><h3>📱 Peranti ini</h3><div class="muted">Log masuk sebagai ${esc(dev?.email||'')} · Cawangan: <b>${esc(infoCaw().nama)}</b></div>
+      <div class="row" style="margin-top:8px"><button id="tTukarCaw">🏪 Tukar cawangan peranti</button><button class="btn-bad" id="tDevOut">Log keluar peranti</button></div></div>`,
   pasang(){
+    if(staf.peranan !== 'Admin') return;
     $('#tSimpan').onclick = async () => {
-      const d = {namaKedai: val('#tNama'), alamat: val('#tAlamat'), telefon: val('#tTel'), notaResit: val('#tNota'),
-        pakej: teksKeSenarai($('#tPakej').value), kenderaan: teksKeSenarai($('#tKend').value), addon: teksKeSenarai($('#tAddon').value),
-        bay: $('#tBay').value.split('\n').map(s => s.trim()).filter(Boolean), floatTunai: numVal('#tFloat'), hadPetty: numVal('#tPetty'), hadDiskaun: numVal('#tDis'),
-        dikemaskiniOleh: staf.nama};
-      if(!d.pakej.length) return toast('Mesti ada sekurang-kurangnya satu pakej');
-      if(!d.kenderaan.length) d.kenderaan = [{nama:'Kereta', harga:0}];
+      const d = {namaKedai: val('#tNama') || infoCaw().kedai, alamat: val('#tAlamat'), telefon: val('#tTel'), notaResit: val('#tNota'),
+        bay: $('#tBay').value.split('\n').map(s => s.trim()).filter(Boolean),
+        katPetty: $('#tKatPetty').value.split('\n').map(s => s.trim()).filter(Boolean),
+        floatTunai: numVal('#tFloat'), hadPetty: numVal('#tPetty'), hadDiskaun: numVal('#tDis'), dikemaskiniOleh: staf.nama};
       if(!d.bay.length) d.bay = ['Bay 1'];
-      try{ await setDoc(TETAPAN_REF, d); toast('✅ Tetapan disimpan'); }catch(e){ onErr(e); }
+      if(!d.katPetty.length) d.katPetty = [...KAT_PETTY];
+      try{ await setDoc(tetapanRef(), d, {merge:true}); toast('✅ Tetapan disimpan'); }catch(e){ onErr(e); }
     };
-    $('#tDevOut').onclick = () => { if(confirm('Log keluar peranti ini?')) { localStorage.removeItem('ls_staf'); signOut(auth); } };
+    $('#tTukarCaw').onclick = () => { closeModal(); kunci(); renderPilihCawangan(true); };
+    $('#tDevOut').onclick = () => { if(confirm('Log keluar peranti ini?')) { try{ localStorage.removeItem('ls_staf'); }catch(_){} signOut(auth); } };
+  },
+  // Senarai pakej / servis / kenderaan dikemas kini secara langsung
+  live: () => staf.peranan !== 'Admin' ? '' : Object.entries(JENIS_ITEM).map(([j, J]) => {
+    const l = senarai(j);
+    return `<div class="card"><div class="between"><h3 style="margin:0">${J.ikon} ${J.label}</h3><button class="btn-dark small" data-tambah="${j}">+ Tambah</button></div>
+      ${j==='kenderaan' ? '<div class="muted" style="margin-top:4px">Harga di sini ialah <b>tambahan</b> kepada harga pakej (boleh negatif, cth motosikal −5).</div>' : ''}
+      <div style="margin-top:6px">${l.map((x,i) => `<div class="item ${x.aktif?'':'off'}">
+        ${J.gambar ? imgItem(x,'th',J.ikon) : ''}
+        <div class="nm"><b>${esc(x.nama)}</b><small>${j==='kenderaan' ? (x.harga ? (x.harga>0?'+':'')+RM(x.harga) : 'harga asas') : (j==='addon'?'+':'')+RM(x.harga)}${x.minit?` · ~${x.minit} min`:''}${x.aktif?'':' · <b>tidak aktif</b>'}</small>${x.ket?`<small style="display:block">${esc(x.ket)}</small>`:''}</div>
+        <div class="bt"><button class="small" data-gerak="${j}|${i}|-1" ${i===0?'disabled':''}>▲</button><button class="small" data-gerak="${j}|${i}|1" ${i===l.length-1?'disabled':''}>▼</button><button class="small" data-ubah="${j}|${x.id}">✏️ Ubah</button></div>
+      </div>`).join('') || '<p class="muted">Tiada lagi.</p>'}</div></div>`;
+  }).join(''),
+  pasangLive(){
+    if(staf.peranan !== 'Admin') return;
+    $$('[data-tambah]').forEach(b => b.onclick = () => borangMenu(b.dataset.tambah, null));
+    $$('[data-ubah]').forEach(b => b.onclick = () => { const [j, id] = b.dataset.ubah.split('|'); borangMenu(j, id); });
+    $$('[data-gerak]').forEach(b => b.onclick = async () => {
+      const [j, i, d] = b.dataset.gerak.split('|'); const l = senarai(j), a = +i, c = a + +d;
+      if(c < 0 || c >= l.length) return;
+      [l[a], l[c]] = [l[c], l[a]];
+      await simpanSenarai(j, l);
+    });
   }
 };
+
+const bersihItem = x => { const o = {id:x.id, nama:x.nama, harga:r2(x.harga), aktif:x.aktif !== false}; if(x.ket) o.ket = x.ket; if(x.minit) o.minit = x.minit; return o; };
+async function simpanSenarai(j, l){
+  if(staf.peranan !== 'Admin'){ toast('⛔ Hanya Admin'); return false; }
+  try{ await setDoc(tetapanRef(), {[j]: l.map(bersihItem), dikemaskiniOleh: staf.nama}, {merge:true}); return true; }
+  catch(e){ onErr(e); toast('⚠ Gagal simpan: ' + (e.code || e.message)); return false; }
+}
+
+function borangMenu(j, id){
+  const J = JENIS_ITEM[j], l = senarai(j);
+  const x = id ? l.find(v => v.id === id) : {id: j.slice(0,2) + Date.now().toString(36), nama:'', harga:'', aktif:true};
+  if(!x) return;
+  let gambarBaru;   // undefined = tidak berubah, '' = buang, data URL = baru
+  const lihat = () => gambarBaru !== undefined ? gambarBaru : (GAMBAR[x.id] || '');
+  openModal(`<div class="between"><h3 style="margin:0">${id?'✏️ Ubah':'➕ Tambah'} ${J.satu}</h3><button class="small" id="mTutup">✕</button></div>
+    ${J.gambar ? `<label>Gambar</label><div id="mPrev"></div>
+      <div class="row" style="margin-bottom:10px"><label class="btn-dark" style="padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:400;color:#fff">📷 Pilih / ambil gambar<input id="mFail" type="file" accept="image/*" style="display:none"></label><button class="small btn-bad" id="mBuang">Buang gambar</button></div>` : ''}
+    <label>Nama</label><input id="mNama" value="${esc(x.nama)}" placeholder="${j==='pakej'?'cth: Premium Wash':j==='addon'?'cth: Tyre Shine':'cth: SUV / MPV'}">
+    <div class="two"><div><label>${j==='kenderaan'?'Tambahan harga (RM, boleh negatif)':'Harga (RM)'}</label><input id="mHarga" type="number" inputmode="decimal" step="0.01" value="${x.harga}"></div>
+    ${J.minit ? `<div><label>Anggaran masa (minit)</label><input id="mMinit" type="number" inputmode="numeric" value="${x.minit||''}" placeholder="cth: 30"></div>` : ''}</div>
+    ${J.ket ? `<label>Keterangan (dipapar di menu)</label><textarea id="mKet" rows="2" placeholder="cth: Snow foam, vakum, tayar berkilat">${esc(x.ket||'')}</textarea>` : ''}
+    <label class="row" style="font-weight:400;margin-bottom:12px"><input type="checkbox" id="mAktif" ${x.aktif?'checked':''} style="width:22px;height:22px;margin:0"> Aktif (dipapar di kaunter & menu)</label>
+    <button class="btn-gold big" id="mSimpan">SIMPAN</button>
+    ${id ? '<button class="btn-bad big" id="mPadam" style="margin-top:8px">Padam</button>' : ''}`);
+  const prev = () => { if(!$('#mPrev')) return; const g = lihat(); $('#mPrev').innerHTML = g ? `<img class="prev" src="${g}">` : `<div class="prev" style="height:120px;display:flex;align-items:center;justify-content:center;font-size:40px">${J.ikon}</div>`; };
+  prev();
+  $('#mTutup').onclick = closeModal;
+  if($('#mFail')) $('#mFail').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ gambarBaru = await kecilkanGambar(f, 640, 0.72); prev(); }catch(_){ toast('Gagal membaca gambar'); } };
+  if($('#mBuang')) $('#mBuang').onclick = () => { gambarBaru = ''; prev(); };
+  $('#mSimpan').onclick = async () => {
+    const nama = val('#mNama'); if(!nama) return toast('Sila isi nama');
+    const harga = numVal('#mHarga');
+    if(j !== 'kenderaan' && !(harga >= 0)) return toast('Harga tidak sah');
+    const baru = {...x, nama, harga, aktif: $('#mAktif').checked};
+    if(J.minit){ const m = Math.round(numVal('#mMinit')); if(m > 0) baru.minit = m; else delete baru.minit; }
+    if(J.ket){ const k = val('#mKet'); if(k) baru.ket = k; else delete baru.ket; }
+    const senaraiBaru = id ? l.map(v => v.id === id ? baru : v) : [...l, baru];
+    if(j === 'pakej' && !senaraiBaru.some(v => v.aktif)) return toast('Mesti ada sekurang-kurangnya satu pakej aktif');
+    $('#mSimpan').disabled = true;
+    try{
+      if(gambarBaru) await setDoc(doc(col('gambar'), x.id), {data: gambarBaru, nama, dikemaskini: serverTimestamp()});
+      else if(gambarBaru === '') await deleteDoc(doc(col('gambar'), x.id));
+    }catch(e){ onErr(e); toast('⚠ Gambar gagal disimpan: ' + (e.code || e.message)); $('#mSimpan').disabled = false; return; }
+    if(await simpanSenarai(j, senaraiBaru)){ closeModal(); toast('✅ Disimpan'); } else $('#mSimpan').disabled = false;
+  };
+  if($('#mPadam')) $('#mPadam').onclick = async () => {
+    const tinggal = l.filter(v => v.id !== id);
+    if(j === 'pakej' && !tinggal.some(v => v.aktif)) return toast('Mesti ada sekurang-kurangnya satu pakej aktif');
+    if(!confirm(`Padam ${x.nama}? (Order lama tidak terjejas)`)) return;
+    if(await simpanSenarai(j, tinggal)){ deleteDoc(doc(col('gambar'), id)).catch(() => {}); closeModal(); toast('🗑 Dipadam'); }
+  };
+}
 
 // =====================================================================
 // JAM, RANGKAIAN, PERTUKARAN HARI

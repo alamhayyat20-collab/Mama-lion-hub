@@ -3,20 +3,38 @@
 Sistem kaunter carwash (versi baru, menggantikan Lion Safari V1.7).
 **Link:** https://alamhayyat20-collab.github.io/Mama-lion-hub/lionsafari/
 
-## Fungsi
-| Tab | Siapa | Kegunaan |
-|---|---|---|
-| Ringkasan | Pengurus, Juruwang | Jualan hari ini, queue, petty cash, stok rendah |
-| Order Baru | Pengurus, Juruwang | Plat, jenis kenderaan, pakej, add-on, bay |
-| Queue | Semua | Menunggu → Cuci → Kering → QC → Siap, tukar bay, cari plat |
-| Bayaran | Pengurus, Juruwang | Tunai (kira baki), QR/eWallet, Kad, Transfer + rujukan & gambar bukti, diskaun, resit 58mm |
-| Petty Cash | Pengurus, Juruwang | Belanja & top-up, baki automatik |
-| Stok | Semua | Terima / guna stok, amaran stok rendah, log pergerakan |
-| Laporan | Pengurus | Harian (cara bayar, pakej, add-on, juruwang, semakan tunai laci, order batal) & Bulanan (ikut hari, CSV Excel, PDF) |
-| Staf | Pengurus | Tambah staf, peranan, PIN, nyahaktif |
-| Tetapan | Pengurus | Nama kedai, harga pakej/kenderaan/add-on, bay, float, had kelulusan |
+## Dua cawangan, satu apps
+- Setiap telefon/tablet kaunter pilih cawangan **sekali sahaja** (logo Mama Lion / Lion King) selepas log masuk peranti.
+- Data diasingkan ikut cawangan: `lionsafari/mama-lion/...` dan `lionsafari/lion-king/...` (order, queue, stok, petty cash, staf & PIN, harga).
+- Jualan & petty cash masuk ke Akaun cawangan masing-masing: `akaun/mama-lion/entri` dan `akaun/lion-king/entri`.
+- Tukar cawangan peranti: butang **🏪 Tukar cawangan** di skrin PIN, atau **Tetapan → Peranti ini**.
+- Staf & PIN tidak dikongsi antara cawangan — daftar dalam Akaun dengan logo cawangan yang betul.
 
-**Kelulusan PIN Pengurus** diperlukan untuk: batal order, diskaun melebihi had, top-up petty cash, belanja petty cash melebihi had, padam petty cash, laras stok.
+## Fungsi
+| Tab | Kegunaan |
+|---|---|
+| Ringkasan | Jualan hari ini, queue, petty cash, stok rendah, **menu pakej & servis bergambar** (tekan pakej → terus buat order) |
+| Order Baru | Plat, jenis kenderaan, pakej (bergambar), add-on, bay |
+| Queue | Menunggu → Cuci → Kering → QC → Siap, tukar bay, cari plat |
+| Bayaran | Tunai (kira baki), QR/eWallet, Kad, Transfer + rujukan & gambar bukti, diskaun, resit 58mm |
+| Petty Cash | Belanja & top-up, baki automatik |
+| Stok | Terima / guna stok, amaran stok rendah, log pergerakan |
+| Laporan | Harian & Bulanan, CSV Excel, PDF |
+| Tetapan | **Admin sahaja**: pakej, servis tambahan & jenis kenderaan (nama, harga, gambar, keterangan, anggaran masa, aktif, susunan), maklumat kedai/resit, bay, kategori petty cash, had kelulusan |
+
+## Peranan
+| Peranan | Akses |
+|---|---|
+| Admin | Semua tab termasuk **Tetapan**; kelulusan |
+| Manager | Semua kecuali Tetapan; urus item stok; kelulusan |
+| Supervisor | Kaunter + Laporan; boleh luluskan batal, diskaun & petty cash |
+| Cashier | Order, queue, bayaran, petty cash, stok (masuk/guna) |
+| Pekerja | Queue & stok sahaja (staf bay) |
+
+**ID staf, peranan & PIN diberi oleh pemilik dalam apps Akaun → tab Pekerja.** Staf log masuk kaunter dengan ID (cth `ML001` Mama Lion, `LK001` Lion King) + PIN. Staf versi lama: Pengurus → Admin, Juruwang → Cashier (automatik).
+**Kelulusan PIN Supervisor / Manager / Admin** diperlukan untuk: batal order, diskaun melebihi had, top-up petty cash, belanja petty cash melebihi had, padam petty cash, laras stok.
+
+Gambar pakej/servis disimpan di `lionsafari/{cawangan}/gambar/{id}` (dikecilkan automatik).
 
 ## Sambungan ke apps Akaun (automatik)
 - Setiap bayaran / pembatalan mengemas kini rekod jualan harian `akaun/mama-lion/entri/ls-YYYY-MM-DD` (Tunai, QR, Kad; Transfer masuk "Lain-lain").
@@ -27,7 +45,7 @@ Sistem kaunter carwash (versi baru, menggantikan Lion Safari V1.7).
 1. Upload folder `lionsafari/` (6 fail) ke repo `Mama-lion-hub`, dan gantikan `akaun/index.html` dengan versi yang dikemas kini.
 2. Tambah Firestore Rules di bawah → **Publish**.
 3. Buka link di telefon kaunter → log masuk peranti dengan akaun Firebase (sekali sahaja).
-4. Kali pertama: daftar Pengurus (nama + PIN). Kemudian tambah staf lain dalam tab **Staf**, isi harga dalam **Tetapan**, dan item dalam **Stok**.
+4. Daftar staf (sekurang-kurangnya seorang Admin) dalam apps Akaun → Pekerja. Kemudian log masuk kaunter dengan ID + PIN, isi pakej, harga & gambar dalam **Tetapan**, dan item dalam **Stok**.
 5. Tekan **PASANG SEKARANG** untuk letak ikon di skrin utama; **KONGSI LINK KEPADA STAF** untuk hantar ke telefon lain.
 
 ## Firestore Rules
