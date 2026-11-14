@@ -597,8 +597,9 @@ async function semakJualanLS(){
     const sedia = (await getDocs(query(COL, where('jenis','==','jualan')))).docs.map(d => ({id:d.id, ...d.data()}));
     lsJualan = Object.values(ikutHari).sort((a,b) => b.tarikh.localeCompare(a.tarikh)).map(h => {
       h.amaun = Math.round((h.tunai + h.qr + h.lain)*100)/100;
-      const lama = sedia.find(e => e.tarikh === h.tarikh && e.sumber === 'lionsafari');
-      const manual = sedia.filter(e => e.tarikh === h.tarikh && e.sumber !== 'lionsafari');
+      // rekod auto dari Lion Safari V2 (ls-YYYY-MM-DD) tidak boleh ditimpa oleh data LionSafari lama
+      const lama = sedia.find(e => e.tarikh === h.tarikh && e.sumber === 'lionsafari' && !e.auto);
+      const manual = sedia.filter(e => e.tarikh === h.tarikh && (e.sumber !== 'lionsafari' || e.auto));
       let status, pilih;
       if(lama && Math.abs(lama.amaun - h.amaun) < 0.005 && lama.kereta === h.kereta){ status = '<span class="tag ok">Sudah ditarik</span>'; pilih = null; }
       else if(lama){ status = `<span class="tag warn">Berubah (dulu ${RM(lama.amaun)})</span>`; pilih = true; }
