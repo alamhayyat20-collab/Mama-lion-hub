@@ -1,663 +1,879 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#12301f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Carian Lot Bukit Goh</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14532d">
+<title>Akaun Mama Lion</title>
+<link rel="manifest" href="manifest.json">
 <style>
-:root{--forest:#12301f;--leaf:#1f5a3d;--gold:#b08a3e;--goldlt:#e0b56a;--ink:#17231d;--muted:#5a6a60;--line:#d6e0d9;--bg:#f4f7f5;--card:#ffffff;--pale:#eef3ef;--warn:#c25b14;
---z1:#c0392b;--z2:#1f6fb2;--z3:#7d3c98;--z4:#1e8449;--z5:#b9770e}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6eee9;--muted:#9fb2a6;--line:#2c3b33;--bg:#0f1713;--card:#17221c;--pale:#1d2b23}}
-:root[data-theme="dark"]{--ink:#e6eee9;--muted:#9fb2a6;--line:#2c3b33;--bg:#0f1713;--card:#17221c;--pale:#1d2b23}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-button{font:inherit;color:inherit;cursor:pointer}
-#top{position:fixed;inset:0 0 auto 0;z-index:30;background:var(--forest);color:#fff;padding:calc(env(safe-area-inset-top) + 6px) 12px 8px}
-#naung{font-size:9.5px;letter-spacing:.06em;color:var(--goldlt);text-align:center;font-weight:700}
-#brand{display:flex;align-items:center;justify-content:space-between;margin:4px 0 6px}
-#brand b{font-size:15px}#brand span{font-size:10.5px;color:var(--goldlt);font-weight:700;letter-spacing:.05em}
-#sbox{display:flex;gap:6px}
-#q{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px;background:#fff;color:#17231d}
-#gpsBtn,#calBtn{border:0;border-radius:10px;background:var(--leaf);color:#fff;padding:0 11px;font-size:13px;font-weight:600;white-space:nowrap}
-#chips{display:flex;gap:6px;overflow-x:auto;padding-top:7px;scrollbar-width:none}
-#chips::-webkit-scrollbar{display:none}
-#tabs{display:flex;gap:4px;margin-top:7px}
-#tabs button{flex:1;border:0;border-radius:9px;padding:7px 4px;font-size:13px;font-weight:700;background:rgba(255,255,255,.1);color:#fff;position:relative}
-#tabs button.on{background:#fff;color:#12301f}
-#tabs .bd{position:absolute;top:-4px;right:6px;min-width:18px;height:18px;border-radius:9px;background:#e53935;color:#fff;font-size:11px;line-height:18px;padding:0 5px}
-#pane{position:fixed;left:0;right:0;bottom:0;z-index:26;background:var(--bg);overflow-y:auto;display:none;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
-#pane h3{margin:14px 2px 8px;font-size:15px}
-.card{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.stb{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:2px 6px;white-space:nowrap}
-.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);margin:6px 0 4px}
-.bar i{display:block;height:100%}
-.leg{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--muted)}
-.leg span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;background:var(--c)}
-.big{font-size:28px;font-weight:800}
-.fd{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;color:var(--ink)}
-.fd small{color:var(--muted);display:block}
-.post{cursor:pointer}.post h4{margin:4px 0 2px;font-size:15px}
-.post .meta{font-size:11.5px;color:var(--muted)}
-.cat{font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;background:var(--pale)}
-.md h4{margin:14px 0 4px;font-size:14.5px}.md p{margin:6px 0}.md ul{margin:4px 0;padding-left:20px}.md li{margin:3px 0}
-#ann{position:fixed;left:10px;right:10px;z-index:40;background:#b08a3e;color:#12301f;border-radius:12px;padding:10px 38px 10px 12px;font-size:13.5px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.3);display:none;cursor:pointer}
-#ann b{display:block;font-size:11px;letter-spacing:.06em}
-#ann .x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:18px;color:#12301f}
-.stopt{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
-#dlg .stopt input{width:auto}
-.chip{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;white-space:nowrap}
-.chip.on{background:var(--goldlt);border-color:var(--goldlt);color:#12301f;font-weight:700}
-#map{position:fixed;inset:0;overflow:hidden;touch-action:none;background:#e9ece8;cursor:grab}
-#layer{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-#layer img{display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
-#zsvg{position:absolute;left:0;top:0;pointer-events:none}
-#marks{position:absolute;inset:0;pointer-events:none}
-.mk{position:absolute;transform:translate(-50%,-50%);pointer-events:auto}
-.pin{width:22px;height:22px;border-radius:50%;background:var(--warn);border:3px solid #fff;box-shadow:0 0 0 2px var(--warn),0 2px 8px rgba(0,0,0,.4)}
-.pin::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:3px solid var(--warn);animation:pulse 1.6s infinite}
-@keyframes pulse{from{transform:scale(.5);opacity:1}to{transform:scale(1.5);opacity:0}}
-.tag{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);background:var(--forest);color:#fff;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-.sib{width:14px;height:14px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.sib .tag{background:var(--gold);bottom:14px;font-size:11px;padding:2px 6px}
-.res{width:9px;height:9px;border-radius:50%;background:var(--leaf);border:1.5px solid #fff;opacity:.85}
-.me{width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 6px rgba(26,115,232,.25)}
-.cal{width:16px;height:16px;border-radius:3px;background:#e91e63;border:2px solid #fff;transform:translate(-50%,-50%) rotate(45deg)}
-.cal span{position:absolute;transform:rotate(-45deg);left:16px;top:-14px;color:#e91e63;font-weight:800;font-size:13px;text-shadow:0 0 3px #fff}
-#sheet{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.18);max-height:52vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom);transition:max-height .2s}
-#sheet.min{max-height:76px}
-#grab{padding:8px 14px 6px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
-#grab::before{content:"";position:absolute;left:50%;top:5px;width:38px;height:4px;border-radius:2px;background:var(--line);transform:translateX(-50%)}
-#stat{flex:1;font-size:13px;color:var(--muted);padding-top:4px}
-#tog{border:0;background:var(--pale);border-radius:8px;padding:5px 10px;font-size:12.5px}
-#body{overflow-y:auto;flex:1}
-.row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0}
-.row:active{background:var(--pale)}
-.ln{font-weight:800;font-variant-numeric:tabular-nums;min-width:58px}
-.nm{flex:1;min-width:0;font-size:13.5px}
-.nm small{display:block;color:var(--muted);font-size:11.5px}
-.zb{font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:2px 6px}
-.det{padding:12px 14px 16px}
-.det h2{margin:0 0 2px;font-size:22px}
-.det .own{font-size:16px;font-weight:600;margin-bottom:8px}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13.5px;margin:6px 0 10px}
-.kv dt{color:var(--muted)}.kv dd{margin:0}
-.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.btn{border:0;border-radius:10px;padding:11px 8px;font-weight:700;font-size:14px;background:var(--pale);text-align:center;text-decoration:none;color:var(--ink);display:block}
-.btn.p{background:var(--leaf);color:#fff}.btn.w{background:#33ccff;color:#06283d}
-.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
-.note{font-size:12px;color:var(--muted);background:var(--pale);border-radius:8px;padding:8px 10px;margin-top:10px}
-.note.warn{color:#7a3a07;background:#fdebd8}
-.sibs{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.sibs button{border:1px solid var(--gold);background:none;border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:700}
-#zoomc{position:fixed;right:10px;z-index:20;display:flex;flex-direction:column;gap:6px}
-#zoomc #lay.on{background:#1f5a3d;color:#fff}
-#zoomc button{width:40px;height:40px;border-radius:10px;border:0;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.2);font-size:20px;font-weight:700}
-#calbar{position:fixed;left:10px;right:60px;z-index:22;background:#e91e63;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;display:none;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-#calbar b{display:block}
-#dlg{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px}
-#dlg .box{background:var(--card);border-radius:14px;max-width:440px;width:100%;padding:16px;max-height:86vh;overflow:auto}
-#dlg h3{margin:0 0 8px}
-#dlg input,#dlg textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)}
-#dlg textarea{font-family:ui-monospace,monospace;font-size:12px;height:80px}
-.cpl{font-size:13px;border-bottom:1px solid var(--line);padding:6px 0;display:flex;justify-content:space-between;gap:8px}
-.cpl button{border:0;background:none;color:var(--warn);font-weight:700}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#17231d;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;display:none}
-@media (min-width:900px){#sheet{left:12px;bottom:12px;top:auto;width:390px;right:auto;border-radius:14px;max-height:calc(100vh - 190px)}#sheet.min{max-height:76px}}
-#lock{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 80% at 50% 0%,#1f5a3d 0%,#12301f 60%);color:#fff;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
-#lock.gone{display:none}
-.lk{max-width:360px;width:100%;text-align:center}
-.lk-n{font-size:13px;letter-spacing:.18em;color:#e0b56a;font-weight:700;margin-bottom:18px}
-.lk-hero{width:190px;height:190px;display:block;margin:0 auto;border-radius:34px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.lk h1{font-size:24px;line-height:1.2;margin:14px 0 6px}
-.lk-s{font-size:13px;color:#cfe0d5;margin:0 0 18px}
-#lki,#lkc{width:100%;border:0;border-radius:12px;padding:13px 14px;font-size:17px;text-align:center;color:#17231d;background:#fff}
-.lk-r{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:#cfe0d5;margin:10px 0}
-#lkb{width:100%;border:0;border-radius:12px;padding:13px;font-size:16px;font-weight:800;background:#e0b56a;color:#12301f}
-#lkb:disabled{opacity:.6}
-#lke{min-height:20px;font-size:13px;color:#ffb38a;margin-top:10px}
-#lkinst{margin-top:6px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600}
-#lkios{font-size:12.5px;color:#cfe0d5;margin-top:8px}
-.lk-f{font-size:11px;color:#9fbfac;margin-top:26px}
-#ver{font-size:10px;color:var(--muted)}
-
-.lk-pw{position:relative;margin-top:8px}
-.lk-pw #lkc{padding-left:52px;padding-right:52px}
-#lkeye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;background:transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-#lkeye:active{background:#eef3ef}
-
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial;background:#f3f4f6;color:#111827}
+header{background:#14532d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+header b{font-size:19px}
+header small{display:block;color:#bbf7d0;margin-top:2px}
+nav{display:flex;gap:6px;overflow:auto;background:#fff;padding:9px;position:sticky;top:0;box-shadow:0 1px 4px #0002;z-index:5}
+nav button{white-space:nowrap}
+button{border:0;border-radius:9px;padding:10px 12px;cursor:pointer;background:#e5e7eb;font-size:14px}
+button.active,.primary{background:#14532d;color:#fff}
+.danger{background:#fee2e2;color:#991b1b}
+.small{padding:6px 9px;font-size:12px}
+.aksi{display:flex;flex-direction:column;gap:4px;align-items:flex-end;margin-top:5px}
+main{max-width:1000px;margin:auto;padding:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.card{background:#fff;border-radius:14px;padding:15px;box-shadow:0 2px 10px #0001;margin-bottom:12px}
+.metric{font-size:22px;font-weight:750;margin-top:4px}
+.muted{color:#6b7280;font-size:13px}
+.pos{color:#15803d}.neg{color:#b91c1c}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:9px;margin:4px 0 10px;font-size:16px;background:#fff}
+label{font-size:13px;font-weight:650}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr.tot td{font-weight:750;border-top:2px solid #111827}
+tr.sub td{background:#f9fafb;font-weight:650}
+.tag{padding:3px 8px;border-radius:999px;background:#f3f4f6;font-size:11px;white-space:nowrap}
+.tag.warn{background:#fef3c7}.tag.ok{background:#dcfce7}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;flex-wrap:wrap;gap:8px}
+.section-title h3{margin:0}
+.err{color:#b91c1c;font-size:13px;min-height:18px}
+.notice{background:#fef3c7;border-radius:10px;padding:10px;font-size:13px;margin-bottom:10px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid #d1d5db}
+.bars div{flex:1;background:#16a34a;border-radius:3px 3px 0 0;min-height:1px}
+.bars div.z{background:#e5e7eb}
+.barlbl{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:3px}
+.totalbox{background:#f0fdf4;border-radius:10px;padding:10px;font-weight:700;margin-bottom:10px}
+.synctag{font-size:12px;padding:5px 9px;border-radius:999px;background:#166534;color:#dcfce7}
+.scroll{overflow-x:auto}
+footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
+@media(max-width:600px){.two{grid-template-columns:1fr}.metric{font-size:19px}}
+@media print{header,nav,footer,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
 </style>
 </head>
 <body>
-<div id="lock">
-  <div class="lk">
-    <div class="lk-n">THE KEY · BKTGOH 2.0</div>
-    <img class="lk-hero" src="logo.jpg" alt="Carian Lot FELDA Bukit Goh · Alam Hayyat Group">
-    <h1>Carian Lot<br>FELDA Bukit Goh 2.0</h1>
-    <p class="lk-s">Untuk kegunaan IGFWK dan syarikat usahasama sahaja. Data peneroka adalah SULIT.</p>
-    <form id="lkf" autocomplete="off">
-      <input id="lki" type="text" placeholder="ID pengguna" autocapitalize="none" autocomplete="username" spellcheck="false">
-      <div class="lk-pw"><input id="lkc" type="password" placeholder="Kata laluan" autocomplete="current-password" spellcheck="false"><button type="button" id="lkeye" aria-label="Tunjuk kata laluan" title="Tunjuk / sembunyi kata laluan"><svg id="eyeOn" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#1f4d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg id="eyeOff" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#1f4d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.8 10.8 0 0 1 12 19c-7 0-11-7-11-7a19.8 19.8 0 0 1 5.1-5.9M9.9 4.2A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a19.9 19.9 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M1 1l22 22"/></svg></button></div>
-      <label class="lk-r"><input id="lkm" type="checkbox" checked> Ingat peranti ini</label>
-      <button id="lkb" type="submit">Log masuk</button>
-    </form>
-    <div id="lke"></div>
-    <button id="lkinst" type="button" hidden>⤓ Pasang aplikasi</button>
-    <div id="lkios" hidden>iPhone: tekan <b>Kongsi</b> → <b>Add to Home Screen</b> untuk memasang.</div>
-    <div class="lk-f">IGFWK · Alam Hayyat Group · Menjaga ALAM agar HAYYAT yang berterusan</div>
-  </div>
-</div>
+<header>
+  <div><b>🦁 Akaun Mama Lion</b><small>Jualan • Pembelian • Belanja • Petty Cash • Laporan</small></div>
+  <div class="row"><a href="../kaunter.html" style="color:#fff">Kembali ke LionSafari</a><span id="userBox"></span></div>
+</header>
+<nav id="nav"></nav>
+<div id="bulanBar" class="row" style="max-width:1000px;margin:10px auto 0;padding:0 14px"></div>
+<main id="app"><div class="card muted">Memuatkan…</div></main>
+<footer>Akaun Mama Lion • Data disimpan di Firebase (lion-safari) • Akses Management sahaja</footer>
 
-<div id="map"><div id="layer"><img id="img" alt="Pelan Rancangan FELDA Bukit Goh" src=""><svg id="zsvg"></svg></div><div id="marks"></div></div>
-<div id="top">
-  <div id="naung">THE KEY · BKTGOH 2.0</div>
-  <div id="brand"><b>Carian Lot · FELDA Bukit Goh 2.0</b><span style="text-align:right">SULIT · IGFWK<br><i id="ver" style="font-style:normal;font-weight:400;color:#cfe0d5"></i></span></div>
-  <div id="sbox"><input id="q" type="search" placeholder="Cari nombor lot atau nama peneroka…" autocomplete="off" enterkeyhint="search"><button id="gpsBtn" title="Lokasi saya">◎ Saya</button><button id="calBtn" title="Tetapan">⚙</button></div>
-  <div id="chips"></div>
-  <div id="tabs"><button data-v="peta" class="on">🗺 Peta</button><button data-v="sum">📊 Ringkasan</button><button data-v="info">📢 Info<span class="bd" id="infobd" hidden></span></button></div>
-</div>
-<div id="calbar"><b>Mod kalibrasi</b>Ketik satu titik yang dikenali pada pelan (cth. simpang jalan, sudut lot), kemudian masukkan koordinat GPS titik itu. <u id="calDone">Selesai</u></div>
-<div id="zoomc"><button id="lay" title="Lapisan satelit" style="font-size:18px">🛰</button><button id="zin">+</button><button id="zout">−</button><button id="zfit" style="font-size:14px">⤢</button></div>
-<div id="sheet"><div id="grab"><div id="stat"></div><button id="tog">Kecilkan</button></div><div id="body"></div></div>
-<div id="dlg"><div class="box" id="dlgbox"></div></div>
-<div id="toast"></div>
-<div id="pane"></div>
-<div id="ann"><button class="x" id="annx">×</button><b>📌 PENGUMUMAN</b><span id="annt"></span></div>
-<script>
-function start(P){
-let W=P.W,H=P.H;const S=P.S;
-const ZN={1:'Utara',2:'Timur (Jabor)',3:'Tengah',4:'Barat Daya (Bukit Kuin)',5:'Barat Laut'};
-const ZC={1:'#c0392b',2:'#1f6fb2',3:'#7d3c98',4:'#1e8449',5:'#b9770e'};
-const WN=['-','Biru','Kuning','Hijau','Merah jambu'];
-const RAW=P.lots;            // [lot,nama,zon,warna,felda,x,y]
-const ZONES=P.zones;
-const BAKED_CAL=P.cal;
-const L=RAW.map(r=>({lot:r[0],nama:r[1],zon:r[2],warna:r[3],felda:!!r[4],x:r[5]*S,y:r[6]*S,blok:r[7]||'',fasa:r[8]||'',dmg:r[9]==null?-1:r[9],ll:r[10]||null}));
-const dmgN=p=>p>=15?'Teruk':p>=5?'Sederhana':p>=1?'Ringan':'Tiada / minimum';
-const dmgC=p=>p>=15?'#c62828':p>=5?'#ef6c00':p>=1?'#c9a400':'#5a6a60';
-const STS=['Belum mula','Ukur & data','Pelan diluluskan','Bebas','Pulih','Tanam','Serah'];
-const STC=['#9aa69f','#5b84b1','#7d3c98','#c25b14','#b9770e','#1e8449','#12301f'];
-const FC={A:'#c0392b',B:'#d68910',C:'#1f6fb2',D:'#1e8449'};
-let ST={};try{ST=JSON.parse(localStorage.getItem('bg_st')||'{}')}catch(e){}
-const stOf=l=>ST[l.lot]?ST[l.lot].s:0;
-const stb=s=>`<span class="stb" style="background:${STC[s]}">${STS[s]}</span>`;
-const norm=s=>s.toUpperCase().replace(/[^A-Z0-9@ ]/g,' ').replace(/\bBT\b|\bBTE\b/g,'BINTI').replace(/\bB\b/g,'BIN').replace(/\s+/g,' ').trim();
-L.forEach(l=>l.key=norm(l.nama));
-const byName={};L.forEach(l=>{if(l.nama)(byName[l.nama]=byName[l.nama]||[]).push(l)});
-const byLot={};L.forEach(l=>byLot[l.lot]=l);
-const $=id=>document.getElementById(id);
-function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
-function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2200)}
-// ---------- zon svg ----------
-const zs=$('zsvg');zs.setAttribute('width',W);zs.setAttribute('height',H);zs.setAttribute('viewBox',`0 0 ${W} ${H}`);
-let ZD={z:ZONES,s:S};
-function drawZones(){zs.setAttribute('width',W);zs.setAttribute('height',H);zs.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  zs.innerHTML=Object.entries(ZD.z).map(([z,p])=>`<polygon points="${p.map(q=>q[0]*ZD.s+','+q[1]*ZD.s).join(' ')}" fill="${ZC[z]}" fill-opacity=".05" stroke="${ZC[z]}" stroke-width="3" stroke-dasharray="14 8" vector-effect="non-scaling-stroke"/>`).join('')}
-drawZones();
-// ---------- pan/zoom ----------
-const map=$('map'),layer=$('layer'),marks=$('marks');
-let sc=1,tx=0,ty=0;
-function topH(){return $('top').offsetHeight}
-function apply(){layer.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;drawMarks()}
-function fit(){$('zoomc').style.top=(topH()+70)+'px';const w=map.clientWidth,h=map.clientHeight-topH()-80;sc=Math.min(w/W,h/H);tx=(w-W*sc)/2;ty=topH()+(h-H*sc)/2;apply()}
-function zoomAt(f,cx,cy){const ns=Math.max(minS(),Math.min(4,sc*f));tx=cx-(cx-tx)*ns/sc;ty=cy-(cy-ty)*ns/sc;sc=ns;apply()}
-function minS(){return Math.min(map.clientWidth/W,map.clientHeight/H)*0.6}
-function centerOn(x,y,s){sc=s||Math.max(sc,1.1);const w=map.clientWidth,h=map.clientHeight;const sheetH=$('sheet').classList.contains('min')?80:$('sheet').offsetHeight;
-  const cy=window.innerWidth>=900?(topH()+h)/2:topH()+(h-topH()-sheetH)/2;const cx=window.innerWidth>=900?(w+400)/2:w/2;tx=cx-x*sc;ty=cy-y*sc;apply()}
-const PT=new Map();let last=null,moved=0,downT=0;
-map.addEventListener('pointerdown',e=>{if(e.target.closest('.mk'))return;map.setPointerCapture(e.pointerId);PT.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=0;downT=Date.now();last=null});
-map.addEventListener('pointermove',e=>{if(!PT.has(e.pointerId))return;const p=PT.get(e.pointerId);const pts=[...PT.values()];
-  if(PT.size===1){tx+=e.clientX-p.x;ty+=e.clientY-p.y;moved+=Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y)}
-  else if(PT.size===2){const o=pts.find(q=>q!==p);const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(e.clientX-o.x,e.clientY-o.y);zoomAt(d1/d0,(e.clientX+o.x)/2,(e.clientY+o.y)/2);moved+=99}
-  PT.set(e.pointerId,{x:e.clientX,y:e.clientY});apply()});
-const up=e=>{if(PT.has(e.pointerId)&&PT.size===1&&moved<8&&Date.now()-downT<500)tap(e.clientX,e.clientY);PT.delete(e.pointerId)};
-map.addEventListener('pointerup',up);map.addEventListener('pointercancel',e=>PT.delete(e.pointerId));
-map.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
-$('zin').onclick=()=>zoomAt(1.5,map.clientWidth/2,map.clientHeight/2);$('zout').onclick=()=>zoomAt(1/1.5,map.clientWidth/2,map.clientHeight/2);$('zfit').onclick=fit;
-const toImg=(cx,cy)=>[(cx-tx)/sc,(cy-ty)/sc],toScr=(x,y)=>[x*sc+tx,y*sc+ty];
-// ---------- state ----------
-let zone=0,cat='',sel=null,results=[],me=null,calMode=false;
-let CAL={pts:[]};try{const loc=JSON.parse(store('bg_cal')||'null');CAL=(loc&&loc.pts&&loc.pts.length)?loc:(BAKED_CAL?{pts:BAKED_CAL.map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}))}:{pts:[]})}catch(e){CAL={pts:[]}}
-// ---------- marks ----------
-function drawMarks(){let h='';
-  if(!sel&&results.length&&results.length<=200&&$('q').value.trim())results.forEach(l=>{const[x,y]=toScr(l.x,l.y);h+=`<div class="mk res" style="left:${x}px;top:${y}px" data-lot="${l.lot}"></div>`});
-  if(sel){(sel.nama?byName[sel.nama]:[]).filter(l=>l!==sel).forEach(l=>{const[x,y]=toScr(l.x,l.y);h+=`<div class="mk sib" style="left:${x}px;top:${y}px" data-lot="${l.lot}"><div class="tag">${l.lot}</div></div>`});
-    const[x,y]=toScr(sel.x,sel.y);h+=`<div class="mk pin" style="left:${x}px;top:${y}px"><div class="tag">Lot ${sel.lot}</div></div>`}
-  if(calMode)CAL.pts.forEach((p,i)=>{const[x,y]=toScr(p.x,p.y);h+=`<div class="mk cal" style="left:${x}px;top:${y}px"><span>${i+1}</span></div>`});
-  if(me&&me.xy){const[x,y]=toScr(me.xy[0],me.xy[1]);h+=`<div class="mk me" style="left:${x}px;top:${y}px"></div>`}
-  marks.innerHTML=h}
-marks.addEventListener('click',e=>{const m=e.target.closest('[data-lot]');if(m)select(byLot[m.dataset.lot])});
-// ---------- chips ----------
-const CH=[['Semua',0,''],['Zon 1',1,''],['Zon 2',2,''],['Zon 3',3,''],['Zon 4',4,''],['Zon 5',5,''],['Fasa A',0,'fA'],['Fasa B',0,'fB'],['Fasa C',0,'fC'],['Fasa D',0,'fD'],['Terjejas (satelit)',0,'dmg'],['Lot FELDA',0,'felda'],['Tiada nama',0,'none'],['Pegangan >1 lot',0,'multi']];
-$('chips').innerHTML=CH.map((c,i)=>`<button class="chip${i?'':' on'}" data-i="${i}">${c[0]}</button>`).join('');
-$('chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const c=CH[+b.dataset.i];
-  if(c[1]){zone=zone===c[1]?0:c[1];}else if(c[2]){cat=cat===c[2]?'':c[2]}else{zone=0;cat=''}
-  [...$('chips').children].forEach((x,i)=>x.classList.toggle('on',i===0?!zone&&!cat:(CH[i][1]?CH[i][1]===zone:CH[i][2]===cat)));sel=null;search()};
-// ---------- search ----------
-function search(){const raw=$('q').value.trim();const q=norm(raw);const toks=q.split(' ').filter(Boolean);
-  results=L.filter(l=>(!zone||l.zon===zone)&&(!cat||(cat[0]==='f'&&cat.length===2?l.fasa===cat[1]:cat==='dmg'?l.dmg>=5:cat==='felda'?l.felda:cat==='none'?(!l.nama&&!l.felda):(l.nama&&byName[l.nama].length>1))));
-  if(toks.length){const num=/^\d+$/.test(q.replace(/ /g,''));
-    if(num){const d=q.replace(/ /g,'');results=results.filter(l=>l.lot.includes(d)).sort((a,b)=>(b.lot.startsWith(d))-(a.lot.startsWith(d))||a.lot.localeCompare(b.lot))}
-    else{const fq=toks.includes('FELDA');results=results.filter(l=>toks.every(t=>l.key.split(' ').some(w=>w.startsWith(t)))||(fq&&l.felda&&toks.length===1)).sort((a,b)=>a.key.localeCompare(b.key)||a.lot.localeCompare(b.lot))}
-  }else results.sort((a,b)=>a.zon-b.zon||a.lot.localeCompare(b.lot,undefined,{numeric:true}));
-  if(results.length===1&&toks.length&&raw.length>=5){select(results[0]);return}
-  list()}
-$('q').addEventListener('input',()=>{sel=null;search()});
-$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){$('q').blur();if(results.length)select(results[0])}});
-const zb=z=>`<span class="zb" style="background:${ZC[z]}">Z${z}</span>`;
-const ownerTxt=l=>l.felda?'<b>FELDA</b> <small>Berdaftar atas nama FELDA pada geran</small>':(l.nama||'<span style="color:var(--muted)">[tiada nama pada pelan]</span>');
-function list(){sheetOpen(true);const n=results.length;const owners=new Set(results.filter(l=>l.nama).map(l=>l.nama)).size;
-  $('stat').innerHTML=`<b style="color:var(--ink)">${n} lot</b> · ${owners} peneroka${zone?' · Zon '+zone+' '+ZN[zone]:''}`;
-  $('body').innerHTML=results.slice(0,300).map(l=>`<button class="row" data-lot="${l.lot}"><span class="ln">${l.lot}</span><span class="nm">${ownerTxt(l)}${l.nama&&byName[l.nama].length>1?`<small>Pegangan ${byName[l.nama].length} lot</small>`:''}</span>${stOf(l)?stb(stOf(l))+' ':''}${zb(l.zon)}</button>`).join('')+(n>300?`<div class="note" style="margin:10px 14px">Menunjukkan 300 daripada ${n}. Taip lebih spesifik.</div>`:'')+(n===0?`<div class="note" style="margin:14px">Tiada padanan. Cuba nombor lot penuh (5–6 digit) atau sebahagian nama.</div>`:'');
-  drawMarks()}
-$('body').addEventListener('click',e=>{const r=e.target.closest('[data-lot]');if(r)select(byLot[r.dataset.lot]);const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
-// ---------- detail ----------
-function select(l){if(!l)return;sel=l;const sibs=l.nama?byName[l.nama]:[l];
-  const ll=l.ll||geo(l.x,l.y);const ok=!!ll;
-  $('stat').innerHTML=`<b style="color:var(--ink)">Lot ${l.lot}</b> · Zon ${l.zon}`;
-  $('body').innerHTML=`<div class="det"><h2>Lot ${l.lot}</h2><div class="own">${ownerTxt(l)}</div>
-  <dl class="kv"><dt>Status</dt><dd>${stb(stOf(l))}${ST[l.lot]?`<small style="display:block;color:var(--muted)">${escH(ST[l.lot].by||"")} · ${ago(ST[l.lot].at)}${ST[l.lot].note?" · "+escH(ST[l.lot].note):""}</small>`:""}</dd><dt>Zon</dt><dd>${zb(l.zon)} ${ZN[l.zon]}</dd>${l.blok?`<dt>Blok · Fasa</dt><dd>${l.blok} · <span class="stb" style="background:${FC[l.fasa]}">Fasa ${l.fasa}</span> <small style="color:var(--muted)">(cadangan simulasi)</small></dd>`:""}${l.dmg>=0?`<dt>Tanah terdedah</dt><dd><span class="stb" style="background:${dmgC(l.dmg)}">${l.dmg}% · ${dmgN(l.dmg)}</span> <small style="color:var(--muted)">(analisis imej satelit)</small></dd>`:""}<dt>Warna kawasan</dt><dd>${l.felda?'Jingga':WN[l.warna]}</dd>
-  ${l.nama?`<dt>Pegangan</dt><dd>${sibs.length>1?`${sibs.length} lot (gabungan pegangan 10 ekar)`:'1 lot'}</dd>`:''}
-  ${ok?`<dt>Koordinat</dt><dd style="font-variant-numeric:tabular-nums">${ll[0].toFixed(6)}, ${ll[1].toFixed(6)}</dd>`:''}
-  ${ok&&me&&me.ll?`<dt>Jarak dari anda</dt><dd>${fmtD(dist(me.ll,ll))}</dd>`:''}</dl>
-  ${sibs.length>1?`<div style="font-size:12.5px;color:var(--muted)">Lot lain dalam pegangan ini:</div><div class="sibs">${sibs.filter(s=>s!==l).map(s=>`<button data-lot="${s.lot}">${s.lot} · Z${s.zon}</button>`).join('')}</div>`:''}
-  <div class="btns"><a class="btn p" ${ok?`href="https://www.google.com/maps/dir/?api=1&destination=${ll[0]},${ll[1]}&travelmode=driving" target="_blank" rel="noopener"`:'aria-disabled="true"'}>▶ Google Maps</a>
-  <a class="btn w" ${ok?`href="https://waze.com/ul?ll=${ll[0]},${ll[1]}&navigate=yes" target="_blank" rel="noopener"`:'aria-disabled="true"'}>▶ Waze</a>
-  ${canEdit()?`<button class="btn p" data-act="st" style="grid-column:1/-1;background:#b08a3e;color:#12301f">✎ Kemas kini status lot</button>`:""}<button class="btn" data-act="copy">Salin maklumat</button><button class="btn" data-act="back">← Senarai</button></div>
-  ${ok?(CAL.err>60?`<div class="note warn">Ketepatan kalibrasi ±${Math.round(CAL.err)} m. Tambah titik kalibrasi untuk navigasi lebih tepat.</div>`:`<div class="note">Navigasi ke titik dalam lot berdasarkan imej satelit (anggaran ±20 m). Sahkan sempadan dengan batu sempadan di lapangan.</div>`)
-   :`<div class="note warn"><b>Navigasi GPS belum aktif.</b> Pelan ini belum dikalibrasi dengan koordinat GPS. Tekan ⚙ dan tandakan sekurang-kurangnya 3 titik yang dikenali. <a href="https://www.google.com/maps/search/?api=1&query=FELDA+Bukit+Goh+Kuantan" target="_blank" rel="noopener">Navigasi ke Perkampungan FELDA Bukit Goh</a></div>`}
+<script type="module">
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+
+// ---------- Senarai kategori (boleh ubah di sini) ----------
+const KAT_PEMBELIAN = ['Sabun & Kimia','Wax & Polish','Peralatan & Mesin','Tuala & Span','Barang Jualan (Minuman/Snek)','Alat Ganti','Lain-lain'];
+const KAT_BELANJA   = ['Gaji & Upah','Komisen Staff','Sewa Premis','Elektrik','Air','Internet & Telefon','Penyelenggaraan','Pemasaran & Iklan','Pengangkutan & Minyak','Makan & Minum Staff','Lesen & Permit','Yuran Bank / Caj Online','Lain-lain'];
+const KAT_PETTY     = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','Barang Kecil / Runcit','Penyelenggaraan Kecil','Lain-lain'];
+const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)'];
+const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
+const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
+const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
+const OWNER_TABS = ['Ringkasan', ...TABS, 'Laporan'];
+
+// ---------- Utiliti ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const RM = n => 'RM ' + (Number(n)||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = id => { const v = parseFloat(($(id)?.value||'').replace(',','.')); return isNaN(v) ? 0 : Math.round(v*100)/100; };
+const val = id => ($(id)?.value || '').trim();
+const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const sum = (arr, f) => arr.reduce((t,x) => t + (Number(f ? f(x) : x)||0), 0);
+const BULAN_NAMA = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+const fmtTarikh = t => { if(!t) return ''; const [y,m,d] = t.split('-'); return `${+d} ${BULAN_NAMA[+m-1]}`; };
+const fmtBulan = b => { const [y,m] = b.split('-'); return `${BULAN_NAMA[+m-1]} ${y}`; };
+const opts = (list, sel) => list.map(o => `<option ${o===sel?'selected':''}>${esc(o)}</option>`).join('');
+
+// ---------- Keadaan ----------
+let tab = 'Jualan';
+let isOwner = false;
+let monthLoaded = false;
+let bulan = today().slice(0,7);
+let entri = [];      // semua entri bulan dipilih
+let pettyAll = [];   // semua entri yang guna petty cash (semua masa)
+let hutangAll = [];  // semua pembelian kredit yang belum lunas
+let editing = null;  // {id, data}
+let user = null, nama = '', loginError = '', dataError = '';
+let unsubBulan = null, unsubPetty = null, unsubHutang = null;
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const store = getFirestore(app);
+const COL = collection(store, 'akaun', BRANCH_ID, 'entri');
+const ownerRecord = uid => doc(store, 'akaun', BRANCH_ID, 'pemilik', uid);
+const entryQuery = (...filters) => query(COL, ...filters,
+  ...(isOwner ? [] : [where('assignedUid', '==', user.uid)]));
+
+// ---------- Log masuk ----------
+function renderLogin(){
+  $('#nav').innerHTML = ''; $('#bulanBar').innerHTML = '';
+  $('#userBox').innerHTML = '';
+  $('#app').innerHTML = `
+  <div class="card" style="max-width:380px;margin:30px auto">
+    <h3 style="margin-top:0">Log Masuk Management</h3>
+    <p class="muted">Guna email & kata laluan yang sama seperti LionSafari.</p>
+    <label>Email</label><input id="em" type="email" autocomplete="username">
+    <label>Kata laluan</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="err">${esc(loginError)}</div>
+    <button class="primary" style="width:100%;padding:14px" id="btnLogin">Log Masuk</button>
   </div>`;
-  sheetOpen(true);centerOn(l.x,l.y,Math.max(sc,1.2))}
-function act(a){if(a==='back'){sel=null;list();return}
-  if(a==='st'&&sel){stDlg(sel);return}
-  if(a==='copy'&&sel){const ll=sel.ll||geo(sel.x,sel.y);const t=`Lot ${sel.lot} · ${sel.felda?'FELDA':(sel.nama||'-')} · Zon ${sel.zon} ${ZN[sel.zon]}`+(ll?` · https://www.google.com/maps?q=${ll[0].toFixed(6)},${ll[1].toFixed(6)}`:'');
-    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Disalin'),()=>prompt('Salin:',t))}}
-function sheetOpen(o){$('sheet').classList.toggle('min',!o);$('tog').textContent=o?'Kecilkan':'Senarai'}
-$('tog').onclick=()=>sheetOpen($('sheet').classList.contains('min'));
-// ---------- georujukan (affine kuasa dua terkecil) ----------
-function solve(A,b){const n=A[0].length,M=A.map((r,i)=>[...r,b[i]]);
-  const N=[...Array(n)].map((_,i)=>[...Array(n+1)].map((_,j)=>M.reduce((s,r)=>s+r[i]*r[j],0)));
-  for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<n;k++)if(Math.abs(N[k][i])>Math.abs(N[p][i]))p=k;[N[i],N[p]]=[N[p],N[i]];if(Math.abs(N[i][i])<1e-12)return null;
-    for(let k=0;k<n;k++)if(k!==i){const f=N[k][i]/N[i][i];for(let j=i;j<=n;j++)N[k][j]-=f*N[i][j]}}
-  return N.map((r,i)=>r[n]/r[i])}
-function fitCal(){const p=CAL.pts;CAL.A=null;CAL.err=null;if(p.length<3)return;
-  const A=p.map(q=>[q.x,q.y,1]);const a=solve(A,p.map(q=>q.lat)),b=solve(A,p.map(q=>q.lng));if(!a||!b)return;
-  CAL.A=[a,b];const det=a[0]*b[1]-a[1]*b[0];if(Math.abs(det)<1e-20){CAL.A=null;return}
-  CAL.err=p.length>3?Math.sqrt(p.reduce((s,q)=>{const g=geo(q.x,q.y);return s+dist(g,[q.lat,q.lng])**2},0)/p.length):null}
-function geo(x,y){if(!CAL.A)return null;const[a,b]=CAL.A;return[a[0]*x+a[1]*y+a[2],b[0]*x+b[1]*y+b[2]]}
-function ungeo(lat,lng){if(!CAL.A)return null;const[a,b]=CAL.A;const d=a[0]*b[1]-a[1]*b[0];const u=lat-a[2],v=lng-b[2];return[(u*b[1]-a[1]*v)/d,(a[0]*v-u*b[0])/d]}
-function dist(p,q){const R=6371000,r=Math.PI/180,dl=(q[0]-p[0])*r,dg=(q[1]-p[1])*r;const h=Math.sin(dl/2)**2+Math.cos(p[0]*r)*Math.cos(q[0]*r)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
-const fmtD=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(2)+' km';
-fitCal();
-// ---------- lapisan satelit ----------
-let LAYER='pelan';const BASE={W,H,img:null,cal:CAL};L.forEach(l=>{l.bx=l.x;l.by=l.y});
-async function setLayer(v){
-  if(v==='sat'){if(!window.bgSat){toast('Lapisan satelit tidak tersedia');return}
-    toast('Memuatkan imej satelit…');let d;try{d=await window.bgSat()}catch(e){toast('Gagal memuat: '+e.message);return}
-    if(!BASE.img)BASE.img=$('img').getAttribute('src');BASE.cal=CAL;
-    W=d.W;H=d.H;L.forEach(l=>{const p=d.pos[l.lot];l.x=p?p[0]:-9999;l.y=p?p[1]:-9999});ZD={z:d.zones,s:1};
-    CAL={pts:d.cal.map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}))};$('img').src=d.img}
-  else{W=BASE.W;H=BASE.H;L.forEach(l=>{l.x=l.bx;l.y=l.by});ZD={z:ZONES,s:S};CAL=BASE.cal;if(BASE.img)$('img').src=BASE.img}
-  LAYER=v;fitCal();if(v==='sat')CAL.err=20;drawZones();if(me&&me.ll)me.xy=ungeo(me.ll[0],me.ll[1]);$('lay').classList.toggle('on',v==='sat');
-  try{localStorage.setItem('bg_layer',v)}catch(e){}
-  if(sel)select(sel);else{fit();drawMarks()}}
-$('lay').onclick=()=>setLayer(LAYER==='sat'?'pelan':'sat');
-setTimeout(()=>{let v=null;try{v=localStorage.getItem('bg_layer')}catch(e){}if(v==='sat')setLayer('sat')},300);
-// ---------- GPS ----------
-let watch=null;
-$('gpsBtn').onclick=()=>{if(!navigator.geolocation){toast('GPS tidak disokong');return}
-  if(!CAL.A){toast('Kalibrasi diperlukan untuk menunjuk lokasi anda pada pelan')}
-  if(watch===null)watch=navigator.geolocation.watchPosition(p=>{const first=!me;me={ll:[p.coords.latitude,p.coords.longitude],acc:p.coords.accuracy};me.xy=ungeo(me.ll[0],me.ll[1]);
-    if(first&&me.xy){if(me.xy[0]<-200||me.xy[0]>W+200||me.xy[1]<-200||me.xy[1]>H+200)toast('Anda berada di luar kawasan pelan');else centerOn(me.xy[0],me.xy[1],Math.max(sc,1))}
-    drawMarks();if(sel)select(sel)},e=>toast('GPS: '+e.message),{enableHighAccuracy:true,maximumAge:5000});
-  else if(me&&me.xy)centerOn(me.xy[0],me.xy[1])};
-// ---------- kalibrasi ----------
-$('calBtn').onclick=()=>calMenu();
-$('calDone').onclick=()=>{calMode=false;$('calbar').style.display='none';drawMarks();calMenu()};
-function tap(cx,cy){if(cy<topH())return;if(calMode){const[x,y]=toImg(cx,cy);if(x<0||y<0||x>W||y>H)return;calPoint(x,y);return}
-  const[x,y]=toImg(cx,cy);let best=null,bd=1e9;L.forEach(l=>{const d=Math.hypot(l.x-x,l.y-y);if(d<bd){bd=d;best=l}});if(best&&bd*sc<40)select(best)}
-function dlg(html){$('dlgbox').innerHTML=html;$('dlg').style.display='flex'}
-function closeDlg(){$('dlg').style.display='none'}
-$('dlg').onclick=e=>{if(e.target.id==='dlg')closeDlg()};
-function save(){fitCal();if(LAYER!=='sat')store('bg_cal',JSON.stringify({pts:CAL.pts}));if(me)me.xy=ungeo(me.ll[0],me.ll[1]);drawMarks()}
-function calMenu(){const p=CAL.pts;dlg(`<h3>Kalibrasi GPS pelan</h3>
-  <p style="font-size:13.5px;margin:0 0 8px">Pelan asal tiada koordinat GPS. Tandakan <b>sekurang-kurangnya 3 titik</b> (lebih baik 4–6, berselerak di seluruh kawasan) yang anda tahu koordinatnya, cth. simpang jalan, jambatan, sudut lot. Koordinat boleh disalin dari Google Maps (tekan lama pada peta) atau guna GPS telefon semasa berdiri di titik itu.</p>
-  <div style="margin:8px 0">${p.length?p.map((q,i)=>`<div class="cpl"><span><b>${i+1}.</b> ${q.lat.toFixed(6)}, ${q.lng.toFixed(6)}${q.n?' · '+q.n:''}</span><button data-del="${i}">Padam</button></div>`).join(''):'<div class="cpl">Belum ada titik.</div>'}</div>
-  <div class="note ${CAL.A?'':'warn'}">${CAL.A?(CAL.err!=null?`Aktif · anggaran ralat ±${Math.round(CAL.err)} m`:'Aktif (3 titik, ralat belum dapat dianggar. Tambah titik ke-4 untuk semakan.)'):`Belum aktif · perlu ${Math.max(0,3-p.length)} titik lagi`}</div>
-  <div class="btns"><button class="btn p" data-c="add">+ Tanda titik</button><button class="btn" data-c="close">Tutup</button>
-  <button class="btn" data-c="exp">Eksport kod</button><button class="btn" data-c="imp">Import kod</button></div>
-  ${window.BG_ROLE==='admin'?'<button class="btn p" style="width:100%;margin-top:8px;background:#b08a3e;color:#12301f" onclick="bgAdmin()">👤 Pengurusan pengguna (Admin)</button>':''}<button class="btn" style="width:100%;margin-top:8px;color:#b23c17" onclick="bgForget()">🔒 Log keluar &amp; lupakan peranti ini</button><p style="font-size:12px;color:var(--muted);margin:10px 0 0">Kalibrasi disimpan dalam pelayar peranti ini sahaja. Guna "Eksport kod" untuk berkongsi dengan pasukan lain.</p>`);
-  $('dlgbox').onclick=e=>{const d=e.target.dataset;
-    if(d.del!==undefined){CAL.pts.splice(+d.del,1);save();calMenu()}
-    if(d.c==='close')closeDlg();
-    if(d.c==='add'){closeDlg();calMode=true;$('calbar').style.display='block';$('calbar').style.top=(topH()+8)+'px';sheetOpen(false);drawMarks()}
-    if(d.c==='exp'){const c=btoa(JSON.stringify(CAL.pts.map(q=>[+q.x.toFixed(1),+q.y.toFixed(1),q.lat,q.lng,q.n||''])));dlg(`<h3>Kod kalibrasi</h3><textarea readonly>${c}</textarea><div class="btns"><button class="btn p" onclick="navigator.clipboard&&navigator.clipboard.writeText('${c}').then(()=>toast('Disalin'))">Salin</button><button class="btn" onclick="calMenu()">Kembali</button></div>`)}
-    if(d.c==='imp'){dlg(`<h3>Import kod kalibrasi</h3><textarea id="impT" placeholder="Tampal kod di sini"></textarea><div class="btns"><button class="btn p" id="impGo">Import</button><button class="btn" onclick="calMenu()">Batal</button></div>`);
-      $('impGo').onclick=()=>{try{CAL.pts=JSON.parse(atob($('impT').value.trim())).map(a=>({x:a[0],y:a[1],lat:a[2],lng:a[3],n:a[4]}));save();toast('Kalibrasi diimport');calMenu()}catch(e){toast('Kod tidak sah')}}}}}
-function calPoint(x,y){CAL.pts.push({x,y,lat:NaN,lng:NaN});drawMarks();const i=CAL.pts.length-1;
-  dlg(`<h3>Titik ${i+1}: koordinat GPS</h3><p style="font-size:13px;margin:0 0 8px">Tampal koordinat dari Google Maps (cth. <code>3.8765, 103.2345</code>) atau guna GPS jika anda sedang berdiri di titik ini.</p>
-  <input id="llIn" placeholder="latitud, longitud" inputmode="decimal"><input id="nIn" placeholder="Nama titik (pilihan), cth. simpang jalan masuk" style="margin-top:6px">
-  <div class="btns"><button class="btn p" id="llOk">Simpan</button><button class="btn" id="llGps">◎ Guna GPS saya</button><button class="btn" id="llNo">Batal</button></div>`);
-  const done=(lat,lng)=>{if(!isFinite(lat)||!isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180){toast('Koordinat tidak sah');return}
-    Object.assign(CAL.pts[i],{lat,lng,n:$('nIn').value.trim()});save();closeDlg();toast(CAL.A?'Kalibrasi dikemas kini':`Titik disimpan · perlu ${3-CAL.pts.length} lagi`)};
-  $('llOk').onclick=()=>{const m=$('llIn').value.match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);if(!m){toast('Format: lat, lng');return}done(+m[1],+m[2])};
-  $('llGps').onclick=()=>{toast('Mendapatkan GPS…');navigator.geolocation.getCurrentPosition(p=>{if(p.coords.accuracy>30)toast(`Ketepatan GPS ±${Math.round(p.coords.accuracy)} m`);done(p.coords.latitude,p.coords.longitude)},e=>toast('GPS: '+e.message),{enableHighAccuracy:true,timeout:20000})};
-  $('llNo').onclick=()=>{CAL.pts.splice(i,1);closeDlg();drawMarks()}}
-// ---------- status, ringkasan dan info projek ----------
-const escH=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const canEdit=()=>['admin','penyelia'].includes(window.BG_ROLE);
-const isAdm=()=>window.BG_ROLE==='admin';
-function ago(t){if(!t)return'';const d=(Date.now()-new Date(t))/1000;if(d<60)return'baru sahaja';if(d<3600)return Math.round(d/60)+' min lalu';if(d<86400)return Math.round(d/3600)+' jam lalu';if(d<86400*7)return Math.round(d/86400)+' hari lalu';
-  return new Date(t).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'})}
-const DB=()=>window.BGDB;
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function lsGet(k,d){try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
-// --- status lot ---
-async function loadStatus(){try{const a=await DB().list('lotstatus');if(!a)return;const m={};a.forEach(o=>{if(o&&o.lot)m[o.lot]=o});ST=m;lsSet('bg_st',ST);if(view==='sum')renderSum();if(!sel)list();else select(sel)}catch(e){}}
-function stDlg(l){const cur=stOf(l);dlg(`<h3>Status Lot ${l.lot}</h3><p style="font-size:12.5px;color:var(--muted);margin:0 0 6px">${escH(l.nama||(l.felda?'FELDA':''))} · Zon ${l.zon}${l.blok?' · Blok '+l.blok+' · Fasa '+l.fasa:''}</p>
-  ${STS.map((n,i)=>`<label class="stopt"><input type="radio" name="sts" value="${i}"${i===cur?' checked':''}> ${stb(i)}</label>`).join('')}
-  <input id="stNote" placeholder="Catatan (pilihan), cth. tanah atas disimpan di hujung blok" style="margin-top:10px">
-  <div class="btns"><button class="btn p" id="stOk">Simpan</button><button class="btn" id="stNo">Batal</button></div>
-  <p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">Kemas kini direkod dengan nama anda dan masa, dan dipaparkan dalam Ringkasan → Terkini.</p>`);
-  $('stNo').onclick=closeDlg;
-  $('stOk').onclick=async()=>{const v=document.querySelector('input[name=sts]:checked');if(!v)return;const s=+v.value;
-    $('stOk').disabled=true;$('stOk').textContent='Menyimpan…';
-    try{const o=await DB().setStatus(l.lot,s,$('stNote').value.trim());ST[l.lot]=o;lsSet('bg_st',ST);closeDlg();toast('Status Lot '+l.lot+': '+STS[s]);select(l)}
-    catch(x){if(x.message!=='batal')toast('Gagal: '+x.message);$('stOk').disabled=false;$('stOk').textContent='Simpan'}}}
-// --- tab ---
-let view='peta';
-$('tabs').onclick=e=>{const b=e.target.closest('button');if(b)showView(b.dataset.v)};
-function showView(v){view=v;[...$('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  const p=$('pane');if(v==='peta'){p.style.display='none';$('sheet').style.display='';return}
-  p.style.top=topH()+'px';p.style.display='block';$('sheet').style.display='none';p.scrollTop=0;
-  if(v==='sum'){renderSum();loadStatus();loadFeed()}if(v==='info'){renderInfo();markSeen()}}
-window.addEventListener('resize',()=>{if(view!=='peta')$('pane').style.top=topH()+'px'});
-// --- ringkasan ---
-let FEED=lsGet('bg_feed',[]);
-async function loadFeed(){try{const a=await DB().feed(40);if(!a)return;FEED=a;lsSet('bg_feed',FEED);if(view==='sum')renderSum()}catch(e){}}
-function barOf(ls){const c=STS.map(()=>0);ls.forEach(l=>c[stOf(l)]++);const n=ls.length||1;
-  return `<div class="bar">${c.map((k,i)=>k?`<i style="width:${k/n*100}%;background:${STC[i]}" title="${STS[i]}: ${k}"></i>`:'').join('')}</div>`+
-    `<div class="leg">${c.map((k,i)=>k?`<span style="--c:${STC[i]}">${STS[i]} ${k}</span>`:'').join('')}</div>`}
-function renderSum(){const P=L.filter(l=>l.blok);const done=P.filter(l=>stOf(l)===6).length,tan=P.filter(l=>stOf(l)>=5).length,mula=P.filter(l=>stOf(l)>=3).length;
-  const fb=window.BGDB&&window.BGDB.on;
-  $('pane').innerHTML=`<div class="card"><div style="font-size:12.5px;color:var(--muted)">Kemajuan keseluruhan · ${P.length} lot</div>
-    <div style="display:flex;gap:14px;margin:6px 0"><div><div class="big">${tan}</div><small>ditanam / serah</small></div><div><div class="big">${mula}</div><small>kerja bermula</small></div><div><div class="big">${Math.round(done/(P.length||1)*100)}%</div><small>diserah</small></div></div>${barOf(P)}</div>
-  <h3>Mengikut fasa</h3>${['A','B','C','D'].map(f=>{const ls=P.filter(l=>l.fasa===f);return `<div class="card"><b><span class="stb" style="background:${FC[f]}">Fasa ${f}</span> ${ls.length} lot · ${new Set(ls.map(l=>l.blok)).size} blok</b>${barOf(ls)}</div>`}).join('')}
-  <h3>Mengikut zon</h3>${[1,2,3,4,5].map(z=>{const ls=P.filter(l=>l.zon===z);return `<div class="card"><b>${zb(z)} ${ZN[z]} · ${ls.length} lot</b>${barOf(ls)}</div>`}).join('')}
-  <h3>Terkini</h3><div class="card" style="padding:4px 14px">${FEED.length?FEED.map(f=>f.t==='post'?`<div class="fd"><span>📢</span><span><b>${escH(f.title||'')}</b><small>${CATN[f.cat]||'Info'} · ${escH(f.by||'')} · ${ago(f.at)}</small></span></div>`:
-     `<button class="fd" data-lot="${f.lot}"><span>📍</span><span><b>Lot ${f.lot}</b> → ${stb(f.s)}${f.note?` <small style="display:inline">${escH(f.note)}</small>`:''}<small>${escH(f.by||'')} · ${ago(f.at)}</small></span></button>`).join(''):
-     `<p style="font-size:13px;color:var(--muted)">${fb?'Belum ada kemas kini status.':'Firebase belum disambung.'}</p>`}</div>
-  <p style="font-size:11.5px;color:var(--muted);margin:8px 2px">Blok dan fasa ialah cadangan simulasi berdasarkan pelan 5 zon; pembahagian muktamad mengikut Pakej Keputusan Lot Lembaga Projek.</p>`}
-$('pane').addEventListener('click',e=>{const r=e.target.closest('[data-lot]');if(r&&byLot[r.dataset.lot]){showView('peta');select(byLot[r.dataset.lot])}});
-// --- info projek ---
-const CATN={umum:'📌 Pengumuman',info:'📰 Info Projek',sop:'📋 SOP Kerja'};
-let POSTS=[],icat='';
-function mergePosts(remote){const m={};(P.posts||[]).forEach(p=>m[p.id]=p);(remote||[]).forEach(p=>{if(p&&p.id)m[p.id]=p});
-  POSTS=Object.values(m).filter(p=>!p.del).sort((a,b)=>(b.pin-a.pin)||String(b.at).localeCompare(String(a.at)))}
-mergePosts(lsGet('bg_posts',[]));
-async function loadPosts(){try{const a=await DB().list('posts');if(!a)return;lsSet('bg_posts',a);mergePosts(a);badge();if(view==='info'&&!openPost)renderInfo();annCheck()}catch(e){}}
-function md(t){const out=[];let ul=false;escH(t).split('\n').forEach(line=>{const x=line.trim();
-    if(/^- /.test(x)){if(!ul){out.push('<ul>');ul=true}out.push('<li>'+x.slice(2)+'</li>');return}
-    if(ul){out.push('</ul>');ul=false}
-    if(/^## /.test(x))out.push('<h4>'+x.slice(3)+'</h4>');else if(x)out.push('<p>'+x+'</p>')});
-  if(ul)out.push('</ul>');return out.join('').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}
-const seen=()=>lsGet('bg_seen','');
-function unread(){const s=seen();return POSTS.filter(p=>String(p.at)>s).length}
-function badge(){const n=unread(),b=$('infobd');b.hidden=!n;b.textContent=n}
-function markSeen(){const m=POSTS.reduce((a,p)=>String(p.at)>a?String(p.at):a,seen());lsSet('bg_seen',m);badge();$('ann').style.display='none'}
-let openPost=null;
-function renderInfo(){openPost=null;const ls=POSTS.filter(p=>!icat||p.cat===icat);
-  $('pane').innerHTML=`<div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:10px">${[['','Semua'],['umum',CATN.umum],['info',CATN.info],['sop',CATN.sop]].map(([k,n])=>`<button class="chip" data-ic="${k}" style="color:var(--ink);border-color:var(--line);${icat===k?'background:var(--leaf);color:#fff;border-color:var(--leaf)':''}">${n}</button>`).join('')}</div>
-  ${isAdm()?`<button class="btn p" data-pa="new" style="width:100%;margin-bottom:10px">+ Hantaran baharu</button>`:''}
-  ${ls.map(p=>`<div class="card post" data-pid="${p.id}">${p.pin?'<span class="cat" style="background:#b08a3e;color:#12301f">PENTING</span> ':''}<span class="cat">${CATN[p.cat]||''}</span>${String(p.at)>seen()?' <span class="cat" style="background:#e53935;color:#fff">BAHARU</span>':''}
-    <h4>${escH(p.title)}</h4><div class="meta">${p.ver?escH(p.ver)+' · ':''}${ago(p.at)}${p.by?' · '+escH(p.by):''}</div></div>`).join('')||'<p style="color:var(--muted)">Tiada hantaran.</p>'}`}
-function readPost(p){openPost=p;$('pane').innerHTML=`<button class="btn" data-pa="back" style="margin-bottom:10px">← Semua info</button>
-  <div class="card"><span class="cat">${CATN[p.cat]||''}</span>${p.pin?' <span class="cat" style="background:#b08a3e;color:#12301f">PENTING</span>':''}
-  <h2 style="margin:8px 0 4px;font-size:19px">${escH(p.title)}</h2><div class="meta" style="font-size:12px;color:var(--muted)">${p.ver?escH(p.ver)+' · ':''}${p.eff?'Berkuat kuasa: '+escH(p.eff)+' · ':''}${ago(p.at)}${p.by?' · '+escH(p.by):''}</div>
-  <div class="md">${md(p.body||'')}</div></div>
-  ${isAdm()?`<div class="btns"><button class="btn p" data-pa="edit">✎ Ubah</button><button class="btn" data-pa="del" style="color:#b23c17">Padam</button></div>`:''}`;$('pane').scrollTop=0}
-function editPost(p){const n=!p;p=p||{id:'p'+Date.now().toString(36),cat:'umum',title:'',body:'',pin:false};
-  dlg(`<h3>${n?'Hantaran baharu':'Ubah hantaran'}</h3>
-  <select id="ePc" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)">${Object.entries(CATN).map(([k,v])=>`<option value="${k}"${p.cat===k?' selected':''}>${v}</option>`).join('')}</select>
-  <input id="ePt" placeholder="Tajuk" value="${escH(p.title)}" style="margin-top:6px">
-  <textarea id="ePb" placeholder="Isi. Guna '## ' untuk tajuk kecil, '- ' untuk senarai, **tebal**." style="height:220px;margin-top:6px;font-family:inherit;font-size:14px">${escH(p.body)}</textarea>
-  <input id="ePv" placeholder="Versi (SOP), cth. v1.1" value="${escH(p.ver||'')}" style="margin-top:6px"><input id="ePe" placeholder="Tarikh berkuat kuasa (SOP)" value="${escH(p.eff||'')}" style="margin-top:6px">
-  <label class="stopt" style="border:0"><input type="checkbox" id="ePp"${p.pin?' checked':''}> Penting: sematkan di atas dan papar sebagai pengumuman</label>
-  <div class="btns"><button class="btn p" id="ePok">Terbitkan</button><button class="btn" id="ePno">Batal</button></div>`);
-  $('ePno').onclick=closeDlg;
-  $('ePok').onclick=async()=>{const q={...p,cat:$('ePc').value,title:$('ePt').value.trim(),body:$('ePb').value,ver:$('ePv').value.trim(),eff:$('ePe').value.trim(),pin:$('ePp').checked,at:new Date().toISOString()};
-    if(!q.title){toast('Tajuk diperlukan');return}$('ePok').disabled=true;$('ePok').textContent='Menerbitkan…';
-    try{await DB().savePost(q);closeDlg();toast('Diterbitkan');const r=lsGet('bg_posts',[]).filter(x=>x.id!==q.id);r.push(q);lsSet('bg_posts',r);mergePosts(r);readPost(q);markSeen()}
-    catch(x){if(x.message!=='batal')toast('Gagal: '+x.message);$('ePok').disabled=false;$('ePok').textContent='Terbitkan'}}}
-$('pane').addEventListener('click',async e=>{const c=e.target.closest('[data-ic]');if(c){icat=c.dataset.ic;renderInfo();return}
-  const pp=e.target.closest('[data-pid]');if(pp){readPost(POSTS.find(p=>p.id===pp.dataset.pid));return}
-  const a=e.target.closest('[data-pa]');if(!a)return;const k=a.dataset.pa;
-  if(k==='back')renderInfo();if(k==='new')editPost(null);if(k==='edit')editPost(openPost);
-  if(k==='del'&&openPost){dlg(`<h3>Padam hantaran?</h3><p>${escH(openPost.title)}</p><div class="btns"><button class="btn p" id="dOk" style="background:#b23c17">Padam</button><button class="btn" id="dNo">Batal</button></div>`);
-    $('dNo').onclick=closeDlg;$('dOk').onclick=async()=>{try{const q={...openPost,del:true,at:new Date().toISOString()};await DB().savePost(q,true);const r=lsGet('bg_posts',[]).filter(x=>x.id!==q.id);r.push(q);lsSet('bg_posts',r);mergePosts(r);closeDlg();renderInfo();toast('Dipadam')}catch(x){if(x.message!=='batal')toast('Gagal: '+x.message)}}}});
-function annCheck(){const p=POSTS.find(p=>p.pin&&String(p.at)>seen());if(!p)return;$('annt').textContent=p.title;const a=$('ann');a.style.top=(topH()+8)+'px';a.style.display='block';a.onclick=e=>{if(e.target.id==='annx'){a.style.display='none';e.stopPropagation();return}showView('info');readPost(p)}}
-badge();setTimeout(annCheck,600);
-if(window.BGDB){loadPosts();loadStatus();loadFeed()}
-
-// ---------- mula ----------
-window.addEventListener('resize',()=>drawMarks());
-$('img').onload=fit;$('img').src=P.img;fit();search();sheetOpen(false);window.calMenu=calMenu;window.toast=toast;
-const h=decodeURIComponent(location.hash.slice(1));if(h&&byLot[h])select(byLot[h]);
+  $('#btnLogin').onclick = doLogin;
+  $('#pw').onkeydown = e => { if(e.key==='Enter') doLogin(); };
 }
-</script>
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-const te=new TextEncoder(),td=new TextDecoder();
-const b64=u=>{const a=new Uint8Array(u);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s)};
-const ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
-const cat=(...a)=>{const o=new Uint8Array(a.reduce((s,x)=>s+x.length,0));let p=0;a.forEach(x=>{o.set(x,p);p+=x.length});return o};
-const normId=s=>(s||'').trim().toLowerCase();
-const sha=async s=>b64(await crypto.subtle.digest('SHA-256',te.encode(s)));
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-// ---------- pasang ----------
-let deferred=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('lkinst').hidden=false});
-$('lkinst').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('lkinst').hidden=true};
-const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!standalone)$('lkios').hidden=false;
-$('lkeye').onclick=()=>{const i=$('lkc'),show=i.type==='password';i.type=show?'text':'password';$('eyeOn').style.display=show?'none':'';$('eyeOff').style.display=show?'':'none';$('lkeye').setAttribute('aria-label',show?'Sembunyi kata laluan':'Tunjuk kata laluan');i.focus()};
-// ---------- simpanan peranti ----------
-function idb(){return new Promise((ok,no)=>{const r=indexedDB.open('bglot',2);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('k'))r.result.createObjectStore('k')};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
-async function kget(){try{const db=await idb();return await new Promise(ok=>{const q=db.transaction('k').objectStore('k').get('sess');q.onsuccess=()=>ok(q.result||null);q.onerror=()=>ok(null)})}catch(e){return null}}
-async function kput(v){try{const db=await idb();await new Promise(ok=>{const t=db.transaction('k','readwrite');v?t.objectStore('k').put(v,'sess'):t.objectStore('k').delete('sess');t.oncomplete=ok;t.onerror=ok})}catch(e){}}
-window.bgForget=async()=>{await kput(null);location.reload()};
-// ---------- kripto ----------
-async function kek(id,pw,salt){const k=await crypto.subtle.importKey('raw',te.encode(normId(id)+'\n'+pw),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['wrapKey','unwrapKey'])}
-async function enc(key,bytes){const iv=rnd(12);return cat(iv,new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,bytes)))}
-async function dec(key,blob){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:blob.slice(0,12)},key,blob.slice(12)))}
-async function makeEntry(dek,meta,pw){const salt=rnd(16),k=await kek(meta.id,pw,salt),iv=rnd(12);
-  const w=new Uint8Array(await crypto.subtle.wrapKey('raw',dek,k,{name:'AES-GCM',iv}));
-  return{h:await sha(normId(meta.id)),s:b64(salt),w:b64(cat(iv,w)),m:b64(await enc(dek,te.encode(JSON.stringify(meta))))}}
-async function readMeta(dek,e){return JSON.parse(td.decode(await dec(dek,ub64(e.m))))}
-// ---------- data ----------
-// ---------- Firebase (pilihan): senarai pengguna dalam Firestore, dikemas kini terus oleh admin ----------
-let FBC;
-async function fbConf(){if(FBC!==undefined)return FBC;try{const r=await fetch('firebase.json',{cache:'no-store'});FBC=r.ok?await r.json():null}catch(e){FBC=null}
-  if(FBC&&!(FBC.projectId&&FBC.apiKey))FBC=null;return FBC}
-const fsUrl=c=>`https://firestore.googleapis.com/v1/projects/${c.projectId}/databases/(default)/documents/config/keys`;
-const lsGet=()=>{try{return JSON.parse(localStorage.getItem('bg_keys')||'null')}catch(e){return null}};
-const lsPut=j=>{try{localStorage.setItem('bg_keys',JSON.stringify(j))}catch(e){}};
-async function getKeys(){const c=await fbConf();
-  if(c){try{const r=await fetch(fsUrl(c)+'?key='+encodeURIComponent(c.apiKey),{cache:'no-store'});
-      if(r.ok){const d=await r.json();const j=JSON.parse(d.fields.json.stringValue);lsPut(j);j._src='firebase';return j}}catch(e){}}
-  let r=null;try{r=await fetch('keys.json',{cache:'no-store'})}catch(e){}
-  if(r&&r.ok){const j=await r.json();const l=lsGet();if(c&&l&&l.updated>j.updated)return l;return j}
-  const l=lsGet();if(l)return l;
-  try{r=await caches.match('keys.json',{ignoreSearch:true})}catch(e){r=null}
-  if(!r)throw new Error('Senarai pengguna tidak dapat dimuat. Sambung ke internet dan cuba lagi.');return r.json()}
-async function fbSign(c,email,password){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email,password,returnSecureToken:true})});const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||'gagal');BG.fbTok=d.idToken;BG.fbExp=Date.now()+(+d.expiresIn-60)*1000;return d.idToken}
-async function fbLogin(){const c=await fbConf();if(BG.fbTok&&BG.fbExp>Date.now())return BG.fbTok;
-  if(BG.meta.fe&&BG.pw){try{return await fbSign(c,BG.meta.fe,BG.pw)}catch(e){}}
-  return new Promise((ok,no)=>{let em=BG.meta.fe||'';try{em=em||localStorage.getItem('bg_fbmail')||''}catch(e){}
-    box(`<h3>Sahkan admin Firebase</h3><p style="font-size:13px;margin:0 0 8px;color:var(--muted)">Masukkan e-mel dan kata laluan akaun admin Firebase (bukan kata laluan aplikasi). Diminta sekali bagi setiap sesi.</p>
-    <input id="fbE" type="email" placeholder="E-mel admin" value="${esc(em)}" autocapitalize="none"><input id="fbP" type="password" placeholder="Kata laluan Firebase" style="margin-top:6px">
-    <div class="btns"><button class="btn p" id="fbOk">Sahkan</button><button class="btn" id="fbNo">Batal</button></div>`);
-    $('fbNo').onclick=()=>{$('dlg').style.display='none';no(new Error('batal'))};
-    $('fbOk').onclick=async()=>{$('fbOk').disabled=true;$('fbOk').textContent='Mengesahkan…';
-      try{const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({email:$('fbE').value.trim(),password:$('fbP').value,returnSecureToken:true})});const d=await r.json();
-        if(!r.ok)throw new Error(d.error&&d.error.message||'gagal');
-        try{localStorage.setItem('bg_fbmail',$('fbE').value.trim())}catch(e){}
-        BG.fbTok=d.idToken;BG.fbExp=Date.now()+(+d.expiresIn-60)*1000;ok(d.idToken)}
-      catch(x){$('fbOk').disabled=false;$('fbOk').textContent='Sahkan';tst('Log masuk Firebase gagal: '+x.message)}}})}
-async function fbSave(json){const c=await fbConf();const tok=await fbLogin();
-  const r=await fetch(fsUrl(c)+'?key='+encodeURIComponent(c.apiKey),{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},
-    body:JSON.stringify({fields:{json:{stringValue:json},updated:{timestampValue:new Date().toISOString()}}})});
-  if(!r.ok){const d=await r.json().catch(()=>({}));if(r.status===401||r.status===403)BG.fbTok=null;throw new Error((d.error&&d.error.message)||('HTTP '+r.status))}
-  lsPut(JSON.parse(json));BG.keys=JSON.parse(json)}
-let SATP=null;
-window.bgSat=async()=>{if(SATP)return SATP;if(!window.BG)throw new Error('belum log masuk');
-  const r=await fetch('sat.txt');if(!r.ok)throw new Error('sat.txt ('+r.status+')');const buf=ub64((await r.text()).trim());
-  if(td.decode(buf.slice(0,4))!=='BG02')throw new Error('format');const pt=await dec(BG.dek,buf.slice(4));
-  const n=new DataView(pt.buffer).getUint32(0);const m=JSON.parse(td.decode(pt.slice(4,4+n)));
-  m.img=URL.createObjectURL(new Blob([pt.slice(4+n)],{type:'image/jpeg'}));SATP=m;return m};
-let BUF=null;
-async function getData(){if(BUF)return BUF;const r=await fetch('data.txt');if(!r.ok)throw new Error('Data tidak dapat dimuat ('+r.status+')');
-  BUF=ub64((await r.text()).trim());if(td.decode(BUF.slice(0,4))!=='BG02')throw new Error('Fail data versi lama. Muat naik data.txt terkini.');return BUF}
-async function openData(dek){const pt=await dec(dek,(await getData()).slice(4));const n=new DataView(pt.buffer).getUint32(0);
-  const P=JSON.parse(td.decode(pt.slice(4,4+n)));P.img=URL.createObjectURL(new Blob([pt.slice(4+n)],{type:'image/jpeg'}));return{P,pt}}
-async function enter(dek,keys,meta,pw){const {P,pt}=await openData(dek);
-  window.BG={dek,keys,meta,pw,role:meta.role,pt:meta.role==='admin'?pt:null};window.BG_ROLE=meta.role;window.BGDB=(await fbConf())?DBAPI:null;
-  $('lock').classList.add('gone');start(P);const u=$('ver');if(u)u.textContent=meta.id+' · '+(RN[meta.role]||'Pengguna')+' · data '+P.ver}
-// ---------- pangkalan data projek (Firestore; kandungan disulitkan dengan kunci data) ----------
-const RN={admin:'Admin',penyelia:'Penyelia',user:'Pengguna'};
-const FSB=c=>`https://firestore.googleapis.com/v1/projects/${c.projectId}/databases/(default)/documents`;
-async function encObj(o){return b64(await enc(BG.dek,te.encode(JSON.stringify(o))))}
-async function decObj(s){return JSON.parse(td.decode(await dec(BG.dek,ub64(s))))}
-async function fsList(col){const c=await fbConf();if(!c)return null;const out=[];let tok='';
-  do{const r=await fetch(`${FSB(c)}/${col}?pageSize=300&key=${encodeURIComponent(c.apiKey)}${tok?'&pageToken='+encodeURIComponent(tok):''}`,{cache:'no-store'});
-    if(!r.ok){if(r.status===404)break;throw new Error('HTTP '+r.status)}const d=await r.json();
-    for(const doc of d.documents||[]){try{out.push(await decObj(doc.fields.e.stringValue))}catch(e){}}tok=d.nextPageToken||''}while(tok);return out}
-async function fsFeed(n){const c=await fbConf();if(!c)return null;
-  const r=await fetch(`${FSB(c)}:runQuery?key=${encodeURIComponent(c.apiKey)}`,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({structuredQuery:{from:[{collectionId:'feed'}],orderBy:[{field:{fieldPath:'at'},direction:'DESCENDING'}],limit:n}})});
-  if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();const out=[];
-  for(const x of d){if(x.document){try{out.push(await decObj(x.document.fields.e.stringValue))}catch(e){}}}return out}
-async function fsWrite(path,obj,create){const c=await fbConf();if(!c)throw new Error('Firebase belum disambung');const tok=await fbLogin();
-  const body=JSON.stringify({fields:{e:{stringValue:await encObj(obj)},at:{timestampValue:obj.at||new Date().toISOString()}}});
-  const r=await fetch(`${FSB(c)}/${path}?key=${encodeURIComponent(c.apiKey)}`,{method:create?'POST':'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body});
-  if(!r.ok){const d=await r.json().catch(()=>({}));if(r.status===401)BG.fbTok=null;
-    throw new Error(r.status===403?'Tiada kebenaran. Akaun Firebase anda belum diberi peranan Penyelia/Admin.':(d.error&&d.error.message)||('HTTP '+r.status))}}
-const DBAPI={on:true,list:fsList,feed:fsFeed,
-  async setStatus(lot,s,note){const at=new Date().toISOString();const o={lot,s,note,by:BG.meta.id,at};
-    await fsWrite('lotstatus/'+encodeURIComponent(lot),o);try{await fsWrite('feed',{t:'status',lot,s,note,by:o.by,at},true)}catch(e){}return o},
-  async savePost(p,silent){p.by=BG.meta.id;await fsWrite('posts/'+encodeURIComponent(p.id),p);
-    if(!silent&&!p.del){try{await fsWrite('feed',{t:'post',title:p.title,cat:p.cat,by:p.by,at:p.at},true)}catch(e){}}return p}};
-async function fbSignUp(c,email,password){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(c.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email,password,returnSecureToken:false})});const d=await r.json();if(!r.ok&&!(d.error&&d.error.message==='EMAIL_EXISTS'))throw new Error(d.error&&d.error.message||'gagal');return true}
-async function fbSaveRoles(){const c=await fbConf();const tok=await fbLogin();const f={};
-  U.forEach(u=>{if(u.m.fe&&(u.m.role==='admin'||u.m.role==='penyelia'))f[u.m.fe.toLowerCase()]={stringValue:u.m.role}});
-  const r=await fetch(`${FSB(c)}/config/roles?key=${encodeURIComponent(c.apiKey)}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},
-    body:JSON.stringify({fields:{r:{mapValue:{fields:f}}}})});if(!r.ok)throw new Error('peranan Firebase tidak disimpan (HTTP '+r.status+')')}
-// ---------- log masuk ----------
-const busy=(on,t)=>{$('lkb').disabled=on;$('lkb').textContent=on?(t||'Membuka…'):'Log masuk'};
-$('lkf').onsubmit=async e=>{e.preventDefault();const id=$('lki').value,pw=$('lkc').value.trim();if(!id.trim()||!pw)return;
-  busy(true);$('lke').textContent='';
-  try{if(!crypto.subtle)throw new Error('Pelayar ini tidak menyokong penyulitan. Buka melalui pautan https.');
-    const keys=await getKeys();const h=await sha(normId(id));const u=keys.users.find(x=>x.h===h);if(!u)throw new Error('ID pengguna atau kata laluan salah');
-    let dek;try{const w=ub64(u.w);dek=await crypto.subtle.unwrapKey('raw',w.slice(12),await kek(id,pw,ub64(u.s)),{name:'AES-GCM',iv:w.slice(0,12)},{name:'AES-GCM'},true,['encrypt','decrypt'])}
-    catch(x){throw new Error('ID pengguna atau kata laluan salah')}
-    const meta=await readMeta(dek,u);if($('lkm').checked)await kput({dek,h});await enter(dek,keys,meta,pw)}
-  catch(x){$('lke').textContent=x.message;busy(false)}};
-(async()=>{const s=await kget();if(!s)return;busy(true);
-  try{const keys=await getKeys();const u=keys.users.find(x=>x.h===s.h);
-    if(!u){await kput(null);throw new Error('Akses peranti ini telah ditarik balik oleh admin.')}
-    await enter(s.dek,keys,await readMeta(s.dek,u))}
-  catch(x){await kput(null);busy(false);$('lke').textContent=/OperationError/.test(x.name)?'Kunci telah ditukar oleh admin. Sila log masuk semula.':x.message}})();
-// ---------- pentadbir ----------
-const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-const genPw=()=>{const g=()=>Array.from(rnd(5),b=>A[b%A.length]).join('');return 'BG-'+g()+'-'+g()};
-let U=null,NEW=[];
-function box(h){$('dlgbox').innerHTML=h;$('dlg').style.display='flex'}
-function close(){$('dlg').style.display='none'}
-function tst(t){if(window.toast)window.toast(t)}
-async function load(){U=[];for(const e of BG.keys.users){let m;try{m=await readMeta(BG.dek,e)}catch(x){m={id:'(tidak dapat dibaca)',nama:'',role:'?'}}U.push({e,m})}NEW=[]}
-window.bgAdmin=async()=>{if(BG.role!=='admin')return;await fbConf();if(!U)await load();render()};
-function render(){const me=normId(BG.meta.id);
-  box(`<h3>Pengurusan pengguna</h3>
-  <p style="font-size:13px;margin:0 0 8px;color:var(--muted)">Tambah, padam atau tukar ID dan kata laluan. ${FBC?'Perubahan disimpan terus ke Firebase dan berkuat kuasa serta-merta.':'Perubahan hanya berkuat kuasa selepas fail <b>keys.json</b> baharu dimuat naik ke GitHub.'}</p>
-  ${U.map((u,i)=>`<div class="cpl"><span><b>${esc(u.m.id)}</b>${u.m.nama?' · '+esc(u.m.nama):''} <span class="zb" style="background:${u.m.role==='admin'?'#b08a3e':u.m.role==='penyelia'?'#5b84b1':'#1f5a3d'}">${RN[u.m.role]||'Pengguna'}</span>${u.dirty?' <i style="color:#c25b14">· diubah</i>':''}</span>
-    <span style="white-space:nowrap"><button data-ed="${i}" style="color:var(--leaf)">Ubah</button>${normId(u.m.id)===me?'':`<button data-del="${i}">Padam</button>`}</span></div>`).join('')}
-  <div class="btns"><button class="btn p" data-a="add">+ Pengguna baharu</button><button class="btn" data-a="close">Tutup</button></div>
-  <button class="btn p" style="width:100%;margin-top:8px;background:#b08a3e;color:#12301f" data-a="save">${FBC?'💾 Simpan perubahan':'Jana keys.json'}${NEW.length||U.some(u=>u.dirty)||U.removed?' (ada perubahan)':''}</button>
-  <details style="margin-top:12px;font-size:13px"><summary style="cursor:pointer;color:var(--muted)">Lanjutan: sekat penuh</summary>
-  <p style="margin:6px 0">Memadam pengguna menghalang log masuk baharu. Tetapi telefon yang pernah membuka aplikasi masih menyimpan kunci data. Untuk menyekat sepenuhnya, tukar kunci data: semua pengguna akan diberi kata laluan baharu dan perlu log masuk semula.</p>
-  <button class="btn" style="width:100%;color:#b23c17" data-a="rekey">Tukar kunci data &amp; semua kata laluan</button></details>`);
-  $('dlgbox').onclick=async e=>{const d=e.target.dataset;
-    if(d.a==='close')close();if(d.a==='add')form(null);if(d.ed!==undefined)form(+d.ed);
-    if(d.del!==undefined){const u=U[+d.del];if(u.m.role==='admin'&&U.filter(x=>x.m.role==='admin').length<2){tst('Mesti ada sekurang-kurangnya seorang admin');return}
-      U.splice(+d.del,1);U.removed=true;render()}
-    if(d.a==='save')save();if(d.a==='rekey')rekeyAsk()}}
-function form(i){const u=i===null?null:U[i];const pw=genPw();
-  box(`<h3>${u?'Ubah pengguna':'Pengguna baharu'}</h3>
-  <label style="font-size:12.5px;color:var(--muted)">ID log masuk</label><input id="fId" value="${u?esc(u.m.id):''}" placeholder="cth. liannex01" autocapitalize="none">
-  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Nama / organisasi</label><input id="fNm" value="${u?esc(u.m.nama||''):''}" placeholder="cth. Liannex – Encik Ali">
-  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Peranan</label>
-  <select id="fRl" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:15px;background:var(--bg);color:var(--ink)"><option value="user">Pengguna (carian &amp; navigasi)</option><option value="penyelia"${u&&u.m.role==='penyelia'?' selected':''}>Penyelia (kemas kini status lot)</option><option value="admin"${u&&u.m.role==='admin'?' selected':''}>Admin (urus pengguna & info)</option></select>
-  <label style="font-size:12.5px;color:var(--muted);display:block;margin-top:8px">Kata laluan ${u?'baharu':''}</label><input id="fPw" value="${pw}" style="font-family:ui-monospace,monospace">
-  <p style="font-size:12px;color:var(--muted);margin:6px 0 0">Kata laluan dijana secara rawak. Tuan boleh menukarnya (sekurang-kurangnya 8 aksara). ${u?'Setiap perubahan pada ID memerlukan kata laluan baharu.':''}</p>
-  <div class="btns"><button class="btn p" id="fOk">Simpan</button><button class="btn" id="fNo">Batal</button></div>`);
-  $('fNo').onclick=render;
-  $('fOk').onclick=async()=>{const id=$('fId').value.trim(),nm=$('fNm').value.trim(),rl=$('fRl').value,p=$('fPw').value.trim();
-    if(!/^[A-Za-z0-9._@-]{3,40}$/.test(id)){tst('ID: 3–40 aksara (huruf, nombor, . _ - @)');return}
-    if(p.length<8){tst('Kata laluan sekurang-kurangnya 8 aksara');return}
-    const h=await sha(normId(id));if(U.some((x,j)=>j!==i&&x.e.h===h)){tst('ID ini sudah wujud');return}
-    if(u&&u.m.role==='admin'&&rl!=='admin'&&U.filter(x=>x.m.role==='admin').length<2){tst('Mesti ada sekurang-kurangnya seorang admin');return}
-    $('fOk').disabled=true;$('fOk').textContent='Menyulitkan…';
-    const m={id,nama:nm,role:rl};const c=await fbConf();
-    if(u&&u.m.fe&&!/@bukitgoh-lot\.app$/.test(u.m.fe))m.fe=u.m.fe;
-    else if(c&&rl!=='user'){m.fe=normId(id).replace(/[^a-z0-9._-]/g,'')+'.'+Array.from(rnd(3),b=>b.toString(36)).join('')+'@bukitgoh-lot.app';
-      try{await fbSignUp(c,m.fe,p.length>=6?p:p+'000000')}catch(x){tst('Akaun Firebase tidak dicipta: '+x.message);delete m.fe}}
-    const e=await makeEntry(BG.dek,m,p);
-    if(u){if(normId(u.m.id)===normId(BG.meta.id))BG.selfChanged=true;U[i]={e,m,dirty:true}}else U.push({e,m,dirty:true});
-    NEW=NEW.filter(x=>normId(x.id)!==normId(id)&&(!u||normId(x.id)!==normId(u.m.id)));NEW.push({id,nama:nm,role:rl,pw:p});render()}}
-function dl(name,text){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/octet-stream'}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){tst('Muat turun tidak disokong di sini')}}
-function cp(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>tst('Disalin'),()=>tst('Salin secara manual'))}
-function creds(){return NEW.length?`<h4 style="margin:12px 0 4px">Maklumat log masuk untuk diedarkan</h4><p style="font-size:12px;color:#b23c17;margin:0 0 6px">Kata laluan hanya dipaparkan sekali. Salin dan hantar kepada setiap pengguna secara peribadi.</p>
-  <textarea id="cr" readonly style="height:${40+NEW.length*20}px">${esc(NEW.map(n=>`${n.nama||n.id} (${n.role==='admin'?'Admin':'Pengguna'})\nID: ${n.id}\nKata laluan: ${n.pw}\n`).join('\n'))}</textarea><button class="btn" style="width:100%;margin-top:6px" onclick="(${cp.toString()})(document.getElementById('cr').value)">Salin maklumat log masuk</button>`:''}
-async function save(){const json=JSON.stringify({v:2,updated:new Date().toISOString(),users:U.map(u=>u.e)});BG.lastKeys=json;
-  if(await fbConf()){try{await fbSave(json);try{await fbSaveRoles()}catch(e){tst(e.message)}U.forEach(u=>u.dirty=false);U.removed=false;
-      box(`<h3>✓ Disimpan terus</h3><p style="font-size:13.5px">Senarai pengguna telah dikemas kini dalam Firebase dan <b>berkuat kuasa serta-merta</b> untuk semua pengguna. Tiada muat naik ke GitHub diperlukan.</p>${creds()}<button class="btn p" style="width:100%;margin-top:10px" id="sBk">← Kembali</button>`);
-      $('sBk').onclick=()=>{NEW=[];render()};return}
-    catch(x){if(x.message==='batal')return;tst('Gagal simpan ke Firebase: '+x.message+'. Guna muat turun.')}}
-  saveFile(json)}
-function saveFile(json){
-  box(`<h3>keys.json baharu sedia</h3>
-  <ol style="font-size:13px;padding-left:18px;margin:0 0 8px"><li>Tekan <b>Muat turun keys.json</b> (atau Salin).</li>
-  <li>Di GitHub, buka repo <b>bukitgoh-lot</b> → fail <b>keys.json</b> → ikon ✏️ <b>Edit</b> → padam semua → tampal → <b>Commit changes</b>. Atau ganti fail dalam folder repo melalui GitHub Desktop → Commit → Push.</li>
-  <li>Dalam 1–2 minit, perubahan berkuat kuasa untuk semua pengguna.</li></ol>
-  <div class="btns"><button class="btn p" id="sDl">Muat turun keys.json</button><button class="btn" id="sCp">Salin teks</button></div>
-  ${creds()}
-  <button class="btn" style="width:100%;margin-top:10px" id="sBk">← Kembali</button>`);
-  $('sDl').onclick=()=>dl('keys.json',json);$('sCp').onclick=()=>cp(json);$('sBk').onclick=render}
-function rekeyAsk(){box(`<h3>Tukar kunci data?</h3><p style="font-size:13.5px">Semua ${U.length} pengguna (termasuk tuan) akan diberi <b>kata laluan baharu</b>. Peranti yang pernah membuka aplikasi tidak lagi boleh membaca data selepas fail baharu dimuat naik. Tuan perlu memuat naik <b>dua fail</b>: data.txt dan keys.json.</p>
-  <div class="btns"><button class="btn p" style="background:#b23c17" id="rkGo">Teruskan</button><button class="btn" id="rkNo">Batal</button></div>`);
-  $('rkNo').onclick=render;$('rkGo').onclick=rekey}
-async function rekey(){if(!BG.pt){tst('Hanya admin');return}$('rkGo').disabled=true;$('rkGo').textContent='Menyulitkan semula…';
-  const dek=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
-  const data=b64(cat(te.encode('BG02'),await enc(dek,BG.pt)));NEW=[];const nu=[];
-  for(const u of U){const p=genPw();nu.push({e:await makeEntry(dek,u.m,p),m:u.m});NEW.push({...u.m,pw:p})}
-  U=nu;BG.dek=dek;const json=JSON.stringify({v:2,updated:new Date().toISOString(),users:U.map(u=>u.e)});
-  box(`<h3>Kunci data baharu sedia</h3><p style="font-size:13px">Muat turun kedua-dua fail dan gantikan dalam repo GitHub (GitHub Desktop → Commit → Push). Selepas itu, edarkan kata laluan baharu.</p>
-  <div class="btns"><button class="btn p" id="r1">Muat turun data.txt</button><button class="btn p" id="r2">Muat turun keys.json</button></div>${creds()}
-  <button class="btn" style="width:100%;margin-top:10px" onclick="document.getElementById('dlg').style.display='none'">Tutup</button>`);
-  $('r1').onclick=()=>dl('data.txt',data);$('r2').onclick=()=>dl('keys.json',json)}
-})();
+async function doLogin(){
+  const em = val('#em'), pw = $('#pw').value;
+  loginError = '';
+  if(!em || !pw){ loginError = 'Sila isi email dan kata laluan.'; return renderLogin(); }
+  $('#btnLogin').disabled = true; $('#btnLogin').textContent = 'Sedang log masuk…';
+  try { await signInWithEmailAndPassword(auth, em, pw); }
+  catch(e){ loginError = e.code==='auth/invalid-credential' ? 'Email atau kata laluan salah.' : 'Ralat: '+e.message; renderLogin(); }
+}
 
+onAuthStateChanged(auth, async u => {
+  stopListeners();
+  user = null;
+  isOwner = false;
+  entri = []; pettyAll = []; hutangAll = []; editing = null;
+  monthLoaded = false;
+  dataError = '';
+  if(!u) return renderLogin();
+  try {
+    const snap = await getDocs(query(collection(store,'staff'), where('email','==',u.email.toLowerCase())));
+    const staff = snap.empty ? null : snap.docs[0].data();
+    if(auth.currentUser !== u) return;
+    if(!staff || staff.role !== 'Management'){
+      loginError = 'Akses ditolak. Apps Akaun hanya untuk peranan Management.';
+      await signOut(auth); return;
+    }
+    const owner = await getDocFromServer(ownerRecord(u.uid));
+    if(!owner.exists()){
+      const akses = await getDocFromServer(doc(store, 'akaun', BRANCH_ID, 'pengurusan', u.uid));
+      if(!akses.exists()) throw new Error('Akses Akaun belum ditetapkan untuk pengguna ini.');
+    }
+    if(auth.currentUser !== u) return;
+    isOwner = owner.exists();
+    tab = isOwner ? 'Ringkasan' : 'Jualan';
+    user = u; nama = staff.name || u.email;
+    startListeners();
+    renderShell();
+  } catch(e){
+    if(auth.currentUser !== u) return;
+    loginError = 'Ralat menyemak peranan: ' + e.message;
+    await signOut(auth);
+  }
+});
+
+// ---------- Data (Firestore) ----------
+function onErr(e){
+  console.error(e);
+  dataError = e.code === 'permission-denied'
+    ? 'Firebase menolak akses (permission-denied). Peraturan Firestore untuk koleksi "akaun" perlu dikemas kini — lihat README.'
+    : 'Ralat data: ' + e.message;
+  refresh();
+}
+function startListeners(){
+  subscribeBulan();
+  unsubPetty = onSnapshot(entryQuery(where('guna_petty','==',true)), s => { pettyAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
+  unsubHutang = onSnapshot(entryQuery(where('hutang','==',true)), s => { hutangAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
+}
+function subscribeBulan(){
+  if(unsubBulan) unsubBulan();
+  entri = [];
+  monthLoaded = false;
+  dataError = '';
+  unsubBulan = onSnapshot(entryQuery(where('bulan','==',bulan)), s => {
+    entri = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.tarikh||'').localeCompare(a.tarikh||'') || ((b.dicipta?.seconds||0)-(a.dicipta?.seconds||0)));
+    monthLoaded = true; refresh();
+  }, onErr);
+}
+function stopListeners(){ [unsubBulan,unsubPetty,unsubHutang].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=null; }
+
+async function simpan(data){
+  data.bulan = data.tarikh.slice(0,7);
+  data.cawangan = BRANCH_ID;
+  try {
+    if(editing){
+      await updateDoc(doc(COL, editing.id), {...data, dikemaskini_oleh:nama, dikemaskini:serverTimestamp()});
+      toast('✅ Rekod dikemas kini');
+    } else {
+      await addDoc(COL, {...data, assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()});
+      toast('✅ Rekod disimpan');
+    }
+    editing = null;
+    renderTab();
+  } catch(e){ onErr(e); toast('⚠ Gagal simpan: '+(e.code||e.message)); }
+}
+async function padam(id){
+  if(!isOwner) return;
+  if(!confirm('Padam rekod ini? Tindakan ini tidak boleh dibatalkan.')) return;
+  try { await deleteDoc(doc(COL, id)); toast('🗑 Rekod dipadam'); if(editing?.id===id){ editing=null; renderTab(); } }
+  catch(e){ onErr(e); }
+}
+function mulaEdit(id){
+  const e = entri.find(x => x.id===id) || hutangAll.find(x => x.id===id) || pettyAll.find(x => x.id===id);
+  if(!e) return;
+  editing = {id, data:e};
+  const peta = {jualan:'Jualan', pembelian:'Pembelian', belanja:'Belanja', petty:'Petty Cash'};
+  tab = peta[e.jenis] || tab;
+  renderShell();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function tandaLunas(id){
+  if(!confirm('Tandakan hutang ini sudah dibayar?')) return;
+  try { await updateDoc(doc(COL,id), {hutang:false, lunas:true, tarikh_lunas:today(), dikemaskini_oleh:nama}); toast('✅ Ditanda lunas'); }
+  catch(e){ onErr(e); }
+}
+window.AK = { padam, mulaEdit, tandaLunas, batal(){ editing=null; renderTab(); } };
+
+// ---------- Kiraan ----------
+function kira(list){
+  const jualan = list.filter(e => e.jenis==='jualan');
+  const beli   = list.filter(e => e.jenis==='pembelian');
+  const belanja = list.filter(e => e.jenis==='belanja' || (e.jenis==='petty' && e.petty_arah==='keluar'));
+  const jumJualan = sum(jualan, e => e.amaun), jumBeli = sum(beli, e => e.amaun), jumBelanja = sum(belanja, e => e.amaun);
+  return { jualan, beli, belanja, jumJualan, jumBeli, jumBelanja, kasar: jumJualan-jumBeli, bersih: jumJualan-jumBeli-jumBelanja, kereta: sum(jualan, e => e.kereta) };
+}
+const bakiPetty = () => sum(pettyAll, e => e.petty_arah==='masuk' ? e.amaun : -e.amaun);
+const groupBy = (list, key) => list.reduce((m,e) => (m[e[key]||'Lain-lain'] = (m[e[key]||'Lain-lain']||0) + (Number(e.amaun)||0), m), {});
+
+// ---------- Paparan utama ----------
+function renderShell(){
+  $('#userBox').innerHTML = `<span class="synctag">👤 ${esc(nama)}</span> <button class="small" id="btnOut">Log Keluar</button>`;
+  $('#btnOut').onclick = () => { if(confirm('Log keluar?')) signOut(auth); };
+  $('#nav').innerHTML = (isOwner ? OWNER_TABS : TABS).map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t}</button>`).join('')
+;
+  $('#bulanBar').innerHTML = `<label for="pilihBulan" style="margin:0">📅 Bulan:</label><input type="month" id="pilihBulan" value="${bulan}" style="width:auto;flex:1;max-width:220px;margin:0;padding:8px">`;
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; editing = null; renderShell(); });
+  $('#pilihBulan').onchange = e => { if(e.target.value){ bulan = e.target.value; subscribeBulan(); refresh(); } };
+  renderTab();
+}
+
+function renderTab(){
+  const f = ({Ringkasan:'', Jualan:formJualan, Pembelian:formPembelian, Belanja:formBelanja, 'Petty Cash':formPetty, Laporan:''})[tab];
+  const alat = tab === 'Import' ? toolImport : isOwner && ({Jualan:toolJualanLS, 'Petty Cash':toolPettyLS})[tab];
+  $('#app').innerHTML = `<div id="errBox"></div>${f ? f() : ''}${alat ? alat() : ''}<div id="dataBox"></div>`;
+  if(f) pasangForm();
+  if(alat) pasangAlat();
+  refresh();
+}
+
+function refresh(){
+  if(!user || !$('#dataBox') || !(isOwner ? OWNER_TABS : TABS).includes(tab)) return;
+  $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Laporan:viewLaporan})[tab];
+  $('#dataBox').innerHTML = r();
+  const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => window.print();
+}
+
+// ---------- Borang ----------
+const D = () => editing?.data || {};
+const tajukForm = (t) => `<div class="section-title"><h3>${editing ? '✏️ Edit ' : '➕ '}${t}</h3>${editing?'<button class="small" onclick="AK.batal()">Batal edit</button>':''}</div>`;
+
+function formJualan(){
+  const d = D();
+  return `<div class="card">${tajukForm('Jualan Harian')}
+    <div class="two">
+      <div><label>Tarikh</label><input type="date" id="f_tarikh" value="${d.tarikh||today()}"></div>
+      <div><label>Bilangan kenderaan dicuci</label><input type="number" inputmode="numeric" id="f_kereta" value="${d.kereta??''}" placeholder="cth: 35"></div>
+      ${KAEDAH_JUALAN.map(([k,l]) => `<div><label>${l} (RM)</label><input type="number" inputmode="decimal" step="0.01" class="kaedah" id="f_${k}" value="${d[k]??''}" placeholder="0.00"></div>`).join('')}
+    </div>
+    <label>Catatan</label><input id="f_catatan" value="${esc(d.catatan||'')}" placeholder="cth: hari hujan, promosi, dll.">
+    <div class="totalbox">Jumlah jualan: <span id="f_jumlah">RM 0.00</span></div>
+    <button class="primary" style="width:100%;padding:14px" id="btnSimpan">${editing?'Kemas Kini':'Simpan Jualan'}</button>
+  </div>`;
+}
+function formPembelian(){
+  const d = D();
+  return `<div class="card">${tajukForm('Pembelian (Stok / Bekalan)')}
+    <div class="two">
+      <div><label>Tarikh</label><input type="date" id="f_tarikh" value="${d.tarikh||today()}"></div>
+      <div><label>Pembekal</label><input id="f_pembekal" value="${esc(d.pembekal||'')}" placeholder="Nama kedai / pembekal"></div>
+      <div><label>Kategori</label><select id="f_kategori">${opts(KAT_PEMBELIAN, d.kategori)}</select></div>
+      <div><label>No. Invois / Resit</label><input id="f_invois" value="${esc(d.invois||'')}" placeholder="pilihan"></div>
+    </div>
+    <label>Perkara / Item</label><input id="f_perkara" value="${esc(d.perkara||'')}" placeholder="cth: Sabun snow foam 20L x2">
+    <div class="two">
+      <div><label>Amaun (RM)</label><input type="number" inputmode="decimal" step="0.01" id="f_amaun" value="${d.amaun??''}" placeholder="0.00"></div>
+      <div><label>Cara bayar</label><select id="f_bayar">${opts(CARA_BAYAR, d.bayar)}</select></div>
+    </div>
+    <p class="muted" style="margin-top:-4px">Pilih "Petty Cash" jika dibayar dari tabung petty cash (baki akan ditolak). Pilih "Kredit (Hutang)" jika belum bayar pembekal.</p>
+    <button class="primary" style="width:100%;padding:14px" id="btnSimpan">${editing?'Kemas Kini':'Simpan Pembelian'}</button>
+  </div>`;
+}
+function formBelanja(){
+  const d = D();
+  return `<div class="card">${tajukForm('Belanja Operasi')}
+    <div class="two">
+      <div><label>Tarikh</label><input type="date" id="f_tarikh" value="${d.tarikh||today()}"></div>
+      <div><label>Kategori</label><select id="f_kategori">${opts(KAT_BELANJA, d.kategori)}</select></div>
+    </div>
+    <label>Perkara</label><input id="f_perkara" value="${esc(d.perkara||'')}" placeholder="cth: Gaji Ali minggu 1 / Bil TNB Okt">
+    <div class="two">
+      <div><label>Amaun (RM)</label><input type="number" inputmode="decimal" step="0.01" id="f_amaun" value="${d.amaun??''}" placeholder="0.00"></div>
+      <div><label>Cara bayar</label><select id="f_bayar">${opts(CARA_BAYAR_B, d.bayar)}</select></div>
+    </div>
+    <button class="primary" style="width:100%;padding:14px" id="btnSimpan">${editing?'Kemas Kini':'Simpan Belanja'}</button>
+  </div>`;
+}
+function formPetty(){
+  const d = D(), arah = d.petty_arah || 'keluar';
+  return `<div class="card">${tajukForm('Petty Cash')}
+    <div class="row" style="margin-bottom:8px">
+      <button id="arahKeluar" class="${arah==='keluar'?'primary':''}">➖ Belanja kecil</button>
+      <button id="arahMasuk" class="${arah==='masuk'?'primary':''}">➕ Tambah wang (top-up)</button>
+    </div>
+    <input type="hidden" id="f_arah" value="${arah}">
+    <div class="two">
+      <div><label>Tarikh</label><input type="date" id="f_tarikh" value="${d.tarikh||today()}"></div>
+      <div><label>Amaun (RM)</label><input type="number" inputmode="decimal" step="0.01" id="f_amaun" value="${d.amaun??''}" placeholder="0.00"></div>
+    </div>
+    <div id="katBox" style="${arah==='masuk'?'display:none':''}"><label>Kategori</label><select id="f_kategori">${opts(KAT_PETTY, d.kategori)}</select></div>
+    <label>Perkara</label><input id="f_perkara" value="${esc(d.perkara||'')}" placeholder="${arah==='masuk'?'cth: Top-up dari jualan tunai':'cth: Beli air mineral staff'}">
+    <button class="primary" style="width:100%;padding:14px" id="btnSimpan">${editing?'Kemas Kini':'Simpan'}</button>
+  </div>`;
+}
+
+function pasangForm(){
+  // jumlah jualan live
+  const kira = () => { const t = sum(KAEDAH_JUALAN.map(([k]) => num('#f_'+k))); if($('#f_jumlah')) $('#f_jumlah').textContent = RM(t); return t; };
+  document.querySelectorAll('.kaedah').forEach(i => i.oninput = kira); kira();
+  // petty arah
+  const setArah = a => { $('#f_arah').value = a; $('#arahKeluar').className = a==='keluar'?'primary':''; $('#arahMasuk').className = a==='masuk'?'primary':''; $('#katBox').style.display = a==='masuk'?'none':''; };
+  if($('#arahKeluar')){ $('#arahKeluar').onclick = () => setArah('keluar'); $('#arahMasuk').onclick = () => setArah('masuk'); }
+
+  $('#btnSimpan').onclick = async () => {
+    const tarikh = val('#f_tarikh');
+    if(!tarikh) return toast('Sila pilih tarikh');
+    const btn = $('#btnSimpan');
+    let data;
+    if(tab==='Jualan'){
+      data = {jenis:'jualan', tarikh, kereta: Math.round(num('#f_kereta')), catatan: val('#f_catatan'), guna_petty:false, hutang:false};
+      KAEDAH_JUALAN.forEach(([k]) => data[k] = num('#f_'+k));
+      data.amaun = Math.round(sum(KAEDAH_JUALAN.map(([k]) => data[k]))*100)/100;
+      if(data.amaun <= 0) return toast('Jumlah jualan masih RM 0');
+      const ada = entri.find(e => e.jenis==='jualan' && e.tarikh===tarikh && e.id!==editing?.id);
+      if(ada && !confirm(`Sudah ada rekod jualan untuk ${fmtTarikh(tarikh)} (${RM(ada.amaun)}). Tambah rekod kedua juga?`)) return;
+    } else if(tab==='Pembelian'){
+      const bayar = val('#f_bayar');
+      data = {jenis:'pembelian', tarikh, pembekal:val('#f_pembekal'), kategori:val('#f_kategori'), invois:val('#f_invois'), perkara:val('#f_perkara'), amaun:num('#f_amaun'), bayar,
+        guna_petty: bayar==='Petty Cash', petty_arah: bayar==='Petty Cash' ? 'keluar' : null,
+        hutang: bayar==='Kredit (Hutang)' && !(editing?.data?.lunas), lunas: editing?.data?.lunas || false};
+      if(!data.perkara) return toast('Sila isi perkara / item');
+    } else if(tab==='Belanja'){
+      const bayar = val('#f_bayar');
+      data = {jenis:'belanja', tarikh, kategori:val('#f_kategori'), perkara:val('#f_perkara'), amaun:num('#f_amaun'), bayar,
+        guna_petty: bayar==='Petty Cash', petty_arah: bayar==='Petty Cash' ? 'keluar' : null, hutang:false};
+      if(!data.perkara) return toast('Sila isi perkara');
+    } else {
+      const arah = val('#f_arah');
+      data = {jenis:'petty', tarikh, petty_arah:arah, kategori: arah==='masuk' ? 'Top-up' : val('#f_kategori'), perkara:val('#f_perkara'), amaun:num('#f_amaun'), bayar:'Petty Cash', guna_petty:true, hutang:false};
+    }
+    if(!(data.amaun > 0)) return toast('Sila isi amaun yang betul');
+    btn.disabled = true; btn.textContent = 'Menyimpan…';
+    await simpan(data);
+    if($('#btnSimpan')){ $('#btnSimpan').disabled = false; }
+  };
+}
+
+// ---------- Senarai rekod ----------
+function barisAksi(e){
+  return `<div class="aksi"><button class="small" onclick="AK.mulaEdit('${e.id}')">Edit</button>${isOwner ? `<button class="small danger" onclick="AK.padam('${e.id}')">Padam</button>` : ''}</div>`;
+}
+function senarai(jenis){
+  const list = entri.filter(e => e.jenis===jenis);
+  const tot = sum(list, e => e.amaun);
+  if(!list.length) return `<div class="card muted" style="text-align:center">Tiada rekod ${jenis} untuk ${fmtBulan(bulan)}.</div>`;
+  let rows;
+  if(jenis==='jualan'){
+    rows = list.map(e => `<tr><td><b>${fmtTarikh(e.tarikh)}</b><br><span class="muted">${e.kereta||0} kenderaan</span></td>
+      <td class="muted">${KAEDAH_JUALAN.filter(([k]) => e[k]).map(([k,l]) => `${l}: ${RM(e[k])}`).join('<br>')}${e.catatan?`<br><i>${esc(e.catatan)}</i>`:''}</td>
+      <td class="r"><b>${RM(e.amaun)}</b><br>${barisAksi(e)}</td></tr>`).join('');
+  } else {
+    rows = list.map(e => `<tr><td><b>${fmtTarikh(e.tarikh)}</b><br><span class="tag">${esc(e.kategori)}</span></td>
+      <td>${esc(e.perkara)}${e.pembekal?`<br><span class="muted">${esc(e.pembekal)}${e.invois?' • '+esc(e.invois):''}</span>`:''}<br><span class="tag ${e.hutang?'warn':''}">${esc(e.bayar)}${e.hutang?' — belum bayar':''}${e.lunas?' — lunas':''}</span></td>
+      <td class="r"><b>${RM(e.amaun)}</b><br>${barisAksi(e)}</td></tr>`).join('');
+  }
+  return `<div class="card"><div class="section-title"><h3>Rekod ${fmtBulan(bulan)}</h3><b>${RM(tot)}</b></div>
+    <div class="scroll"><table>${rows}</table></div></div>`;
+}
+
+function senaraiHutang(){
+  if(!hutangAll.length) return '';
+  const list = [...hutangAll].sort((a,b) => (a.tarikh||'').localeCompare(b.tarikh||''));
+  return `<div class="card"><div class="section-title"><h3>🧾 Hutang Pembekal Belum Bayar</h3><b class="neg">${RM(sum(list,e=>e.amaun))}</b></div>
+    <div class="scroll"><table>${list.map(e => `<tr><td><b>${fmtTarikh(e.tarikh)}</b> ${e.tarikh?.slice(0,4)}<br><span class="muted">${esc(e.pembekal||'-')}</span></td><td>${esc(e.perkara)}${e.invois?`<br><span class="muted">${esc(e.invois)}</span>`:''}</td>
+      <td class="r"><b>${RM(e.amaun)}</b><br><button class="small primary" onclick="AK.tandaLunas('${e.id}')">Tanda lunas</button></td></tr>`).join('')}</table></div></div>`;
+}
+const viewPembelian = () => senaraiHutang() + senarai('pembelian');
+
+function viewPetty(){
+  const baki = bakiPetty();
+  const list = [...pettyAll].sort((a,b) => (b.tarikh||'').localeCompare(a.tarikh||'') || ((b.dicipta?.seconds||0)-(a.dicipta?.seconds||0))).filter(e => e.bulan===bulan);
+  const masuk = sum(list.filter(e=>e.petty_arah==='masuk'), e=>e.amaun), keluar = sum(list.filter(e=>e.petty_arah!=='masuk'), e=>e.amaun);
+  const sumber = e => e.jenis==='pembelian' ? 'Pembelian' : e.jenis==='belanja' ? 'Belanja' : '';
+  return `<div class="grid">
+    <div class="card"><div class="muted">Baki petty cash semasa</div><div class="metric ${baki<0?'neg':'pos'}">${RM(baki)}</div></div>
+    <div class="card"><div class="muted">Masuk (${fmtBulan(bulan)})</div><div class="metric">${RM(masuk)}</div></div>
+    <div class="card"><div class="muted">Keluar (${fmtBulan(bulan)})</div><div class="metric">${RM(keluar)}</div></div>
+  </div>
+  ${baki<0?'<div class="notice">⚠ Baki petty cash negatif — sila rekod top-up atau semak rekod.</div>':''}
+  <div class="card"><h3 style="margin-top:0">Buku Petty Cash ${fmtBulan(bulan)}</h3>
+  ${list.length ? `<div class="scroll"><table>${list.map(e => `<tr><td><b>${fmtTarikh(e.tarikh)}</b><br><span class="tag">${esc(e.kategori)}</span>${sumber(e)?` <span class="tag">dari ${sumber(e)}</span>`:''}</td>
+    <td>${esc(e.perkara)}<br><span class="muted">${esc(e.oleh||'')}</span></td>
+    <td class="r ${e.petty_arah==='masuk'?'pos':'neg'}"><b>${e.petty_arah==='masuk'?'+':'−'}${RM(e.amaun)}</b><br>${barisAksi(e)}</td></tr>`).join('')}</table></div>`
+    : '<p class="muted">Tiada pergerakan petty cash bulan ini.</p>'}
+  </div>`;
+}
+
+// ---------- Ringkasan ----------
+function viewRingkasan(){
+  if(!monthLoaded) return '<div class="card muted">Menunggu data bulan dipilih.</div>';
+  const k = kira(entri);
+  const t = today(), bulanIni = bulan === t.slice(0,7);
+  const jualanHariIni = sum(entri.filter(e => e.jenis==='jualan' && e.tarikh===t), e=>e.amaun);
+  const hari = new Date(+bulan.slice(0,4), +bulan.slice(5,7), 0).getDate();
+  const harian = Array.from({length:hari}, (_,i) => sum(k.jualan.filter(e => +e.tarikh.slice(8,10)===i+1), e=>e.amaun));
+  const max = Math.max(...harian, 1);
+  const hariAda = harian.filter(x=>x>0).length;
+  const terkini = entri.slice(0,6);
+  const label = {jualan:'Jualan', pembelian:'Pembelian', belanja:'Belanja', petty:'Petty'};
+  return `<div class="grid">
+    ${bulanIni?`<div class="card"><div class="muted">Jualan hari ini</div><div class="metric">${RM(jualanHariIni)}</div></div>`:''}
+    <div class="card"><div class="muted">Jualan ${fmtBulan(bulan)}</div><div class="metric pos">${RM(k.jumJualan)}</div><div class="muted">${k.kereta} kenderaan</div></div>
+    <div class="card"><div class="muted">Pembelian + Belanja</div><div class="metric neg">${RM(k.jumBeli + k.jumBelanja)}</div></div>
+    <div class="card"><div class="muted">Untung / Rugi bersih</div><div class="metric ${k.bersih<0?'neg':'pos'}">${RM(k.bersih)}</div></div>
+    <div class="card"><div class="muted">Baki petty cash</div><div class="metric">${RM(bakiPetty())}</div></div>
+    <div class="card"><div class="muted">Hutang pembekal</div><div class="metric ${hutangAll.length?'neg':''}">${RM(sum(hutangAll,e=>e.amaun))}</div></div>
+  </div>
+  <div class="card"><div class="section-title"><h3>Jualan harian — ${fmtBulan(bulan)}</h3><span class="muted">Purata: ${RM(hariAda ? k.jumJualan/hariAda : 0)}/hari</span></div>
+    <div class="bars">${harian.map((v,i) => `<div class="${v?'':'z'}" style="height:${v ? Math.max(4, v/max*100) : 1}%" title="${i+1}: ${RM(v)}"></div>`).join('')}</div>
+    <div class="barlbl"><span>1</span><span>${Math.ceil(hari/2)}</span><span>${hari}</span></div>
+  </div>
+  <div class="card"><h3 style="margin-top:0">Rekod terkini</h3>
+    ${terkini.length ? `<table>${terkini.map(e => `<tr><td>${fmtTarikh(e.tarikh)}</td><td><span class="tag">${label[e.jenis]}</span> ${esc(e.perkara || e.catatan || '')}</td>
+      <td class="r ${e.jenis==='jualan'||e.petty_arah==='masuk'?'pos':'neg'}">${RM(e.amaun)}</td></tr>`).join('')}</table>` : '<p class="muted">Belum ada rekod bulan ini. Mula dengan tab Jualan.</p>'}
+  </div>`;
+}
+
+// ---------- Laporan Untung Rugi ----------
+function ringkasanTempoh(mingguan){
+  const kumpulan = new Map();
+  for(const rekod of entri){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(rekod.tarikh || '')) continue;
+    const tarikh = new Date(rekod.tarikh + 'T00:00:00Z');
+    if(!Number.isFinite(tarikh.getTime()) || tarikh.toISOString().slice(0,10) !== rekod.tarikh) continue;
+    if(mingguan) tarikh.setUTCDate(tarikh.getUTCDate() - (tarikh.getUTCDay() + 6) % 7);
+    const awal = tarikh.toISOString().slice(0,10);
+    if(!kumpulan.has(awal)) kumpulan.set(awal, []);
+    kumpulan.get(awal).push(rekod);
+  }
+  const baris = [...kumpulan].sort(([a], [b]) => a.localeCompare(b)).map(([awal, rekod]) => {
+    const akhir = new Date(awal + 'T00:00:00Z');
+    akhir.setUTCDate(akhir.getUTCDate() + 6);
+    const label = mingguan ? `${fmtTarikh(awal)} – ${fmtTarikh(akhir.toISOString().slice(0,10))}` : fmtTarikh(awal);
+    const k = kira(rekod);
+    return `<tr><td>${label}</td><td class="r">${k.kereta}</td><td class="r">${RM(k.jumJualan)}</td><td class="r">${RM(k.jumBeli + k.jumBelanja)}</td><td class="r ${k.bersih < 0 ? 'neg' : 'pos'}">${RM(k.bersih)}</td></tr>`;
+  }).join('');
+  const tajuk = mingguan ? 'Ringkasan Mingguan' : 'Ringkasan Harian';
+  return `<div class="card"><h3>${tajuk}</h3>
+    ${mingguan ? '<p class="muted">Isnin–Ahad. Jumlah termasuk transaksi dalam bulan dipilih sahaja.</p>' : ''}
+    ${baris ? `<div class="scroll"><table><tr><th>Tarikh</th><th>Kend.</th><th>Jualan</th><th>Perbelanjaan</th><th>Bersih</th></tr>${baris}</table></div>` : '<p class="muted">Tiada rekod.</p>'}
+  </div>`;
+}
+
+function viewLaporan(){
+  if(!isOwner || !monthLoaded) return '<div class="card muted">Menunggu data bulan dipilih.</div>';
+  const k = kira(entri);
+  const beliKat = groupBy(k.beli, 'kategori'), belanjaKat = groupBy(k.belanja, 'kategori');
+  const baris = (obj) => Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,v]) => `<tr><td style="padding-left:18px">${esc(n)}</td><td class="r">${RM(v)}</td></tr>`).join('') || '<tr><td style="padding-left:18px" class="muted">Tiada</td><td></td></tr>';
+  const margin = k.jumJualan ? (k.bersih/k.jumJualan*100).toFixed(1) : '0.0';
+  return `<div class="row noprint" style="margin-bottom:10px"><button class="primary" id="btnCsv">⬇ Muat turun CSV (Excel)</button><button id="btnPrint">🖨 Cetak / Simpan PDF</button></div>
+  <div class="card">
+    <h3 style="margin:0">Penyata Untung Rugi</h3>
+    <p class="muted" style="margin-top:4px">Mama Lion • ${fmtBulan(bulan)}</p>
+    <div class="scroll"><table>
+      <tr class="sub"><td>JUALAN</td><td></td></tr>
+      ${KAEDAH_JUALAN.map(([key,l]) => `<tr><td style="padding-left:18px">${l}</td><td class="r">${RM(sum(k.jualan, e=>e[key]))}</td></tr>`).join('')}
+      <tr class="tot"><td>Jumlah Jualan</td><td class="r">${RM(k.jumJualan)}</td></tr>
+      <tr class="sub"><td>TOLAK: KOS PEMBELIAN</td><td></td></tr>
+      ${baris(beliKat)}
+      <tr class="tot"><td>Jumlah Pembelian</td><td class="r">(${RM(k.jumBeli)})</td></tr>
+      <tr class="tot"><td>UNTUNG KASAR</td><td class="r ${k.kasar<0?'neg':'pos'}">${RM(k.kasar)}</td></tr>
+      <tr class="sub"><td>TOLAK: BELANJA OPERASI</td><td></td></tr>
+      ${baris(belanjaKat)}
+      <tr class="tot"><td>Jumlah Belanja Operasi</td><td class="r">(${RM(k.jumBelanja)})</td></tr>
+      <tr class="tot"><td>UNTUNG / RUGI BERSIH</td><td class="r ${k.bersih<0?'neg':'pos'}">${RM(k.bersih)}</td></tr>
+      <tr><td class="muted">Margin untung bersih</td><td class="r muted">${margin}%</td></tr>
+      <tr><td class="muted">Kenderaan dicuci • purata jualan/kenderaan</td><td class="r muted">${k.kereta} • ${RM(k.kereta ? k.jumJualan/k.kereta : 0)}</td></tr>
+    </table></div>
+  </div>
+  ${ringkasanTempoh(false)}
+  ${ringkasanTempoh(true)}
+  <div class="card"><h3 style="margin-top:0">Lain-lain</h3><table>
+    <tr><td>Baki petty cash semasa</td><td class="r">${RM(bakiPetty())}</td></tr>
+    <tr><td>Hutang pembekal belum bayar (semua bulan)</td><td class="r">${RM(sum(hutangAll,e=>e.amaun))}</td></tr>
+    <tr><td>Top-up petty cash bulan ini (bukan belanja)</td><td class="r">${RM(sum(entri.filter(e=>e.jenis==='petty'&&e.petty_arah==='masuk'),e=>e.amaun))}</td></tr>
+  </table></div>`;
+}
+
+function eksportCsv(){
+  if(!isOwner || !monthLoaded) return;
+  const kol = ['tarikh','jenis','kategori','perkara','pembekal','invois','bayar','tunai','qr','kad','ewallet','lain','kereta','amaun','petty_arah','hutang','catatan','oleh'];
+  const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+  const list = [...entri].sort((a,b) => (a.tarikh||'').localeCompare(b.tarikh||''));
+  const csv = '﻿' + kol.join(',') + '\n' + list.map(e => kol.map(c => q(e[c])).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = `akaun-mama-lion-${bulan}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ================================================================
+// SAMBUNGAN LIONSAFARI (tarik jualan & petty cash)
+// ================================================================
+const LS_DOC = doc(store, 'branches', BRANCH_ID);
+const pad2 = n => String(n).padStart(2,'0');
+const isoDate = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+let lsFormat = 'dmy';      // format tarikh telefon LionSafari: dmy (Malaysia) atau mdy (US)
+let lsJualan = [], lsPetty = [];
+
+// LionSafari simpan masa sebagai teks ikut tetapan telefon, cth "9/11/2026, 1:30:00 PM".
+function tarikhLS(s){
+  if(!s) return null;
+  const m = String(s).match(/(\d{1,4})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if(!m){ const d = new Date(s); return isNaN(d) ? null : {iso:isoDate(d), amb:false}; }
+  let a = +m[1], b = +m[2], c = +m[3];
+  if(a > 31) return {iso:`${a}-${pad2(b)}-${pad2(c)}`, amb:false};   // YYYY-MM-DD
+  if(c < 100) c += 2000;
+  let d, mo, amb = false;
+  if(a > 12){ d = a; mo = b; }
+  else if(b > 12){ mo = a; d = b; }
+  else { amb = a !== b; if(lsFormat === 'dmy'){ d = a; mo = b; } else { mo = a; d = b; } }
+  if(mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return {iso:`${c}-${pad2(mo)}-${pad2(d)}`, amb};
+}
+const formatPilihan = adaAmb => adaAmb ? `<div class="notice">Format tarikh dalam LionSafari tidak jelas (cth 9/11 boleh jadi 9 Nov atau 11 Sep).
+  <select id="lsFmt" style="margin:6px 0 0"><option value="dmy" ${lsFormat==='dmy'?'selected':''}>Hari/Bulan (9/11 = 9 Nov) — biasa di Malaysia</option><option value="mdy" ${lsFormat==='mdy'?'selected':''}>Bulan/Hari (11/9 = 9 Nov)</option></select></div>` : '';
+
+function toolJualanLS(){
+  return `<div class="card"><div class="section-title"><h3>🔗 Tarik jualan dari LionSafari</h3><button class="primary small" id="btnLS">Semak LionSafari</button></div>
+  <div id="lsBox" class="muted">Kira jualan harian secara automatik daripada order yang sudah dibayar (Cash/QR) dalam LionSafari. Buat sebelum sesiapa tekan "Reset Data" di LionSafari.</div></div>`;
+}
+function toolPettyLS(){
+  return `<div class="card"><div class="section-title"><h3>🔗 Tarik petty cash dari LionSafari</h3><button class="primary small" id="btnLSP">Semak LionSafari</button></div>
+  <div id="lsBox" class="muted">Salin rekod petty cash (Expense / Top-up) yang dimasukkan staff dalam LionSafari. Rekod yang sudah ditarik tidak akan diulang.</div></div>`;
+}
+
+async function bacaLS(){
+  const snap = await getDoc(LS_DOC);
+  if(!snap.exists()) throw new Error('Data LionSafari (branches/' + BRANCH_ID + ') tidak dijumpai.');
+  return snap.data();
+}
+
+async function semakJualanLS(){
+  const box = $('#lsBox'); box.innerHTML = 'Membaca LionSafari…';
+  try{
+    const data = await bacaLS();
+    const orders = (data.orders || []).filter(o => o.paid);
+    if(!orders.length){ box.innerHTML = 'Tiada order berbayar dalam LionSafari sekarang.'; return; }
+    const ikutHari = {}; let adaAmb = false, tanpaTarikh = 0;
+    for(const o of orders){
+      const t = tarikhLS(o.paidAt || o.time);
+      if(!t){ tanpaTarikh++; continue; }
+      adaAmb = adaAmb || t.amb;
+      const h = ikutHari[t.iso] ||= {tarikh:t.iso, tunai:0, qr:0, lain:0, kereta:0};
+      const amt = Number(o.total) || 0;
+      if(o.paid === 'Cash') h.tunai += amt; else if(o.paid === 'QR') h.qr += amt; else h.lain += amt;
+      h.kereta++;
+    }
+    const sedia = (await getDocs(query(COL, where('jenis','==','jualan')))).docs.map(d => ({id:d.id, ...d.data()}));
+    lsJualan = Object.values(ikutHari).sort((a,b) => b.tarikh.localeCompare(a.tarikh)).map(h => {
+      h.amaun = Math.round((h.tunai + h.qr + h.lain)*100)/100;
+      const lama = sedia.find(e => e.tarikh === h.tarikh && e.sumber === 'lionsafari');
+      const manual = sedia.filter(e => e.tarikh === h.tarikh && e.sumber !== 'lionsafari');
+      let status, pilih;
+      if(lama && Math.abs(lama.amaun - h.amaun) < 0.005 && lama.kereta === h.kereta){ status = '<span class="tag ok">Sudah ditarik</span>'; pilih = null; }
+      else if(lama){ status = `<span class="tag warn">Berubah (dulu ${RM(lama.amaun)})</span>`; pilih = true; }
+      else if(manual.length){ status = `<span class="tag warn">Ada rekod manual ${RM(sum(manual,e=>e.amaun))}</span>`; pilih = false; }
+      else { status = '<span class="tag">Baru</span>'; pilih = true; }
+      return {...h, lamaId: lama?.id, status, pilih};
+    });
+    box.innerHTML = formatPilihan(adaAmb) + `
+      <div class="scroll"><table><tr><th></th><th>Tarikh</th><th class="r">Kend.</th><th class="r">Tunai</th><th class="r">QR</th><th class="r">Jumlah</th></tr>
+      ${lsJualan.map((h,i) => `<tr><td>${h.pilih===null ? '' : `<input type="checkbox" class="lsPilih" data-i="${i}" ${h.pilih?'checked':''} style="width:22px;height:22px;margin:0">`}</td>
+        <td><b>${fmtTarikh(h.tarikh)} ${h.tarikh.slice(0,4)}</b><br>${h.status}</td><td class="r">${h.kereta}</td><td class="r">${RM(h.tunai)}</td><td class="r">${RM(h.qr)}</td><td class="r"><b>${RM(h.amaun)}</b></td></tr>`).join('')}
+      </table></div>
+      ${tanpaTarikh ? `<p class="muted">${tanpaTarikh} order tiada tarikh yang boleh dibaca — tidak dikira.</p>` : ''}
+      <p class="muted">"Ada rekod manual" tidak ditanda supaya jualan tidak dikira dua kali. Tanda jika mahu tambah juga.</p>
+      ${lsJualan.some(h => h.pilih !== null) ? '<button class="primary" style="width:100%;padding:13px" id="btnSimpanLS">Simpan hari yang ditanda</button>' : '<p><b>✅ Semua jualan LionSafari sudah ada dalam Akaun.</b></p>'}`;
+    if($('#lsFmt')) $('#lsFmt').onchange = e => { lsFormat = e.target.value; semakJualanLS(); };
+    if($('#btnSimpanLS')) $('#btnSimpanLS').onclick = simpanJualanLS;
+  }catch(e){ box.innerHTML = `<span class="neg">⚠ ${esc(e.code === 'permission-denied' ? 'Tiada kebenaran membaca data LionSafari (semak Firestore Rules).' : e.message)}</span>`; }
+}
+
+async function simpanJualanLS(){
+  const dipilih = [...document.querySelectorAll('.lsPilih')].filter(c => c.checked).map(c => lsJualan[+c.dataset.i]);
+  if(!dipilih.length) return toast('Tiada hari ditanda');
+  const btn = $('#btnSimpanLS'); btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try{
+    const batch = writeBatch(store);
+    for(const h of dipilih){
+      const data = {jenis:'jualan', tarikh:h.tarikh, bulan:h.tarikh.slice(0,7), cawangan:BRANCH_ID, tunai:h.tunai, qr:h.qr, kad:0, ewallet:0, lain:h.lain,
+        kereta:h.kereta, amaun:h.amaun, catatan:`Dari LionSafari (${h.kereta} order)`, sumber:'lionsafari', guna_petty:false, hutang:false};
+      if(h.lamaId) batch.update(doc(COL, h.lamaId), {...data, dikemaskini_oleh:nama, dikemaskini:serverTimestamp()});
+      else batch.set(doc(COL), {...data, oleh:nama, dicipta:serverTimestamp()});
+    }
+    await batch.commit();
+    toast(`✅ ${dipilih.length} hari jualan disimpan`);
+    semakJualanLS();
+  }catch(e){ onErr(e); btn.disabled = false; btn.textContent = 'Cuba lagi'; }
+}
+
+async function semakPettyLS(){
+  const box = $('#lsBox'); box.innerHTML = 'Membaca LionSafari…';
+  try{
+    const data = await bacaLS();
+    const sudah = new Set(pettyAll.map(e => e.ls_key).filter(Boolean));
+    let adaAmb = false;
+    lsPetty = (data.petty || []).map(p => {
+      const t = tarikhLS(p.time); if(t?.amb) adaAmb = true;
+      return {...p, iso: t?.iso, key: `${p.time}|${p.type}|${p.amt}|${p.reason||''}`};
+    }).filter(p => p.iso && !sudah.has(p.key));
+    if(!lsPetty.length){ box.innerHTML = '<b>✅ Tiada rekod petty cash baru dalam LionSafari.</b>'; return; }
+    box.innerHTML = formatPilihan(adaAmb) + `
+      <div class="scroll"><table>${lsPetty.map((p,i) => `<tr><td><input type="checkbox" class="lsPilih" data-i="${i}" checked style="width:22px;height:22px;margin:0"></td>
+        <td><b>${fmtTarikh(p.iso)}</b><br><span class="tag">${p.type==='Top-up'?'Top-up':'Belanja'}</span></td><td>${esc(p.reason||'-')}<br><span class="muted">${esc(p.by||'')}</span></td>
+        <td class="r ${p.type==='Top-up'?'pos':'neg'}"><b>${p.type==='Top-up'?'+':'−'}${RM(p.amt)}</b></td></tr>`).join('')}</table></div>
+      <label>Kategori untuk belanja yang ditarik</label><select id="lsKat">${opts(KAT_PETTY, 'Lain-lain')}</select>
+      <p class="muted">Kategori boleh diubah satu persatu selepas ini dengan butang Edit.</p>
+      <button class="primary" style="width:100%;padding:13px" id="btnSimpanLSP">Simpan rekod yang ditanda</button>`;
+    if($('#lsFmt')) $('#lsFmt').onchange = e => { lsFormat = e.target.value; semakPettyLS(); };
+    $('#btnSimpanLSP').onclick = simpanPettyLS;
+  }catch(e){ box.innerHTML = `<span class="neg">⚠ ${esc(e.code === 'permission-denied' ? 'Tiada kebenaran membaca data LionSafari (semak Firestore Rules).' : e.message)}</span>`; }
+}
+
+async function simpanPettyLS(){
+  const dipilih = [...document.querySelectorAll('.lsPilih')].filter(c => c.checked).map(c => lsPetty[+c.dataset.i]);
+  if(!dipilih.length) return toast('Tiada rekod ditanda');
+  const kat = val('#lsKat');
+  const btn = $('#btnSimpanLSP'); btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try{
+    const batch = writeBatch(store);
+    for(const p of dipilih){
+      const masuk = p.type === 'Top-up';
+      batch.set(doc(COL), {jenis:'petty', tarikh:p.iso, bulan:p.iso.slice(0,7), cawangan:BRANCH_ID, petty_arah: masuk ? 'masuk' : 'keluar',
+        kategori: masuk ? 'Top-up' : kat, perkara: p.reason || (masuk ? 'Top-up' : 'Belanja petty cash'), amaun: Number(p.amt)||0,
+        bayar:'Petty Cash', guna_petty:true, hutang:false, sumber:'lionsafari', ls_key:p.key, oleh:p.by || nama, dicipta:serverTimestamp()});
+    }
+    await batch.commit();
+    toast(`✅ ${dipilih.length} rekod petty cash disimpan`);
+    semakPettyLS();
+  }catch(e){ onErr(e); btn.disabled = false; btn.textContent = 'Cuba lagi'; }
+}
+
+// ================================================================
+// IMPORT EXCEL / CSV
+// ================================================================
+const XLSX_URL = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs';
+let XLSX = null;
+const muatXLSX = async () => XLSX ||= await import(XLSX_URL);
+const KOL_IMPORT = ['tarikh','jenis','kategori','perkara','pembekal','invois','bayar','tunai','qr','kad','ewallet','lain','kereta','amaun','petty_arah','catatan'];
+let importRows = [];
+
+function toolImport(){
+  return `<div class="card noprint"><h3 style="margin-top:0">📥 Import dari Excel</h3>
+    <p class="muted">Masukkan banyak rekod sekali gus (cth rekod lama). Guna templat supaya lajur betul. Fail CSV yang dimuat turun dari apps ini juga boleh diimport semula.</p>
+    <div class="row"><button id="btnTemplat">⬇ Muat turun templat Excel</button>
+    <label class="primary" style="padding:10px 12px;border-radius:9px;cursor:pointer;background:#14532d;color:#fff;font-size:14px">📂 Pilih fail Excel / CSV<input type="file" id="fImport" accept=".xlsx,.xls,.csv" style="display:none"></label></div>
+    <div id="importBox"></div></div>`;
+}
+
+const CONTOH = [
+  {tarikh:'2026-11-01', jenis:'jualan', tunai:450, qr:320, kad:0, ewallet:0, lain:0, kereta:30, catatan:'Contoh jualan harian'},
+  {tarikh:'2026-11-01', jenis:'pembelian', kategori:'Sabun & Kimia', perkara:'Snow foam 20L', pembekal:'Kedai ABC', invois:'INV-001', bayar:'Tunai', amaun:180},
+  {tarikh:'2026-11-02', jenis:'pembelian', kategori:'Tuala & Span', perkara:'Microfiber x20', pembekal:'Kedai XYZ', bayar:'Kredit (Hutang)', amaun:120},
+  {tarikh:'2026-11-05', jenis:'belanja', kategori:'Elektrik', perkara:'Bil TNB Oktober', bayar:'Bank / Transfer', amaun:210},
+  {tarikh:'2026-11-03', jenis:'petty', petty_arah:'masuk', perkara:'Top-up petty cash', amaun:200},
+  {tarikh:'2026-11-03', jenis:'petty', petty_arah:'keluar', kategori:'Makan & Minum Staff', perkara:'Air mineral', amaun:12}
+];
+const PANDUAN = [
+  ['PANDUAN IMPORT — AKAUN MAMA LION'], [],
+  ['Lajur','Keterangan'],
+  ['tarikh','Tarikh rekod, cth 2026-11-01 atau 01/11/2026 (hari/bulan/tahun)'],
+  ['jenis','jualan / pembelian / belanja / petty'],
+  ['tunai, qr, kad, ewallet, lain','Untuk JUALAN sahaja: amaun ikut cara bayar'],
+  ['kereta','Untuk JUALAN: bilangan kenderaan dicuci'],
+  ['amaun','Untuk pembelian / belanja / petty'],
+  ['kategori','Lihat senarai di bawah. Kosong = Lain-lain'],
+  ['bayar','Pembelian: ' + CARA_BAYAR.join(' / ') + '. Belanja: ' + CARA_BAYAR_B.join(' / ')],
+  ['petty_arah','Untuk PETTY: masuk (top-up) / keluar (belanja)'],
+  [],
+  ['Kategori Pembelian', KAT_PEMBELIAN.join(', ')],
+  ['Kategori Belanja', KAT_BELANJA.join(', ')],
+  ['Kategori Petty', KAT_PETTY.join(', ')],
+  [], ['Padam baris contoh dalam helaian "Data" sebelum import.']
+];
+
+async function muatTemplat(){
+  try{
+    const X = await muatXLSX();
+    const wb = X.utils.book_new();
+    X.utils.book_append_sheet(wb, X.utils.json_to_sheet(CONTOH, {header:KOL_IMPORT}), 'Data');
+    X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet(PANDUAN), 'Panduan');
+    X.writeFile(wb, 'templat-akaun-mama-lion.xlsx');
+  }catch(e){
+    // jika SheetJS gagal dimuat, beri templat CSV (boleh dibuka dengan Excel)
+    const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+    const csv = '﻿' + KOL_IMPORT.join(',') + '\n' + CONTOH.map(r => KOL_IMPORT.map(c => q(r[c])).join(',')).join('\n');
+    muatTurun(new Blob([csv], {type:'text/csv;charset=utf-8'}), 'templat-akaun-mama-lion.csv');
+  }
+}
+function muatTurun(blob, nama){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nama;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// Pembaca CSV ringkas (sokong koma/titik koma, tanda petik)
+function bacaCSV(teks){
+  teks = teks.replace(/^﻿/, '');
+  const pemisah = (teks.split('\n')[0].split(';').length > teks.split('\n')[0].split(',').length) ? ';' : ',';
+  const baris = []; let sel = '', row = [], petik = false;
+  for(let i = 0; i < teks.length; i++){
+    const c = teks[i];
+    if(petik){ if(c === '"'){ if(teks[i+1] === '"'){ sel += '"'; i++; } else petik = false; } else sel += c; }
+    else if(c === '"') petik = true;
+    else if(c === pemisah){ row.push(sel); sel = ''; }
+    else if(c === '\n' || c === '\r'){ if(c === '\r' && teks[i+1] === '\n') i++; row.push(sel); baris.push(row); row = []; sel = ''; }
+    else sel += c;
+  }
+  if(sel || row.length){ row.push(sel); baris.push(row); }
+  const kepala = (baris.shift() || []).map(h => h.trim().toLowerCase().replace(/\s+/g,'_'));
+  return baris.filter(r => r.some(x => String(x).trim())).map(r => Object.fromEntries(kepala.map((h,i) => [h, r[i] ?? ''])));
+}
+
+function tarikhImport(v){
+  if(v instanceof Date && !isNaN(v)) return isoDate(new Date(v.getTime() + 12*3600*1000)); // elak anjakan zon masa
+  if(typeof v === 'number' && v > 20000 && v < 80000){ const d = new Date(Date.UTC(1899,11,30) + v*86400000); return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth()+1)}-${pad2(d.getUTCDate())}`; }
+  const s = String(v || '').trim();
+  const sah = (y,mo,d) => { const t = new Date(y, mo-1, d); return (t.getFullYear()===y && t.getMonth()===mo-1 && t.getDate()===d && y>=2000 && y<=2100) ? `${y}-${pad2(mo)}-${pad2(d)}` : null; };
+  let m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  if(m) return sah(+m[1], +m[2], +m[3]);
+  m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);
+  if(m) return sah(+m[3] < 100 ? 2000 + +m[3] : +m[3], +m[2], +m[1]);
+  return null;
+}
+const nombor = v => { if(typeof v === 'number') return Math.round(v*100)/100; const n = parseFloat(String(v||'').replace(/rm/i,'').replace(/,/g,'').trim()); return isNaN(n) ? 0 : Math.round(n*100)/100; };
+const cariSenarai = (list, v, lalai) => list.find(x => x.toLowerCase() === String(v||'').trim().toLowerCase()) || lalai;
+
+function tukarBaris(r){
+  const t = tarikhImport(r.tarikh);
+  if(!t) return {ralat:'tarikh tidak sah ("' + (r.tarikh ?? '') + '")'};
+  let jenis = String(r.jenis||'').trim().toLowerCase();
+  if(jenis.startsWith('petty')) jenis = 'petty';
+  if(!['jualan','pembelian','belanja','petty'].includes(jenis)) return {ralat:'jenis tidak dikenali ("' + (r.jenis ?? '') + '")'};
+  const asas = {jenis, tarikh:t, bulan:t.slice(0,7), cawangan:BRANCH_ID, perkara:String(r.perkara||'').trim(), catatan:String(r.catatan||'').trim(), sumber:'excel', hutang:false, guna_petty:false};
+  if(jenis === 'jualan'){
+    const d = {...asas}; KAEDAH_JUALAN.forEach(([k]) => d[k] = nombor(r[k]));
+    let jum = sum(KAEDAH_JUALAN.map(([k]) => d[k]));
+    if(!jum && nombor(r.amaun)){ d.lain = nombor(r.amaun); jum = d.lain; }
+    d.amaun = Math.round(jum*100)/100; d.kereta = Math.round(nombor(r.kereta));
+    return d.amaun > 0 ? {d} : {ralat:'jumlah jualan RM 0'};
+  }
+  const amaun = nombor(r.amaun);
+  if(!(amaun > 0)) return {ralat:'amaun kosong / tidak sah'};
+  if(jenis === 'petty'){
+    const masuk = /^(masuk|top|tambah|in)/i.test(String(r.petty_arah||'').trim());
+    return {d:{...asas, amaun, petty_arah: masuk ? 'masuk' : 'keluar', kategori: masuk ? 'Top-up' : cariSenarai(KAT_PETTY, r.kategori, 'Lain-lain'),
+      perkara: asas.perkara || (masuk ? 'Top-up' : 'Belanja petty cash'), bayar:'Petty Cash', guna_petty:true}};
+  }
+  const bayar = cariSenarai(jenis === 'pembelian' ? CARA_BAYAR : CARA_BAYAR_B, r.bayar, 'Tunai');
+  const d = {...asas, amaun, bayar, kategori: cariSenarai(jenis === 'pembelian' ? KAT_PEMBELIAN : KAT_BELANJA, r.kategori, 'Lain-lain'),
+    guna_petty: bayar === 'Petty Cash', petty_arah: bayar === 'Petty Cash' ? 'keluar' : null};
+  if(jenis === 'pembelian'){ d.pembekal = String(r.pembekal||'').trim(); d.invois = String(r.invois||'').trim(); d.hutang = bayar === 'Kredit (Hutang)'; d.lunas = false; }
+  if(!d.perkara) d.perkara = d.kategori;
+  return {d};
+}
+
+async function bacaFailImport(fail){
+  const box = $('#importBox'); box.innerHTML = '<p class="muted">Membaca fail…</p>';
+  try{
+    let rows;
+    if(/\.csv$/i.test(fail.name)) rows = bacaCSV(await fail.text());
+    else {
+      const X = await muatXLSX().catch(() => { throw new Error('Gagal memuat pembaca Excel (semak internet). Cuba simpan fail sebagai CSV dan import semula.'); });
+      const wb = X.read(await fail.arrayBuffer(), {cellDates:true});
+      const nm = wb.SheetNames.find(n => n.toLowerCase() === 'data') || wb.SheetNames.find(n => n.toLowerCase() !== 'panduan') || wb.SheetNames[0];
+      rows = X.utils.sheet_to_json(wb.Sheets[nm], {defval:'', raw:true})
+        .map(r => Object.fromEntries(Object.entries(r).map(([k,v]) => [k.trim().toLowerCase().replace(/\s+/g,'_'), v])));
+    }
+    if(!rows.length) throw new Error('Fail kosong atau tiada baris data.');
+    const hasil = rows.map((r,i) => ({...tukarBaris(r), baris:i+2}));
+    const ok = hasil.filter(h => h.d), salah = hasil.filter(h => h.ralat);
+    // semak pendua dengan rekod sedia ada dalam bulan berkaitan
+    const bulanSet = [...new Set(ok.map(h => h.d.bulan))];
+    const sedia = [];
+    for(const b of bulanSet) (await getDocs(entryQuery(where('bulan','==',b)))).docs.forEach(x => sedia.push(x.data()));
+    const kunci = e => `${e.tarikh}|${e.jenis}|${Number(e.amaun).toFixed(2)}|${(e.perkara||'').toLowerCase()}`;
+    const ada = new Set(sedia.map(kunci));
+    ok.forEach(h => h.pendua = ada.has(kunci(h.d)));
+    const kiraanFail = {}; ok.forEach(h => kiraanFail[kunci(h.d)] = (kiraanFail[kunci(h.d)]||0) + 1);
+    const samaDalamFail = ok.filter(h => !h.pendua && kiraanFail[kunci(h.d)] > 1).map(h => h.baris);
+    importRows = ok;
+    const baru = ok.filter(h => !h.pendua);
+    const jenisList = ['jualan','pembelian','belanja','petty'];
+    box.innerHTML = `<hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0">
+      <p><b>${esc(fail.name)}</b> — ${rows.length} baris dibaca</p>
+      <table>${jenisList.map(j => { const l = baru.filter(h => h.d.jenis === j); return l.length ? `<tr><td>${j[0].toUpperCase()+j.slice(1)}</td><td class="r">${l.length} rekod</td><td class="r">${RM(sum(l,h=>h.d.amaun))}</td></tr>` : ''; }).join('')}</table>
+      ${ok.length - baru.length ? `<p class="muted">${ok.length - baru.length} rekod sudah wujud dalam Akaun (sama tarikh, jenis, amaun & perkara) — akan dilangkau.</p>` : ''}
+      ${samaDalamFail.length ? `<div class="notice">Baris ${samaDalamFail.join(', ')} adalah sama (tarikh, jenis, amaun & perkara). Semua akan diimport — padam dari fail jika ia berulang secara tidak sengaja.</div>` : ''}
+      ${salah.length ? `<div class="notice"><b>${salah.length} baris ada masalah & tidak akan diimport:</b><br>${salah.slice(0,10).map(h => `Baris ${h.baris}: ${esc(h.ralat)}`).join('<br>')}${salah.length > 10 ? `<br>…dan ${salah.length-10} lagi` : ''}</div>` : ''}
+      ${baru.length ? `<details style="margin:8px 0"><summary class="muted">Lihat ${Math.min(baru.length,30)} rekod pertama</summary><div class="scroll"><table>
+        ${baru.slice(0,30).map(h => `<tr><td>${fmtTarikh(h.d.tarikh)} ${h.d.tarikh.slice(0,4)}</td><td><span class="tag">${h.d.jenis}</span> ${esc(h.d.perkara||h.d.catatan||'')}</td><td class="r">${RM(h.d.amaun)}</td></tr>`).join('')}</table></div></details>
+        <button class="primary" style="width:100%;padding:13px" id="btnImport">Import ${baru.length} rekod</button>` : '<p><b>Tiada rekod baru untuk diimport.</b></p>'}`;
+    if($('#btnImport')) $('#btnImport').onclick = simpanImport;
+  }catch(e){ box.innerHTML = `<p class="neg">⚠ ${esc(e.message)}</p>`; }
+  $('#fImport').value = '';
+}
+
+async function simpanImport(){
+  const baru = importRows.filter(h => !h.pendua).map(h => h.d);
+  if(!confirm(`Import ${baru.length} rekod ke dalam Akaun Mama Lion?`)) return;
+  const btn = $('#btnImport'); btn.disabled = true;
+  try{
+    for(let i = 0; i < baru.length; i += 400){
+      btn.textContent = `Menyimpan ${Math.min(i+400, baru.length)}/${baru.length}…`;
+      const batch = writeBatch(store);
+      baru.slice(i, i+400).forEach(d => batch.set(doc(COL), {...d, assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()}));
+      await batch.commit();
+    }
+    toast(`✅ ${baru.length} rekod diimport`);
+    importRows = [];
+    $('#importBox').innerHTML = `<p class="pos"><b>✅ ${baru.length} rekod berjaya diimport.</b> Tukar bulan di atas untuk melihat rekod bulan lain.</p>`;
+  }catch(e){ onErr(e); btn.disabled = false; btn.textContent = 'Cuba lagi'; }
+}
+
+function pasangAlat(){
+  if($('#btnLS')) $('#btnLS').onclick = semakJualanLS;
+  if($('#btnLSP')) $('#btnLSP').onclick = semakPettyLS;
+  if($('#btnTemplat')) $('#btnTemplat').onclick = muatTemplat;
+  if($('#fImport')) $('#fImport').onchange = e => { const f = e.target.files[0]; if(f) bacaFailImport(f); };
+}
+
+// ---------- Toast ----------
+function toast(msg){
+  let t = $('#toast');
+  if(!t){ t = document.createElement('div'); t.id='toast'; t.style.cssText='position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:99;max-width:90%;text-align:center'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display='none', 2600);
+}
 </script>
 </body>
 </html>

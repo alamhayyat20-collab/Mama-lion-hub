@@ -6,7 +6,8 @@ header small{display:block;color:#d1d5db;margin-top:2px}
 nav{display:flex;gap:6px;overflow:auto;background:white;padding:9px;position:sticky;top:0;box-shadow:0 1px 4px #0002;z-index:5}
 button{border:0;border-radius:9px;padding:10px 12px;cursor:pointer;background:#e5e7eb;position:relative}
 button:disabled{opacity:.45;cursor:not-allowed}
-nav button{white-space:nowrap}
+nav button,nav .account-link{white-space:nowrap}
+nav .account-link{border-radius:9px;padding:10px 12px;background:#e5e7eb;color:#111827;text-decoration:none;font-size:13px}
 nav button.active,.primary{background:#111827;color:#fff}
 main{max-width:1100px;margin:auto;padding:16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}

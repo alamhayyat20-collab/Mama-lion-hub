@@ -151,6 +151,9 @@ function nav(){
     if(x==='Payment'&&unpaid) badge=`<span class='badge'>${unpaid}</span>`;
     return `<button class='${x==tab?'active':''}' onclick="tab='${x}';render()">${x}${badge}</button>`;
   }).join('');
+  if(currentUser && currentRole==='Management'){
+    navEl.insertAdjacentHTML('beforeend', '<a class="account-link" href="./akaun/">Akaun Mama Lion</a>');
+  }
 }
 
 function staffBox(){
