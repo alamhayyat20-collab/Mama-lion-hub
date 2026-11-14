@@ -149,12 +149,19 @@ function nav(){
     let badge='';
     if(x==='Inventory'&&low) badge=`<span class='badge'>${low}</span>`;
     if(x==='Payment'&&unpaid) badge=`<span class='badge'>${unpaid}</span>`;
-    return `<button class='${x==tab?'active':''}' onclick="tab='${x}';render()">${x}${badge}</button>`;
+    return `<button type='button' class='${x===tab?'active':''}' data-tab='${x}'>${x}${badge}</button>`;
   }).join('');
   if(currentUser && currentRole==='Management'){
     navEl.insertAdjacentHTML('beforeend', '<a class="account-link" href="./akaun/">Akaun Mama Lion</a>');
   }
 }
+
+$('#nav').addEventListener('click', event=>{
+  const button=event.target.closest('button[data-tab]');
+  if(!button || !visibleTabs().includes(button.dataset.tab)) return;
+  tab=button.dataset.tab;
+  render();
+});
 
 function staffBox(){
   const el=$('#staffBox');
@@ -178,8 +185,16 @@ function render(){
   staffBox();
   const f={Dashboard:dash,'New Order':newOrder,Queue:queue,Payment:payment,'Petty Cash':petty,Inventory:inventory,Shift:shift,Music:music}[tab] || dash;
   $('#app').innerHTML=f();
+  if(tab==='Queue'){
+    const search=$('#queueSearch');
+    search.value=q;
+    search.addEventListener('input', ()=>{
+      q=search.value;
+      renderQueueOrders();
+    });
+    renderQueueOrders();
+  }
 }
-window.render=render; // exposed for onclick handlers
 
 function loginScreen(){
   return `<div class='card' style='max-width:380px;margin:40px auto'>
@@ -267,10 +282,14 @@ function orderTable(arr){
 }
 
 function queue(){
-  const list=db.orders.filter(o=>!q || o.plate.toLowerCase().includes(q.toLowerCase()));
   return `<div class='section-title'><h2>Queue & Bay Ops</h2><span class='tag'>Reception → Washing → Drying → QC → Ready → Payment</span></div>
-  <input placeholder='Cari plat...' value='${q}' oninput='q=this.value;render()' style='max-width:260px'>
-  ${list.length?list.map(o=>{
+  <input id='queueSearch' placeholder='Cari plat...' style='max-width:260px'>
+  <div id='queueOrders'></div>`;
+}
+
+function renderQueueOrders(){
+  const list=db.orders.filter(o=>!q || o.plate.toLowerCase().includes(q.toLowerCase()));
+  $('#queueOrders').innerHTML=list.length?list.map(o=>{
     const idx=db.orders.indexOf(o);
     const cur=FLOW.indexOf(o.status);
     return `<div class='card' style='margin-bottom:10px'>
@@ -279,13 +298,13 @@ function queue(){
         <span class='tag ${o.status==='Completed'?'ok':''}'>${o.status}</span>
       </div>
       <div class='row' style='margin-top:10px'>
-        ${FLOW.map((s,i)=>`<button class='${i===cur?'active':''}' ${i<cur?'disabled':''} onclick="status(${idx},'${s}')">${s}</button>`).join('')}
+        ${FLOW.map((s,i)=>`<button class='${i===cur?'active':''}' ${i<cur?'disabled':''} onclick="setOrderStatus(${idx},'${s}')">${s}</button>`).join('')}
       </div>
     </div>`;
-  }).join(''):`<div class='card empty'>Tiada order sepadan.</div>`}`;
+  }).join(''):`<div class='card empty'>Tiada order sepadan.</div>`;
 }
 
-function status(i,s){db.orders[i].status=s;save();render()}
+function setOrderStatus(i,s){db.orders[i].status=s;save();render()}
 
 function payment(){
   const unpaid=db.orders.filter(o=>!o.paid && o.status!=='Waiting');
@@ -401,7 +420,7 @@ function toggleMusic(){db.music.playing=!db.music.playing;save();render()}
 function setVol(v){db.music.vol=+v;save();render()}
 
 // expose functions used by inline onclick= handlers (needed because this file is a module)
-Object.assign(window,{addOrder,status,pay,addPetty,stock,reportItem,addStockItem,saveShift,resetData,toggleMusic,setVol});
+Object.assign(window,{addOrder,setOrderStatus,pay,addPetty,stock,reportItem,addStockItem,saveShift,resetData,toggleMusic,setVol});
 
 setInterval(()=>$('#clock')&&($('#clock').textContent=new Date().toLocaleTimeString()),1000);
 setStatus(CLOUD_ENABLED?'☁ Menyambung...':'💾 Mod offline (local sahaja)', CLOUD_ENABLED?'':'warn');
