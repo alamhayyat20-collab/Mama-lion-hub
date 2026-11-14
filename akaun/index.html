@@ -94,6 +94,7 @@ header{padding-top:max(14px,env(safe-area-inset-top))}
 
 <script type="module">
 import { firebaseConfig, BRANCH_ID } from '../firebase-config.js';
+import { modulPengurusan, CSS_MODUL, fMinit } from '../pekerja-lib.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -235,7 +236,7 @@ function subscribeBulan(){
   }, onErr);
   if(isOwner) langganHRBulan();
 }
-function stopListeners(){ [unsubBulan,unsubPetty,unsubHutang,unsubHRBulan,...unsubHR].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=unsubHRBulan=null; unsubHR=[]; }
+function stopListeners(){ if(typeof modulPK !== 'undefined') modulPK.henti(); [unsubBulan,unsubPetty,unsubHutang,unsubHRBulan,...unsubHR].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=unsubHRBulan=null; unsubHR=[]; }
 
 async function simpan(data){
   data.bulan = data.tarikh.slice(0,7);
@@ -952,15 +953,21 @@ let stafKaunter = [], pekerjaInfo = {}, hrBulan = [], hrError = '', pkMod = 'Sen
 const stafCol = () => collection(store, 'lionsafari', cawangan, 'staf');
 const pekerjaCol = () => collection(store, 'akaun', cawangan, 'pekerja');
 const hrCol = () => collection(store, 'akaun', cawangan, 'hr');
+const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
+  cawangan: () => cawangan, pengguna: () => nama, esc, RM, toast, refresh: () => refresh(), kehadiranBulan: true});
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}</style>`);
+const MOD_KM = ['Kehadiran','Permohonan','Roster','Tetapan Pekerja'];
 function onErrHR(e){ console.error(e); hrError = e.code === 'permission-denied' ? 'Firebase menolak akses rekod pekerja — Firestore Rules perlu dikemas kini (blok "pekerja" & "hr").' : 'Ralat: ' + e.message; refresh(); }
 function mulaHR(){
   unsubHR.forEach(f => f && f()); unsubHR = []; hrError = ''; stafKaunter = []; pekerjaInfo = {};
+  modulPK.mula(bulan);
   unsubHR.push(onSnapshot(stafCol(), s => { stafKaunter = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; return x; }); refresh(); }, onErrHR));
   unsubHR.push(onSnapshot(pekerjaCol(), s => { pekerjaInfo = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); refresh(); }, onErrHR));
 }
 function langganHRBulan(){
   if(unsubHRBulan) unsubHRBulan();
   hrBulan = [];
+  modulPK.setBulan(bulan);
   unsubHRBulan = onSnapshot(query(hrCol(), where('bulan','==',bulan)), s => { hrBulan = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.tarikh||'').localeCompare(a.tarikh||'')); refresh(); }, onErrHR);
 }
 async function hashPin(id, pin){
@@ -980,17 +987,20 @@ function kiraGaji(p){
   const info = p.info, harian = info.jenisGaji === 'Harian';
   const hari = sum(r.filter(h => h.jenis === 'hari'), h => h.hari);
   const asas = harian ? Math.round((Number(info.kadarHarian)||0) * hari * 100)/100 : (Number(info.gajiBulanan)||0);
-  const ot = j('ot'), elaun = j('elaun'), komisen = j('komisen'), potongan = j('potongan'), advance = j('advance');
-  const kasar = asas + ot + elaun + komisen;
-  return {r, harian, hari, asas, ot, otJam: sum(r.filter(h => h.jenis === 'ot'), h => h.jam), elaun, komisen, potongan, advance, kasar, bersih: kasar - potongan - advance};
+  const pk = modulPK.ringkasStaf(p.id);                       // dari Apps Pekerja (diluluskan) & punch in/out
+  const otApps = Math.round(pk.otJam * (Number(info.kadarOT)||0) * 100)/100;
+  const ot = j('ot') + otApps, elaun = j('elaun'), komisen = j('komisen'), potongan = j('potongan'), advance = j('advance') + pk.advance, claim = pk.claim;
+  const kasar = asas + ot + elaun + komisen + claim;
+  return {r, harian, hari, asas, ot, otJam: sum(r.filter(h => h.jenis === 'ot'), h => h.jam) + pk.otJam, elaun, komisen, claim, potongan, advance, kasar, bersih: kasar - potongan - advance, pk};
 }
 
 function viewPekerja(){
   if(!isOwner) return '';
   const list = senaraiPekerja();
-  const sub = `<div class="subnav noprint">${['Senarai','Gaji Bulanan','Rekod Bulan Ini'].map(m => `<button class="${m===pkMod?'on':''}" data-pkmod="${m}">${m}</button>`).join('')}
+  const sub = `<div class="subnav noprint">${['Senarai','Gaji Bulanan','Rekod Bulan Ini', ...MOD_KM].map(m => `<button class="${m===pkMod?'on':''}" data-pkmod="${m}">${m}${m==='Permohonan' && modulPK.st.menunggu.length ? ` (${modulPK.st.menunggu.length})` : ''}</button>`).join('')}
     <button class="primary" data-pkbaru="1" style="margin-left:auto">+ Pekerja baru</button></div>`;
   const err = hrError ? `<div class="notice">⚠ ${esc(hrError)}</div>` : '';
+  if(MOD_KM.includes(pkMod)) return sub + modulPK.html(pkMod, []);
   if(pkMod === 'Senarai') return sub + err + `<div class="card"><div class="section-title"><h3>👥 Pekerja ${esc(namaCawangan())}</h3><span class="muted">${list.filter(p=>p.aktif!==false).length} aktif</span></div>
     <p class="muted" style="margin-top:0">ID & PIN di sini digunakan untuk log masuk kaunter Lion Safari V2 (${esc(namaCawangan())}). Maklumat gaji hanya boleh dilihat oleh pemilik.</p>
     ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}"><div><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
@@ -1000,17 +1010,17 @@ function viewPekerja(){
       : '<p class="muted">Belum ada pekerja. Tekan "+ Pekerja baru".</p>'}</div>`;
 
   if(pkMod === 'Gaji Bulanan'){
-    const aktif = list.filter(p => p.aktif !== false || kiraGaji(p).r.length);
+    const aktif = list.filter(p => p.aktif !== false || kiraGaji(p).r.length || kiraGaji(p).pk.permohonan.length);
     const rows = aktif.map(p => ({p, g: kiraGaji(p)}));
     const T = k => sum(rows, x => x.g[k]);
     return sub + err + `<div class="row noprint" style="margin-bottom:10px"><button class="primary" id="btnCsvGaji">⬇ CSV Gaji (Excel)</button><button id="btnPrintGaji">🖨 Cetak / PDF</button></div>
-    <div class="card"><h3 style="margin:0">Ringkasan Gaji — ${esc(namaCawangan())}</h3><p class="muted" style="margin-top:4px">${fmtBulan(bulan)} · Bersih = Gaji asas + OT + Elaun + Komisen − Potongan − Advance</p>
-    <div class="scroll"><table><tr><th>Pekerja</th><th class="r">Asas</th><th class="r">OT</th><th class="r">Elaun</th><th class="r">Komisen</th><th class="r">Potongan</th><th class="r">Advance</th><th class="r">Bersih</th><th class="noprint"></th></tr>
-    ${rows.map(({p,g}) => { const ada = entri.some(e => e.id === `gaji-${p.id}-${bulan}`); return `<tr><td><b>${esc(p.idStaf||'')}</b> ${esc(p.nama)}<br><span class="muted">${g.harian ? `${g.hari} hari × ${RM(p.info.kadarHarian)}` : 'Bulanan'}${g.otJam?` · OT ${g.otJam} jam`:''}</span></td>
-      <td class="r">${RM(g.asas)}</td><td class="r">${RM(g.ot)}</td><td class="r">${RM(g.elaun)}</td><td class="r">${RM(g.komisen)}</td><td class="r neg">${g.potongan?'('+RM(g.potongan)+')':'-'}</td><td class="r neg">${g.advance?'('+RM(g.advance)+')':'-'}</td>
+    <div class="card"><h3 style="margin:0">Ringkasan Gaji — ${esc(namaCawangan())}</h3><p class="muted" style="margin-top:4px">${fmtBulan(bulan)} · Bersih = Gaji asas + OT + Elaun + Komisen + Claim − Potongan − Advance. OT, advance & claim dari Apps Pekerja dikira bila diluluskan.</p>
+    <div class="scroll"><table><tr><th>Pekerja</th><th class="r">Asas</th><th class="r">OT</th><th class="r">Elaun</th><th class="r">Komisen</th><th class="r">Claim</th><th class="r">Potongan</th><th class="r">Advance</th><th class="r">Bersih</th><th class="noprint"></th></tr>
+    ${rows.map(({p,g}) => { const ada = entri.some(e => e.id === `gaji-${p.id}-${bulan}`); return `<tr><td><b>${esc(p.idStaf||'')}</b> ${esc(p.nama)}<br><span class="muted">${g.harian ? `${g.hari} hari × ${RM(p.info.kadarHarian)}` : 'Bulanan'}${g.otJam?` · OT ${g.otJam} jam`:''}${g.pk.hariHadir ? `<br>Hadir ${g.pk.hariHadir} hari · ${fMinit(g.pk.minit)}${g.pk.lewatKali ? ` · lewat ${g.pk.lewatKali}×` : ''}` : ''}</span></td>
+      <td class="r">${RM(g.asas)}</td><td class="r">${RM(g.ot)}</td><td class="r">${RM(g.elaun)}</td><td class="r">${RM(g.komisen)}</td><td class="r">${RM(g.claim)}</td><td class="r neg">${g.potongan?'('+RM(g.potongan)+')':'-'}</td><td class="r neg">${g.advance?'('+RM(g.advance)+')':'-'}</td>
       <td class="r"><b>${RM(g.bersih)}</b></td><td class="r noprint">${g.kasar - g.potongan > 0 ? `<button class="small ${ada?'':'primary'}" data-pkbelanja="${p.id}">${ada?'✓ Kemas kini Belanja':'Rekod ke Belanja'}</button>` : ''}</td></tr>`; }).join('')}
-    <tr class="tot"><td>Jumlah</td><td class="r">${RM(T('asas'))}</td><td class="r">${RM(T('ot'))}</td><td class="r">${RM(T('elaun'))}</td><td class="r">${RM(T('komisen'))}</td><td class="r">(${RM(T('potongan'))})</td><td class="r">(${RM(T('advance'))})</td><td class="r">${RM(T('bersih'))}</td><td class="noprint"></td></tr></table></div>
-    <p class="muted noprint">"Rekod ke Belanja" masukkan kos gaji (Asas + OT + Elaun + Komisen − Potongan) ke tab Belanja, kategori "Gaji & Upah", supaya Penyata Untung Rugi tepat. Advance sudah termasuk dalam kos ini (ia pendahuluan gaji yang sama).</p></div>`;
+    <tr class="tot"><td>Jumlah</td><td class="r">${RM(T('asas'))}</td><td class="r">${RM(T('ot'))}</td><td class="r">${RM(T('elaun'))}</td><td class="r">${RM(T('komisen'))}</td><td class="r">${RM(T('claim'))}</td><td class="r">(${RM(T('potongan'))})</td><td class="r">(${RM(T('advance'))})</td><td class="r">${RM(T('bersih'))}</td><td class="noprint"></td></tr></table></div>
+    <p class="muted noprint">"Rekod ke Belanja" masukkan kos gaji (Asas + OT + Elaun + Komisen + Claim − Potongan) ke tab Belanja, kategori "Gaji & Upah", supaya Penyata Untung Rugi tepat. Advance sudah termasuk dalam kos ini (ia pendahuluan gaji yang sama).</p></div>`;
   }
 
   // Rekod Bulan Ini
@@ -1022,6 +1032,7 @@ function viewPekerja(){
 }
 
 function pasangPekerja(){
+  if(MOD_KM.includes(pkMod)) modulPK.pasang(m => { pkMod = m; refresh(); });
   $$('[data-pkmod]').forEach(b => b.onclick = () => { pkMod = b.dataset.pkmod; refresh(); });
   $$('[data-pkbaru]').forEach(b => b.onclick = () => borangPekerja(null));
   $$('[data-pkurus]').forEach(b => b.onclick = () => borangPekerja(b.dataset.pkurus));
@@ -1129,7 +1140,7 @@ async function rekodGajiBelanja(id){
   try{
     await setDoc(doc(COL, `gaji-${p.id}-${bulan}`), {jenis:'belanja', tarikh, bulan, cawangan, kategori:'Gaji & Upah', perkara:`Gaji ${p.nama} (${p.idStaf||''}) ${fmtBulan(bulan)}`,
       amaun:kos, bayar:'Bank / Transfer', guna_petty:false, hutang:false, petty_arah:null, sumber:'gaji',
-      catatan:`Asas ${RM(g.asas)} + OT ${RM(g.ot)} + Elaun ${RM(g.elaun)} + Komisen ${RM(g.komisen)} − Potongan ${RM(g.potongan)}; Advance ${RM(g.advance)}; Bersih ${RM(g.bersih)}`,
+      catatan:`Asas ${RM(g.asas)} + OT ${RM(g.ot)} + Elaun ${RM(g.elaun)} + Komisen ${RM(g.komisen)} + Claim ${RM(g.claim)} − Potongan ${RM(g.potongan)}; Advance ${RM(g.advance)}; Bersih ${RM(g.bersih)}`,
       assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()});
     toast('✅ Kos gaji direkod ke Belanja');
   }catch(e){ onErr(e); }
@@ -1137,8 +1148,8 @@ async function rekodGajiBelanja(id){
 
 function csvGaji(){
   const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
-  const kol = ['ID','Nama','Jawatan','Jenis gaji','Hari','Gaji asas','OT jam','OT','Elaun','Komisen','Potongan','Advance','Bersih','Bank'];
-  const rows = senaraiPekerja().filter(p => p.aktif !== false || kiraGaji(p).r.length).map(p => { const g = kiraGaji(p); return [p.idStaf, p.nama, p.info.jawatan, p.info.jenisGaji||'Bulanan', g.hari||'', g.asas, g.otJam||'', g.ot, g.elaun, g.komisen, g.potongan, g.advance, g.bersih, p.info.bank]; });
+  const kol = ['ID','Nama','Jawatan','Jenis gaji','Hari hadir','Jam kerja','Lewat (kali)','Gaji asas','OT jam','OT','Elaun','Komisen','Claim','Potongan','Advance','Bersih','Bank'];
+  const rows = senaraiPekerja().filter(p => p.aktif !== false || kiraGaji(p).r.length).map(p => { const g = kiraGaji(p); return [p.idStaf, p.nama, p.info.jawatan, p.info.jenisGaji||'Bulanan', g.pk.hariHadir || g.hari || '', (g.pk.minit/60).toFixed(1), g.pk.lewatKali, g.asas, g.otJam||'', g.ot, g.elaun, g.komisen, g.claim, g.potongan, g.advance, g.bersih, p.info.bank]; });
   const csv = '﻿' + kol.join(',') + '\n' + rows.map(r => r.map(q).join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})); a.download = `gaji-${cawangan}-${bulan}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
