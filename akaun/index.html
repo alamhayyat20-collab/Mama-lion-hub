@@ -55,7 +55,7 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 <body>
 <header>
   <div><b>🦁 Akaun Mama Lion</b><small>Jualan • Pembelian • Belanja • Petty Cash • Laporan</small></div>
-  <div class="row"><span id="userBox"></span></div>
+  <div class="row"><a href="../kaunter.html" style="color:#fff">Kembali ke LionSafari</a><span id="userBox"></span></div>
 </header>
 <nav id="nav"></nav>
 <div id="bulanBar" class="row" style="max-width:1000px;margin:10px auto 0;padding:0 14px"></div>
@@ -66,7 +66,7 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 import { firebaseConfig, BRANCH_ID } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 // ---------- Senarai kategori (boleh ubah di sini) ----------
 const KAT_PEMBELIAN = ['Sabun & Kimia','Wax & Polish','Peralatan & Mesin','Tuala & Span','Barang Jualan (Minuman/Snek)','Alat Ganti','Lain-lain'];
@@ -75,7 +75,8 @@ const KAT_PETTY     = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis
 const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)'];
 const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
 const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
-const TABS = ['Ringkasan','Jualan','Pembelian','Belanja','Petty Cash','Laporan'];
+const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
+const OWNER_TABS = ['Ringkasan', ...TABS, 'Laporan'];
 
 // ---------- Utiliti ----------
 const $ = s => document.querySelector(s);
@@ -91,7 +92,9 @@ const fmtBulan = b => { const [y,m] = b.split('-'); return `${BULAN_NAMA[+m-1]} 
 const opts = (list, sel) => list.map(o => `<option ${o===sel?'selected':''}>${esc(o)}</option>`).join('');
 
 // ---------- Keadaan ----------
-let tab = 'Ringkasan';
+let tab = 'Jualan';
+let isOwner = false;
+let monthLoaded = false;
 let bulan = today().slice(0,7);
 let entri = [];      // semua entri bulan dipilih
 let pettyAll = [];   // semua entri yang guna petty cash (semua masa)
@@ -104,6 +107,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const store = getFirestore(app);
 const COL = collection(store, 'akaun', BRANCH_ID, 'entri');
+const ownerRecord = uid => doc(store, 'akaun', BRANCH_ID, 'pemilik', uid);
+const entryQuery = (...filters) => query(COL, ...filters,
+  ...(isOwner ? [] : [where('assignedUid', '==', user.uid)]));
 
 // ---------- Log masuk ----------
 function renderLogin(){
@@ -132,18 +138,33 @@ async function doLogin(){
 
 onAuthStateChanged(auth, async u => {
   stopListeners();
-  if(!u){ user = null; return renderLogin(); }
+  user = null;
+  isOwner = false;
+  entri = []; pettyAll = []; hutangAll = []; editing = null;
+  monthLoaded = false;
+  dataError = '';
+  if(!u) return renderLogin();
   try {
     const snap = await getDocs(query(collection(store,'staff'), where('email','==',u.email.toLowerCase())));
     const staff = snap.empty ? null : snap.docs[0].data();
+    if(auth.currentUser !== u) return;
     if(!staff || staff.role !== 'Management'){
       loginError = 'Akses ditolak. Apps Akaun hanya untuk peranan Management.';
       await signOut(auth); return;
     }
+    const owner = await getDocFromServer(ownerRecord(u.uid));
+    if(!owner.exists()){
+      const akses = await getDocFromServer(doc(store, 'akaun', BRANCH_ID, 'pengurusan', u.uid));
+      if(!akses.exists()) throw new Error('Akses Akaun belum ditetapkan untuk pengguna ini.');
+    }
+    if(auth.currentUser !== u) return;
+    isOwner = owner.exists();
+    tab = isOwner ? 'Ringkasan' : 'Jualan';
     user = u; nama = staff.name || u.email;
     startListeners();
     renderShell();
   } catch(e){
+    if(auth.currentUser !== u) return;
     loginError = 'Ralat menyemak peranan: ' + e.message;
     await signOut(auth);
   }
@@ -159,15 +180,17 @@ function onErr(e){
 }
 function startListeners(){
   subscribeBulan();
-  unsubPetty = onSnapshot(query(COL, where('guna_petty','==',true)), s => { pettyAll = s.docs.map(d => ({id:d.id, ...d.data()})); dataError=''; refresh(); }, onErr);
-  unsubHutang = onSnapshot(query(COL, where('hutang','==',true)), s => { hutangAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
+  unsubPetty = onSnapshot(entryQuery(where('guna_petty','==',true)), s => { pettyAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
+  unsubHutang = onSnapshot(entryQuery(where('hutang','==',true)), s => { hutangAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
 }
 function subscribeBulan(){
   if(unsubBulan) unsubBulan();
   entri = [];
-  unsubBulan = onSnapshot(query(COL, where('bulan','==',bulan)), s => {
+  monthLoaded = false;
+  dataError = '';
+  unsubBulan = onSnapshot(entryQuery(where('bulan','==',bulan)), s => {
     entri = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.tarikh||'').localeCompare(a.tarikh||'') || ((b.dicipta?.seconds||0)-(a.dicipta?.seconds||0)));
-    dataError=''; refresh();
+    monthLoaded = true; refresh();
   }, onErr);
 }
 function stopListeners(){ [unsubBulan,unsubPetty,unsubHutang].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=null; }
@@ -180,7 +203,7 @@ async function simpan(data){
       await updateDoc(doc(COL, editing.id), {...data, dikemaskini_oleh:nama, dikemaskini:serverTimestamp()});
       toast('✅ Rekod dikemas kini');
     } else {
-      await addDoc(COL, {...data, oleh:nama, dicipta:serverTimestamp()});
+      await addDoc(COL, {...data, assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()});
       toast('✅ Rekod disimpan');
     }
     editing = null;
@@ -188,12 +211,13 @@ async function simpan(data){
   } catch(e){ onErr(e); toast('⚠ Gagal simpan: '+(e.code||e.message)); }
 }
 async function padam(id){
+  if(!isOwner) return;
   if(!confirm('Padam rekod ini? Tindakan ini tidak boleh dibatalkan.')) return;
   try { await deleteDoc(doc(COL, id)); toast('🗑 Rekod dipadam'); if(editing?.id===id){ editing=null; renderTab(); } }
   catch(e){ onErr(e); }
 }
 function mulaEdit(id){
-  const e = entri.find(x => x.id===id) || hutangAll.find(x => x.id===id);
+  const e = entri.find(x => x.id===id) || hutangAll.find(x => x.id===id) || pettyAll.find(x => x.id===id);
   if(!e) return;
   editing = {id, data:e};
   const peta = {jualan:'Jualan', pembelian:'Pembelian', belanja:'Belanja', petty:'Petty Cash'};
@@ -223,7 +247,7 @@ const groupBy = (list, key) => list.reduce((m,e) => (m[e[key]||'Lain-lain'] = (m
 function renderShell(){
   $('#userBox').innerHTML = `<span class="synctag">👤 ${esc(nama)}</span> <button class="small" id="btnOut">Log Keluar</button>`;
   $('#btnOut').onclick = () => { if(confirm('Log keluar?')) signOut(auth); };
-  $('#nav').innerHTML = TABS.map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t}</button>`).join('')
+  $('#nav').innerHTML = (isOwner ? OWNER_TABS : TABS).map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t}</button>`).join('')
 ;
   $('#bulanBar').innerHTML = `<label for="pilihBulan" style="margin:0">📅 Bulan:</label><input type="month" id="pilihBulan" value="${bulan}" style="width:auto;flex:1;max-width:220px;margin:0;padding:8px">`;
   $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; editing = null; renderShell(); });
@@ -233,7 +257,7 @@ function renderShell(){
 
 function renderTab(){
   const f = ({Ringkasan:'', Jualan:formJualan, Pembelian:formPembelian, Belanja:formBelanja, 'Petty Cash':formPetty, Laporan:''})[tab];
-  const alat = ({Jualan:toolJualanLS, 'Petty Cash':toolPettyLS, Laporan:toolImport})[tab];
+  const alat = tab === 'Import' ? toolImport : isOwner && ({Jualan:toolJualanLS, 'Petty Cash':toolPettyLS})[tab];
   $('#app').innerHTML = `<div id="errBox"></div>${f ? f() : ''}${alat ? alat() : ''}<div id="dataBox"></div>`;
   if(f) pasangForm();
   if(alat) pasangAlat();
@@ -241,9 +265,9 @@ function renderTab(){
 }
 
 function refresh(){
-  if(!user || !$('#dataBox')) return;
+  if(!user || !$('#dataBox') || !(isOwner ? OWNER_TABS : TABS).includes(tab)) return;
   $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
-  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Laporan:viewLaporan})[tab];
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Laporan:viewLaporan})[tab];
   $('#dataBox').innerHTML = r();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
   const pr = $('#btnPrint'); if(pr) pr.onclick = () => window.print();
@@ -361,7 +385,7 @@ function pasangForm(){
 
 // ---------- Senarai rekod ----------
 function barisAksi(e){
-  return `<div class="aksi"><button class="small" onclick="AK.mulaEdit('${e.id}')">Edit</button><button class="small danger" onclick="AK.padam('${e.id}')">Padam</button></div>`;
+  return `<div class="aksi"><button class="small" onclick="AK.mulaEdit('${e.id}')">Edit</button>${isOwner ? `<button class="small danger" onclick="AK.padam('${e.id}')">Padam</button>` : ''}</div>`;
 }
 function senarai(jenis){
   const list = entri.filter(e => e.jenis===jenis);
@@ -411,6 +435,7 @@ function viewPetty(){
 
 // ---------- Ringkasan ----------
 function viewRingkasan(){
+  if(!monthLoaded) return '<div class="card muted">Menunggu data bulan dipilih.</div>';
   const k = kira(entri);
   const t = today(), bulanIni = bulan === t.slice(0,7);
   const jualanHariIni = sum(entri.filter(e => e.jenis==='jualan' && e.tarikh===t), e=>e.amaun);
@@ -439,17 +464,37 @@ function viewRingkasan(){
 }
 
 // ---------- Laporan Untung Rugi ----------
+function ringkasanTempoh(mingguan){
+  const kumpulan = new Map();
+  for(const rekod of entri){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(rekod.tarikh || '')) continue;
+    const tarikh = new Date(rekod.tarikh + 'T00:00:00Z');
+    if(!Number.isFinite(tarikh.getTime()) || tarikh.toISOString().slice(0,10) !== rekod.tarikh) continue;
+    if(mingguan) tarikh.setUTCDate(tarikh.getUTCDate() - (tarikh.getUTCDay() + 6) % 7);
+    const awal = tarikh.toISOString().slice(0,10);
+    if(!kumpulan.has(awal)) kumpulan.set(awal, []);
+    kumpulan.get(awal).push(rekod);
+  }
+  const baris = [...kumpulan].sort(([a], [b]) => a.localeCompare(b)).map(([awal, rekod]) => {
+    const akhir = new Date(awal + 'T00:00:00Z');
+    akhir.setUTCDate(akhir.getUTCDate() + 6);
+    const label = mingguan ? `${fmtTarikh(awal)} – ${fmtTarikh(akhir.toISOString().slice(0,10))}` : fmtTarikh(awal);
+    const k = kira(rekod);
+    return `<tr><td>${label}</td><td class="r">${k.kereta}</td><td class="r">${RM(k.jumJualan)}</td><td class="r">${RM(k.jumBeli + k.jumBelanja)}</td><td class="r ${k.bersih < 0 ? 'neg' : 'pos'}">${RM(k.bersih)}</td></tr>`;
+  }).join('');
+  const tajuk = mingguan ? 'Ringkasan Mingguan' : 'Ringkasan Harian';
+  return `<div class="card"><h3>${tajuk}</h3>
+    ${mingguan ? '<p class="muted">Isnin–Ahad. Jumlah termasuk transaksi dalam bulan dipilih sahaja.</p>' : ''}
+    ${baris ? `<div class="scroll"><table><tr><th>Tarikh</th><th>Kend.</th><th>Jualan</th><th>Perbelanjaan</th><th>Bersih</th></tr>${baris}</table></div>` : '<p class="muted">Tiada rekod.</p>'}
+  </div>`;
+}
+
 function viewLaporan(){
+  if(!isOwner || !monthLoaded) return '<div class="card muted">Menunggu data bulan dipilih.</div>';
   const k = kira(entri);
   const beliKat = groupBy(k.beli, 'kategori'), belanjaKat = groupBy(k.belanja, 'kategori');
   const baris = (obj) => Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,v]) => `<tr><td style="padding-left:18px">${esc(n)}</td><td class="r">${RM(v)}</td></tr>`).join('') || '<tr><td style="padding-left:18px" class="muted">Tiada</td><td></td></tr>';
   const margin = k.jumJualan ? (k.bersih/k.jumJualan*100).toFixed(1) : '0.0';
-  // ringkasan harian
-  const tarikhSet = [...new Set(entri.map(e => e.tarikh))].sort();
-  const harian = tarikhSet.map(t => {
-    const x = kira(entri.filter(e => e.tarikh===t));
-    return `<tr><td>${fmtTarikh(t)}</td><td class="r">${x.kereta||''}</td><td class="r">${RM(x.jumJualan)}</td><td class="r">${RM(x.jumBeli + x.jumBelanja)}</td><td class="r ${x.bersih<0?'neg':'pos'}">${RM(x.bersih)}</td></tr>`;
-  }).join('');
   return `<div class="row noprint" style="margin-bottom:10px"><button class="primary" id="btnCsv">⬇ Muat turun CSV (Excel)</button><button id="btnPrint">🖨 Cetak / Simpan PDF</button></div>
   <div class="card">
     <h3 style="margin:0">Penyata Untung Rugi</h3>
@@ -470,9 +515,8 @@ function viewLaporan(){
       <tr><td class="muted">Kenderaan dicuci • purata jualan/kenderaan</td><td class="r muted">${k.kereta} • ${RM(k.kereta ? k.jumJualan/k.kereta : 0)}</td></tr>
     </table></div>
   </div>
-  <div class="card"><h3 style="margin-top:0">Ringkasan Harian</h3>
-    ${harian ? `<div class="scroll"><table><tr><th>Tarikh</th><th class="r">Kend.</th><th class="r">Jualan</th><th class="r">Perbelanjaan</th><th class="r">Bersih</th></tr>${harian}</table></div>` : '<p class="muted">Tiada rekod.</p>'}
-  </div>
+  ${ringkasanTempoh(false)}
+  ${ringkasanTempoh(true)}
   <div class="card"><h3 style="margin-top:0">Lain-lain</h3><table>
     <tr><td>Baki petty cash semasa</td><td class="r">${RM(bakiPetty())}</td></tr>
     <tr><td>Hutang pembekal belum bayar (semua bulan)</td><td class="r">${RM(sum(hutangAll,e=>e.amaun))}</td></tr>
@@ -481,6 +525,7 @@ function viewLaporan(){
 }
 
 function eksportCsv(){
+  if(!isOwner || !monthLoaded) return;
   const kol = ['tarikh','jenis','kategori','perkara','pembekal','invois','bayar','tunai','qr','kad','ewallet','lain','kereta','amaun','petty_arah','hutang','catatan','oleh'];
   const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
   const list = [...entri].sort((a,b) => (a.tarikh||'').localeCompare(b.tarikh||''));
@@ -775,7 +820,7 @@ async function bacaFailImport(fail){
     // semak pendua dengan rekod sedia ada dalam bulan berkaitan
     const bulanSet = [...new Set(ok.map(h => h.d.bulan))];
     const sedia = [];
-    for(const b of bulanSet) (await getDocs(query(COL, where('bulan','==',b)))).docs.forEach(x => sedia.push(x.data()));
+    for(const b of bulanSet) (await getDocs(entryQuery(where('bulan','==',b)))).docs.forEach(x => sedia.push(x.data()));
     const kunci = e => `${e.tarikh}|${e.jenis}|${Number(e.amaun).toFixed(2)}|${(e.perkara||'').toLowerCase()}`;
     const ada = new Set(sedia.map(kunci));
     ok.forEach(h => h.pendua = ada.has(kunci(h.d)));
@@ -806,7 +851,7 @@ async function simpanImport(){
     for(let i = 0; i < baru.length; i += 400){
       btn.textContent = `Menyimpan ${Math.min(i+400, baru.length)}/${baru.length}…`;
       const batch = writeBatch(store);
-      baru.slice(i, i+400).forEach(d => batch.set(doc(COL), {...d, oleh:nama, dicipta:serverTimestamp()}));
+      baru.slice(i, i+400).forEach(d => batch.set(doc(COL), {...d, assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()}));
       await batch.commit();
     }
     toast(`✅ ${baru.length} rekod diimport`);
