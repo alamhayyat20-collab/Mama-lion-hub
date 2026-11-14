@@ -10,6 +10,8 @@ Apps perakaunan untuk Mama Lion (Management sahaja). Guna login & projek Firebas
 - **Pembelian** – stok & bekalan (pembekal, kategori, invois, cara bayar). Pembelian "Kredit (Hutang)" masuk senarai hutang sehingga ditanda lunas
 - **Belanja** – belanja operasi (gaji, sewa, elektrik, air, internet, dll.)
 - **Petty Cash** – top-up & belanja kecil, baki dikira automatik. Pembelian/belanja yang dibayar guna "Petty Cash" juga menolak baki
+- **Pekerja** (pemilik sahaja) – daftar pekerja ikut cawangan: **ID staf, peranan kaunter (Admin / Manager / Supervisor / Cashier / Pekerja) & PIN** untuk log masuk Lion Safari V2, serta maklumat peribadi (IC, telefon, bank, kenalan kecemasan, tarikh mula). Rekod **advance, overtime (jam × kadar), elaun, komisen/bonus, potongan, hari bekerja** (gaji harian). **Gaji Bulanan**: ringkasan setiap pekerja (Asas + OT + Elaun + Komisen − Potongan − Advance = Bersih), CSV, cetak, dan butang "Rekod ke Belanja" (kategori Gaji & Upah)
+- **Cawangan** – pilih logo Mama Lion / Lion King; semua data diasingkan ikut cawangan
 - **Laporan** – Penyata Untung Rugi bulanan, ringkasan harian, muat turun CSV (buka dalam Excel), cetak / simpan PDF
 - **Tarik dari LionSafari** – (tab Jualan) kira jualan harian dari order berbayar LionSafari (Cash → Tunai, QR → QR). Hari yang sudah ditarik tidak diulang; jika ada order baru, ia ditanda "Berubah" untuk dikemas kini. (Tab Petty Cash) salin rekod petty cash LionSafari, setiap rekod hanya sekali.
   ⚠ Tarik jualan **sebelum** tekan "Reset Data" di LionSafari — Reset memadam semua order.
