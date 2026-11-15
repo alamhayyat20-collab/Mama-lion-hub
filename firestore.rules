@@ -96,6 +96,12 @@ service cloud.firestore {
       allow create: if staffApp()
         && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(id));
     }
+    // Daily Report Duty: pekerja kuasa 👀 Hadir rekod PIC & catatan
+    match /kakitangan/{cawangan}/duty/{id} {
+      allow read: if staffApp();
+      allow write: if staffApp() && olehKuasa('mama-lion', 'hadir')
+        && request.resource.data.get('disahkanOleh', '') == resource.data.get('disahkanOleh', '');
+    }
     // Tutup kaunter: kuasa 🔐 Tutup (gambar & kiraan tunai), kuasa 🧮 Semak (sahkan / pulangkan)
     match /lionsafari/{cawangan}/tutup/{tarikh} {
       allow read: if staffApp();

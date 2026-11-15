@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-8">
+<meta name="app-versi" content="2026.11.16-9">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,15 +115,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-8';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-9';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-8';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-8';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-8';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP } from '../laporan-lib.js?v=2026.11.16-8';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-8';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-9';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-9';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-9';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-9';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-9';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -436,17 +436,20 @@ const modulPG = modulPengurusan({store, fs:{collection, doc, query, where, onSna
 let pgMula = false;
 const pgBadge = () => pgMula ? modulPG.st.menunggu.filter(m => MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus'))).length : 0;
 function segPengelola(){
-  return [adaKuasa(saya,'hadir') && 'Kehadiran', (adaKuasa(saya,'lulus') || adaKuasa(saya,'roster')) && 'Permohonan', adaKuasa(saya,'roster') && 'Roster', adaKuasa(saya,'info') && 'Info', adaKuasa(saya,'promosi') && 'Promosi'].filter(Boolean);
+  return [adaKuasa(saya,'hadir') && 'Kehadiran', (adaKuasa(saya,'lulus') || adaKuasa(saya,'roster')) && 'Permohonan', adaKuasa(saya,'roster') && 'Roster', adaKuasa(saya,'hadir') && 'Duty', adaKuasa(saya,'info') && 'Info', adaKuasa(saya,'promosi') && 'Promosi'].filter(Boolean);
 }
 function viewPengelola(){
   const segs = segPengelola();
   if(!segs.includes(pgSeg)) pgSeg = segs[0];
   if(!pgMula && segs.some(x => ['Kehadiran','Permohonan','Roster'].includes(x))){ pgMula = true; modulPG.mula(); }
   const atas = `<div class="card" style="padding:10px 14px"><b>🛠 Pengelola</b> <span class="muted">— kuasa diberi oleh Dato' / Datin. Setiap perubahan direkod.</span></div>
-    <div class="seg" style="grid-template-columns:repeat(${segs.length},1fr)">${segs.map(x => `<button class="${x===pgSeg?'on':''}" data-pgseg="${x}" style="font-size:12px"><b>${({Kehadiran:'👀',Permohonan:'✅',Roster:'📅',Info:'📢',Promosi:'🎁'})[x]}</b>${x}${x === 'Permohonan' && pgBadge() ? ` (${pgBadge()})` : ''}</button>`).join('')}</div>`;
+    <div class="seg" style="grid-template-columns:repeat(${segs.length},1fr)">${segs.map(x => `<button class="${x===pgSeg?'on':''}" data-pgseg="${x}" style="font-size:12px"><b>${({Kehadiran:'👀',Permohonan:'✅',Roster:'📅',Duty:'📋',Info:'📢',Promosi:'🎁'})[x]}</b>${x}${x === 'Permohonan' && pgBadge() ? ` (${pgBadge()})` : ''}</button>`).join('')}</div>`;
   if(['Kehadiran','Permohonan','Roster'].includes(pgSeg)){
     $('#app').innerHTML = atas + `<div>${modulPG.html(pgSeg, [])}</div>` + (pgSeg === 'Permohonan' ? '<p class="muted center">Advance & claim hanya diluluskan oleh Dato\' / Datin.</p>' : '');
     modulPG.pasang(m => { pgSeg = m; render(); });
+  } else if(pgSeg === 'Duty'){
+    if(!MDP.st.D && !MDP.mulaD){ MDP.mulaD = true; MDP.mula(); }
+    $('#app').innerHTML = atas + MDP.html(); MDP.pasang();
   } else if(pgSeg === 'Info') viewPGInfo(atas);
   else if(pgSeg === 'Promosi') viewPGPromosi(atas);
   $$('[data-pgseg]').forEach(b => b.onclick = () => { pgSeg = b.dataset.pgseg; $('#app').dataset.sibuk = ''; render(); });
@@ -526,6 +529,8 @@ function langganTutup(){
     tutupMenunggu = [...tutupMenunggu.filter(x => x.c !== c), ...s.docs.map(d => ({c, ...d.data()}))].sort((a,b) => a.tarikh.localeCompare(b.tarikh));
     renderNav(); if(tab === 'Tutup' && !$('#app').dataset.sibuk) render(); }, () => {}));
 }
+const MDP = modulDuty({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, onSnapshot}, pengguna: () => `${saya?.nama || ''} (${saya?.idStaf || ''})`,
+  tanda: () => ({olehId: saya.id, olehCaw: saya.c}), toast, bolehSahkan: false, refresh: () => { if(tab === 'Pengelola' && pgSeg === 'Duty' && !$('#app').dataset.sibuk) render(); }});
 function viewTutup(){
   if(MTP.st.c !== cawO) MTP.mula();
   const pending = tutupMenunggu.length ? `<div class="card"><h3 style="margin-top:0">🧮 Menunggu semakan (${tutupMenunggu.length})</h3>${tutupMenunggu.map(r => `<button class="btn" style="width:100%;margin:4px 0;text-align:left" data-tsemak="${r.c}|${r.tarikh}">${esc(namaCaw(r.c))} · ${esc(r.tarikh)} · RM ${(r.laporan?.jumlah || 0).toFixed(2)} · ${esc(r.ditutupOleh || '')}</button>`).join('')}</div>` : '';

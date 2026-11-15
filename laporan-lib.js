@@ -360,3 +360,138 @@ export const CSS_TUTUP = `
 .lt-btn{border:0;border-radius:10px;padding:11px 12px;font-weight:700;background:#e2e8f0;cursor:pointer;font-size:14px}.lt-pri{background:#14532d;color:#fff}.lt-wa{background:#16a34a;color:#fff}
 .lt-x{padding:4px 9px;background:#fee2e2;color:#b91c1c}.lt-bigbtn{width:100%;padding:15px;font-size:16px;margin-top:10px}.lt-btn:disabled{opacity:.45}
 `;
+
+// =====================================================================
+// DAILY REPORT DUTY (syif pagi & petang) — auto dari roster & punch card
+// Data catatan: kakitangan/mama-lion/duty/{tarikh}_{c} = {picPagi, picPetang, notaPagi, notaPetang, direkodOleh, disahkanOleh}
+// =====================================================================
+const PAGI = ['9-6', '9-12', 'P', 'F', 'SPLIT'], PETANG = ['3-12', '9-12', 'M', 'F', 'SPLIT'];
+export function kiraDuty({tarikh, c, roster = {}, kehadiran = [], staf = [], syif = []}){
+  const pagi = [], petang = [], off = [];
+  const sy = k => syif.find(s => s.kod === k);
+  const hadirS = id => kehadiran.filter(h => h.stafId === id && (h.cawangan || 'mama-lion') === c).sort((a,b) => masaMs(a) - masaMs(b));
+  const lewat = (h, mula) => { if(!h || !mula) return 0; const [H, M] = mula.split(':').map(Number); const d = new Date(tarikh + 'T00:00:00'); d.setHours(H, M, 0, 0); return Math.max(0, Math.round((masaMs(h) - d) / 60000)); };
+  const dilihat = new Set();
+  for(const s of staf.filter(x => x.aktif !== false)){
+    const k = roster.syif?.[s.id] || '', tp = roster.tempat?.[s.id] || null, h = hadirS(s.id), masuk = h.find(x => x.jenis === 'masuk'), keluar = [...h].reverse().find(x => x.jenis === 'keluar');
+    const rem = (mula) => { if(!masuk) return 'Tiada punch in'; const l = lewat(masuk, mula); return `In ${masaJ(masaMs(masuk))}${keluar ? ' · Out ' + masaJ(masaMs(keluar)) : ''}${l > 5 ? ` · LEWAT ${l} min` : ''}`; };
+    if(['OFF','CUTI'].includes(k)){ if(!tp || tp.c === c || !tp.c) off.push({nama: s.nama, ket: k === 'CUTI' ? 'Cuti' : 'Off'}); dilihat.add(s.id); continue; }
+    if(!k) continue;
+    const diC = tp?.c === c, diC2 = tp?.c2 === c, tanpaTempat = !tp?.c && c === 'mama-lion';
+    if((diC || tanpaTempat) && PAGI.includes(k)){ pagi.push({nama: s.nama, idStaf: s.idStaf || '', syif: k, ket: rem(sy(k)?.mula || '09:00')}); dilihat.add(s.id); }
+    if(((diC || tanpaTempat) && PETANG.includes(k) && !(k === '9-12' && tp?.c2)) || (diC2 && k === '9-12')){ petang.push({nama: s.nama, idStaf: s.idStaf || '', syif: k, ket: k === '9-12' && diC2 ? 'Sambung dari ' + (tp.c === 'lion-king' ? 'LK' : 'ML') : rem('15:00')}); dilihat.add(s.id); }
+  }
+  // Punch tanpa jadual di cawangan ini
+  for(const s of staf){ if(dilihat.has(s.id)) continue; const h = hadirS(s.id), m = h.find(x => x.jenis === 'masuk'); if(!m) continue;
+    const jam = new Date(masaMs(m)).getHours(); (jam < 14 ? pagi : petang).push({nama: s.nama, idStaf: s.idStaf || '', syif: '', ket: `In ${masaJ(masaMs(m))} · luar jadual`}); }
+  return {tarikh, hari: namaHari(tarikh), c, namaKedai: NAMA_CAW[c] || c, pagi, petang, off};
+}
+export function htmlDuty(D, n = {}){
+  const kol = (tajuk, l, pic, nota) => { const b = [...l]; while(b.length < 10) b.push(null); const offL = D.off.slice(0, 4);
+    return `<div class="k"><h2>DAILY REPORT DUTY: ${tajuk}</h2><div class="m"><span>DATE (DAY): <b>${fT(D.tarikh)} (${D.hari})</b></span><span>PERSON IN CHARGED NAME: <b>${esc(pic || '')}</b></span></div>
+    <table><tr><th style="width:36px">No</th><th>STAFF FULL NAME</th><th style="width:44%">REMARKS</th></tr>${b.map((x,i) => `<tr><td class="c">${i+1}</td><td>${x ? esc(x.nama) + (x.syif ? ` <small>(${esc(x.syif)})</small>` : '') : ''}</td><td>${x ? esc(x.ket) : ''}</td></tr>`).join('')}</table>
+    <p><b>OFF DUTY</b><br>${offL.length ? offL.map((x,i) => `${i+1}) ${esc(x.nama)}${x.ket === 'Cuti' ? ' (Cuti)' : ''}`).join(' &nbsp; ') : '1) _______________ 2) _______________'}</p>
+    <p><b>NOTE / REMARKS:</b><br>${esc(nota || '') || '<br><br>'}</p>
+    <div class="s"><div>RECORDED BY<br><b>${esc(n.direkodOleh || '')}</b></div><div>CHECKED BY<br><b>${esc(n.disahkanOleh || '')}</b></div></div>
+    <div class="s"><div>APPROVED BY<br><b>DATIN NUR SAFARINI</b><br>DIRECTOR</div><div>APPROVED BY<br><b>DATO' MUHAMMAD ARIS</b><br>CHAIRMAN</div></div></div>`; };
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Daily Report Duty ${D.tarikh}</title><style>@page{size:A4 landscape;margin:8mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:11px;margin:0}
+  h1{text-align:center;font-size:15px;margin:0 0 6px}.w{display:grid;grid-template-columns:1fr 1fr;gap:14px}.k{border:1px solid #222;padding:8px}h2{font-size:13px;text-align:center;margin:0 0 6px;background:#f4dc8c;padding:4px}
+  .m{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #222;padding:4px;height:22px}th{background:#fff7d6;font-size:10px}td.c{text-align:center}
+  .s{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center;font-size:10px}.s div{margin-top:30px;border-top:1px solid #222;padding-top:3px}@media screen{body{padding:12px}}</style></head><body>
+  <h1>${esc(D.namaKedai)}</h1><div class="w">${kol('MORNING SHIFT', D.pagi, n.picPagi, n.notaPagi)}${kol('EVENING SHIFT', D.petang, n.picPetang, n.notaPetang)}</div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`;
+}
+export function teksDuty(D, n = {}){
+  const b = [`*${D.namaKedai}*`, `*DAILY REPORT DUTY* — ${D.hari}, ${fT(D.tarikh)}`, ''];
+  b.push(`🌅 *MORNING SHIFT* — PIC: ${n.picPagi || '-'}`); D.pagi.forEach((x,i) => b.push(`${i+1}) ${x.nama}${x.syif ? ' (' + x.syif + ')' : ''} — ${x.ket}`)); if(n.notaPagi) b.push(`📝 ${n.notaPagi}`);
+  b.push('', `🌙 *EVENING SHIFT* — PIC: ${n.picPetang || '-'}`); D.petang.forEach((x,i) => b.push(`${i+1}) ${x.nama}${x.syif ? ' (' + x.syif + ')' : ''} — ${x.ket}`)); if(n.notaPetang) b.push(`📝 ${n.notaPetang}`);
+  b.push('', `🛌 *OFF DUTY*: ${D.off.map(x => x.nama + (x.ket === 'Cuti' ? ' (Cuti)' : '')).join(', ') || '-'}`, '', `Recorded by: ${n.direkodOleh || '-'}`, `Checked by: ${n.disahkanOleh || '-'}`);
+  return b.join('\n');
+}
+// ctx = {store, fs, pengguna(), tanda?(), toast, refresh, bolehSahkan}
+export function modulDuty(ctx){
+  const {store, fs} = ctx;
+  const st = {tarikh: hariIniT(), c: 'mama-lion', D: null, n: {}, staf: [], unsub: []};
+  const K = n => fs.collection(store, 'kakitangan', 'mama-lion', n);
+  const T = () => ctx.tanda ? ctx.tanda() : {};
+  const id = () => `${st.tarikh}_${st.c}`;
+  async function mula(){
+    st.unsub.forEach(f => f()); st.unsub = [];
+    try{
+      const [staf, tp, rs, kh] = await Promise.all([
+        fs.getDocs(fs.collection(store, 'lionsafari', 'mama-lion', 'staf')).then(s => s.docs.map(d => ({id: d.id, ...d.data()}))),
+        fs.getDoc(fs.doc(K('tetapan'), 'umum')).then(s => s.exists() ? s.data() : {}),
+        fs.getDoc(fs.doc(K('roster'), st.tarikh)).then(s => s.exists() ? s.data() : {}),
+        fs.getDocs(fs.query(K('kehadiran'), fs.where('tarikh', '==', st.tarikh))).then(s => s.docs.map(d => ({id: d.id, ...d.data()})))]);
+      st.staf = staf.filter(s => s.aktif !== false);
+      st.D = kiraDuty({tarikh: st.tarikh, c: st.c, roster: rs, kehadiran: kh, staf: st.staf, syif: tp.syif || []});
+    }catch(e){ console.error(e); ctx.toast('⚠ Gagal muat data duty: ' + (e.code || e.message)); }
+    st.unsub.push(fs.onSnapshot(fs.doc(K('duty'), id()), s => { st.n = s.exists() ? s.data() : {}; ctx.refresh(); }, () => {}));
+    ctx.refresh();
+  }
+  function html(){
+    const D = st.D, n = st.n, e = esc, ed = !n.disahkanOleh;
+    const pilihPic = (k, l) => `<select data-dt-pic="${k}" ${ed ? '' : 'disabled'}><option value="">— pilih PIC —</option>${st.staf.map(s => `<option ${n[k] === s.nama ? 'selected' : ''}>${e(s.nama)}</option>`).join('')}</select>`;
+    const kol = (tajuk, l, pk, nk) => `<div class="lt-card"><h3>${tajuk}</h3><label>Person in charge</label>${pilihPic(pk)}
+      ${l.map((x,i) => `<div class="lt-ln"><span>${i+1}) <b>${e(x.nama)}</b> ${x.syif ? `<small>(${e(x.syif)})</small>` : ''}</span><span class="lt-muted">${e(x.ket)}</span></div>`).join('') || '<p class="lt-muted">Tiada.</p>'}
+      <label>Note / remarks</label><textarea data-dt-nota="${nk}" rows="2" ${ed ? '' : 'disabled'}>${e(n[nk] || '')}</textarea></div>`;
+    return `<div class="lt-card"><div class="lt-between"><h3 style="margin:0">📋 Daily Report Duty</h3>${n.disahkanOleh ? '<span class="lt-tag lt-disahkan">Disahkan</span>' : ''}</div>
+      <div class="lt-row"><input type="date" data-dt-tarikh value="${st.tarikh}" style="width:auto;margin:0"><button class="lt-btn ${st.c === 'mama-lion' ? 'lt-pri' : ''}" data-dt-c="mama-lion">ML</button><button class="lt-btn ${st.c === 'lion-king' ? 'lt-pri' : ''}" data-dt-c="lion-king">LK</button></div>
+      <div class="lt-muted">Senarai staf diisi automatik daripada roster & punch card. PIC hanya pilih nama & tulis catatan.</div></div>
+      ${D ? `<div class="lt-grid">${kol('🌅 Morning shift', D.pagi, 'picPagi', 'notaPagi')}${kol('🌙 Evening shift', D.petang, 'picPetang', 'notaPetang')}</div>
+      <div class="lt-card"><b>🛌 Off duty:</b> ${D.off.map(x => e(x.nama) + (x.ket === 'Cuti' ? ' (Cuti)' : '')).join(', ') || '-'}
+      <div class="lt-muted" style="margin-top:6px">${n.direkodOleh ? 'Direkod oleh ' + e(n.direkodOleh) : ''}${n.disahkanOleh ? ' · Disahkan ' + e(n.disahkanOleh) : ''}</div>
+      ${ctx.bolehSahkan && !n.disahkanOleh && n.direkodOleh ? '<button class="lt-btn lt-pri" data-dt-sahkan style="width:100%;margin-top:8px">✅ Sahkan laporan duty</button>' : ''}</div>
+      <div class="lt-row" style="margin:10px 0 20px"><button class="lt-btn" data-dt-cetak style="flex:1">🖨 Cetak / PDF</button><button class="lt-btn lt-wa" data-dt-wa style="flex:1">📤 WhatsApp</button></div>` : '<div class="lt-card lt-muted">Memuatkan…</div>'}`;
+  }
+  const simpan = d => fs.setDoc(fs.doc(K('duty'), id()), {tarikh: st.tarikh, cawangan: st.c, ...d, direkodOleh: ctx.pengguna(), dikemaskini: Date.now(), ...T()}, {merge: true}).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
+  function pasang(){
+    const q = s => document.querySelector(s), qa = s => document.querySelectorAll(s);
+    const t = q('[data-dt-tarikh]'); if(t) t.onchange = e => { if(e.target.value){ st.tarikh = e.target.value; st.D = null; mula(); } };
+    qa('[data-dt-c]').forEach(b => b.onclick = () => { st.c = b.dataset.dtC; st.D = null; mula(); });
+    qa('[data-dt-pic]').forEach(s => s.onchange = () => simpan({[s.dataset.dtPic]: s.value}));
+    qa('[data-dt-nota]').forEach(s => s.onchange = () => simpan({[s.dataset.dtNota]: s.value}));
+    const sh = q('[data-dt-sahkan]'); if(sh) sh.onclick = () => fs.setDoc(fs.doc(K('duty'), id()), {disahkanOleh: ctx.pengguna(), masaSah: Date.now(), ...T()}, {merge: true}).then(() => ctx.toast('✅ Disahkan')).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
+    const ct = q('[data-dt-cetak]'); if(ct) ct.onclick = () => cetak(htmlDuty(st.D, st.n));
+    const wa = q('[data-dt-wa]'); if(wa) wa.onclick = () => kongsiWhatsApp(teksDuty(st.D, st.n));
+  }
+  return {mula, html, pasang, st, henti: () => { st.unsub.forEach(f => f()); st.unsub = []; }};
+}
+
+// =====================================================================
+// ATTENDANCE RECORD FOR PART TIME STAFF (bulanan) — dari punch card
+// p = {nama, idStaf, info:{jawatan, ic, bank, telefon, alamat, kadarJam}}, hadir = rekod kehadiran bulan itu
+// =====================================================================
+export function hariPT(hadir){
+  const ikut = {};
+  for(const h of hadir) (ikut[h.tarikh] = ikut[h.tarikh] || []).push(h);
+  return Object.entries(ikut).sort(([a],[b]) => a.localeCompare(b)).map(([t, l]) => {
+    const x = [...l].sort((a,b) => masaMs(a) - masaMs(b)); let buka = null, m = 0, pertama = null, akhir = null; const caw = new Set();
+    for(const r of x){ caw.add(r.cawangan === 'lion-king' ? 'LK' : 'ML'); if(r.jenis === 'masuk'){ if(!buka) buka = r; if(!pertama) pertama = r; } else if(r.jenis === 'keluar' && buka){ m += (masaMs(r) - masaMs(buka)) / 60000; akhir = r; buka = null; } }
+    return {tarikh: t, masuk: pertama ? masaJ(masaMs(pertama)) : '', keluar: akhir ? masaJ(masaMs(akhir)) : '', jam: r2(Math.min(m, JAM_MAKS_MINIT) / 60), tempat: [...caw].join('/'), stesen: x.find(r => r.stesenNama)?.stesenNama || ''};
+  });
+}
+export function htmlPT(p, hari, bulan){
+  const i = p.info || {}, jum = r2(hari.reduce((t,h) => t + h.jam, 0)), kadar = Number(i.kadarJam) || 0;
+  const baris = [...hari]; while(baris.length < 16) baris.push(null);
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Part Time ${esc(p.nama)} ${bulan}</title><style>@page{size:A4;margin:12mm}body{font-family:Arial,sans-serif;font-size:11.5px;margin:0}
+  .t{text-align:right;font-size:10px}h1{font-size:14px;text-align:center;margin:10px 0}.f div{margin:3px 0}.f b{display:inline-block;width:130px}.h{display:flex;justify-content:space-between;margin:10px 0}
+  table{border-collapse:collapse;width:100%}th,td{border:1px solid #222;padding:4px;height:20px}th{background:#f4dc8c;font-size:10.5px}td.c{text-align:center}.s{display:grid;grid-template-columns:1fr 1fr;gap:30px;text-align:center;margin-top:16px}
+  .s div{margin-top:40px;border-top:1px solid #222;padding-top:3px}@media screen{body{padding:16px;max-width:820px;margin:auto}}</style></head><body>
+  <div class="t">Form No: PTF · Effective Date: ${bulan}</div><h1>ATTENDANCE RECORD FOR PART TIME STAFF (ON HOURLY BASIS)</h1>
+  <div class="h"><div class="f"><div><b>NAME:</b> ${esc(p.nama)} (${esc(p.idStaf || '')})</div><div><b>POSITION:</b> ${esc(i.jawatan || 'Part-time')}</div><div><b>IC NO:</b> ${esc(i.ic || '')}</div>
+    <div><b>BANK ACCOUNT:</b> ${esc(i.bank || '')}</div><div><b>CONTACT NO:</b> ${esc(i.telefon || '')}</div><div><b>ADDRESS:</b> ${esc(i.alamat || '')}</div></div>
+    <div style="text-align:right"><b>MAMALION CARWASH</b><br>LOT 3 SEKSYEN 20 (GRN 8329),<br>JALAN GAMBUT / TUN ISMAIL 10, 25000<br>KUANTAN, PAHANG DARUL MAKMUR.<br><br>BULAN: <b>${bulan}</b></div></div>
+  <table><tr><th>DATE</th><th>TIME IN</th><th>TIME OUT</th><th>TOTAL HOURS</th><th>REMARKS / DUTIES</th><th>SIGN PT STAFF</th></tr>
+  ${baris.map(h => h ? `<tr><td class="c">${fT(h.tarikh)}</td><td class="c">${h.masuk}</td><td class="c">${h.keluar}</td><td class="c">${h.jam.toFixed(2)}</td><td>${esc(h.tempat)}${h.stesen ? ' · ' + esc(h.stesen) : ''}</td><td></td></tr>` : '<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}
+  <tr><td colspan="3" style="text-align:right"><b>TOTAL</b></td><td class="c"><b>${jum.toFixed(2)}</b></td><td colspan="2">${kadar ? `× RM ${RMx(kadar)} = <b>RM ${RMx(jum * kadar)}</b>` : ''}</td></tr></table>
+  <p style="font-size:10px">NOTE: FOR COACH/TRAINER, PLEASE ATTACH THE ATTENDANCE RECORD OF YOUR TRAINEE/PARTIME. Masa diambil daripada punch card Apps Pekerja (maks 8 jam sehari).</p>
+  <div class="s"><div>PARTIME STAFF<br>( ${esc(p.nama)} )</div><div>APPROVED BY<br>(DATIN NUR SAFARINI BINTI JAAFAR)</div></div>
+  <div class="s" style="grid-template-columns:1fr"><div style="width:50%;margin-left:25%">SIGNATURE WITNESS<br>( ACCOUNT / HUMAN RESOURCE )</div></div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`;
+}
+export function teksPT(p, hari, bulan){
+  const i = p.info || {}, jum = r2(hari.reduce((t,h) => t + h.jam, 0)), kadar = Number(i.kadarJam) || 0;
+  return [`*PART TIME ATTENDANCE — ${bulan}*`, `${p.nama} (${p.idStaf || ''})`, '', ...hari.map(h => `${fT(h.tarikh)}  ${h.masuk}–${h.keluar}  ${h.jam.toFixed(2)} jam  ${h.tempat}`), '',
+    `*Jumlah: ${jum.toFixed(2)} jam*${kadar ? ` × RM ${RMx(kadar)} = *RM ${RMx(jum * kadar)}*` : ''}`].join('\n');
+}

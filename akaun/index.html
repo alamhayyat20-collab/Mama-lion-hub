@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-8">
+<meta name="app-versi" content="2026.11.16-9">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,11 +108,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-8';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-8';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-8';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF } from '../laporan-lib.js?v=2026.11.16-8';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-8';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-9';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-9';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-9';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-9';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-9';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1015,7 +1015,8 @@ document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}$
 let fotoStaf = {};   // gambar profil staf: lionsafari/{cawangan}/staf_foto/{id}
 const fotoColAk = () => collection(store, 'lionsafari', PUSAT, 'staf_foto');
 const MOD_KM = ['Kehadiran','Permohonan','Roster','Tetapan Pekerja'];
-const MOD_EXTRA = ['Info Pekerja', 'Kadar Komisen', 'Log Pengelola'];
+const MOD_EXTRA = ['Laporan Duty', 'Info Pekerja', 'Kadar Komisen', 'Log Pengelola'];
+let MDA = null, mdaMula = false;
 function onErrHR(e){ console.error(e); hrError = e.code === 'permission-denied' ? 'Firebase menolak akses rekod pekerja — Firestore Rules perlu dikemas kini (blok "pekerja" & "hr").' : 'Ralat: ' + e.message; refresh(); }
 function mulaHR(){
   unsubHR.forEach(f => f && f()); unsubHR = []; hrError = ''; stafKaunter = []; pekerjaInfo = {}; tetapanKaunter = {}; kadarKomisen = {}; fotoStaf = {};
@@ -1090,6 +1091,11 @@ function viewPekerja(){
     <button class="primary" data-pkbaru="1" style="margin-left:auto">+ Pekerja baru</button></div>`;
   const err = hrError ? `<div class="notice">⚠ ${esc(hrError)}</div>` : '';
   if(MOD_KM.includes(pkMod)) return sub + modulPK.html(pkMod, []);
+  if(pkMod === 'Laporan Duty'){
+    if(!MDA) MDA = modulDuty({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, onSnapshot}, pengguna: () => nama, toast, bolehSahkan: true, refresh: () => { if(tab === 'Pekerja' && pkMod === 'Laporan Duty') refresh(); }});
+    if(!mdaMula){ mdaMula = true; MDA.mula(); }
+    return sub + MDA.html();
+  }
   if(pkMod === 'Kadar Komisen') return sub + err + viewKomisen();
   if(pkMod === 'Info Pekerja') return sub + err + viewInfoPK();
   if(pkMod === 'Log Pengelola') return sub + err + viewLogPK();
@@ -1098,7 +1104,7 @@ function viewPekerja(){
     ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}">${avatar(fotoStaf[p.id], p.nama, 44)}<div style="flex:1"><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${jenisPekerja(p.info) === 'parttime' ? ' <span class="tag">⏱ Part-time</span>' : jenisPekerja(p.info) === 'pengurusan' ? ' <span class="tag">🧑‍💼 Pengurusan</span>' : ''}${p.punchBebas ? ' <span class="tag" title="Punch selfie lokasi semasa, tanpa stesen">📍 Punch bebas</span>' : ''}${ikonKuasa(p)?` <span class="tag" style="background:#fef3c7" title="${esc([p.mo?'MO':'', ...KUASA.filter(x => adaKuasa(p,x.k)).map(x => x.label)].filter(Boolean).join(', '))}">${ikonKuasa(p)}</span>`:''}${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
         <br><span class="muted">${esc(p.info.jawatan||'')}${p.info.telefon?' · '+esc(p.info.telefon):''}${p.info.jenisGaji ? ' · '+(p.info.jenisGaji==='Harian' ? RM(p.info.kadarHarian)+'/hari' : RM(p.info.gajiBulanan)+'/bulan') : ''}</span>
         ${g.advance ? `<br><span class="tag warn">Advance ${fmtBulan(bulan)}: ${RM(g.advance)}</span>` : ''}</div>
-        <div class="aksi"><button class="small primary" data-pkrekod="${p.id}">+ Rekod</button><button class="small" data-pkurus="${p.id}">Urus</button></div></div>`; }).join('')
+        <div class="aksi">${jenisPekerja(p.info) === 'parttime' ? `<button class="small" data-pkpt="${p.id}" title="Borang kehadiran part-time">🧾 PT</button><button class="small" data-pkpt="${p.id}" data-wa="1" title="WhatsApp">📤</button>` : ''}<button class="small primary" data-pkrekod="${p.id}">+ Rekod</button><button class="small" data-pkurus="${p.id}">Urus</button></div></div>`; }).join('')
       : '<p class="muted">Belum ada pekerja. Tekan "+ Pekerja baru".</p>'}</div>`;
 
   if(pkMod === 'Gaji Bulanan'){
@@ -1126,6 +1132,8 @@ function viewPekerja(){
 function pasangPekerja(){
   if(pkMod === 'Kadar Komisen') pasangKomisen();
   if(pkMod === 'Info Pekerja') pasangInfoPK();
+  if(pkMod === 'Laporan Duty' && MDA) MDA.pasang();
+  $$('[data-pkpt]').forEach(b => b.onclick = () => { const p = senaraiPekerja().find(x => x.id === b.dataset.pkpt); if(!p) return; const h = hariPT(modulPK.st.hadirBulan.filter(x => x.stafId === p.id)); if(b.dataset.wa) kongsiWhatsApp(teksPT(p, h, bulan)); else cetak(htmlPT(p, h, bulan)); });
   if(MOD_KM.includes(pkMod)) modulPK.pasang(m => { pkMod = m; refresh(); });
   $$('[data-pkmod]').forEach(b => b.onclick = () => { pkMod = b.dataset.pkmod; refresh(); });
   $$('[data-pkbaru]').forEach(b => b.onclick = () => borangPekerja(null));
@@ -1173,6 +1181,7 @@ function borangPekerja(id){
       <div id="pGajiBox"></div>
       <div><label>Bayaran komisen & part-time</label><select id="pKaedahBayar">${Object.entries(KAEDAH_BAYAR_STAF).map(([k,v]) => `<option value="${k}" ${k === (p?.kaedahBayar || 'bulanan') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
       <div><label>Bank & no. akaun (untuk bayar gaji)</label><input id="pBank" value="${esc(i.bank||'')}" placeholder="cth: Maybank 1234..."></div></div>
+ <label>Alamat</label><input id="pAlamat" value="${esc(i.alamat||'')}" placeholder="Alamat rumah">
     <label>Kenalan kecemasan</label><input id="pKecemasan" value="${esc(i.kecemasan||'')}" placeholder="Nama & no. telefon">
     <label>Catatan</label><textarea id="pCatatan" rows="2">${esc(i.catatan||'')}</textarea>
     <button class="primary" style="width:100%;padding:14px" id="pSimpan">SIMPAN</button>`);
@@ -1210,7 +1219,7 @@ function borangPekerja(id){
     const jn = val('#pJenis'), harian = jn === 'harian';
     const info = {nama:nama_, idStaf, jawatan:val('#pJawatan'), telefon:val('#pTel'), ic:val('#pIc'), tarikhMula:val('#pMula'), jenisPekerja: jn, jenisGaji: harian ? 'Harian' : jn === 'pengurusan' ? 'Bulanan' : 'Jam',
       gajiBulanan: ['tetap','pengurusan'].includes(jn) ? num('#pGaji') : 0, kadarHarian: harian ? num('#pGaji') : 0, kadarJam: jn === 'parttime' ? num('#pKadarJam') : 0,
-      elaunTetap: jn === 'pengurusan' ? num('#pElaun') : 0, kadarOT: $('#pOT') ? num('#pOT') : 0, bank:val('#pBank'), kecemasan:val('#pKecemasan'), catatan:val('#pCatatan'),
+      elaunTetap: jn === 'pengurusan' ? num('#pElaun') : 0, kadarOT: $('#pOT') ? num('#pOT') : 0, bank:val('#pBank'), alamat:val('#pAlamat'), kecemasan:val('#pKecemasan'), catatan:val('#pCatatan'),
       cawangan, dikemaskini: serverTimestamp(), dikemaskiniOleh: nama};
     $('#pSimpan').disabled = true;
     try{
