@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d2a20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Safari Members">
+<meta name="description" content="Kad ahli digital, promosi dan pakej Mama Lion & Lion King Premium Car Wash.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<title>Safari Members — Mama Lion & Lion King</title>
+<style>
+:root{
+  --zamrud:#0d2a20; --zamrud2:#14402f; --zamrud3:#1d5a43;
+  --emas:#d7b25a; --emas-terang:#f6e3a1; --emas-gelap:#8c6a22;
+  --perak:#c3c8cf; --marmar:#f2f2f0; --dakwat:#17201c; --kelabu:#5f6b66; --tembaga:#b4532a;
+  --r-besar:22px; --r:14px;
+  --serif:'Cinzel', 'Times New Roman', serif; --sans:'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:var(--sans);color:var(--dakwat);background:var(--marmar) url(marmar.jpg) center top/900px auto;min-height:100vh;font-size:16px;line-height:1.5}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+:focus-visible{outline:3px solid var(--emas);outline-offset:2px}
+main{max-width:560px;margin:0 auto;padding:0 18px calc(110px + env(safe-area-inset-bottom))}
+.hidden{display:none!important}
+
+/* ---------- Kepala ---------- */
+.atas{display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 18px 6px;max-width:560px;margin:0 auto}
+.jenama{font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:.12em;color:var(--zamrud);display:flex;align-items:center;gap:10px}
+.jenama img{width:34px;height:34px}
+.jenama small{display:block;font-family:var(--sans);letter-spacing:0;font-weight:500;font-size:11.5px;color:var(--kelabu)}
+
+/* ---------- Syiling 3D (hero) ---------- */
+.pentas{perspective:900px;display:flex;justify-content:center;padding:18px 0 6px}
+.syiling{width:min(62vw,250px);aspect-ratio:1;border-radius:50%;position:relative;transform-style:preserve-3d;animation:goyang 9s ease-in-out infinite;filter:drop-shadow(0 26px 22px rgba(13,42,32,.28))}
+.syiling img{width:100%;height:100%;border-radius:50%;display:block;backface-visibility:hidden}
+.syiling::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 48%,transparent 60%);mix-blend-mode:overlay;animation:kilau 9s ease-in-out infinite}
+@keyframes goyang{0%,100%{transform:rotateY(-16deg) rotateX(6deg)}50%{transform:rotateY(16deg) rotateX(-4deg)}}
+@keyframes kilau{0%,100%{background-position:-120px 0}50%{background-position:120px 0}}
+
+h1,h2{font-family:var(--serif);color:var(--zamrud);font-weight:700;letter-spacing:.04em;margin:0}
+h1{font-size:28px;line-height:1.15;text-align:center}
+h2{font-size:19px;margin:28px 0 12px}
+.lead{text-align:center;color:var(--kelabu);margin:8px auto 0;max-width:34ch}
+.muted{color:var(--kelabu);font-size:14px}
+
+/* ---------- Butang ---------- */
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:16px 20px;font-weight:800;font-size:16px;cursor:pointer;text-align:center;text-decoration:none}
+.btn-emas{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a 55%,#b48a32);box-shadow:inset 0 1px 0 #fff8d8,0 8px 18px rgba(140,106,34,.35)}
+.btn-zamrud{color:var(--emas-terang);background:linear-gradient(180deg,var(--zamrud3),var(--zamrud));box-shadow:0 8px 18px rgba(13,42,32,.3)}
+.btn-garis{background:rgba(255,255,255,.7);color:var(--zamrud);border:1.5px solid var(--zamrud)}
+.btn+.btn{margin-top:10px}
+.btn:disabled{opacity:.55}
+
+/* ---------- Panel kaca ---------- */
+.panel{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:var(--r-besar);padding:18px;border:1px solid rgba(195,200,207,.6);margin-top:14px}
+.panel h3{margin:0 0 8px;font-size:16px}
+
+/* ---------- Kad ahli 3D ---------- */
+.kad-pentas{perspective:1200px;margin:16px 0 4px}
+.kad{position:relative;width:100%;aspect-ratio:1.586;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+.kad.balik{transform:rotateY(180deg)}
+.muka{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
+  background:radial-gradient(120% 90% at 85% 10%,#2b6b52 0%,transparent 55%),linear-gradient(135deg,#1a4a38,#0d2a20 55%,#081a14);
+  box-shadow:0 22px 40px rgba(8,26,20,.45),inset 0 0 0 1.5px rgba(246,227,161,.65),inset 0 0 0 5px rgba(13,42,32,.9),inset 0 0 0 6px rgba(215,178,90,.5)}
+.muka::before{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 110% -10%,rgba(246,227,161,.07) 0 1px,transparent 1px 9px);pointer-events:none}
+.kilat{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.28),transparent 45%);mix-blend-mode:soft-light;pointer-events:none}
+.depan{padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;color:#eaf3ee}
+.kad .wm{font-family:var(--serif);font-weight:700;letter-spacing:.16em;font-size:15px;
+  background:linear-gradient(180deg,#fff6cf,#d7b25a 60%,#a47c2c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kad .wm small{display:block;font-family:var(--sans);letter-spacing:.02em;font-size:11px;font-weight:500;color:#b8cfc4;-webkit-text-fill-color:#b8cfc4}
+.kad .lencana{position:absolute;right:18px;top:16px;width:58px;height:58px;border-radius:50%;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.kad .nama{font-family:var(--serif);font-size:21px;letter-spacing:.06em;color:#fff7dc;text-shadow:0 1px 0 #000,0 0 1px rgba(255,255,255,.4);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:78%}
+.kad .baris{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;color:#b8cfc4}
+.kad .kod{font-family:var(--serif);font-size:17px;letter-spacing:.18em;color:var(--emas-terang)}
+.belakang{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;gap:18px;padding:18px;color:#eaf3ee}
+.belakang .qr{background:#fff;border-radius:14px;padding:10px;width:46%;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.belakang .qr img,.belakang .qr canvas{width:100%;height:auto;image-rendering:pixelated}
+.belakang p{margin:0;font-size:13px;color:#cfe0d8;max-width:20ch}
+.belakang b{display:block;font-family:var(--serif);color:var(--emas-terang);letter-spacing:.14em;font-size:18px;margin-bottom:6px}
+.petunjuk{text-align:center;font-size:13px;color:var(--kelabu);margin-top:8px}
+
+/* ---------- Dulang cop (syiling emas) ---------- */
+.dulang{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;padding:18px 14px;border-radius:var(--r-besar);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(236,238,240,.9));box-shadow:inset 0 2px 6px rgba(0,0,0,.08);border:1px solid rgba(195,200,207,.7)}
+.slot{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:var(--kelabu)}
+.lubang{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#dfe2e5,#c9cdd2);box-shadow:inset 0 3px 7px rgba(0,0,0,.22),0 1px 0 #fff;perspective:400px;position:relative;display:flex;align-items:center;justify-content:center}
+.lubang .mahkota{font-size:20px;opacity:.45}
+.cop{position:absolute;inset:2px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d;
+  background:radial-gradient(circle at 35% 30%,#fff4c6 0%,#e8c56b 32%,#b88a2e 70%,#7d5a17 100%);
+  box-shadow:0 4px 8px rgba(80,55,10,.45),inset 0 -3px 5px rgba(90,60,10,.45),inset 0 2px 3px rgba(255,255,255,.7)}
+.cop svg{width:58%;height:58%;fill:#7a5513;filter:drop-shadow(0 1px 0 rgba(255,240,190,.9))}
+.cop.baru{animation:jatuh 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes jatuh{0%{transform:translateY(-40px) rotateY(540deg) scale(.6);opacity:0}70%{opacity:1}100%{transform:none;opacity:1}}
+.slot.ganjaran .lubang{box-shadow:inset 0 3px 7px rgba(0,0,0,.22),0 0 0 2px var(--emas)}
+.slot.ganjaran span{color:var(--emas-gelap);font-weight:800}
+.kemajuan{text-align:center;margin:12px 0 0;font-weight:700;color:var(--zamrud)}
+
+/* ---------- Baucar Free Wash ---------- */
+.baucar{display:flex;border-radius:var(--r);overflow:hidden;margin-top:10px;box-shadow:0 8px 18px rgba(13,42,32,.18)}
+.baucar .kiri{background:linear-gradient(160deg,var(--zamrud3),var(--zamrud));color:var(--emas-terang);padding:14px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:92px;font-family:var(--serif);font-size:13px;letter-spacing:.1em;border-right:2px dashed rgba(246,227,161,.6)}
+.baucar .kiri b{font-size:26px}
+.baucar .kanan{background:#fffdf5;padding:12px 14px;flex:1}
+.baucar .kanan b{display:block;color:var(--zamrud)}
+
+/* ---------- Promosi ---------- */
+.karusel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 10px;scrollbar-width:none}
+.karusel::-webkit-scrollbar{display:none}
+.promo{scroll-snap-align:start;flex:0 0 86%;border-radius:var(--r-besar);overflow:hidden;background:#fff;box-shadow:0 10px 24px rgba(13,42,32,.16);display:flex;flex-direction:column}
+.senarai-promo .promo{flex:none;margin-bottom:16px}
+.promo .gbr{aspect-ratio:16/9;background:var(--zamrud) center/cover no-repeat;position:relative}
+.promo .gbr span{position:absolute;left:12px;top:12px;background:rgba(13,42,32,.82);color:var(--emas-terang);font-size:12px;padding:4px 10px;border-radius:999px}
+.promo .isi{padding:14px 16px 16px}
+.promo .isi b{display:block;font-size:17px;color:var(--zamrud)}
+.promo .isi p{margin:6px 0 0;color:var(--kelabu);font-size:14px;white-space:pre-line}
+.promo .isi .btn{margin-top:12px;padding:12px}
+.kosong{text-align:center;color:var(--kelabu);padding:24px 10px}
+
+/* ---------- Pakej ---------- */
+.cawangan{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cawangan button{background:#fff;border:2px solid transparent;border-radius:var(--r);padding:10px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(13,42,32,.1);cursor:pointer;text-align:left}
+.cawangan button img{width:44px;height:44px;object-fit:contain}
+.cawangan button.on{border-color:var(--emas);background:#fffbea}
+.cawangan button b{font-size:14px;color:var(--zamrud)}
+.pakej{display:flex;gap:14px;align-items:stretch;background:#fff;border-radius:var(--r-besar);overflow:hidden;margin-top:12px;box-shadow:0 6px 16px rgba(13,42,32,.1)}
+.pakej .g{width:112px;flex:none;background:var(--zamrud2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:34px}
+.pakej .t{padding:12px 14px 12px 0;flex:1}
+.pakej .t b{display:block;color:var(--zamrud);font-size:16px}
+.pakej .h{font-family:var(--serif);font-size:20px;color:var(--emas-gelap);margin-top:2px}
+.pakej .t small{display:block;color:var(--kelabu);font-size:13px;margin-top:4px}
+.pakej .lencana-fw{display:inline-block;margin-top:6px;font-size:12px;background:#fff3c4;color:#6b4f12;border-radius:999px;padding:2px 9px}
+.tambahan{display:flex;flex-wrap:wrap;gap:8px}
+.tambahan span{background:#fff;border-radius:999px;padding:8px 12px;font-size:14px;box-shadow:0 3px 8px rgba(13,42,32,.08)}
+.tambahan span b{color:var(--emas-gelap)}
+.maklumat a:not(.btn){color:var(--zamrud);font-weight:700}
+
+/* ---------- Borang ---------- */
+label{display:block;font-size:14px;font-weight:700;color:var(--zamrud);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid #cdd3d0;background:#fff;color:var(--dakwat)}
+input:focus,select:focus,textarea:focus{border-color:var(--emas);outline:none;box-shadow:0 0 0 3px rgba(215,178,90,.25)}
+.semak{display:flex;gap:10px;align-items:flex-start;font-weight:500;color:var(--dakwat);font-size:14px;margin-top:14px}
+.semak input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--zamrud)}
+.dua{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.ralat{background:#fde8e1;color:#7a2a12;border-radius:12px;padding:12px;font-size:14px;margin-top:12px}
+.kenderaan-baris{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+.kenderaan-baris button{border:0;background:#eef1ef;border-radius:10px;padding:12px;cursor:pointer}
+
+/* ---------- Kelebihan (alu-aluan) ---------- */
+.kelebihan{list-style:none;padding:0;margin:18px 0 0}
+.kelebihan li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(13,42,32,.1)}
+.kelebihan li:last-child{border:0}
+.kelebihan i{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;background:radial-gradient(circle at 35% 30%,#fff4c6,#d7b25a 60%,#9a7426);box-shadow:0 3px 6px rgba(80,55,10,.3)}
+
+/* ---------- Sejarah ---------- */
+.sejarah div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(13,42,32,.08);font-size:14px}
+.sejarah div:last-child{border:0}
+
+/* ---------- Navigasi bawah ---------- */
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(540px,calc(100% - 24px));z-index:30;
+  display:grid;grid-template-columns:repeat(5,1fr);background:rgba(13,42,32,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:24px;padding:6px;box-shadow:0 14px 30px rgba(8,26,20,.4),inset 0 0 0 1px rgba(246,227,161,.25)}
+nav button{background:none;border:0;color:#9fb9ad;padding:8px 2px;border-radius:18px;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
+
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--zamrud);color:var(--emas-terang);padding:12px 18px;border-radius:14px;font-size:14px;z-index:60;display:none;max-width:88%;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.pasang{display:flex;gap:12px;align-items:center}
+.pasang img{width:46px;height:46px;border-radius:12px}
+
+@media (prefers-reduced-motion: reduce){
+  .syiling,.syiling::after{animation:none}
+  .kad{transition:none}
+  .cop.baru{animation:none}
+}
+</style>
+</head>
+<body>
+<header class="atas" id="atas">
+  <div class="jenama"><img src="icon-192.png" alt="">
+    <div>Safari Members<small>Mama Lion & Lion King Premium Car Wash</small></div></div>
+</header>
+<main id="app"><p class="kosong">Memuatkan…</p></main>
+<nav id="nav" class="hidden" aria-label="Menu utama"></nav>
+<div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" defer></script>
+
+<script type="module">
+import { firebaseConfig } from '../firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, writeBatch, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru } from '../safari-lib.js';
+
+const CAWANGAN = [
+  {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
+  {id:'lion-king', nama:'Lion King', logo:'logo-lionking.jpg'}
+];
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const RM = n => 'RM' + (Number(n)||0).toLocaleString('en-MY', {minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2});
+const val = id => String($(id)?.value || '').trim();
+const tarikhBM = ms => new Date(ms).toLocaleDateString('ms-MY', {day:'numeric', month:'short', year:'numeric'});
+const hariIni = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const urlSelamat = u => /^https:\/\//.test(u || '') ? u : '';
+function toast(m){ const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3400); }
+const LS = {get: k => { try{ return localStorage.getItem(k); }catch(_){ return null; } }, set: (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(_){} }};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ---------- Keadaan ----------
+let token = null, ahli = null, sejarah = [], promosi = [], tab = 'Utama', cawPakej = 'mama-lion', unsubAhli = null;
+const tetapan = {}, gambarPakej = {};
+
+// Pautan kad dari kaunter: .../pelanggan/#k=TOKEN
+const m = location.hash.match(/k=([A-Za-z0-9]{20,40})/);
+if(m){ LS.set('sm_token', m[1]); history.replaceState(null, '', location.pathname); }
+token = LS.get('sm_token');
+
+// ---------- Ikon navigasi ----------
+const IKON = {
+  Utama: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/>',
+  Kad: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/>',
+  Promosi: '<path d="M4 10v4l11 5V5L4 10Z"/><path d="M15 9a3 3 0 0 1 0 6"/><path d="M6.5 14.5 8 20h3l-1.2-4.5"/>',
+  Pakej: '<path d="M5 17h14l-1.5-6.5a2 2 0 0 0-2-1.5h-7a2 2 0 0 0-2 1.5L5 17Z"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/><path d="M9 5.5c0 1 1 1 1 2M12.5 4.5c0 1 1 1 1 2"/>',
+  Profil: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4.2-5.2 7.5-5.2s6.3 1.6 7.5 5.2"/>'
+};
+const PAW = '<svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="42" rx="14" ry="12"/><ellipse cx="15" cy="27" rx="6" ry="8"/><ellipse cx="26" cy="17" rx="6" ry="8.5"/><ellipse cx="38" cy="17" rx="6" ry="8.5"/><ellipse cx="49" cy="27" rx="6" ry="8"/></svg>';
+
+function renderNav(){
+  const nav = $('#nav'); nav.classList.toggle('hidden', !ahli && tab === 'Alu-aluan');
+  const tabs = ahli ? ['Utama','Kad','Promosi','Pakej','Profil'] : ['Utama','Promosi','Pakej','Kad','Profil'];
+  nav.innerHTML = tabs.map(t => `<button class="${t===tab?'on':''}" data-t="${t}" aria-label="${t}"><svg viewBox="0 0 24 24">${IKON[t]}</svg>${t}</button>`).join('');
+  $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); window.scrollTo({top:0}); });
+}
+
+function render(){
+  renderNav();
+  if(!ahli && (tab === 'Kad' || tab === 'Profil' || tab === 'Utama')) return viewAluan();
+  ({Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
+}
+
+// ---------- Data ----------
+function mulaAhli(){
+  if(unsubAhli) unsubAhli();
+  if(!token){ ahli = null; render(); return; }
+  unsubAhli = onSnapshot(doc(db, 'ahli', token), s => {
+    if(!s.exists()){ ahli = null; LS.set('sm_token', null); token = null; tab = 'Utama'; render(); return toast('Kad ahli tidak dijumpai. Sila daftar atau minta pautan kad dari kaunter.'); }
+    ahli = {id: s.id, ...s.data()};
+    if(tab === 'Alu-aluan' || tab === 'Daftar') tab = 'Utama';
+    render();
+  }, e => { console.error(e); toast('Tidak dapat memuatkan kad. Semak sambungan internet.'); });
+  getDocs(query(collection(db, 'ahli', token, 'sejarah'), orderBy('masa', 'desc'), limit(30))).then(s => { sejarah = s.docs.map(d => d.data()); if(tab === 'Kad') render(); }).catch(() => {});
+}
+async function muatPromosi(){
+  try{
+    const s = await getDocs(collection(db, 'promosi')); const t = hariIni();
+    promosi = s.docs.map(d => ({id:d.id, ...d.data()})).filter(p => p.aktif !== false && (!p.mula || p.mula <= t) && (!p.tamat || p.tamat >= t)).sort((a,b) => (a.susunan||0) - (b.susunan||0));
+    if(['Utama','Promosi'].includes(tab)) render();
+  }catch(e){ console.error(e); }
+}
+async function muatTetapan(c){
+  if(tetapan[c]) return;
+  try{
+    const s = await getDoc(doc(db, 'lionsafari', c, 'tetapan', 'umum')); tetapan[c] = s.exists() ? s.data() : {};
+    const g = await getDocs(collection(db, 'lionsafari', c, 'gambar')); gambarPakej[c] = Object.fromEntries(g.docs.map(d => [d.id, d.data().data]));
+  }catch(e){ console.error(e); tetapan[c] = {}; gambarPakej[c] = {}; }
+  if(tab === 'Pakej') render();
+}
+
+// ---------- Komponen ----------
+function kadHtml(){
+  const k = keadaanKad(ahli);
+  return `<div class="kad-pentas"><div class="kad" id="kad" role="button" tabindex="0" aria-label="Kad ahli. Tekan untuk paparkan kod QR.">
+    <div class="muka depan"><div class="kilat"></div><img class="lencana" src="syiling.png" alt="">
+      <div class="wm">SAFARI MEMBERS<small>Mama Lion & Lion King Premium Car Wash</small></div>
+      <div><div class="nama">${esc(ahli.nama)}</div>
+        <div class="baris"><div><span class="kod">${esc(ahli.kod)}</span><br>Ahli sejak ${new Date(ahli.daftarMasa || Date.now()).toLocaleDateString('ms-MY', {month:'short', year:'numeric'})}</div>
+        <div style="text-align:right">${k.bil}/${KAD.saiz} cop${k.freeWash.length ? `<br><span style="color:var(--emas-terang)">${k.freeWash.length} Free Wash</span>` : ''}</div></div></div></div>
+    <div class="muka belakang"><div class="qr" id="qr"></div><div><b>${esc(ahli.kod)}</b><p>Tunjukkan kod ini kepada kaunter atau Marketing Officer setiap kali mencuci.</p></div></div>
+  </div></div><p class="petunjuk">Tekan kad untuk paparkan kod QR</p>`;
+}
+function pasangKad(){
+  const kad = $('#kad'); if(!kad) return;
+  const balik = () => { kad.classList.toggle('balik'); kad.style.transform = ''; lukisQR(); };
+  kad.onclick = balik; kad.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); balik(); } };
+  const kurang = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!kurang) kad.onpointermove = e => {
+    if(kad.classList.contains('balik')) return;
+    const r = kad.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    kad.style.transform = `rotateY(${(x - .5) * 16}deg) rotateX(${(.5 - y) * 12}deg)`;
+    kad.querySelector('.kilat').style.setProperty('--gx', x*100 + '%'); kad.querySelector('.kilat').style.setProperty('--gy', y*100 + '%');
+  };
+  kad.onpointerleave = () => { if(!kad.classList.contains('balik')) kad.style.transform = ''; };
+}
+function lukisQR(){
+  const box = $('#qr'); if(!box || box.dataset.siap) return;
+  if(!window.qrcode){ box.innerHTML = `<b style="color:#0d2a20;font-size:20px">${esc(ahli.kod)}</b>`; return; }
+  const q = window.qrcode(0, 'M'); q.addData(ahli.kod); q.make();
+  box.innerHTML = q.createImgTag(6, 0); box.dataset.siap = '1';
+}
+function dulangHtml(){
+  const k = keadaanKad(ahli), lama = Number(LS.get('sm_cop_' + ahli.kod) || 0);
+  const html = `<div class="dulang" aria-label="${k.bil} daripada ${KAD.saiz} cop">${Array.from({length: KAD.saiz}, (_, i) => {
+    const ada = i < k.bil, ganj = KAD.ganjaranPada.includes(i + 1);
+    return `<div class="slot ${ganj ? 'ganjaran' : ''}"><div class="lubang">${ganj && !ada ? '<span class="mahkota">👑</span>' : ''}${ada ? `<div class="cop ${i >= lama ? 'baru' : ''}" style="animation-delay:${(i - lama) * 120}ms">${PAW}</div>` : ''}</div>
+      <span>${ganj ? 'Free Wash' : `Cop ${i + 1}`}</span></div>`; }).join('')}</div>
+    <p class="kemajuan">${k.bil === 0 && k.freeWash.length === 0 ? 'Cucian berbayar pertama anda akan memberi cop pertama.' : `Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash seterusnya.`}</p>`;
+  LS.set('sm_cop_' + ahli.kod, String(k.bil));
+  return html;
+}
+function baucarHtml(){
+  const k = keadaanKad(ahli);
+  if(!k.freeWash.length) return '';
+  return `<h2>Free Wash anda</h2>${k.freeWash.sort((a,b) => a.tamat - b.tamat).map(f => `<div class="baucar"><div class="kiri"><b>FREE</b>WASH</div>
+    <div class="kanan"><b>Satu cucian pakej Basic percuma</b><span class="muted">Sah hingga ${tarikhBM(f.tamat)}. Beritahu kaunter sebelum cucian bermula.</span></div></div>`).join('')}`;
+}
+function promoHtml(p){
+  const c = CAWANGAN.find(x => x.id === p.cawangan);
+  return `<article class="promo"><div class="gbr" style="${p.gambar ? `background-image:url('${p.gambar}')` : ''}"><span>${p.jenis === 'iklan' ? 'Iklan' : 'Promosi'}${c ? ' · ' + esc(c.nama) : ''}</span></div>
+    <div class="isi"><b>${esc(p.tajuk)}</b>${p.ket ? `<p>${esc(p.ket)}</p>` : ''}${p.tamat ? `<p class="muted">Sehingga ${tarikhBM(p.tamat + 'T12:00:00')}</p>` : ''}
+    ${p.butangTeks && urlSelamat(p.butangUrl) ? `<a class="btn btn-emas" href="${esc(urlSelamat(p.butangUrl))}" target="_blank" rel="noopener">${esc(p.butangTeks)}</a>` : ''}</div></article>`;
+}
+
+// ---------- Alu-aluan (belum ahli) ----------
+function viewAluan(){
+  $('#app').innerHTML = `<div class="pentas"><div class="syiling"><img src="syiling.png" alt="Lencana Animal Safari"></div></div>
+    <h1>Safari Members</h1>
+    <p class="lead">Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.</p>
+    <div class="panel"><ul class="kelebihan">
+      <li><i>🐾</i><div><b>1 cop setiap cucian berbayar</b><div class="muted">Di Mama Lion atau Lion King.</div></div></li>
+      <li><i>👑</i><div><b>Cop ke-4 dan ke-8 = Free Wash</b><div class="muted">Dua cucian pakej Basic percuma bagi setiap kad 8 cop.</div></div></li>
+      <li><i>📣</i><div><b>Promosi khas ahli</b><div class="muted">Tawaran terkini terus dalam apps.</div></div></li>
+    </ul></div>
+    <div style="margin-top:20px"><button class="btn btn-emas" id="keDaftar">Daftar ahli percuma</button>
+      <button class="btn btn-garis" id="kePromo">Lihat promosi & pakej</button></div>
+    <p class="muted" style="text-align:center;margin-top:16px">Sudah didaftarkan di kaunter? Minta kaunter hantar pautan kad anda melalui WhatsApp.</p>
+    ${pasangHtml()}`;
+  $('#keDaftar').onclick = () => { tab = 'Daftar'; render(); window.scrollTo({top:0}); };
+  $('#kePromo').onclick = () => { tab = 'Promosi'; render(); };
+  pasangPasang();
+}
+
+// ---------- Daftar ----------
+function viewDaftar(){
+  $('#app').innerHTML = `<h1 style="margin-top:14px">Daftar Safari Members</h1>
+    <p class="lead">Isi maklumat anda. Nombor telefon digunakan untuk mengenal pasti kad anda di kaunter.</p>
+    <form class="panel" id="fDaftar" novalidate>
+      <label for="dNama">Nama penuh</label><input id="dNama" autocomplete="name" required>
+      <label for="dTel">No. telefon bimbit</label><input id="dTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="012-345 6789" required>
+      <div class="dua"><div><label for="dEmel">Emel (pilihan)</label><input id="dEmel" type="email" autocomplete="email"></div>
+        <div><label for="dLahir">Tarikh lahir (pilihan)</label><input id="dLahir" type="date"></div></div>
+      <div class="kenderaan-baris"><div><label for="dPlat">No. plat kenderaan</label><input id="dPlat" autocapitalize="characters" placeholder="VAB 1234" style="text-transform:uppercase" required></div>
+        <div><label for="dModel">Jenama & model</label><input id="dModel" placeholder="cth Honda City"></div></div>
+      <label for="dCaw">Cawangan kegemaran</label><select id="dCaw">${CAWANGAN.map(c => `<option value="${c.id}">${c.nama}</option>`).join('')}</select>
+      <label class="semak"><input type="checkbox" id="dPdpa"> Saya bersetuju maklumat ini disimpan oleh Mama Lion & Lion King untuk tujuan keahlian dan cucian kenderaan saya.</label>
+      <label class="semak"><input type="checkbox" id="dPromo"> Saya mahu terima promosi melalui WhatsApp (pilihan).</label>
+      <div id="dRalat" class="ralat hidden"></div>
+      <button class="btn btn-emas" style="margin-top:18px" id="dHantar">Daftar ahli</button>
+      <button type="button" class="btn btn-garis" id="dBatal">Kembali</button>
+    </form>`;
+  $('#dBatal').onclick = () => { tab = 'Utama'; render(); };
+  $('#fDaftar').onsubmit = async e => {
+    e.preventDefault();
+    const ralat = m => { $('#dRalat').textContent = m; $('#dRalat').classList.remove('hidden'); };
+    const nama = val('#dNama'), tel = normTelefon(val('#dTel')), plat = paparPlat(val('#dPlat'));
+    if(nama.length < 2) return ralat('Sila isi nama penuh anda.');
+    if(!telefonSah(tel)) return ralat('Nombor telefon tidak sah. Contoh: 012-345 6789.');
+    if(normPlat(plat).length < 2) return ralat('Sila isi nombor plat kenderaan.');
+    if(!$('#dPdpa').checked) return ralat('Sila tandakan persetujuan penyimpanan maklumat untuk mendaftar.');
+    $('#dHantar').disabled = true; $('#dHantar').textContent = 'Mendaftar…';
+    const t = buatToken();
+    const data = ahliBaru({nama, telefon: tel, emel: val('#dEmel'), tarikhLahir: val('#dLahir'), plat: [normPlat(plat)], kenderaan: [{plat, model: val('#dModel')}],
+      cawanganUtama: val('#dCaw'), setujuPromosi: $('#dPromo').checked, oleh: 'pelanggan'});
+    try{
+      const b = writeBatch(db);
+      b.set(doc(db, 'ahli', t), data);
+      b.set(doc(db, 'ahli_telefon', tel), {token: t});
+      await b.commit();
+      token = t; LS.set('sm_token', t); tab = 'Kad';
+      toast(`Selamat datang ke Safari Members, ${nama.split(' ')[0]}!`);
+      mulaAhli();
+    }catch(e){
+      console.error(e);
+      $('#dHantar').disabled = false; $('#dHantar').textContent = 'Daftar ahli';
+      ralat(e.code === 'permission-denied' ? 'Nombor telefon ini sudah berdaftar. Minta kaunter hantar pautan kad anda melalui WhatsApp.' : 'Pendaftaran gagal. Semak sambungan internet dan cuba lagi.');
+    }
+  };
+}
+
+// ---------- Utama ----------
+function viewUtama(){
+  const k = keadaanKad(ahli), nama = esc(ahli.nama.split(' ')[0]);
+  $('#app').innerHTML = `<h1 style="margin-top:12px;text-align:left">Hai, ${nama}</h1>
+    <p class="muted" style="margin:4px 0 0">${k.freeWash.length ? `Anda ada ${k.freeWash.length} Free Wash untuk ditebus.` : `Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash.`}</p>
+    ${kadHtml()}
+    ${promosi.length ? `<h2>Promosi terkini</h2><div class="karusel">${promosi.map(promoHtml).join('')}</div>` : ''}
+    <h2>Cawangan kami</h2>
+    <div class="cawangan">${CAWANGAN.map(c => `<button data-caw="${c.id}"><img src="${c.logo}" alt=""><div><b>${c.nama}</b><div class="muted" style="font-size:12px">Pakej & lokasi</div></div></button>`).join('')}</div>
+    ${pasangHtml()}`;
+  pasangKad();
+  $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; tab = 'Pakej'; render(); window.scrollTo({top:0}); });
+  pasangPasang();
+}
+
+// ---------- Kad ----------
+function viewKad(){
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}
+    <h2>Cop anda</h2>${dulangHtml()}
+    ${baucarHtml()}
+    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-4 dan ke-8 memberi 1 Free Wash pakej Basic. Selepas cop ke-8, kad bermula semula. Cop dan Free Wash sah selama 12 bulan.</div></div>
+    <h2>Sejarah cucian</h2><div class="panel sejarah">${sejarah.length ? sejarah.map(h => `<div><span>${tarikhBM(h.tarikh + 'T12:00:00')}<br><span class="muted">${esc(CAWANGAN.find(c => c.id === h.cawangan)?.nama || '')} · ${esc(h.plat)}</span></span><span style="text-align:right">${esc(h.pakej)}<br><span class="muted">${h.freeWash ? 'Free Wash' : '+1 cop'}</span></span></div>`).join('') : '<p class="muted" style="margin:0">Belum ada rekod cucian.</p>'}</div>`;
+  pasangKad();
+}
+
+// ---------- Promosi ----------
+function viewPromosi(){
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Promosi</h1><p class="lead">Tawaran terkini di Mama Lion & Lion King.</p>
+    <div class="senarai-promo" style="margin-top:16px">${promosi.length ? promosi.map(promoHtml).join('') : '<div class="panel kosong">Tiada promosi buat masa ini. Semak semula tidak lama lagi.</div>'}</div>`;
+}
+
+// ---------- Pakej ----------
+function viewPakej(){
+  muatTetapan(cawPakej);
+  const T = tetapan[cawPakej], G = gambarPakej[cawPakej] || {};
+  const senarai = j => (T?.[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`})).filter(x => x.aktif !== false);
+  const fw = T?.pakejFreeWash || senarai('pakej')[0]?.id;
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Pakej & harga</h1>
+    <div class="cawangan" style="margin-top:16px">${CAWANGAN.map(c => `<button class="${c.id===cawPakej?'on':''}" data-caw="${c.id}"><img src="${c.logo}" alt=""><b>${c.nama}</b></button>`).join('')}</div>
+    ${!T ? '<p class="kosong">Memuatkan…</p>' : `
+      ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${G[p.id] ? `background-image:url('${G[p.id]}')` : ''}">${G[p.id] ? '' : '🚿'}</div>
+        <div class="t"><b>${esc(p.nama)}</b><div class="h">${RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
+      ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>+${RM(a.harga)}</b></span>`).join('')}</div>` : ''}
+      ${senarai('kenderaan').some(k => k.harga) ? `<p class="muted" style="margin-top:12px">Caj ikut kenderaan: ${senarai('kenderaan').filter(k => k.harga).map(k => `${esc(k.nama)} ${k.harga > 0 ? '+' : ''}${RM(k.harga)}`).join(', ')}.</p>` : ''}
+      <div class="panel maklumat"><h3>${esc(T.namaKedai || CAWANGAN.find(c => c.id === cawPakej).nama)}</h3>
+        ${T.alamat ? `<div>${esc(T.alamat)}</div>` : ''}${T.waktuOperasi ? `<div class="muted">${esc(T.waktuOperasi)}</div>` : ''}
+        <div class="dua" style="margin-top:12px">${urlSelamat(T.mapsUrl) ? `<a class="btn btn-zamrud" style="padding:12px" href="${esc(T.mapsUrl)}" target="_blank" rel="noopener">Arah ke kedai</a>` : ''}
+        ${T.whatsapp ? `<a class="btn btn-emas" style="padding:12px" href="https://wa.me/${normTelefon(T.whatsapp)}" target="_blank" rel="noopener">WhatsApp kedai</a>` : ''}</div></div>`}`;
+  $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; render(); });
+}
+
+// ---------- Profil ----------
+function viewProfil(){
+  const kend = (ahli.kenderaan && ahli.kenderaan.length ? ahli.kenderaan : (ahli.plat || []).map(p => ({plat: p}))).map(k => ({plat: k.plat, model: k.model || k.jenis || ''}));
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Profil saya</h1>
+    <form class="panel" id="fProfil" novalidate>
+      <label for="pNama">Nama penuh</label><input id="pNama" data-tetap="1" value="${esc(ahli.nama)}">
+      <label>No. telefon</label><input value="${esc(paparTelefon(ahli.telefon))}" disabled>
+      <div class="dua"><div><label for="pEmel">Emel</label><input id="pEmel" data-tetap="1" type="email" value="${esc(ahli.emel || '')}"></div>
+        <div><label for="pLahir">Tarikh lahir</label><input id="pLahir" data-tetap="1" type="date" value="${esc(ahli.tarikhLahir || '')}"></div></div>
+      <label>Kenderaan saya</label><div id="pKend">${kend.map((k,i) => barisKenderaan(k, i)).join('')}</div>
+      <button type="button" class="btn btn-garis" id="pTambahKend" style="margin-top:10px;padding:12px">Tambah kenderaan</button>
+      <label for="pCaw">Cawangan kegemaran</label><select id="pCaw" data-tetap="1">${CAWANGAN.map(c => `<option value="${c.id}" ${c.id===ahli.cawanganUtama?'selected':''}>${c.nama}</option>`).join('')}</select>
+      <label class="semak"><input type="checkbox" id="pPromo" ${ahli.setujuPromosi ? 'checked' : ''}> Terima promosi melalui WhatsApp</label>
+      <button class="btn btn-emas" style="margin-top:18px" id="pSimpan">Simpan profil</button>
+    </form>
+    <div class="panel"><h3>Tukar telefon?</h3><div class="muted">Simpan pautan kad ini dan bukanya di telefon baru. Jangan kongsi dengan orang lain.</div>
+      <button class="btn btn-zamrud" style="margin-top:12px;padding:12px" id="pSalin">Salin pautan kad saya</button></div>
+    <button class="btn btn-garis" style="margin-top:14px" id="pKeluar">Keluar dari kad di telefon ini</button>`;
+  const lukis = () => $$('[data-buang]').forEach(b => b.onclick = () => { b.closest('.kenderaan-baris').remove(); });
+  lukis();
+  $('#pTambahKend').onclick = () => { $('#pKend').insertAdjacentHTML('beforeend', barisKenderaan({plat:'', model:''}, Date.now())); lukis(); };
+  $('#fProfil').onsubmit = async e => {
+    e.preventDefault();
+    const kenderaan = $$('#pKend .kenderaan-baris').map(r => ({plat: paparPlat(r.querySelector('[data-p]').value), model: r.querySelector('[data-m]').value.trim()})).filter(k => normPlat(k.plat));
+    if(!val('#pNama')) return toast('Sila isi nama.');
+    if(!kenderaan.length) return toast('Sila isi sekurang-kurangnya satu kenderaan.');
+    try{
+      await updateDoc(doc(db, 'ahli', token), {nama: val('#pNama'), emel: val('#pEmel'), tarikhLahir: val('#pLahir'), kenderaan, plat: [...new Set(kenderaan.map(k => normPlat(k.plat)))],
+        cawanganUtama: val('#pCaw'), setujuPromosi: $('#pPromo').checked, dikemaskini: Date.now()});
+      toast('Profil disimpan.');
+    }catch(err){ console.error(err); toast('Profil tidak dapat disimpan. Semak sambungan internet.'); }
+  };
+  $('#pSalin').onclick = async () => { const u = new URL('#k=' + token, location.href.split('#')[0]).href; try{ await navigator.clipboard.writeText(u); toast('Pautan kad disalin.'); }catch(_){ prompt('Salin pautan kad anda:', u); } };
+  $('#pKeluar').onclick = () => { if(!confirm('Keluar dari kad di telefon ini? Anda perlukan pautan kad untuk masuk semula.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
+}
+const barisKenderaan = (k, i) => `<div class="kenderaan-baris" style="margin-top:8px"><input data-p placeholder="No. plat" value="${esc(k.plat)}" style="text-transform:uppercase" aria-label="No. plat"><input data-m placeholder="Jenama & model" value="${esc(k.model)}" aria-label="Jenama dan model"><button type="button" data-buang aria-label="Buang kenderaan">✕</button></div>`;
+
+// ---------- Pasang apps ----------
+let pasangPrompt = null;
+const iOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; if(['Utama'].includes(tab)) render(); });
+function pasangHtml(){
+  if(standalone()) return '';
+  return `<div class="panel pasang"><img src="icon-192.png" alt=""><div style="flex:1"><b>Pasang Safari Members</b><div class="muted" id="pasangInfo">${iOS ? 'Safari → butang Kongsi → Add to Home Screen.' : 'Buka kad anda terus dari skrin utama.'}</div></div>
+    <button class="btn btn-emas" id="btnPasang" style="width:auto;padding:10px 16px">Pasang</button></div>`;
+}
+function pasangPasang(){
+  const b = $('#btnPasang'); if(!b) return;
+  b.onclick = async () => {
+    if(pasangPrompt){ pasangPrompt.prompt(); await pasangPrompt.userChoice; pasangPrompt = null; }
+    else $('#pasangInfo').textContent = iOS ? 'Dalam Safari: tekan butang Kongsi, kemudian "Add to Home Screen".' : 'Dalam Chrome: tekan menu ⋮, kemudian "Install app".';
+  };
+}
+
+// ---------- Mula ----------
+tab = 'Utama';
+mulaAhli();
+muatPromosi();
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

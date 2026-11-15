@@ -30,12 +30,26 @@ Sistem kaunter carwash (versi baru, menggantikan Lion Safari V1.7).
 | Manager | Semua kecuali Tetapan; urus item stok; kelulusan |
 | Supervisor | Kaunter + Laporan; boleh luluskan batal, diskaun & petty cash |
 | Cashier | Order, queue, bayaran, petty cash, stok (masuk/guna) |
+| Sales (Marketing Officer) | Order Baru & Queue sahaja: ambil order, gambar plat/emblem/calar, daftar Safari Members; dapat komisen |
 | Pekerja | Queue & stok sahaja (staf bay) |
 
 **ID staf, peranan & PIN diberi oleh pemilik dalam apps Akaun → tab Pekerja.** Staf log masuk kaunter dengan ID (cth `ML001` Mama Lion, `LK001` Lion King) + PIN. Staf versi lama: Pengurus → Admin, Juruwang → Cashier (automatik).
 **Kelulusan PIN Supervisor / Manager / Admin** diperlukan untuk: batal order, diskaun melebihi had, top-up petty cash, belanja petty cash melebihi had, padam petty cash, laras stok.
 
 Gambar pakej/servis disimpan di `lionsafari/{cawangan}/gambar/{id}` (dikecilkan automatik).
+
+## Order oleh Marketing Officer (Sales)
+1. Taip **plat** → jika pelanggan ahli Safari Members, nama, telefon & kad cop keluar sendiri (atau 🔍 cari telefon/kod, 📷 imbas QR kad).
+2. **Nama & telefon pelanggan wajib.** Pelanggan baru boleh terus didaftar sebagai ahli (tanda kotak).
+3. Pilih kenderaan, pakej, add-on. **Gambar plat & emblem wajib**, gambar calar/kemik pilihan (maks 4).
+4. SIMPAN ORDER → order terus masuk Queue & Bayaran kaunter dengan gambar. Butang **Kongsi ke WhatsApp group** (pilihan).
+5. Komisen MO dicatat pada order ikut kadar dalam Akaun → Pekerja → Kadar Komisen, dan dikira bila order **dibayar**.
+
+## Safari Members (kad cop)
+- 1 cop bagi setiap pakej **berbayar**, maksimum 1 cop / plat / hari — diberi automatik semasa bayaran.
+- Cop ke-4 & ke-8 = 1 **Free Wash** (pakej Basic yang dipilih di Tetapan). Selepas cop ke-8 kad bermula semula. Cop & Free Wash luput 12 bulan.
+- Tebus: di Order Baru tanda **🎁 Guna Free Wash** → semasa bayar perlu **PIN Supervisor / Manager / Admin**. Add-on tetap dibayar. Tiada komisen pakej untuk Free Wash.
+- Batal order yang sudah dibayar → cop / Free Wash dipulangkan automatik.
 
 ## Sambungan ke apps Akaun (automatik)
 - Setiap bayaran / pembatalan mengemas kini rekod jualan harian `akaun/mama-lion/entri/ls-YYYY-MM-DD` (Tunai, QR, Kad; Transfer masuk "Lain-lain").
