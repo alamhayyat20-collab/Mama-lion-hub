@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-5">
+<meta name="app-versi" content="2026.11.15-6">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -100,14 +100,28 @@ details.bab{border-bottom:1px solid var(--line);padding:10px 0}details.bab summa
 <input id="kamera" type="file" accept="image/*" capture="user" class="hidden">
 <div id="toast"></div>
 
+<script>
+// Penyelamat: jika apps tersangkut "Memuatkan…" (fail lama dalam cache telefon), muat semula versi terbaru
+setTimeout(function(){
+  var a = document.getElementById('app');
+  if(!a || !/^\s*Memuatkan…\s*$/.test(a.innerText || '')) return;
+  a.innerHTML = '<div class="card" style="padding:16px"><b>Apps tidak dapat dimuatkan.</b><p style="color:#64748b">Mungkin versi lama tersimpan dalam telefon. Tekan butang di bawah untuk memuat versi terkini.</p><button id="btnPulih" style="width:100%;padding:14px;border:0;border-radius:12px;background:#14532d;color:#fff;font-weight:700;font-size:16px">🔄 MUAT VERSI TERKINI</button></div>';
+  document.getElementById('btnPulih').onclick = function(){
+    var p = [];
+    if(window.caches) p.push(caches.keys().then(function(k){ return Promise.all(k.map(function(x){ return caches.delete(x); })); }));
+    if(navigator.serviceWorker) p.push(navigator.serviceWorker.getRegistrations().then(function(r){ return Promise.all(r.map(function(x){ return x.unregister(); })); }));
+    Promise.all(p).catch(function(){}).then(function(){ location.replace(location.pathname + '?v=' + Date.now()); });
+  };
+}, 9000);
+</script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.15-6';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL } from '../pekerja-lib.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD } from '../safari-lib.js';
-import { pasangSync } from '../sync-lib.js';
+import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL } from '../pekerja-lib.js?v=2026.11.15-6';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD } from '../safari-lib.js?v=2026.11.15-6';
+import { pasangSync } from '../sync-lib.js?v=2026.11.15-6';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'pekerja@mamalion.app';
