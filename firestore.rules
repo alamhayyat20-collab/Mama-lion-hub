@@ -1,3 +1,4 @@
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml)
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
