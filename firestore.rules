@@ -30,6 +30,20 @@ service cloud.firestore {
     // Apps Pekerja hanya baca senarai staf (untuk semak ID + PIN)
     match /lionsafari/{cawangan}/staf/{id} {
       allow read: if staffApp();
+      // Kuasa 👥 Urus pekerja: maklumat asas sahaja (bukan kuasa, MO, Admin/Manager, atau diri sendiri)
+      allow create: if staffApp() && cawangan == 'mama-lion'
+        && olehKuasa('mama-lion', 'urus')
+        && request.resource.data.peranan in ['Pekerja', 'Sales', 'Cashier', 'Supervisor']
+        && request.resource.data.mo == false && request.resource.data.kuasa.size() == 0
+        && request.resource.data.keys().hasOnly(['nama', 'idStaf', 'peranan', 'telefon', 'jawatan', 'jenisPekerja', 'tarikhMula', 'punchBebas', 'aktif',
+          'pinHash', 'mo', 'kuasa', 'dicipta', 'dikemaskiniOleh', 'olehId', 'olehCaw']);
+      allow update: if staffApp() && cawangan == 'mama-lion'
+        && olehKuasa('mama-lion', 'urus')
+        && request.resource.data.olehId != id
+        && resource.data.get('peranan', 'Pekerja') in ['Pekerja', 'Sales', 'Cashier', 'Supervisor']
+        && request.resource.data.peranan in ['Pekerja', 'Sales', 'Cashier', 'Supervisor']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nama', 'idStaf', 'peranan', 'telefon', 'jawatan', 'jenisPekerja', 'tarikhMula',
+          'punchBebas', 'aktif', 'pinHash', 'dikemaskiniOleh', 'olehId', 'olehCaw']);
     }
     // Apps Pekerja baca gambar profil staf (untuk Kad ID & skrin PIN); hanya pengurusan boleh tukar
     match /lionsafari/{cawangan}/staf_foto/{id} {
@@ -169,7 +183,7 @@ service cloud.firestore {
     }
     function olehKuasaMana(c) {
       return request.resource.data.olehId is string
-        && get(/databases/$(database)/documents/lionsafari/$(c)/staf/$(request.resource.data.olehId)).data.get('kuasa', {}).size() > 0;
+        && get(/databases/$(database)/documents/lionsafari/mama-lion/staf/$(request.resource.data.olehId)).data.get('kuasa', {}).size() > 0;
     }
     // Arahan pemilik: tugasan & chat (pekerja dengan kuasa chat)
     match /kakitangan/{cawangan}/tugas/{id} {

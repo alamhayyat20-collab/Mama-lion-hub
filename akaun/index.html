@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-1">
+<meta name="app-versi" content="2026.11.16-2">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,10 +108,10 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-1';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-1';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-2';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-2';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1031,7 +1031,7 @@ function idSeterus(){
   return a + String(n + 1).padStart(3,'0');
 }
 const tahap = r => ({Admin:4, Manager:3, Supervisor:2, Cashier:1, Sales:1, Pekerja:0})[r] ?? 0;
-const senaraiPekerja = () => stafKaunter.map(s => ({...s, info: pekerjaInfo[s.id] || {}})).sort((a,b) => (b.aktif!==false) - (a.aktif!==false) || String(a.idStaf||'zz').localeCompare(String(b.idStaf||'zz')));
+const senaraiPekerja = () => stafKaunter.map(s => ({...s, info: {telefon: s.telefon || '', jawatan: s.jawatan || '', tarikhMula: s.tarikhMula || '', ...(pekerjaInfo[s.id] || {}), ...(s.jenisPekerja ? {jenisPekerja: s.jenisPekerja} : {})}})).sort((a,b) => (b.aktif!==false) - (a.aktif!==false) || String(a.idStaf||'zz').localeCompare(String(b.idStaf||'zz')));
 
 const jenisPekerja = info => info.jenisPekerja || (info.jenisGaji === 'Harian' ? 'harian' : 'tetap');
 // Gaji: tetap = jam bekerja × (pokok ÷ 30 ÷ 8); part-time = jam × kadar sejam; pengurusan = bulanan + elaun, tiada OT
@@ -1174,7 +1174,7 @@ function borangPekerja(id){
     if(p && p.peranan === 'Admin' && (peranan !== 'Admin' || !aktifF) && !adminLain) return toast('Mesti ada sekurang-kurangnya seorang Admin aktif di kaunter');
     const ref = p ? doc(stafCol(), p.id) : doc(stafCol());
     const kuasa = Object.fromEntries($$('[data-kuasa]').map(i => [i.dataset.kuasa, i.checked]));
-    const k = {nama:nama_, idStaf, peranan, aktif:aktifF, mo: $('#pMO').checked, punchBebas: $('#pBebas').checked, kuasa, dikemaskiniOleh:nama};
+    const k = {nama:nama_, idStaf, peranan, aktif:aktifF, mo: $('#pMO').checked, punchBebas: $('#pBebas').checked, kuasa, jenisPekerja: val('#pJenis'), telefon: val('#pTel'), jawatan: val('#pJawatan'), dikemaskiniOleh:nama};
     if(pin) k.pinHash = await hashPin(ref.id, pin);
     if(!p) k.dicipta = serverTimestamp();
     const jn = val('#pJenis'), harian = jn === 'harian';

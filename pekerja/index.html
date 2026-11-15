@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-1">
+<meta name="app-versi" content="2026.11.16-2">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,14 +115,14 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-1';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-1';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK } from '../safari-lib.js?v=2026.11.16-1';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-1';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-2';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK } from '../safari-lib.js?v=2026.11.16-2';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-2';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'pekerja@mamalion.app';
@@ -188,6 +188,7 @@ onAuthStateChanged(auth, u => {
     if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
     if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo, kuasaLama = JSON.stringify(saya.kuasa||{}); saya = baru; if(moLama !== !!baru.mo) langganMO(); if(kuasaLama !== JSON.stringify(baru.kuasa||{})){ langganChat(); langganQ(); } if(moLama !== !!baru.mo || kuasaLama !== JSON.stringify(baru.kuasa||{})){ if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran'; kepala(); renderNav(); render(); } } }
     else skrinLogin();
+    if(saya && tab === 'Pekerja' && !$('#app').dataset.sibuk) render();
   }, e => { $('#app').innerHTML = `<div class="card notice bad">⚠ ${esc(e.code === 'permission-denied' ? 'Akses ditolak. Firestore Rules untuk Apps Pekerja belum dikemas kini.' : e.message)}</div>`; }));
   skrinLogin();
 });
@@ -314,7 +315,7 @@ function langganMO(){
 }
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...(adaKuasa(saya,'kaunter') ? [['Queue','💳']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...(adaKuasa(saya,'kaunter') ? [['Queue','💳']] : []), ...(adaKuasa(saya,'urus') ? [['Pekerja','👥']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
 const arahanBaru = () => tugasSaya.filter(t => t.status === 'baru').length + mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).length;
 const memoBaru = () => infoList.filter(x => x.jenis === 'memo' && !bacaSaya.has(x.id)).length;
 function renderNav(){
@@ -328,7 +329,7 @@ function render(){
   if(!saya) return;
   if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
   if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran';
-  ({Queue:viewQueue, Kehadiran:viewKehadiran, Arahan:viewArahan, Pengelola:viewPengelola, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
+  ({Pekerja:viewPekerja, Queue:viewQueue, Kehadiran:viewKehadiran, Arahan:viewArahan, Pengelola:viewPengelola, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
 }
 
 // ---------------- KAD ID STAF ----------------
@@ -508,6 +509,59 @@ function borangPGPromosi(p){
     $('#prSimpan').disabled = true;
     try{ await setDoc(p._baru ? doc(collection(store, 'promosi')) : doc(store, 'promosi', p.id), d); logTindakan(`${p._baru ? 'Tambah' : 'Ubah'} promosi`, d.tajuk); $('#app').dataset.sibuk = ''; toast('✅ Promosi disimpan'); render(); }
     catch(e){ $('#prSimpan').disabled = false; onErr(e); }
+  };
+}
+
+// ---------------- URUS PEKERJA (kuasa 👥) ----------------
+// Maklumat asas sahaja: gaji, IC, bank & kuasa kekal di Apps Akaun (Dato' / Datin)
+const PERANAN_URUS = ['Pekerja','Sales','Cashier','Supervisor'];
+let cariPK = '';
+const semuaStaf = () => (stafSemua[PUSAT] || []).slice().sort((a,b) => (b.aktif!==false) - (a.aktif!==false) || String(a.idStaf||'zz').localeCompare(String(b.idStaf||'zz')));
+function idBaruStaf(a){ const n = Math.max(0, ...semuaStaf().map(x => { const m = String(x.idStaf||'').match(new RegExp('^' + a + '-?(\\d+)$', 'i')); return m ? +m[1] : 0; })); return a + pad(n + 1, 3); }
+function viewPekerja(){
+  const q = cariPK.toLowerCase(), l = semuaStaf().filter(x => !q || `${x.nama} ${x.idStaf} ${x.peranan}`.toLowerCase().includes(q));
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">👥 Pekerja (${semuaStaf().filter(x => x.aktif !== false).length} aktif)</h3><button class="btn pri" id="pkBaru">+ Pekerja baru</button></div>
+    <input id="pkCari" placeholder="Cari nama / ID" value="${esc(cariPK)}" style="margin-top:10px"><p class="muted" style="margin:6px 0 0">Gaji, IC, bank & kuasa diurus oleh Dato' / Datin dalam Apps Akaun.</p></div>
+    ${l.map(x => `<div class="card" style="display:flex;gap:10px;align-items:center;${x.aktif === false ? 'opacity:.55' : ''}"><div style="flex:1"><b>${esc(x.idStaf || '—')}</b> · ${esc(x.nama)} ${ikonKuasa(x)}<br>
+      <small class="muted">${esc(x.peranan || 'Pekerja')} · ${esc(JENIS_PEKERJA[x.jenisPekerja]?.label || 'Jenis belum ditetapkan')}${x.telefon ? ' · ' + esc(x.telefon) : ''}${x.aktif === false ? ' · TIDAK AKTIF' : ''}</small></div>
+      ${PERANAN_URUS.includes(x.peranan || 'Pekerja') && x.id !== saya.id ? `<button class="btn" data-pkubah="${x.id}">Ubah</button>` : '<small class="muted">Akaun</small>'}</div>`).join('') || '<div class="card muted center">Tiada pekerja</div>'}`;
+  $('#pkCari').oninput = e => { cariPK = e.target.value; const pos = e.target.selectionStart; viewPekerja(); const i = $('#pkCari'); i.focus(); i.setSelectionRange(pos, pos); };
+  $('#pkBaru').onclick = () => borangPekerja(null);
+  $$('[data-pkubah]').forEach(b => b.onclick = () => borangPekerja(semuaStaf().find(x => x.id === b.dataset.pkubah)));
+}
+function borangPekerja(p){
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
+  const awal = (p?.idStaf || '').match(/^[A-Z]+/)?.[0] || 'ML';
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">${p ? 'Ubah ' + esc(p.idStaf || '') : '+ Pekerja baru'}</h3><button class="btn" id="fpBatal" style="padding:8px 12px">✕</button></div>
+    <label>Nama penuh</label><input id="fpNama" value="${esc(p?.nama || '')}">
+    <div class="grid2"><div><label>ID staf</label><input id="fpId" value="${esc(p?.idStaf || idBaruStaf(awal))}" style="text-transform:uppercase"></div>
+      <div><label>Peranan (kaunter)</label><select id="fpPeranan">${PERANAN_URUS.map(r => `<option ${r === (p?.peranan || 'Pekerja') ? 'selected' : ''}>${r}</option>`).join('')}</select></div></div>
+    <div class="grid2"><div><label>Telefon</label><input id="fpTel" inputmode="tel" value="${esc(p?.telefon || '')}"></div><div><label>Jawatan</label><input id="fpJaw" value="${esc(p?.jawatan || '')}" placeholder="cth Washer"></div></div>
+    <div class="grid2"><div><label>Jenis pekerja</label><select id="fpJenis">${Object.entries(JENIS_PEKERJA).map(([k,v]) => `<option value="${k}" ${k === (p?.jenisPekerja || 'tetap') ? 'selected' : ''}>${v.ikon} ${v.label}</option>`).join('')}</select></div>
+      <div><label>Tarikh mula</label><input id="fpMula" type="date" value="${esc(p?.tarikhMula || hariIni())}"></div></div>
+    <label>${p ? 'PIN baru (kosongkan jika tidak tukar)' : 'PIN 4–6 digit'}</label><input id="fpPin" inputmode="numeric" maxlength="6" placeholder="${p ? '••••' : 'cth 1234'}">
+    <label style="display:flex;align-items:center;font-weight:400;gap:8px;margin-top:12px"><input type="checkbox" id="fpBebas" style="width:22px;height:22px;margin:0;flex:none" ${p?.punchBebas ? 'checked' : ''}> Punch bebas (selfie sahaja, tanpa QR stesen) — pengurusan sahaja</label>
+    ${p ? `<label style="display:flex;align-items:center;font-weight:400;gap:8px"><input type="checkbox" id="fpAktif" style="width:22px;height:22px;margin:0;flex:none" ${p.aktif !== false ? 'checked' : ''}> Aktif (buang tanda jika berhenti kerja)</label>` : ''}
+    <p class="muted">Gaji pokok / kadar sejam, IC, bank & kuasa akan diisi oleh Dato' / Datin dalam Apps Akaun.</p>
+    <button class="btn pri big" id="fpSimpan">💾 Simpan</button></div>`;
+  $('#fpBatal').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  $('#fpSimpan').onclick = async () => {
+    const nama = val('#fpNama'), idStaf = val('#fpId').toUpperCase().replace(/\s+/g,''), pin = val('#fpPin');
+    if(!nama) return toast('Sila isi nama'); if(!idStaf) return toast('Sila isi ID staf');
+    if(semuaStaf().some(x => x.id !== p?.id && String(x.idStaf||'').toUpperCase() === idStaf)) return toast(`ID ${idStaf} sudah digunakan`);
+    if((!p || pin) && !/^\d{4,6}$/.test(pin)) return toast('PIN mesti 4–6 digit');
+    const ref = p ? doc(store, 'lionsafari', PUSAT, 'staf', p.id) : doc(collection(store, 'lionsafari', PUSAT, 'staf'));
+    const d = {nama, idStaf, peranan: val('#fpPeranan'), telefon: val('#fpTel'), jawatan: val('#fpJaw'), jenisPekerja: val('#fpJenis'), tarikhMula: val('#fpMula'),
+      punchBebas: $('#fpBebas').checked, aktif: p ? $('#fpAktif').checked : true, dikemaskiniOleh: `${saya.nama} (${saya.idStaf})`, ...tanda()};
+    if(pin) d.pinHash = await hashPin(ref.id, pin);
+    if(!p){ d.mo = false; d.kuasa = {}; d.dicipta = serverTimestamp(); }
+    $('#fpSimpan').disabled = true;
+    try{
+      await (p ? updateDoc(ref, d) : setDoc(ref, d));
+      logTindakan(p ? 'Ubah pekerja' : 'Daftar pekerja', `${idStaf} ${nama}${pin ? ' (PIN baru)' : ''}${p && p.aktif !== false && !d.aktif ? ' — dinyahaktif' : ''}`);
+      $('#app').innerHTML = `<div class="card center"><h3>✅ ${esc(idStaf)} ${esc(nama)} disimpan</h3>${pin ? `<p>Beri kepada pekerja:<br><b style="font-size:20px">ID ${esc(idStaf)} · PIN ${esc(pin)}</b></p>` : ''}<p class="muted">Dato' / Datin akan dimaklumkan melalui Log Pengelola untuk isi gaji & maklumat lain.</p><button class="btn pri big" id="fpOk">OK</button></div>`;
+      $('#fpOk').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+    }catch(e){ $('#fpSimpan').disabled = false; onErr(e); }
   };
 }
 
