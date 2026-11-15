@@ -1,5 +1,5 @@
 // Safari Members — simpan fail apps (data Firebase diurus berasingan)
-const V = 'safari-members-v7';
+const V = 'safari-members-v8';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'syiling.png', 'marmar.jpg', 'logo-mamalion.jpg', 'logo-lionking.jpg', '../firebase-config.js', '../safari-lib.js', '../sync-lib.js'];
 self.addEventListener('install', e => e.waitUntil(caches.open(V).then(c => Promise.allSettled(SHELL.map(u => c.add(u)))).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('safari-members-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));
