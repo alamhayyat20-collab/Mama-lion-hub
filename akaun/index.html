@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="app-versi" content="2026.11.15-2">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -82,7 +83,7 @@ header{padding-top:max(14px,env(safe-area-inset-top))}
 <body>
 <header>
   <div><b>🦁 Akaun Mama Lion</b><small>Jualan • Pembelian • Belanja • Petty Cash • Laporan</small></div>
-  <div class="row"><a href="../lionsafari/" style="color:#fff">Kembali ke Lion Safari V2</a><span id="userBox"></span></div>
+  <div class="row" id="hKananAk"><a href="../lionsafari/" style="color:#fff">Kembali ke Lion Safari V2</a><span id="userBox"></span></div>
 </header>
 <nav id="nav"></nav>
 <div id="pasangBox" class="noprint"></div>
@@ -94,7 +95,8 @@ header{padding-top:max(14px,env(safe-area-inset-top))}
 
 <script type="module">
 import { firebaseConfig, BRANCH_ID } from '../firebase-config.js';
-import { modulPengurusan, CSS_MODUL, fMinit } from '../pekerja-lib.js';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR } from '../pekerja-lib.js';
+import { pasangSync } from '../sync-lib.js';
 import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD } from '../safari-lib.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
@@ -961,16 +963,19 @@ const pekerjaCol = () => collection(store, 'akaun', cawangan, 'pekerja');
 const hrCol = () => collection(store, 'akaun', cawangan, 'hr');
 const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
   cawangan: () => cawangan, pengguna: () => nama, esc, RM, toast, refresh: () => refresh(), kehadiranBulan: true});
-document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}</style>`);
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}</style>`);
+let fotoStaf = {};   // gambar profil staf: lionsafari/{cawangan}/staf_foto/{id}
+const fotoColAk = () => collection(store, 'lionsafari', cawangan, 'staf_foto');
 const MOD_KM = ['Kehadiran','Permohonan','Roster','Tetapan Pekerja'];
 const MOD_EXTRA = ['Kadar Komisen'];
 function onErrHR(e){ console.error(e); hrError = e.code === 'permission-denied' ? 'Firebase menolak akses rekod pekerja — Firestore Rules perlu dikemas kini (blok "pekerja" & "hr").' : 'Ralat: ' + e.message; refresh(); }
 function mulaHR(){
-  unsubHR.forEach(f => f && f()); unsubHR = []; hrError = ''; stafKaunter = []; pekerjaInfo = {}; tetapanKaunter = {}; kadarKomisen = {};
+  unsubHR.forEach(f => f && f()); unsubHR = []; hrError = ''; stafKaunter = []; pekerjaInfo = {}; tetapanKaunter = {}; kadarKomisen = {}; fotoStaf = {};
   modulPK.mula(bulan);
   unsubHR.push(onSnapshot(doc(store, 'lionsafari', cawangan, 'tetapan', 'umum'), s => { tetapanKaunter = s.exists() ? s.data() : {}; refresh(); }, onErrHR));
   unsubHR.push(onSnapshot(doc(store, 'lionsafari', cawangan, 'tetapan', 'komisen'), s => { kadarKomisen = s.exists() ? (s.data().kadar || {}) : {}; refresh(); }, onErrHR));
   unsubHR.push(onSnapshot(stafCol(), s => { stafKaunter = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; return x; }); refresh(); }, onErrHR));
+  unsubHR.push(onSnapshot(fotoColAk(), s => { fotoStaf = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); refresh(); }, () => {}));
   unsubHR.push(onSnapshot(pekerjaCol(), s => { pekerjaInfo = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); refresh(); }, onErrHR));
 }
 function langganHRBulan(){
@@ -1018,7 +1023,7 @@ function viewPekerja(){
   if(pkMod === 'Kadar Komisen') return sub + err + viewKomisen();
   if(pkMod === 'Senarai') return sub + err + `<div class="card"><div class="section-title"><h3>👥 Pekerja ${esc(namaCawangan())}</h3><span class="muted">${list.filter(p=>p.aktif!==false).length} aktif</span></div>
     <p class="muted" style="margin-top:0">ID & PIN di sini digunakan untuk log masuk kaunter Lion Safari V2 (${esc(namaCawangan())}). Maklumat gaji hanya boleh dilihat oleh pemilik.</p>
-    ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}"><div><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
+    ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}">${avatar(fotoStaf[p.id], p.nama, 44)}<div style="flex:1"><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
         <br><span class="muted">${esc(p.info.jawatan||'')}${p.info.telefon?' · '+esc(p.info.telefon):''}${p.info.jenisGaji ? ' · '+(p.info.jenisGaji==='Harian' ? RM(p.info.kadarHarian)+'/hari' : RM(p.info.gajiBulanan)+'/bulan') : ''}</span>
         ${g.advance ? `<br><span class="tag warn">Advance ${fmtBulan(bulan)}: ${RM(g.advance)}</span>` : ''}</div>
         <div class="aksi"><button class="small primary" data-pkrekod="${p.id}">+ Rekod</button><button class="small" data-pkurus="${p.id}">Urus</button></div></div>`; }).join('')
@@ -1065,7 +1070,13 @@ $('#modal').addEventListener('click', e => { if(e.target.id === 'modal') tutupMo
 
 function borangPekerja(id){
   const p = id ? senaraiPekerja().find(x => x.id === id) : null, i = p?.info || {};
+  let fotoBaru;   // undefined = tidak berubah, '' = buang, data URL = baru
   bukaModal(`<div class="section-title"><h3>${p?'Urus pekerja':'Pekerja baru'} — ${esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
+    <label>Gambar profil (dipapar pada ID staf di Lion Safari & Apps Pekerja)</label>
+    <div class="foto-edit"><span id="pFotoPrev"></span><div class="row">
+      <label class="foto-btn">📷 Ambil gambar<input id="pFotoKam" type="file" accept="image/*" capture="user" style="display:none"></label>
+      <label class="foto-btn" style="background:#475569">🖼 Galeri<input id="pFotoGal" type="file" accept="image/*" style="display:none"></label>
+      <button class="small danger" id="pFotoBuang">Buang</button></div></div>
     <div class="card" style="background:#f0fdf4;box-shadow:none"><b>🔑 Log masuk kaunter</b>
     <div class="two"><div><label>ID Staf</label><input id="pId" value="${esc(p?.idStaf || idSeterus())}" style="text-transform:uppercase"></div>
       <div><label>Peranan di kaunter</label><select id="pPeranan">${PERANAN_KAUNTER.map(r => `<option ${r===(p?.peranan||'Cashier')?'selected':''}>${r}</option>`).join('')}</select></div></div>
@@ -1089,6 +1100,12 @@ function borangPekerja(id){
   gaji(); ket();
   $('#pJenis').onchange = gaji; $('#pPeranan').onchange = ket;
   $('#mTutup').onclick = tutupModal;
+  const prevFoto = () => { const f = fotoBaru !== undefined ? fotoBaru : (p ? fotoStaf[p.id] : ''); $('#pFotoPrev').innerHTML = avatar(f, val('#pNama') || p?.nama || '?', 84); $('#pFotoBuang').classList.toggle('hidden', !f); };
+  prevFoto();
+  const ambilFoto = async e => { const f = e.target.files[0]; if(!f) return; try{ fotoBaru = await fotoProfil(f); prevFoto(); }catch(_){ toast('Gagal membaca gambar'); } e.target.value = ''; };
+  $('#pFotoKam').onchange = ambilFoto; $('#pFotoGal').onchange = ambilFoto;
+  $('#pFotoBuang').onclick = () => { fotoBaru = ''; prevFoto(); };
+  $('#pNama').oninput = () => { if(!(fotoBaru || (p && fotoStaf[p.id]))) prevFoto(); };
   $('#pSimpan').onclick = async () => {
     const nama_ = val('#pNama'), idStaf = val('#pId').toUpperCase().replace(/\s+/g,''), peranan = val('#pPeranan'), pin = val('#pPin');
     const aktifF = p ? $('#pAktif').checked : true;
@@ -1110,6 +1127,8 @@ function borangPekerja(id){
     try{
       await setDoc(ref, k, {merge:true});
       await setDoc(doc(pekerjaCol(), ref.id), info, {merge:true});
+      if(fotoBaru) await setDoc(doc(fotoColAk(), ref.id), {data: fotoBaru, oleh: nama, dikemaskini: serverTimestamp()});
+      else if(fotoBaru === '') await deleteDoc(doc(fotoColAk(), ref.id));
       tutupModal(); toast(`✅ ${idStaf} ${nama_} disimpan${pin ? ' — beri ID & PIN kepada pekerja' : ''}`);
     }catch(e){ onErrHR(e); toast('⚠ Gagal simpan: ' + (e.code || e.message)); $('#pSimpan').disabled = false; }
   };
@@ -1368,6 +1387,8 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasang
 window.addEventListener('appinstalled', () => { pasangPrompt = null; $('#pasangBox').innerHTML = ''; toast('✅ Akaun Mama Lion dipasang di skrin utama'); });
 renderPasang();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Butang 🔄 Sync: hantar data tertunggak, tarik data terkini & pastikan versi apps sama di semua peranti
+pasangSync({store, tempat: '#hKananAk', awalan: 'akaun-', sebelum: () => !$('#modal').classList.contains('hidden') ? 'Ada borang sedang dibuka di skrin.' : ''});
 </script>
 </body>
 </html>

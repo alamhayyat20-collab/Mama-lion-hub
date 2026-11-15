@@ -31,6 +31,10 @@ service cloud.firestore {
     match /lionsafari/{cawangan}/staf/{id} {
       allow read: if staffApp();
     }
+    // Apps Pekerja baca gambar profil staf (untuk Kad ID & skrin PIN); hanya pengurusan boleh tukar
+    match /lionsafari/{cawangan}/staf_foto/{id} {
+      allow read: if staffApp();
+    }
 
     // Lion Safari V2 hantar jualan (ls-) & petty cash (lsp-) ke Akaun
     match /akaun/{cawangan}/entri/{id} {

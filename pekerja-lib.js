@@ -298,3 +298,55 @@ export const CSS_MODUL = `
 .km-two{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 @media(max-width:600px){.km-two{grid-template-columns:1fr}}
 `;
+
+// =====================================================================
+// GAMBAR PROFIL STAF (untuk ID staf di Lion Safari V2, Apps Pekerja & Akaun)
+// Disimpan berasingan supaya senarai staf kekal ringan:
+//   lionsafari/{cawangan}/staf_foto/{id dokumen staf} = {data: JPEG data URL, oleh, dikemaskini}
+// =====================================================================
+export const fotoCol = (store, fs, cawangan) => fs.collection(store, 'lionsafari', cawangan, 'staf_foto');
+
+// Potong segi empat di tengah & kecilkan (≈20–35 KB)
+export async function fotoProfil(fail, saiz = 360, kualiti = 0.78){
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(fail); });
+  const sisi = Math.min(img.width, img.height), sx = (img.width - sisi) / 2, sy = (img.height - sisi) / 2.6;   // sedikit ke atas: muka
+  const c = document.createElement('canvas'); c.width = c.height = Math.min(saiz, sisi);
+  c.getContext('2d').drawImage(img, sx, Math.max(0, sy), sisi, sisi, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', kualiti);
+}
+
+const _esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const inisial = nama => String(nama || '?').replace(/^(dato'?|datin|en\.?|encik|puan|cik|tuan)\s+/i, '').split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase() || '?';
+// Avatar bulat: gambar jika ada, jika tiada huruf awal nama
+export function avatar(foto, nama, px = 40, kelas = ''){
+  const st = `width:${px}px;height:${px}px;font-size:${Math.round(px*0.4)}px`;
+  return foto
+    ? `<img class="av ${kelas}" src="${foto}" alt="${_esc(nama)}" style="${st}">`
+    : `<span class="av av-kosong ${kelas}" style="${st}">${_esc(inisial(nama))}</span>`;
+}
+
+// Kad ID staf digital
+export function kadID({foto, nama, idStaf, peranan, cawangan, logo, warna = '#0f172a'}){
+  return `<div class="kad-id" style="--kid:${warna}">
+    <div class="kid-atas">${logo ? `<img src="${logo}" alt="">` : ''}<div><b>${_esc(cawangan || '')}</b><small>KAD ID STAF</small></div></div>
+    <div class="kid-foto">${avatar(foto, nama, 128)}</div>
+    <div class="kid-nama">${_esc(nama)}</div>
+    <div class="kid-id">${_esc(idStaf || '—')}</div>
+    <div class="kid-peranan">${_esc(peranan || '')}</div>
+  </div>`;
+}
+
+export const CSS_AVATAR = `
+.av{border-radius:50%;object-fit:cover;flex:none;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;background:#e2e8f0;border:2px solid #fff;box-shadow:0 1px 4px #0002}
+.av-kosong{background:linear-gradient(135deg,#1e293b,#334155);color:#f59e0b;font-weight:800;letter-spacing:.5px}
+.kad-id{max-width:320px;margin:0 auto;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 8px 28px #0f172a33;text-align:center;padding-bottom:18px;border:1px solid #e2e8f0}
+.kid-atas{background:var(--kid);color:#fff;display:flex;align-items:center;gap:10px;padding:14px 16px 46px;text-align:left}
+.kid-atas img{width:42px;height:42px;border-radius:10px;object-fit:contain;background:#fff;padding:3px}
+.kid-atas b{display:block;font-size:15px}.kid-atas small{color:#f59e0b;font-size:11px;letter-spacing:2px;font-weight:700}
+.kid-foto{margin-top:-40px}.kid-foto .av{border:4px solid #fff;box-shadow:0 4px 14px #0003}
+.kid-nama{font-size:20px;font-weight:800;margin-top:8px;padding:0 12px}
+.kid-id{display:inline-block;margin-top:8px;font-size:22px;font-weight:900;letter-spacing:3px;background:#fef3c7;color:#92400e;padding:5px 16px;border-radius:10px;font-family:ui-monospace,Menlo,monospace}
+.kid-peranan{margin-top:8px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:12px}
+.foto-edit{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
+.foto-edit label.foto-btn{display:inline-block;padding:9px 12px;border-radius:10px;background:#0f172a;color:#fff;cursor:pointer;font-size:13px;font-weight:400}
+`;

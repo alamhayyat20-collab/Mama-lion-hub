@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="app-versi" content="2026.11.15-2">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,6 +21,8 @@ header b{font-size:17px;letter-spacing:.3px}
 header small{display:block;color:var(--gold);font-size:11px;margin-top:1px}
 .hright{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .pill{font-size:12px;padding:5px 9px;border-radius:999px;background:var(--navy2);color:#cbd5e1;white-space:nowrap}
+.pill-id{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border:0;cursor:pointer;font-family:inherit}
+.pill-id .av{border-width:1px}
 .pill.on{background:#14532d;color:#bbf7d0}.pill.off{background:#7f1d1d;color:#fecaca}
 nav{display:flex;gap:6px;overflow-x:auto;background:#fff;padding:8px;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
 nav button{white-space:nowrap;position:relative}
@@ -149,7 +152,8 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD } from '../safari-lib.js';
-import { modulPengurusan, CSS_MODUL } from '../pekerja-lib.js';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR } from '../pekerja-lib.js';
+import { pasangSync } from '../sync-lib.js';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -239,7 +243,7 @@ const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
 const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
   cawangan: () => cawangan, pengguna: () => staf ? `${staf.nama}${staf.idStaf ? ' (' + staf.idStaf + ')' : ''}` : '',
   esc, RM, toast, refresh: () => { if(staf) refreshLive(); }});
-document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}</style>`);
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}</style>`);
 let pkMod = 'Kehadiran';
 
 // =====================================================================
@@ -250,7 +254,10 @@ let tab = 'Ringkasan', hari = today();
 let aktif = [], dibuatHari = [], bayarHari = [], stok = [], petty = [];
 let unsubAsas = [], unsubHari = [], dataError = '';
 let pasangPrompt = null;
-let GAMBAR = {}, KOMISEN = {};
+let GAMBAR = {}, KOMISEN = {}, FOTO = {};
+// Avatar staf yang dikemas kini sendiri bila gambar profil berubah (tanpa lukis semula skrin)
+const av = (s, px = 40) => s ? `<span data-av="${s.id}" data-px="${px}" data-nm="${esc(s.nama)}">${avatar(FOTO[s.id], s.nama, px)}</span>` : '';
+function segarAvatar(){ $$('[data-av]').forEach(e => { e.innerHTML = avatar(FOTO[e.dataset.av], e.dataset.nm, +e.dataset.px || 40); }); }
 const OG = {};   // cache gambar order (plat / emblem / calar)
 const ahliCol = () => collection(store, 'ahli');   // id item -> gambar (data URL), dari koleksi lionsafari/{cawangan}/gambar
 // Senarai pakej / kenderaan / add-on dengan id tetap (untuk gambar & susunan)
@@ -289,7 +296,7 @@ function mulaCawangan(){
   stopAll(unsubAsas); stopAll(unsubHari); modulPK.henti();
   staf = null; stafLoaded = false; stafList = []; dataError = '';
   aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = [];
-  T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {};
+  T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {}; FOTO = {};
   setHeader();
   unsubAsas.push(onSnapshot(col('staf'), s => {
     stafList = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; if(!PERANAN[x.peranan]) x.peranan = 'Pekerja'; return x; }).sort((a,b) => tahap(b.peranan) - tahap(a.peranan) || a.nama.localeCompare(b.nama));
@@ -305,6 +312,7 @@ function mulaCawangan(){
     }
   }, onErr));
   unsubAsas.push(onSnapshot(doc(col('tetapan'), 'komisen'), s => { KOMISEN = s.exists() ? (s.data().kadar || {}) : {}; }, () => {}));
+  unsubAsas.push(onSnapshot(col('staf_foto'), s => { FOTO = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); segarAvatar(); }, () => {}));
   unsubAsas.push(onSnapshot(col('gambar'), s => { GAMBAR = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); if(staf) refreshLive(); }, onErr));
   unsubAsas.push(onSnapshot(tetapanRef(), s => { T = {...asalCaw(), ...(s.exists() ? s.data() : {})};
     if(staf){ if(tab === 'Order Baru' && $('#oPlat') && !val('#oPlat') && !$('#modal:not(.hidden)')) renderShell(); else refreshLive(); } }, onErr));
@@ -390,11 +398,13 @@ function renderPinScreen(){
     <label>ID Staf</label><input id="lId" autocapitalize="characters" autocomplete="off" placeholder="cth: ${cawangan==='lion-king'?'LK':'ML'}001" style="text-transform:uppercase;font-size:22px;font-weight:800;letter-spacing:1px">
     <button class="btn-gold big" id="btnId">SETERUSNYA → PIN</button>
     <div class="muted" style="margin-top:8px">ID & PIN diberi oleh pihak pengurusan (apps Akaun → Pekerja).</div></div>
-    ${tanpaId.length ? `<div class="card" style="max-width:420px;margin:10px auto"><div class="muted" style="margin-bottom:6px">Staf belum ada ID (sementara):</div><div class="stafgrid">${tanpaId.map(s => `<button data-id="${s.id}">${esc(s.nama)}<small>${esc(s.peranan)}</small></button>`).join('')}</div></div>` : ''}
+    ${tanpaId.length ? `<div class="card" style="max-width:420px;margin:10px auto"><div class="muted" style="margin-bottom:6px">Staf belum ada ID (sementara):</div><div class="stafgrid">${tanpaId.map(s => `<button data-id="${s.id}">${av(s, 52)}<br>${esc(s.nama)}<small>${esc(s.peranan)}</small></button>`).join('')}</div></div>` : ''}
     ${kadPasang()}`;
   const mintaPin = s => {
     $('#app').innerHTML = `<div class="card" style="max-width:380px;margin:10px auto;text-align:center">
-      <h3>${esc(s.nama)}</h3><div class="muted">${esc(s.idStaf||'')} · ${esc(s.peranan)} — masukkan PIN</div><div id="kp"></div>
+      <div style="margin:4px 0 6px">${av(s, 104)}</div>
+      <h3 style="margin:0 0 2px">${esc(s.nama)}</h3><div style="display:inline-block;font-weight:900;letter-spacing:2px;background:#fef3c7;color:#92400e;padding:3px 12px;border-radius:8px;margin:4px 0">${esc(s.idStaf||'—')}</div>
+      <div class="muted">${esc(s.peranan)} — masukkan PIN</div><div id="kp"></div>
       <button class="small" id="btnBalik">← Tukar ID</button></div>`;
     $('#btnBalik').onclick = renderPinScreen;
     keypad('#kp', async pin => {
@@ -430,6 +440,13 @@ function masukStaf(s){
   langganHari();
   if(PERANAN[s.peranan]?.includes('Pekerja')) modulPK.mula(); else modulPK.henti();
   renderShell();
+}
+function bukaKadId(){
+  const c = infoCaw();
+  openModal(`<div class="between" style="margin-bottom:10px"><h3 style="margin:0">🪪 Kad ID Staf</h3><button class="small" id="mTutup">✕</button></div>
+    ${kadID({foto: FOTO[staf.id], nama: staf.nama, idStaf: staf.idStaf, peranan: staf.peranan, cawangan: `${c.nama} Premium Carwash`, logo: c.logo})}
+    ${FOTO[staf.id] ? '' : '<p class="muted" style="text-align:center">Belum ada gambar profil. Pemilik boleh ambil gambar di apps Akaun → tab Pekerja → Urus.</p>'}`);
+  $('#mTutup').onclick = closeModal;
 }
 function kunci(){ modulPK.henti(); staf = null; try{ localStorage.removeItem('ls_staf'); }catch(_){} stopAll(unsubHari); closeModal(); renderPinScreen(); }
 
@@ -485,8 +502,9 @@ function renderNav(){
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; renderShell(); window.scrollTo(0,0); });
 }
 function renderShell(){
-  $('#who').innerHTML = `<span class="pill">👤 ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}</span><button class="small" id="btnKunci">🔒 Kunci</button>`;
+  $('#who').innerHTML = `<button class="pill pill-id" id="btnKadId" title="Kad ID saya">${av(staf, 24)} ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}</button><button class="small" id="btnKunci">🔒 Kunci</button>`;
   $('#btnKunci').onclick = kunci;
+  $('#btnKadId').onclick = bukaKadId;
   renderNav();
   const v = VIEWS[tab];
   $('#app').innerHTML = `<div id="errBox"></div>${v.statik ? v.statik() : ''}<div id="live"></div>`;
@@ -1261,14 +1279,20 @@ VIEWS['Staf'] = {
   statik: () => `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">👥 Staf, ID & Peranan</h3><button class="btn-dark" id="btnStaf">+ Staf baru</button></div>
     <div class="notice">${Object.entries(KETERANGAN_PERANAN).map(([r,k]) => `<b>${r}</b> — ${k}`).join('<br>')}</div>`,
   pasang(){ $('#btnStaf').onclick = () => borangStaf(); },
-  live: () => `<div class="card"><table><tr><th>ID</th><th>Nama / Peranan</th><th>Status</th><th></th></tr>${stafList.map(s => `<tr><td><b>${esc(s.idStaf||'—')}</b></td><td><b>${esc(s.nama)}</b>${s.id===staf.id?' <span class="tag gold">anda</span>':''}<br><span class="muted">${esc(s.peranan)}</span></td>
+  live: () => `<div class="card"><table><tr><th></th><th>ID</th><th>Nama / Peranan</th><th>Status</th><th></th></tr>${stafList.map(s => `<tr><td style="width:44px">${av(s, 38)}</td><td><b>${esc(s.idStaf||'—')}</b></td><td><b>${esc(s.nama)}</b>${s.id===staf.id?' <span class="tag gold">anda</span>':''}<br><span class="muted">${esc(s.peranan)}</span></td>
       <td>${s.aktif===false?'<span class="tag bad">Tidak aktif</span>':'<span class="tag ok">Aktif</span>'}</td><td class="r">${bolehUrus(s) || s.id===staf.id ? `<button class="small" data-staf="${s.id}">Urus</button>` : ''}</td></tr>`).join('')}</table></div>`,
   pasangLive(){ $$('[data-staf]').forEach(b => b.onclick = () => borangStaf(stafList.find(s => s.id === b.dataset.staf))); }
 };
 function borangStaf(s){
   const diri = s && s.id === staf.id && !bolehUrus(s);   // Manager urus diri sendiri: tukar PIN sahaja
   const pilihan = diri ? [s.peranan] : perananBoleh();
+  let fotoBaru;   // undefined = tidak berubah, '' = buang, data URL = baru
   openModal(`<div class="between"><h3 style="margin:0">${s?'Urus staf':'Staf baru'}</h3><button class="small" id="mTutup">✕</button></div>
+    <label>Gambar profil (dipapar pada ID staf)</label>
+    <div class="foto-edit"><span id="fFotoPrev"></span><div class="row">
+      <label class="foto-btn">📷 Ambil gambar<input id="fFotoKam" type="file" accept="image/*" capture="user" style="display:none"></label>
+      <label class="foto-btn" style="background:#475569">🖼 Galeri<input id="fFotoGal" type="file" accept="image/*" style="display:none"></label>
+      <button class="small btn-bad" id="fFotoBuang">Buang</button></div></div>
     <div class="two"><div><label>ID Staf</label><input id="fId" value="${esc(s?.idStaf || idSeterus())}" autocapitalize="characters" style="text-transform:uppercase" ${diri?'disabled':''}></div>
     <div><label>Peranan</label><select id="fPeranan" ${diri?'disabled':''}>${pilihan.map(p => `<option ${p===(s?.peranan||'Cashier')?'selected':''}>${p}</option>`).join('')}</select></div></div>
     <label>Nama</label><input id="fNama" value="${esc(s?.nama||'')}" ${diri?'disabled':''}>
@@ -1276,12 +1300,22 @@ function borangStaf(s){
     ${s && !diri ?`<label class="row" style="font-weight:400;margin-bottom:10px"><input type="checkbox" id="fAktif" ${s.aktif!==false?'checked':''} style="width:22px;height:22px;margin:0"> Aktif (boleh log masuk)</label>`:''}
     <button class="btn-gold big" id="fSimpan">SIMPAN</button>`);
   $('#mTutup').onclick = closeModal;
+  const prevFoto = () => { const f = fotoBaru !== undefined ? fotoBaru : (s ? FOTO[s.id] : ''); $('#fFotoPrev').innerHTML = avatar(f, val('#fNama') || s?.nama || '?', 84); $('#fFotoBuang').classList.toggle('hidden', !f); };
+  prevFoto();
+  const ambilFoto = async e => { const f = e.target.files[0]; if(!f) return; try{ fotoBaru = await fotoProfil(f); prevFoto(); }catch(_){ toast('Gagal membaca gambar'); } e.target.value = ''; };
+  $('#fFotoKam').onchange = ambilFoto; $('#fFotoGal').onchange = ambilFoto;
+  $('#fFotoBuang').onclick = () => { fotoBaru = ''; prevFoto(); };
+  $('#fNama').oninput = () => { if(!(fotoBaru || (s && FOTO[s.id]))) prevFoto(); };
+  const simpanFoto = async id => {
+    if(fotoBaru) await setDoc(doc(col('staf_foto'), id), {data: fotoBaru, oleh: staf.nama, dikemaskini: serverTimestamp()});
+    else if(fotoBaru === '') await deleteDoc(doc(col('staf_foto'), id));
+  };
   $('#fSimpan').onclick = async () => {
     const pin = val('#fPin');
     if((!s || pin) && !/^\d{4,6}$/.test(pin)) return toast('PIN mesti 4–6 digit');
     const ref = s ? doc(col('staf'), s.id) : doc(col('staf'));
     try{
-      if(diri){ if(!pin) return closeModal(); await updateDoc(ref, {pinHash: await hashPin(ref.id, pin)}); closeModal(); return toast('✅ PIN ditukar'); }
+      if(diri){ if(pin) await updateDoc(ref, {pinHash: await hashPin(ref.id, pin)}); await simpanFoto(ref.id); closeModal(); return toast(pin ? '✅ PIN ditukar' : fotoBaru !== undefined ? '✅ Gambar profil dikemas kini' : 'Tiada perubahan'); }
       const nama = val('#fNama'), peranan = val('#fPeranan'), idStaf = val('#fId').toUpperCase().replace(/\s+/g,''), aktifF = s ? $('#fAktif').checked : true;
       if(!nama) return toast('Sila isi nama');
       if(!idStaf) return toast('Sila isi ID staf');
@@ -1292,6 +1326,7 @@ function borangStaf(s){
       const d = {nama, idStaf, peranan, aktif: aktifF};
       if(pin) d.pinHash = await hashPin(ref.id, pin);
       if(s) await updateDoc(ref, d); else await setDoc(ref, {...d, dicipta: serverTimestamp()});
+      await simpanFoto(ref.id);
       closeModal(); toast('✅ Staf disimpan');
     }catch(e){ onErr(e); }
   };
@@ -1433,6 +1468,9 @@ setInterval(tick, 1000); tick(); net();
 addEventListener('online', net); addEventListener('offline', net);
 setInterval(() => { if(staf && tab === 'Queue') refreshLive(); }, 60000);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Butang 🔄 Sync: hantar data tertunggak, tarik data terkini & pastikan versi apps sama di semua peranti
+pasangSync({store, tempat: '.hright', awalan: 'lionsafari-',
+  sebelum: () => !$('#modal').classList.contains('hidden') ? 'Ada borang / bayaran sedang dibuka di skrin.' : (tab === 'Order Baru' && $('#oPlat') && val('#oPlat') ? 'Order baru sedang diisi.' : '')});
 </script>
 </body>
 </html>

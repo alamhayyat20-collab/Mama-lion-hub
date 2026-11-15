@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="app-versi" content="2026.11.15-2">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +20,7 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
 header{background:var(--hijau);color:#fff;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
 header b{font-size:17px}header small{display:block;color:#bbf7d0;font-size:12px}
 .hlogo{width:40px;height:40px;border-radius:9px;background:#fff;object-fit:contain}
-nav{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
+nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
 nav button{border:0;background:none;padding:10px 4px;font-size:12px;color:var(--muted);font-family:inherit;position:relative}
 nav button b{display:block;font-size:20px;margin-bottom:2px}
 nav button.on{color:var(--hijau);font-weight:700;box-shadow:inset 0 -3px var(--hijau)}
@@ -68,7 +69,7 @@ label{font-size:13px;font-weight:650}
 <body>
 <header>
   <div class="row" style="flex-wrap:nowrap;gap:10px"><img id="hLogo" class="hlogo hidden" alt=""><div><b>👷 Apps Pekerja</b><small id="hSub">Mama Lion & Lion King</small></div></div>
-  <div id="hKanan"></div>
+  <div style="display:flex;gap:6px;align-items:center"><span id="syncBox"></span><div id="hKanan"></div></div>
 </header>
 <nav id="nav" class="hidden"></nav>
 <main id="app"><div class="card muted">Memuatkan…</div></main>
@@ -79,8 +80,9 @@ label{font-size:13px;font-weight:650}
 import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
-import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar } from '../pekerja-lib.js';
+import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR } from '../pekerja-lib.js';
+import { pasangSync } from '../sync-lib.js';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'pekerja@mamalion.app';
@@ -111,6 +113,10 @@ let unsubAsas = [], unsubSaya = [];
 let rosterBulan = {}, hadirHariIni = [], tetapan = {}, roster = {}, mohonSaya = [], hadirBulan = [], bulanRekod = hariIni().slice(0,7), mohonJenis = 'advance';
 const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 const infoCaw = () => CAWANGAN.find(c => c.id === sesi?.c) || CAWANGAN[0];
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_AVATAR}</style>`);
+// Gambar profil staf (ditetapkan oleh pengurusan): lionsafari/{cawangan}/staf_foto/{id}
+let fotoSaya = '';
+const fotoRef = st => doc(store, 'lionsafari', st.c, 'staf_foto', st.id);
 
 // ---------------- Log masuk telefon (sekali sahaja, oleh pemilik) ----------------
 onAuthStateChanged(auth, u => {
@@ -166,10 +172,11 @@ function skrinLogin(msg=''){
   pasangKadPasang();
 }
 function skrinPin(st){
-  let pin = '';
+  let pin = '', foto = '';
   const caw = CAWANGAN.find(c => c.id === st.c);
+  getDoc(fotoRef(st)).then(d => { foto = d.exists() ? d.data().data : ''; const e = $('#pinFoto'); if(e && foto) e.innerHTML = avatar(foto, st.nama, 96); }).catch(() => {});
   const draw = (m='') => {
-    $('#app').innerHTML = `<div class="card center"><img src="${caw.logo}" style="width:70px;height:70px;object-fit:contain"><h3 style="margin:6px 0 2px">${esc(st.nama)}</h3>
+    $('#app').innerHTML = `<div class="card center"><div id="pinFoto">${foto ? avatar(foto, st.nama, 96) : `<img src="${caw.logo}" style="width:70px;height:70px;object-fit:contain">`}</div><h3 style="margin:6px 0 2px">${esc(st.nama)}</h3>
       <div class="muted">${esc(st.idStaf)} · ${esc(caw.nama)}</div>
       <div class="pindots">${[0,1,2,3,4,5].map(i => `<i class="${i < pin.length ? 'f' : ''}"></i>`).join('')}</div>
       <div style="color:var(--merah);font-size:13px;min-height:18px">${esc(m)}</div>
@@ -197,13 +204,20 @@ function masuk(st){
   unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'roster'), where('tarikh','>=',t), where('tarikh','<=',tambahHari(t,13))), s => { roster = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'permohonan'), where('stafId','==',st.id)), s => { mohonSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); render(); }, onErr));
+  fotoSaya = '';
+  unsubSaya.push(onSnapshot(fotoRef(st), d => { fotoSaya = d.exists() ? d.data().data : ''; kepala(); if(tab === 'ID') render(); }, () => {}));
   langganBulan();
+  kepala();
+  renderNav(); render();
+}
+function kepala(){
+  if(!saya) return;
   const caw = infoCaw();
   $('#hLogo').src = caw.logo; $('#hLogo').classList.remove('hidden');
-  $('#hSub').textContent = `${st.idStaf} · ${st.nama} · ${caw.nama}`;
-  $('#hKanan').innerHTML = `<button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>`;
+  $('#hSub').textContent = `${saya.idStaf} · ${saya.nama} · ${caw.nama}`;
+  $('#hKanan').innerHTML = `<button id="btnAv" title="Kad ID saya" style="border:0;background:none;padding:0;cursor:pointer">${avatar(fotoSaya, saya.nama, 34)}</button><button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>`;
   $('#btnKeluar').onclick = () => { if(confirm('Log keluar?')) keluar(); };
-  renderNav(); render();
+  $('#btnAv').onclick = () => { $('#app').dataset.sibuk = ''; tab = 'ID'; renderNav(); render(); window.scrollTo(0,0); };
 }
 function langganBulan(){
   if(unsubSaya.bulan) unsubSaya.bulan();
@@ -214,7 +228,7 @@ function langganBulan(){
 }
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = [['Kehadiran','🕘'],['Mohon','📝'],['Roster','📅'],['Rekod','📊']];
+const TABS = [['Kehadiran','🕘'],['Mohon','📝'],['Roster','📅'],['Rekod','📊'],['ID','🪪']];
 function renderNav(){
   $('#nav').classList.remove('hidden');
   const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length;
@@ -224,7 +238,14 @@ function renderNav(){
 function render(){
   if(!saya) return;
   if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
-  ({Kehadiran:viewKehadiran, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod})[tab]();
+  ({Kehadiran:viewKehadiran, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
+}
+
+// ---------------- KAD ID STAF ----------------
+function viewID(){
+  const caw = infoCaw();
+  $('#app').innerHTML = `<div style="padding:8px 0 4px">${kadID({foto: fotoSaya, nama: saya.nama, idStaf: saya.idStaf, peranan: saya.peranan, cawangan: `${caw.nama} Premium Carwash`, logo: caw.logo, warna: '#14532d'})}</div>
+    <p class="muted center" style="margin-top:14px">${fotoSaya ? 'Tunjukkan kad ini jika diminta. Gambar profil ditetapkan oleh pihak pengurusan.' : 'Belum ada gambar profil. Minta pengurus ambil gambar anda di apps Akaun → Pekerja → Urus.'}</p>`;
 }
 
 // ---------------- KEHADIRAN (punch in / out) ----------------
@@ -369,6 +390,8 @@ function pasangKadPasang(){
   };
 }
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Butang 🔄 Sync: hantar data tertunggak, tarik data terkini & pastikan versi apps sama di semua telefon
+pasangSync({store, tempat: '#syncBox', awalan: 'pekerja-ml-', sebelum: () => $('#app').dataset.sibuk === '1' ? 'Anda sedang punch in/out atau mengisi borang.' : ''});
 </script>
 </body>
 </html>

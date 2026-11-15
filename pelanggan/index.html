@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="app-versi" content="2026.11.15-2">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -184,6 +185,7 @@ nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
 <header class="atas" id="atas">
   <div class="jenama"><img src="icon-192.png" alt="">
     <div>Safari Members<small>Mama Lion & Lion King Premium Car Wash</small></div></div>
+  <span id="syncBox" style="margin-left:auto"></span>
 </header>
 <main id="app"><p class="kosong">Memuatkan…</p></main>
 <nav id="nav" class="hidden" aria-label="Menu utama"></nav>
@@ -194,6 +196,7 @@ nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
 import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, writeBatch, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { pasangSync } from '../sync-lib.js';
 import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru } from '../safari-lib.js';
 
 const CAWANGAN = [
@@ -505,6 +508,8 @@ mulaAhli();
 muatPromosi();
 render();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Butang 🔄 Sync: tarik data kad terkini & pastikan apps pelanggan versi terbaru
+pasangSync({store: db, tempat: '#syncBox', awalan: 'safari-members-'});
 </script>
 </body>
 </html>
