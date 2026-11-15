@@ -18,8 +18,25 @@ export const SYIF_ASAL = [
 export const JENIS_MOHON = {
   advance: {label:'Advance', ikon:'💸', ket:'Pendahuluan gaji'},
   claim:   {label:'Claim', ikon:'🧾', ket:'Tuntutan perbelanjaan (sertakan resit)'},
-  ot:      {label:'Overtime', ikon:'⏱', ket:'Kerja lebih masa'}
+  ot:      {label:'Overtime', ikon:'⏱', ket:'Kerja lebih masa'},
+  cuti:    {label:'Cuti', ikon:'🌴', ket:'Mohon cuti (tarikh mula hingga tamat)'},
+  tukar:   {label:'Tukar syif', ikon:'🔁', ket:'Tukar syif dengan rakan sekerja yang sudah setuju'}
 };
+// Permohonan yang tidak melibatkan wang — boleh diluluskan oleh pengelola (kuasa ✅ / 📅)
+export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
+// Kuasa pengelola yang ditanda oleh pemilik di Akaun → Pekerja → Urus  (lionsafari/{c}/staf/{id}.kuasa)
+export const KUASA = [
+  {k:'harga',   ikon:'🏷', label:'Harga, pakej & servis', ket:'Buka tab Tetapan di kaunter Lion Safari V2'},
+  {k:'roster',  ikon:'📅', label:'Roster & tukar syif', ket:'Susun roster, luluskan tukar syif'},
+  {k:'lulus',   ikon:'✅', label:'Lulus OT & cuti', ket:'Luluskan OT dan cuti (bukan advance / claim)'},
+  {k:'hadir',   ikon:'👀', label:'Lihat kehadiran', ket:'Lihat punch in / out semua pekerja'},
+  {k:'info',    ikon:'📢', label:'Memo, peraturan & SOP', ket:'Tulis memo, Buku Peraturan Kerja dan SOP'},
+  {k:'promosi', ikon:'🎁', label:'Promosi Apps Pelanggan', ket:'Urus promosi & iklan dalam Apps Pelanggan'},
+  {k:'chat',    ikon:'💬', label:'Chat & arahan pemilik', ket:'Terima tugasan & chat terus dengan Dato\' / Datin'}
+];
+export const adaKuasa = (st, k) => !!st?.kuasa?.[k];
+export const ikonKuasa = st => [st?.mo ? '🧾' : '', ...KUASA.filter(x => st?.kuasa?.[x.k]).map(x => x.ikon)].join('');
+export const pengelola = st => ['roster','lulus','hadir','info','promosi'].some(k => st?.kuasa?.[k]);
 export const STATUS_MOHON = {menunggu:'⏳ Menunggu', lulus:'✅ Lulus', tolak:'❌ Ditolak'};
 const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -167,7 +184,11 @@ export function modulPengurusan(ctx){
 
   function kadMohon(m, bolehLulus){
     const J = JENIS_MOHON[m.jenis] || {label:m.jenis, ikon:''};
-    const nilai = m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam${m.jamLulus != null && m.jamLulus != m.jam ? ` (mohon ${m.jam})` : ''}` : `${RM(m.amaunLulus ?? m.amaun)}${m.amaunLulus != null && m.amaunLulus != m.amaun ? ` (mohon ${RM(m.amaun)})` : ''}`;
+    const nilai = m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam${m.jamLulus != null && m.jamLulus != m.jam ? ` (mohon ${m.jam})` : ''}`
+      : m.jenis === 'cuti' ? `${fTarikhPendek(m.tarikh)}${m.hingga && m.hingga !== m.tarikh ? ' – ' + fTarikhPendek(m.hingga) : ''}`
+      : m.jenis === 'tukar' ? `dengan ${esc(m.denganNama || namaStaf(m.denganId))}`
+      : `${RM(m.amaunLulus ?? m.amaun)}${m.amaunLulus != null && m.amaunLulus != m.amaun ? ` (mohon ${RM(m.amaun)})` : ''}`;
+    bolehLulus = bolehLulus && (ctx.bolehLulus ? ctx.bolehLulus(m) : true);
     return `<div class="km-row"><div class="km-nm"><b>${J.ikon} ${J.label} — ${esc(namaStaf(m.stafId))}</b>
       <small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' · ' : ''}${esc(m.sebab||'')}${m.kategori ? ' · ' + esc(m.kategori) : ''}</small>
       <small>Dihantar ${new Date(masaMs(m)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${m.diprosesOleh ? ` · ${m.status==='lulus'?'Diluluskan':'Ditolak'} oleh ${esc(m.diprosesOleh)}` : ''}${m.catatanLulus ? ' · ' + esc(m.catatanLulus) : ''}</small>
@@ -213,12 +234,28 @@ export function modulPengurusan(ctx){
   // ---------------- Tindakan ----------------
   async function proses(id, lulus){
     const m = st.menunggu.find(x => x.id === id); if(!m) return;
-    const d = {status: lulus ? 'lulus' : 'tolak', diprosesOleh: ctx.pengguna(), diproses: fs.serverTimestamp()};
+    if(ctx.bolehLulus && !ctx.bolehLulus(m)) return ctx.toast('Anda tiada kuasa meluluskan permohonan ini');
+    const d = {status: lulus ? 'lulus' : 'tolak', diprosesOleh: ctx.pengguna(), diproses: fs.serverTimestamp(), ...(ctx.tanda ? ctx.tanda() : {})};
+    if(lulus && (m.jenis === 'cuti' || m.jenis === 'tukar')){
+      try{
+        if(m.jenis === 'cuti'){
+          let t = m.tarikh, n = 0;
+          while(t <= (m.hingga || m.tarikh) && n < 31){ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), syif:{[m.stafId]:'CUTI'}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); t = tambahHari(t, 1); n++; }
+        } else {
+          const r = await fs.getDoc(fs.doc(C('roster'), m.tarikh)), sy = r.exists() ? (r.data().syif || {}) : {};
+          await fs.setDoc(fs.doc(C('roster'), m.tarikh), {tarikh:m.tarikh, bulan:m.tarikh.slice(0,7), syif:{[m.stafId]: sy[m.denganId] || '', [m.denganId]: sy[m.stafId] || ''}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true});
+        }
+        await fs.updateDoc(fs.doc(C('permohonan'), id), d);
+        if(ctx.log) ctx.log(`Lulus ${JENIS_MOHON[m.jenis].label}`, `${namaStaf(m.stafId)} · ${m.tarikh}${m.hingga ? ' – ' + m.hingga : ''}`);
+        ctx.toast('✅ Diluluskan — roster dikemas kini');
+      }catch(e){ err(e); }
+      return;
+    }
     if(lulus){
       if(m.jenis === 'ot'){ const j = prompt(`Jam OT diluluskan untuk ${namaStaf(m.stafId)}:`, m.jam); if(j === null) return; const n = parseFloat(j); if(!(n > 0)) return ctx.toast('Jam tidak sah'); d.jamLulus = n; }
       else { const a = prompt(`Amaun ${JENIS_MOHON[m.jenis]?.label} diluluskan (RM):`, m.amaun); if(a === null) return; const n = parseFloat(a); if(!(n > 0)) return ctx.toast('Amaun tidak sah'); d.amaunLulus = Math.round(n*100)/100; }
     } else { const c = prompt('Sebab ditolak (pilihan):', ''); if(c === null) return; if(c) d.catatanLulus = c; }
-    try{ await fs.updateDoc(fs.doc(C('permohonan'), id), d); ctx.toast(lulus ? '✅ Diluluskan' : 'Permohonan ditolak'); }catch(e){ err(e); }
+    try{ await fs.updateDoc(fs.doc(C('permohonan'), id), d); if(ctx.log) ctx.log(`${lulus ? 'Lulus' : 'Tolak'} ${JENIS_MOHON[m.jenis]?.label || m.jenis}`, namaStaf(m.stafId)); ctx.toast(lulus ? '✅ Diluluskan' : 'Permohonan ditolak'); }catch(e){ err(e); }
   }
   async function muatGambar(){
     for(const im of document.querySelectorAll('[data-km-img]')){
@@ -236,13 +273,14 @@ export function modulPengurusan(ctx){
     document.querySelectorAll('[data-km-minggu]').forEach(b => b.onclick = () => { st.minggu = tambahHari(st.minggu, +b.dataset.kmMinggu); langganMinggu(); ctx.refresh(); });
     document.querySelectorAll('[data-km-syif]').forEach(s => s.onchange = async () => {
       const [t, id] = s.dataset.kmSyif.split('|');
-      try{ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), syif:{[id]: s.value}, dikemaskiniOleh: ctx.pengguna()}, {merge:true}); }catch(e){ err(e); }
+      try{ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), syif:{[id]: s.value}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); if(ctx.log) ctx.log('Ubah roster', `${namaStaf(id)} · ${t} → ${s.value || '–'}`); }catch(e){ err(e); }
     });
     const salin = document.querySelector('[data-km-salin]');
     if(salin) salin.onclick = async () => {
       if(!confirm('Salin roster minggu lepas ke minggu ini? Syif sedia ada minggu ini akan ditimpa.')) return;
       try{ for(let i = 0; i < 7; i++){ const dari = tambahHari(st.minggu, i - 7), ke = tambahHari(st.minggu, i); const sy = st.roster[dari]?.syif || {};
-          await fs.setDoc(fs.doc(C('roster'), ke), {tarikh:ke, bulan:ke.slice(0,7), syif:sy, dikemaskiniOleh: ctx.pengguna()}); }
+          await fs.setDoc(fs.doc(C('roster'), ke), {tarikh:ke, bulan:ke.slice(0,7), syif:sy, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}); }
+        if(ctx.log) ctx.log('Salin roster', `minggu ${st.minggu}`);
         ctx.toast('✅ Roster disalin'); }catch(e){ err(e); }
     };
     const lok = document.querySelector('[data-km-lokasisaya]');

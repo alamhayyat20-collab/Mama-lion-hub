@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-3">
+<meta name="app-versi" content="2026.11.15-4">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -105,7 +105,7 @@ import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK } from '../pekerja-lib.js';
+import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL } from '../pekerja-lib.js';
 import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD } from '../safari-lib.js';
 import { pasangSync } from '../sync-lib.js';
 
@@ -138,14 +138,15 @@ let unsubAsas = [], unsubSaya = [];
 let rosterBulan = {}, hadirHariIni = [], tetapan = {}, roster = {}, mohonSaya = [], hadirBulan = [], bulanRekod = hariIni().slice(0,7), mohonJenis = 'advance';
 const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 const infoCaw = () => CAWANGAN.find(c => c.id === sesi?.c) || CAWANGAN[0];
-document.head.insertAdjacentHTML('beforeend', `<style>${CSS_AVATAR}${CSS_DOK}</style>`);
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_AVATAR}${CSS_DOK}${CSS_MODUL}</style>`);
 // Gambar profil staf (ditetapkan oleh pengurusan): lionsafari/{cawangan}/staf_foto/{id}
 let fotoSaya = '';
 const fotoRef = st => doc(store, 'lionsafari', st.c, 'staf_foto', st.id);
 // Kaunter (Lion Safari V2): harga, pakej, gambar & order — untuk tab Harga & Order (MO)
 const LS = (c, n) => collection(store, 'lionsafari', c, n);
 let TK = {}, GBR = null, KOM = {}, orderHari = [], orderSayaBulan = [], infoList = [], bacaSaya = new Set();
-let unsubMO = [];
+let unsubMO = [], unsubChat = [];
+let tugasSaya = [], mesejSaya = [], chatAwal = true, arahanSeg = 'Tugas', pgSeg = null, infoSemua = [], promoSemua = null, unsubPromo = null;
 const itemTK = j => (TK[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, harga: Number(x.harga)||0})).filter(x => x.aktif !== false);
 const r2 = n => Math.round((Number(n)||0)*100)/100;
 const pad = (n,l=2) => String(n).padStart(l,'0');
@@ -159,7 +160,7 @@ onAuthStateChanged(auth, u => {
     stafSemua[c.id] = s.docs.map(d => ({id:d.id, c:c.id, ...d.data()}));
     const ss = bacaLS('pk_sesi');
     if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
-    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo; saya = baru; if(moLama !== !!baru.mo){ if(!baru.mo && tab === 'Order') tab = 'Kehadiran'; langganMO(); renderNav(); render(); } } }
+    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo, kuasaLama = JSON.stringify(saya.kuasa||{}); saya = baru; if(moLama !== !!baru.mo) langganMO(); if(kuasaLama !== JSON.stringify(baru.kuasa||{})) langganChat(); if(moLama !== !!baru.mo || kuasaLama !== JSON.stringify(baru.kuasa||{})){ if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran'; kepala(); renderNav(); render(); } } }
     else skrinLogin();
   }, e => { $('#app').innerHTML = `<div class="card notice bad">⚠ ${esc(e.code === 'permission-denied' ? 'Akses ditolak. Firestore Rules untuk Apps Pekerja belum dikemas kini.' : e.message)}</div>`; }));
   skrinLogin();
@@ -225,12 +226,12 @@ function skrinPin(st){
   };
   draw();
 }
-function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); tab = 'Kehadiran'; $('#app').dataset.sibuk = ''; skrinLogin(); }
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; $('#app').dataset.sibuk = ''; skrinLogin(); }
 
 // ---------------- Selepas log masuk ----------------
 function masuk(st){
   saya = st; sesi = {c: st.c, id: st.id};
-  stopAll(unsubSaya);
+  stopAll(unsubSaya); unsubSaya.infoSemua = null; infoSemua = [];
   const c = st.c, t = hariIni();
   unsubSaya.push(onSnapshot(doc(K(c,'tetapan'), 'umum'), s => { tetapan = s.exists() ? s.data() : {}; render(); }, () => {}));
   unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr));
@@ -240,7 +241,7 @@ function masuk(st){
   unsubSaya.push(onSnapshot(K(c,'info'), s => { infoList = s.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.aktif !== false); renderNav(); if(tab === 'Info') render(); }, () => {}));
   unsubSaya.push(onSnapshot(query(K(c,'info_baca'), where('stafId','==',st.id)), s => { bacaSaya = new Set(s.docs.map(d => d.data().infoId)); renderNav(); if(tab === 'Info') render(); }, () => {}));
   GBR = null;
-  langganMO();
+  langganMO(); langganChat();
   fotoSaya = '';
   unsubSaya.push(onSnapshot(fotoRef(st), d => { fotoSaya = d.exists() ? d.data().data : ''; kepala(); if(tab === 'ID') render(); }, () => {}));
   langganBulan();
@@ -251,7 +252,7 @@ function kepala(){
   if(!saya) return;
   const caw = infoCaw();
   $('#hLogo').src = caw.logo; $('#hLogo').classList.remove('hidden');
-  $('#hSub').textContent = `${saya.idStaf} · ${saya.nama} · ${caw.nama}`;
+  $('#hSub').textContent = `${saya.idStaf} · ${saya.nama} · ${caw.nama}${ikonKuasa(saya) ? ' · ' + ikonKuasa(saya) : ''}`;
   $('#hKanan').innerHTML = `<button id="btnAv" title="Kad ID saya" style="border:0;background:none;padding:0;cursor:pointer">${avatar(fotoSaya, saya.nama, 34)}</button><button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>`;
   $('#btnKeluar').onclick = () => { if(confirm('Log keluar?')) keluar(); };
   $('#btnAv').onclick = () => { $('#app').dataset.sibuk = ''; tab = 'ID'; renderNav(); render(); window.scrollTo(0,0); };
@@ -274,27 +275,201 @@ function langganMO(){
 }
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = () => [['Kehadiran','🕘'], ...(saya?.mo ? [['Order','🧾']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const arahanBaru = () => tugasSaya.filter(t => t.status === 'baru').length + mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).length;
 const memoBaru = () => infoList.filter(x => x.jenis === 'memo' && !bacaSaya.has(x.id)).length;
 function renderNav(){
   if(!saya) return;
   $('#nav').classList.remove('hidden');
   const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length, baru = memoBaru();
-  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}</button>`).join('');
+  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
 }
 function render(){
   if(!saya) return;
   if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
-  if(tab === 'Order' && !saya.mo) tab = 'Kehadiran';
-  ({Kehadiran:viewKehadiran, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
+  if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran';
+  ({Kehadiran:viewKehadiran, Arahan:viewArahan, Pengelola:viewPengelola, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
 }
 
 // ---------------- KAD ID STAF ----------------
 function viewID(){
   const caw = infoCaw();
   $('#app').innerHTML = `<div style="padding:8px 0 4px">${kadID({foto: fotoSaya, nama: saya.nama, idStaf: saya.idStaf, peranan: saya.peranan, cawangan: `${caw.nama} Premium Carwash`, logo: caw.logo, warna: '#14532d'})}</div>
+    ${ikonKuasa(saya) ? `<div class="card" style="margin-top:14px"><b>Kuasa anda</b>${saya.mo ? '<div class="item"><span>🧾 MO — ambil order</span></div>' : ''}${KUASA.filter(x => adaKuasa(saya, x.k)).map(x => `<div class="item"><span>${x.ikon} ${esc(x.label)}</span><small>${esc(x.ket)}</small></div>`).join('')}</div>` : ''}
     <p class="muted center" style="margin-top:14px">${fotoSaya ? 'Tunjukkan kad ini jika diminta. Gambar profil ditetapkan oleh pihak pengurusan.' : 'Belum ada gambar profil. Minta pengurus ambil gambar anda di apps Akaun → Pekerja → Urus.'}</p>`;
+}
+
+// ---------------- NOTIFIKASI (semasa apps dibuka / di latar) ----------------
+function bunyi(){ try{ navigator.vibrate?.([120,60,120]); const c = new (window.AudioContext||window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain(); o.frequency.value = 880; g.gain.value = .08; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + .18); }catch(_){} }
+async function maklum(tajuk, isi){
+  bunyi(); toast(`${tajuk}: ${isi}`);
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try{ const r = await navigator.serviceWorker?.getRegistration(); if(r) r.showNotification(tajuk, {body: isi, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'arahan', renotify: true}); else new Notification(tajuk, {body: isi, icon: 'icon-192.png'}); }catch(_){}
+}
+
+// ---------------- ARAHAN: tugasan & chat dengan Dato' / Datin ----------------
+function langganChat(){
+  stopAll(unsubChat); tugasSaya = []; mesejSaya = []; chatAwal = true;
+  if(!adaKuasa(saya, 'chat')) return;
+  const c = saya.c; let awalT = true, awalM = true;
+  unsubChat.push(onSnapshot(query(K(c,'tugas'), where('stafId','==',saya.id)), s => {
+    const lama = new Set(tugasSaya.map(t => t.id));
+    tugasSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.status === 'selesai') - (b.status === 'selesai') || (b.masaCipta||0) - (a.masaCipta||0));
+    if(!awalT) tugasSaya.filter(t => !lama.has(t.id) && t.status === 'baru').forEach(t => maklum(`📋 Tugasan baru${t.keutamaan === 'segera' ? ' (SEGERA)' : ''}`, t.tajuk));
+    awalT = false; renderNav(); if(tab === 'Arahan') render();
+  }, onErr));
+  unsubChat.push(onSnapshot(query(K(c,'mesej'), where('stafId','==',saya.id)), s => {
+    const lama = new Set(mesejSaya.map(m => m.id));
+    mesejSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaPeranti||0) - (b.masaPeranti||0));
+    if(!awalM) mesejSaya.filter(m => !lama.has(m.id) && m.dari === 'pemilik').forEach(m => maklum(`💬 ${m.nama || 'Pemilik'}`, m.teks || '📷 Gambar'));
+    awalM = false; renderNav();
+    if(tab === 'Arahan' && arahanSeg === 'Chat'){ tandaDibaca(); lukisChat(); } else if(tab === 'Arahan') render();
+  }, onErr));
+}
+function tandaDibaca(){ mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).forEach(m => { m.dibaca = true; updateDoc(doc(K(saya.c,'mesej'), m.id), {dibaca: true}).catch(() => {}); }); renderNav(); }
+const STATUS_TUGAS = {baru:['🆕 Baru','bad'], diterima:['👍 Diterima','warn'], sedang:['🔧 Sedang dibuat','warn'], selesai:['✅ Selesai','ok']};
+const fMasaPenuh = ms => ms ? new Date(ms).toLocaleString('en-GB', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+function viewArahan(){
+  const bT = tugasSaya.filter(t => t.status === 'baru').length, bM = mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).length;
+  const notif = 'Notification' in window && Notification.permission !== 'granted';
+  const seg = `<div class="seg" style="grid-template-columns:repeat(2,1fr)"><button class="${arahanSeg==='Tugas'?'on':''}" data-aseg="Tugas"><b>📋</b>Tugasan${bT ? ` (${bT})` : ''}</button><button class="${arahanSeg==='Chat'?'on':''}" data-aseg="Chat"><b>💬</b>Chat${bM ? ` (${bM})` : ''}</button></div>
+    ${notif ? `<div class="notice">🔔 Hidupkan notifikasi supaya telefon berbunyi bila ada arahan baru. <button class="btn emas" id="btnNotif" style="padding:8px 12px;font-size:13px;margin-top:6px">Hidupkan notifikasi</button></div>` : ''}`;
+  if(arahanSeg === 'Chat'){
+    $('#app').innerHTML = `${seg}<div class="card" style="padding:10px"><div id="chatBox" style="display:flex;flex-direction:column;gap:8px;max-height:58vh;overflow-y:auto;padding:4px"></div></div>
+      <div class="card" style="position:sticky;bottom:8px"><div class="row" style="flex-wrap:nowrap"><label class="btn" style="padding:12px;margin:0;cursor:pointer" title="Gambar">📷<input id="cGambar" type="file" accept="image/*" class="hidden"></label>
+        <input id="cTeks" placeholder="Tulis mesej kepada Dato' / Datin…" style="margin:0;flex:1" autocomplete="off"><button class="btn pri" id="cHantar">Hantar</button></div></div>`;
+    lukisChat(); tandaDibaca();
+    const hantar = async (gambar = '') => {
+      const teks = val('#cTeks'); if(!teks && !gambar) return;
+      $('#cTeks').value = '';
+      try{ await setDoc(doc(K(saya.c,'mesej')), {stafId: saya.id, dari: 'staf', nama: saya.nama, idStaf: saya.idStaf || '', teks, gambar, masa: serverTimestamp(), masaPeranti: Date.now(), dibaca: false}); }
+      catch(e){ onErr(e); $('#cTeks').value = teks; }
+    };
+    $('#cHantar').onclick = () => hantar(); $('#cTeks').onkeydown = e => { if(e.key === 'Enter') hantar(); };
+    $('#cTeks').onfocus = () => $('#app').dataset.sibuk = '1'; $('#cTeks').onblur = () => { if(!val('#cTeks')) $('#app').dataset.sibuk = ''; };
+    $('#cGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ hantar(await capGambar(f, null, 900, 0.65)); }catch(_){ toast('Gagal baca gambar'); } };
+  } else {
+    $('#app').innerHTML = `${seg}${tugasSaya.map(t => { const [lbl, kl] = STATUS_TUGAS[t.status] || [t.status, '']; return `<div class="card" style="${t.keutamaan === 'segera' && t.status !== 'selesai' ? 'border:2px solid var(--merah)' : ''}">
+      <div class="between"><b style="font-size:16px">${t.keutamaan === 'segera' ? '🔴 ' : ''}${esc(t.tajuk)}</b><span class="tag ${kl}">${lbl}</span></div>
+      <div class="muted">Daripada ${esc(t.oleh || 'Pemilik')} · ${fMasaPenuh(t.masaCipta)}${t.tarikhAkhir ? ` · <b style="color:var(--merah)">Sebelum ${fTarikhPendek(t.tarikhAkhir)}</b>` : ''}</div>
+      ${t.isi ? `<div class="dok" style="margin-top:6px">${teksKeHtml(t.isi)}</div>` : ''}${t.gambar ? `<img class="prev" src="${t.gambar}" alt="">` : ''}
+      ${t.nota ? `<div class="notice" style="background:var(--hijau2);margin-top:8px">Nota anda: ${esc(t.nota)}</div>` : ''}${t.bukti ? `<img class="prev" src="${t.bukti}" alt="bukti">` : ''}
+      ${t.status === 'baru' ? `<button class="btn pri big" data-tg="${t.id}|diterima">👍 TERIMA ARAHAN</button>` : t.status === 'diterima' ? `<button class="btn emas big" data-tg="${t.id}|sedang">🔧 MULA BUAT</button>` : t.status === 'sedang' ? `<button class="btn pri big" data-tgsiap="${t.id}">✅ TANDA SELESAI</button>` : ''}</div>`; }).join('') || '<div class="card muted center">Tiada tugasan. 🎉</div>'}`;
+    $$('[data-tg]').forEach(b => b.onclick = async () => { const [id, st] = b.dataset.tg.split('|'); b.disabled = true;
+      try{ await updateDoc(doc(K(saya.c,'tugas'), id), {status: st, masaStatus: Date.now()}); }catch(e){ b.disabled = false; onErr(e); } });
+    $$('[data-tgsiap]').forEach(b => b.onclick = () => siapTugas(tugasSaya.find(t => t.id === b.dataset.tgsiap)));
+  }
+  $$('[data-aseg]').forEach(b => b.onclick = () => { arahanSeg = b.dataset.aseg; $('#app').dataset.sibuk = ''; render(); });
+  if($('#btnNotif')) $('#btnNotif').onclick = async () => { try{ const r = await Notification.requestPermission(); toast(r === 'granted' ? '🔔 Notifikasi dihidupkan' : 'Notifikasi tidak dibenarkan — buka tetapan telefon'); }catch(_){} render(); };
+}
+function lukisChat(){
+  const box = $('#chatBox'); if(!box) return;
+  box.innerHTML = mesejSaya.map(m => { const saya_ = m.dari === 'staf';
+    return `<div style="align-self:${saya_ ? 'flex-end' : 'flex-start'};max-width:82%;background:${saya_ ? 'var(--hijau)' : '#f1f5f9'};color:${saya_ ? '#fff' : '#0f172a'};border-radius:14px;padding:8px 11px">
+      ${saya_ ? '' : `<b style="font-size:12px;color:var(--hijau)">${esc(m.nama || 'Pemilik')}</b><br>`}${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
+      <div style="font-size:10px;opacity:.7;text-align:right;margin-top:2px">${fMasaPenuh(m.masaPeranti)}${saya_ && m.dibaca ? ' · ✓✓' : ''}</div></div>`; }).join('') || '<p class="muted center">Mulakan perbualan dengan Dato\' / Datin.</p>';
+  box.scrollTop = box.scrollHeight;
+}
+function siapTugas(t){
+  if(!t) return;
+  $('#app').dataset.sibuk = '1'; let bukti = '';
+  $('#app').innerHTML = `<div class="card"><h3>✅ Selesai: ${esc(t.tajuk)}</h3>
+    <label>Nota kepada Dato' / Datin (pilihan)</label><textarea id="tgNota" rows="3" placeholder="cth: sudah dicuci & disusun"></textarea>
+    <label>Gambar bukti (pilihan)</label><input id="tgBukti" type="file" accept="image/*" capture="environment"><img id="tgPrev" class="prev hidden">
+    <button class="btn pri big" id="tgSimpan">HANTAR — TUGASAN SELESAI</button><button class="btn big" id="tgBatal" style="margin-top:8px">Batal</button></div>`;
+  $('#tgBukti').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ bukti = await capGambar(f, [`SELESAI ${new Date().toLocaleString('en-GB')}`, `${saya.idStaf} ${saya.nama}`], 900, 0.62); $('#tgPrev').src = bukti; $('#tgPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
+  $('#tgBatal').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  $('#tgSimpan').onclick = async () => { $('#tgSimpan').disabled = true;
+    try{ await updateDoc(doc(K(saya.c,'tugas'), t.id), {status:'selesai', nota: val('#tgNota'), bukti, masaStatus: Date.now()}); $('#app').dataset.sibuk = ''; toast('✅ Dilaporkan selesai'); render(); }
+    catch(e){ $('#tgSimpan').disabled = false; onErr(e); } };
+}
+
+// ---------------- PENGELOLA: kuasa yang diberi oleh Dato' / Datin ----------------
+const tanda = () => ({olehId: saya.id, olehCaw: saya.c});
+const logTindakan = (tindakan, butiran = '') => setDoc(doc(K(saya.c,'log')), {stafId: saya.id, idStaf: saya.idStaf || '', nama: saya.nama, tindakan, butiran, tarikh: hariIni(), bulan: hariIni().slice(0,7), sumber: 'apps-pekerja', masa: serverTimestamp(), ...tanda()}).catch(console.error);
+const modulPG = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
+  cawangan: () => saya.c, pengguna: () => `${saya.nama} (${saya.idStaf || ''})`, esc, RM, toast, refresh: () => { if(tab === 'Pengelola' && ['Kehadiran','Permohonan','Roster'].includes(pgSeg)) render(); },
+  bolehLulus: m => MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus')),
+  tanda, log: logTindakan});
+let pgMula = false;
+const pgBadge = () => pgMula ? modulPG.st.menunggu.filter(m => MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus'))).length : 0;
+function segPengelola(){
+  return [adaKuasa(saya,'hadir') && 'Kehadiran', (adaKuasa(saya,'lulus') || adaKuasa(saya,'roster')) && 'Permohonan', adaKuasa(saya,'roster') && 'Roster', adaKuasa(saya,'info') && 'Info', adaKuasa(saya,'promosi') && 'Promosi'].filter(Boolean);
+}
+function viewPengelola(){
+  const segs = segPengelola();
+  if(!segs.includes(pgSeg)) pgSeg = segs[0];
+  if(!pgMula && segs.some(x => ['Kehadiran','Permohonan','Roster'].includes(x))){ pgMula = true; modulPG.mula(); }
+  const atas = `<div class="card" style="padding:10px 14px"><b>🛠 Pengelola</b> <span class="muted">— kuasa diberi oleh Dato' / Datin. Setiap perubahan direkod.</span></div>
+    <div class="seg" style="grid-template-columns:repeat(${segs.length},1fr)">${segs.map(x => `<button class="${x===pgSeg?'on':''}" data-pgseg="${x}" style="font-size:12px"><b>${({Kehadiran:'👀',Permohonan:'✅',Roster:'📅',Info:'📢',Promosi:'🎁'})[x]}</b>${x}${x === 'Permohonan' && pgBadge() ? ` (${pgBadge()})` : ''}</button>`).join('')}</div>`;
+  if(['Kehadiran','Permohonan','Roster'].includes(pgSeg)){
+    $('#app').innerHTML = atas + `<div>${modulPG.html(pgSeg, [])}</div>` + (pgSeg === 'Permohonan' ? '<p class="muted center">Advance & claim hanya diluluskan oleh Dato\' / Datin.</p>' : '');
+    modulPG.pasang(m => { pgSeg = m; render(); });
+  } else if(pgSeg === 'Info') viewPGInfo(atas);
+  else if(pgSeg === 'Promosi') viewPGPromosi(atas);
+  $$('[data-pgseg]').forEach(b => b.onclick = () => { pgSeg = b.dataset.pgseg; $('#app').dataset.sibuk = ''; render(); });
+}
+function viewPGInfo(atas){
+  if(!unsubSaya.infoSemua) unsubSaya.push(unsubSaya.infoSemua = onSnapshot(K(saya.c,'info'), s => { infoSemua = s.docs.map(d => ({id:d.id, ...d.data()})); if(tab === 'Pengelola' && pgSeg === 'Info') render(); }, onErr));
+  const l = [...infoSemua].sort((a,b) => (a.jenis||'').localeCompare(b.jenis||'') || (b.tarikh||'').localeCompare(a.tarikh||''));
+  $('#app').innerHTML = atas + `<button class="btn pri big" id="pgInfoBaru">+ Memo / peraturan / SOP baru</button>
+    <div class="card" style="margin-top:12px">${l.map(x => `<div class="item"><div><b>${JENIS_INFO[x.jenis]?.ikon || ''} ${esc(x.tajuk)}</b><small>${esc(JENIS_INFO[x.jenis]?.label || x.jenis)} · ${x.tarikh || ''}${x.aktif === false ? ' · disembunyi' : ''}</small></div><button class="btn" data-pginfo="${x.id}" style="padding:8px 12px;font-size:13px">Ubah</button></div>`).join('') || '<p class="muted">Tiada.</p>'}</div>`;
+  $('#pgInfoBaru').onclick = () => borangPGInfo(null);
+  $$('[data-pginfo]').forEach(b => b.onclick = () => borangPGInfo(infoSemua.find(x => x.id === b.dataset.pginfo)));
+}
+function borangPGInfo(x){
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0); let gambar = x?.gambar || '';
+  $('#app').innerHTML = `<div class="card"><h3>📢 ${x ? 'Ubah' : 'Baru'}</h3>
+    <label>Jenis</label><select id="iJenis">${Object.entries(JENIS_INFO).map(([k,v]) => `<option value="${k}" ${k === (x?.jenis || 'memo') ? 'selected' : ''}>${v.ikon} ${v.label}</option>`).join('')}</select>
+    <label>Tajuk</label><input id="iTajuk" value="${esc(x?.tajuk || '')}">
+    <div class="grid2"><div><label>Tarikh</label><input id="iTarikh" type="date" value="${esc(x?.tarikh || hariIni())}"></div><div><label>Susunan (bab)</label><input id="iSusun" type="number" value="${x?.susunan ?? ''}"></div></div>
+    <label>Isi</label><textarea id="iIsi" rows="8" placeholder="# Tajuk kecil&#10;- senarai&#10;**tebal**">${esc(x?.isi || '')}</textarea>
+    <label>Gambar (pilihan)</label><input id="iGambar" type="file" accept="image/*"><img id="iPrev" class="prev ${gambar ? '' : 'hidden'}" src="${gambar}">
+    <label class="chk"><input type="checkbox" id="iPenting" ${x?.penting ? 'checked' : ''}> ❗ Penting (memo)</label>
+    <label class="chk"><input type="checkbox" id="iAktif" ${x?.aktif === false ? '' : 'checked'}> Papar kepada pekerja</label>
+    <button class="btn pri big" id="iSimpan">SIMPAN</button><button class="btn big" id="iBatal" style="margin-top:8px">Batal</button></div>`;
+  $('#iGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ gambar = await capGambar(f, null, 1000, 0.68); $('#iPrev').src = gambar; $('#iPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
+  $('#iBatal').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  $('#iSimpan').onclick = async () => {
+    const d = {jenis: val('#iJenis'), tajuk: val('#iTajuk'), isi: $('#iIsi').value.trim(), tarikh: val('#iTarikh') || hariIni(), susunan: parseInt(val('#iSusun')) || 0, penting: $('#iPenting').checked, aktif: $('#iAktif').checked, gambar, oleh: saya.nama, dikemaskini: Date.now(), ...tanda()};
+    if(!d.tajuk) return toast('Sila isi tajuk'); if(!d.isi && !gambar) return toast('Sila isi kandungan');
+    $('#iSimpan').disabled = true;
+    try{ await setDoc(x ? doc(K(saya.c,'info'), x.id) : doc(K(saya.c,'info')), d); logTindakan(`${x ? 'Ubah' : 'Tambah'} ${JENIS_INFO[d.jenis].label}`, d.tajuk); $('#app').dataset.sibuk = ''; toast('✅ Disimpan'); render(); }
+    catch(e){ $('#iSimpan').disabled = false; onErr(e); }
+  };
+}
+function viewPGPromosi(atas){
+  if(!unsubPromo) unsubPromo = onSnapshot(collection(store, 'promosi'), s => { promoSemua = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.susunan||0) - (b.susunan||0)); if(tab === 'Pengelola' && pgSeg === 'Promosi') render(); }, onErr);
+  $('#app').innerHTML = atas + `<button class="btn pri big" id="pgPrBaru">+ Promosi / iklan baru</button>
+    <div class="card" style="margin-top:12px">${(promoSemua || []).map(p => `<div class="item"><div style="display:flex;gap:8px">${p.gambar ? `<img src="${p.gambar}" style="width:70px;height:46px;object-fit:cover;border-radius:8px">` : ''}<div><b>${esc(p.tajuk)}</b><small>${p.jenis === 'iklan' ? 'Iklan' : 'Promosi'} · ${p.mula || '—'} → ${p.tamat || 'tiada tamat'}${p.aktif === false ? ' · tidak aktif' : ''}</small></div></div><button class="btn" data-pgpr="${p.id}" style="padding:8px 12px;font-size:13px">Ubah</button></div>`).join('') || '<p class="muted">Belum ada promosi.</p>'}</div>`;
+  $('#pgPrBaru').onclick = () => borangPGPromosi(null);
+  $$('[data-pgpr]').forEach(b => b.onclick = () => borangPGPromosi(promoSemua.find(x => x.id === b.dataset.pgpr)));
+}
+function borangPGPromosi(p){
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0); p = p || {jenis:'promosi', aktif:true, cawangan:'semua', mula: hariIni(), susunan: (promoSemua?.length || 0) + 1, _baru:true}; let gambar = p.gambar || '';
+  $('#app').innerHTML = `<div class="card"><h3>🎁 ${p._baru ? 'Promosi baru' : 'Ubah promosi'}</h3>
+    <div class="grid2"><div><label>Jenis</label><select id="prJenis"><option value="promosi">Promosi</option><option value="iklan" ${p.jenis==='iklan'?'selected':''}>Iklan</option></select></div>
+      <div><label>Cawangan</label><select id="prCaw"><option value="semua">Semua</option><option value="mama-lion" ${p.cawangan==='mama-lion'?'selected':''}>Mama Lion</option><option value="lion-king" ${p.cawangan==='lion-king'?'selected':''}>Lion King</option></select></div></div>
+    <label>Tajuk</label><input id="prTajuk" value="${esc(p.tajuk||'')}" placeholder="cth: Diskaun 20% Safari Premium">
+    <label>Keterangan</label><textarea id="prKet" rows="3">${esc(p.ket||'')}</textarea>
+    <label>Gambar / banner (16:9)</label><input id="prGambar" type="file" accept="image/*"><img id="prPrev" class="prev ${gambar ? '' : 'hidden'}" src="${gambar}">
+    <div class="grid2"><div><label>Mula</label><input id="prMula" type="date" value="${esc(p.mula||'')}"></div><div><label>Tamat</label><input id="prTamat" type="date" value="${esc(p.tamat||'')}"></div>
+      <div><label>Teks butang</label><input id="prBtn" value="${esc(p.butangTeks||'')}" placeholder="cth: Tempah sekarang"></div><div><label>Pautan butang</label><input id="prUrl" value="${esc(p.butangUrl||'')}" placeholder="https://wa.me/60..."></div>
+      <div><label>Susunan</label><input id="prSusun" type="number" value="${p.susunan||1}"></div></div>
+    <label class="chk"><input type="checkbox" id="prAktif" ${p.aktif!==false?'checked':''}> Aktif (dipapar dalam Apps Pelanggan)</label>
+    <button class="btn pri big" id="prSimpan">SIMPAN</button><button class="btn big" id="prBatal" style="margin-top:8px">Batal</button></div>`;
+  $('#prGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ gambar = await capGambar(f, null, 1200, 0.72); $('#prPrev').src = gambar; $('#prPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
+  $('#prBatal').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  $('#prSimpan').onclick = async () => {
+    const d = {jenis: val('#prJenis'), cawangan: val('#prCaw'), tajuk: val('#prTajuk'), ket: val('#prKet'), gambar, mula: val('#prMula'), tamat: val('#prTamat'),
+      butangTeks: val('#prBtn'), butangUrl: val('#prUrl'), susunan: parseInt(val('#prSusun')) || 1, aktif: $('#prAktif').checked, dikemaskiniOleh: `${saya.nama} (${saya.idStaf || ''})`, dikemaskini: Date.now(), ...tanda()};
+    if(!d.tajuk) return toast('Sila isi tajuk');
+    if(d.butangUrl && !/^https:\/\//.test(d.butangUrl)) return toast('Pautan mesti bermula dengan https://');
+    $('#prSimpan').disabled = true;
+    try{ await setDoc(p._baru ? doc(collection(store, 'promosi')) : doc(store, 'promosi', p.id), d); logTindakan(`${p._baru ? 'Tambah' : 'Ubah'} promosi`, d.tajuk); $('#app').dataset.sibuk = ''; toast('✅ Promosi disimpan'); render(); }
+    catch(e){ $('#prSimpan').disabled = false; onErr(e); }
+  };
 }
 
 // ---------------- HARGA & PAKEJ ----------------
@@ -309,7 +484,7 @@ function viewHarga(){
   const pk = itemTK('pakej'), ad = itemTK('addon'), kd = itemTK('kenderaan'), caw = infoCaw();
   const img = (x, ikon) => GBR?.[x.id] ? `<img class="img" src="${GBR[x.id]}" alt="">` : `<div class="img">${ikon}</div>`;
   $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">🏷 Harga & Pakej — ${esc(caw.nama)}</h3></div>
-      <p class="muted" style="margin:6px 0 0">Senarai rasmi dari kaunter. Terangkan kepada pelanggan ikut harga ini.${TK.waktu ? `<br>🕘 Waktu operasi: <b>${esc(TK.waktu)}</b>` : ''}</p></div>
+      <p class="muted" style="margin:6px 0 0">Senarai rasmi dari kaunter. Terangkan kepada pelanggan ikut harga ini.${TK.waktuOperasi ? `<br>🕘 Waktu operasi: <b>${esc(TK.waktuOperasi)}</b>` : ''}</p></div>
     <h3 style="margin:14px 2px 8px">🚿 Pakej cucian</h3>
     <div class="menu">${pk.map(x => `<div class="mk">${img(x,'🚿')}<div class="isi"><b>${esc(x.nama)}</b><div class="h">${RM(x.harga)}</div>${x.minit ? `<small>⏱ ~${x.minit} min</small>` : ''}${x.ket ? `<small>${esc(x.ket)}</small>` : ''}${komTag(x)}</div></div>`).join('') || '<p class="muted">Belum ada pakej.</p>'}</div>
     ${ad.length ? `<h3 style="margin:16px 2px 8px">✨ Servis tambahan (add-on)</h3><div class="menu">${ad.map(x => `<div class="mk">${img(x,'✨')}<div class="isi"><b>${esc(x.nama)}</b><div class="h">+${RM(x.harga)}</div>${x.ket ? `<small>${esc(x.ket)}</small>` : ''}${komTag(x)}</div></div>`).join('')}</div>` : ''}
@@ -630,19 +805,21 @@ async function prosesPunch(jenis, fail){
   }
 }
 
-// ---------------- MOHON (advance / claim / OT) ----------------
+// ---------------- MOHON (advance / claim / OT / cuti / tukar syif) ----------------
 function viewMohon(){
   const J = JENIS_MOHON[mohonJenis];
   $('#app').innerHTML = `<div class="card"><h3>📝 Permohonan baru</h3>
-    <div class="seg">${Object.entries(JENIS_MOHON).map(([k,v]) => `<button class="${k===mohonJenis?'on':''}" data-j="${k}"><b>${v.ikon}</b>${v.label}</button>`).join('')}</div>
+    <div class="seg" style="grid-template-columns:repeat(5,1fr)">${Object.entries(JENIS_MOHON).map(([k,v]) => `<button class="${k===mohonJenis?'on':''}" data-j="${k}" style="font-size:12px"><b>${v.ikon}</b>${v.label}</button>`).join('')}</div>
     <div class="muted" style="margin-bottom:8px">${J.ket}</div>
-    ${mohonJenis === 'ot' ? `<div class="grid2"><div><label>Tarikh OT</label><input id="mTarikh" type="date" value="${hariIni()}"></div><div><label>Jam OT</label><input id="mJam" type="number" inputmode="decimal" step="0.5" placeholder="cth 2"></div></div>`
+    ${mohonJenis === 'cuti' ? `<div class="grid2"><div><label>Mula</label><input id="mTarikh" type="date" value="${tambahHari(hariIni(),1)}"></div><div><label>Hingga</label><input id="mHingga" type="date" value="${tambahHari(hariIni(),1)}"></div></div>`
+      : mohonJenis === 'tukar' ? `<div class="grid2"><div><label>Tarikh</label><input id="mTarikh" type="date" value="${tambahHari(hariIni(),1)}"></div><div><label>Tukar dengan</label><select id="mDengan"><option value="">— pilih rakan —</option>${(stafSemua[saya.c]||[]).filter(x => x.aktif !== false && x.id !== saya.id).map(x => `<option value="${x.id}">${esc(x.idStaf||'')} ${esc(x.nama)}</option>`).join('')}</select></div></div><div class="muted" style="margin:-4px 0 8px">Pastikan rakan sudah setuju. Bila diluluskan, syif anda berdua pada tarikh itu ditukar dalam roster.</div>`
+      : mohonJenis === 'ot' ? `<div class="grid2"><div><label>Tarikh OT</label><input id="mTarikh" type="date" value="${hariIni()}"></div><div><label>Jam OT</label><input id="mJam" type="number" inputmode="decimal" step="0.5" placeholder="cth 2"></div></div>`
       : `<div class="grid2"><div><label>Tarikh</label><input id="mTarikh" type="date" value="${hariIni()}"></div><div><label>Amaun (RM)</label><input id="mAmaun" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div></div>`}
     ${mohonJenis === 'claim' ? `<label>Jenis claim</label><select id="mKat">${['Minyak / Tol','Barang kedai','Makan (tugasan)','Perubatan','Lain-lain'].map(x => `<option>${x}</option>`).join('')}</select>
       <label>Gambar resit</label><input id="mResit" type="file" accept="image/*"><img id="mPrev" class="prev hidden">` : ''}
-    <label>${mohonJenis === 'ot' ? 'Kerja yang dibuat' : 'Sebab'}</label><textarea id="mSebab" rows="2" placeholder="${mohonJenis === 'advance' ? 'cth: kecemasan keluarga' : mohonJenis === 'ot' ? 'cth: cuci 3 kereta selepas tutup' : 'cth: beli sabun di kedai ABC'}"></textarea>
+    <label>${mohonJenis === 'ot' ? 'Kerja yang dibuat' : 'Sebab'}</label><textarea id="mSebab" rows="2" placeholder="${mohonJenis === 'advance' ? 'cth: kecemasan keluarga' : mohonJenis === 'ot' ? 'cth: cuci 3 kereta selepas tutup' : mohonJenis === 'cuti' ? 'cth: balik kampung, kenduri' : mohonJenis === 'tukar' ? 'cth: ada urusan pagi, Kamal setuju ganti' : 'cth: beli sabun di kedai ABC'}"></textarea>
     <button class="btn pri big" id="mHantar">HANTAR PERMOHONAN</button></div>
-    <div class="card"><h3>Permohonan saya</h3>${mohonSaya.map(m => { const v = JENIS_MOHON[m.jenis] || {}; return `<div class="item"><div><b>${v.ikon||''} ${v.label||m.jenis} · ${m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam` : RM(m.amaunLulus ?? m.amaun)}</b>
+    <div class="card"><h3>Permohonan saya</h3>${mohonSaya.map(m => { const v = JENIS_MOHON[m.jenis] || {}; return `<div class="item"><div><b>${v.ikon||''} ${v.label||m.jenis} · ${m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam` : m.jenis === 'cuti' ? `${fTarikhPendek(m.tarikh)}${m.hingga && m.hingga !== m.tarikh ? ' – ' + fTarikhPendek(m.hingga) : ''}` : m.jenis === 'tukar' ? `dengan ${esc(m.denganNama||'')}` : RM(m.amaunLulus ?? m.amaun)}</b>
       <small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' · ' : ''}${esc(m.sebab||'')}${m.catatanLulus ? ' · ' + esc(m.catatanLulus) : ''}</small></div>
       <span class="tag ${m.status==='lulus'?'ok':m.status==='tolak'?'bad':'warn'}">${STATUS_MOHON[m.status]||m.status}</span></div>`; }).join('') || '<p class="muted">Belum ada permohonan.</p>'}</div>`;
   $$('[data-j]').forEach(b => b.onclick = () => { mohonJenis = b.dataset.j; viewMohon(); });
@@ -654,6 +831,8 @@ function viewMohon(){
     const tarikh = val('#mTarikh'); if(!tarikh) return toast('Sila pilih tarikh');
     const d = {stafId:saya.id, idStaf:saya.idStaf||'', nama:saya.nama, cawangan:saya.c, jenis:mohonJenis, tarikh, bulan:tarikh.slice(0,7), sebab:val('#mSebab'), status:'menunggu', masa: serverTimestamp()};
     if(mohonJenis === 'ot'){ d.jam = num('#mJam'); if(!(d.jam > 0)) return toast('Sila isi jam OT'); }
+    else if(mohonJenis === 'cuti'){ d.hingga = val('#mHingga') || tarikh; if(d.hingga < tarikh) return toast('Tarikh hingga mesti selepas tarikh mula'); if(tambahHari(tarikh, 30) < d.hingga) return toast('Maksimum 31 hari setiap permohonan'); }
+    else if(mohonJenis === 'tukar'){ d.denganId = val('#mDengan'); if(!d.denganId) return toast('Sila pilih rakan'); d.denganNama = (stafSemua[saya.c]||[]).find(x => x.id === d.denganId)?.nama || ''; }
     else { d.amaun = num('#mAmaun'); if(!(d.amaun > 0)) return toast('Sila isi amaun'); }
     if(mohonJenis === 'claim'){ d.kategori = val('#mKat'); if(!resit) return toast('Sila sertakan gambar resit'); d.resit = resit; }
     if(!d.sebab) return toast('Sila isi sebab / keterangan');

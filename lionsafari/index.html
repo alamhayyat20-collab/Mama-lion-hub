@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-3">
+<meta name="app-versi" content="2026.11.15-4">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -152,7 +152,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD } from '../safari-lib.js';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR } from '../pekerja-lib.js';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa } from '../pekerja-lib.js';
 import { pasangSync } from '../sync-lib.js';
 
 // =====================================================================
@@ -242,7 +242,15 @@ const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
 // Modul pekerja (kehadiran, kelulusan, roster) — dikongsi dengan Apps Pekerja & Akaun
 const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
   cawangan: () => cawangan, pengguna: () => staf ? `${staf.nama}${staf.idStaf ? ' (' + staf.idStaf + ')' : ''}` : '',
-  esc, RM, toast, refresh: () => { if(staf) refreshLive(); }});
+  esc, RM, toast, refresh: () => { if(staf) refreshLive(); },
+  // Kuasa ditanda oleh pemilik di Akaun. Advance & claim: pemilik sahaja.
+  bolehLulus: m => !!staf && MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(staf,'roster') : adaKuasa(staf,'lulus')),
+  log: (tindakan, butiran = '') => { if(!staf) return; const t = today(); setDoc(doc(collection(store, 'kakitangan', cawangan, 'log')), {stafId: staf.id, idStaf: staf.idStaf || '', nama: staf.nama, tindakan, butiran, tarikh: t, bulan: t.slice(0,7), sumber: 'kaunter', masa: serverTimestamp()}).catch(console.error); }});
+// Tab ikut peranan + kuasa (Pekerja / Tetapan diberi melalui suis kuasa di Akaun; Admin kekal ada Tetapan)
+const bolehTetapan = s => s?.peranan === 'Admin' || adaKuasa(s, 'harga');
+const modPK = s => [adaKuasa(s,'hadir') && 'Kehadiran', (adaKuasa(s,'lulus') || adaKuasa(s,'roster')) && 'Permohonan', adaKuasa(s,'roster') && 'Roster'].filter(Boolean);
+const tabsStaf = s => { if(!s) return []; const l = (PERANAN[s.peranan] || []).filter(t => t !== 'Pekerja' && t !== 'Tetapan');
+  if(modPK(s).length) l.push('Pekerja'); if(bolehTetapan(s)) l.push('Tetapan'); return l; };
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}</style>`);
 let pkMod = 'Kehadiran';
 
@@ -404,7 +412,7 @@ function renderPinScreen(){
     $('#app').innerHTML = `<div class="card" style="max-width:380px;margin:10px auto;text-align:center">
       <div style="margin:4px 0 6px">${av(s, 104)}</div>
       <h3 style="margin:0 0 2px">${esc(s.nama)}</h3><div style="display:inline-block;font-weight:900;letter-spacing:2px;background:#fef3c7;color:#92400e;padding:3px 12px;border-radius:8px;margin:4px 0">${esc(s.idStaf||'—')}</div>
-      <div class="muted">${esc(s.peranan)} — masukkan PIN</div><div id="kp"></div>
+      <div class="muted">${esc(s.peranan)}${ikonKuasa(s) ? ' · ' + ikonKuasa(s) : ''} — masukkan PIN</div><div id="kp"></div>
       <button class="small" id="btnBalik">← Tukar ID</button></div>`;
     $('#btnBalik').onclick = renderPinScreen;
     keypad('#kp', async pin => {
@@ -436,9 +444,9 @@ function renderSetupPertama(err){
 function masukStaf(s){
   staf = s;
   try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now()})); }catch(_){}
-  if(!PERANAN[s.peranan]?.includes(tab)) tab = PERANAN[s.peranan]?.[0] || 'Queue';
+  if(!tabsStaf(s).includes(tab)) tab = tabsStaf(s)[0] || 'Queue';
   langganHari();
-  if(PERANAN[s.peranan]?.includes('Pekerja')) modulPK.mula(); else modulPK.henti();
+  if(tabsStaf(s).includes('Pekerja')) modulPK.mula(); else modulPK.henti();
   renderShell();
 }
 function bukaKadId(){
@@ -493,16 +501,17 @@ $('#modal').addEventListener('click', e => { if(e.target.id === 'modal') closeMo
 function badge(t){
   if(t === 'Queue' && aktif.length) return aktif.length;
   if(t === 'Bayaran'){ const n = aktif.filter(o => o.status === 'Siap').length; if(n) return n; }
-  if(t === 'Pekerja' && modulPK.st.menunggu.length) return modulPK.st.menunggu.length;
+  if(t === 'Pekerja'){ const n = modulPK.st.menunggu.filter(m => modulPK_bolehLulus(m)).length; if(n) return n; }
   if(t === 'Stok'){ const n = stok.filter(s => (s.baki||0) <= (s.min||0)).length; if(n) return n; }
   return 0;
 }
 function renderNav(){
-  $('#nav').innerHTML = PERANAN[staf.peranan].map(t => { const b = badge(t); return `<button class="${t===tab?'active':''}" data-t="${t}">${t}${b?`<span class="badge">${b}</span>`:''}</button>`; }).join('');
+  if(!tabsStaf(staf).includes(tab)) tab = tabsStaf(staf)[0] || 'Queue';
+  $('#nav').innerHTML = tabsStaf(staf).map(t => { const b = badge(t); return `<button class="${t===tab?'active':''}" data-t="${t}">${t}${b?`<span class="badge">${b}</span>`:''}</button>`; }).join('');
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; renderShell(); window.scrollTo(0,0); });
 }
 function renderShell(){
-  $('#who').innerHTML = `<button class="pill pill-id" id="btnKadId" title="Kad ID saya">${av(staf, 24)} ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}</button><button class="small" id="btnKunci">🔒 Kunci</button>`;
+  $('#who').innerHTML = `<button class="pill pill-id" id="btnKadId" title="Kad ID saya">${av(staf, 24)} ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}${ikonKuasa(staf) ? ' ' + ikonKuasa(staf) : ''}</button><button class="small" id="btnKunci">🔒 Kunci</button>`;
   $('#btnKunci').onclick = kunci;
   $('#btnKadId').onclick = bukaKadId;
   renderNav();
@@ -618,14 +627,14 @@ VIEWS['Ringkasan'] = {
   },
   pasangLive(){
     $$('[data-menu]').forEach(b => b.onclick = () => {
-      if(!PERANAN[staf.peranan].includes('Order Baru')) return;
+      if(!tabsStaf(staf).includes('Order Baru')) return;
       pilihPakejAwal = b.dataset.menu; tab = 'Order Baru'; renderShell(); window.scrollTo(0,0);
     });
   }
 };
 function kadMenu(){
   const pk = aktifSahaja('pakej'), ad = aktifSahaja('addon');
-  const boleh = PERANAN[staf.peranan].includes('Order Baru');
+  const boleh = tabsStaf(staf).includes('Order Baru');
   return `<div class="card"><div class="between"><h3 style="margin:0">🧽 Menu Pakej & Servis</h3>${staf.peranan==='Admin'?'<span class="muted">Ubah di tab Tetapan</span>':''}</div>
     ${boleh?'<div class="muted" style="margin:4px 0 8px">Tekan pakej untuk terus buat order.</div>':''}
     <div class="menu">${pk.map(p => `<button class="m" data-menu="${p.id}">${imgItem(p,'img','🚿')}<div class="isi"><b>${esc(p.nama)}</b><div class="h">${RM(p.harga)}</div>${p.minit?`<small>⏱ ~${p.minit} min</small>`:''}${p.ket?`<small>${esc(p.ket)}</small>`:''}</div></button>`).join('') || '<p class="muted">Belum ada pakej.</p>'}</div>
@@ -1356,14 +1365,15 @@ function borangStaf(s){
 }
 
 // ---------- PEKERJA (kehadiran, kelulusan advance/claim/OT, roster) ----------
+const modulPK_bolehLulus = m => !!staf && MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(staf,'roster') : adaKuasa(staf,'lulus'));
 VIEWS['Pekerja'] = {
-  live: () => modulPK.html(pkMod, ['Kehadiran','Permohonan','Roster']),
+  live: () => { const m = modPK(staf); if(!m.includes(pkMod)) pkMod = m[0]; return modulPK.html(pkMod, m) + (pkMod === 'Permohonan' ? '<p class="muted" style="text-align:center">Advance & claim diluluskan oleh Dato\' / Datin di apps Akaun.</p>' : ''); },
   pasangLive: () => modulPK.pasang(m => { pkMod = m; refreshLive(); })
 };
 
 // ---------- TETAPAN ----------
 VIEWS['Tetapan'] = {
-  statik: () => staf.peranan !== 'Admin' ? '<div class="notice bad">⛔ Tetapan hanya untuk Admin.</div>' : `<div class="card"><h3>⚙️ Tetapan — ${esc(infoCaw().nama)}</h3>
+  statik: () => !bolehTetapan(staf) ? '<div class="notice bad">⛔ Tiada kuasa Tetapan.</div>' : `<div class="card"><h3>⚙️ Tetapan — ${esc(infoCaw().nama)}</h3>
       <div class="muted">Perubahan pakej, servis & harga di bawah disimpan <b>serta-merta</b> dan terus dipakai di semua peranti kaunter cawangan ini. Harga order yang sudah dibuat tidak berubah.</div></div>
     <div id="live"></div>
     <div class="card"><h3>🏪 Maklumat kedai (untuk resit)</h3>
@@ -1389,7 +1399,7 @@ VIEWS['Tetapan'] = {
     <div class="card" style="margin-top:12px"><h3>📱 Peranti ini</h3><div class="muted">Log masuk sebagai ${esc(dev?.email||'')} · Cawangan: <b>${esc(infoCaw().nama)}</b></div>
       <div class="row" style="margin-top:8px"><button id="tTukarCaw">🏪 Tukar cawangan peranti</button><button class="btn-bad" id="tDevOut">Log keluar peranti</button></div></div>`,
   pasang(){
-    if(staf.peranan !== 'Admin') return;
+    if(!bolehTetapan(staf)) return;
     $('#tSimpan').onclick = async () => {
       const d = {namaKedai: val('#tNama') || infoCaw().kedai, alamat: val('#tAlamat'), telefon: val('#tTel'), notaResit: val('#tNota'),
         bay: $('#tBay').value.split('\n').map(s => s.trim()).filter(Boolean),
@@ -1404,7 +1414,7 @@ VIEWS['Tetapan'] = {
     $('#tDevOut').onclick = () => { if(confirm('Log keluar peranti ini?')) { try{ localStorage.removeItem('ls_staf'); }catch(_){} signOut(auth); } };
   },
   // Senarai pakej / servis / kenderaan dikemas kini secara langsung
-  live: () => staf.peranan !== 'Admin' ? '' : Object.entries(JENIS_ITEM).map(([j, J]) => {
+  live: () => !bolehTetapan(staf) ? '' : Object.entries(JENIS_ITEM).map(([j, J]) => {
     const l = senarai(j);
     return `<div class="card"><div class="between"><h3 style="margin:0">${J.ikon} ${J.label}</h3><button class="btn-dark small" data-tambah="${j}">+ Tambah</button></div>
       ${j==='kenderaan' ? '<div class="muted" style="margin-top:4px">Harga di sini ialah <b>tambahan</b> kepada harga pakej (boleh negatif, cth motosikal −5).</div>' : ''}
@@ -1415,7 +1425,7 @@ VIEWS['Tetapan'] = {
       </div>`).join('') || '<p class="muted">Tiada lagi.</p>'}</div></div>`;
   }).join(''),
   pasangLive(){
-    if(staf.peranan !== 'Admin') return;
+    if(!bolehTetapan(staf)) return;
     $$('[data-tambah]').forEach(b => b.onclick = () => borangMenu(b.dataset.tambah, null));
     $$('[data-ubah]').forEach(b => b.onclick = () => { const [j, id] = b.dataset.ubah.split('|'); borangMenu(j, id); });
     $$('[data-gerak]').forEach(b => b.onclick = async () => {
@@ -1429,7 +1439,7 @@ VIEWS['Tetapan'] = {
 
 const bersihItem = x => { const o = {id:x.id, nama:x.nama, harga:r2(x.harga), aktif:x.aktif !== false}; if(x.ket) o.ket = x.ket; if(x.minit) o.minit = x.minit; return o; };
 async function simpanSenarai(j, l){
-  if(staf.peranan !== 'Admin'){ toast('⛔ Hanya Admin'); return false; }
+  if(!bolehTetapan(staf)){ toast('⛔ Tiada kuasa Tetapan'); return false; }
   try{ await setDoc(tetapanRef(), {[j]: l.map(bersihItem), dikemaskiniOleh: staf.nama}, {merge:true}); return true; }
   catch(e){ onErr(e); toast('⚠ Gagal simpan: ' + (e.code || e.message)); return false; }
 }

@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (MO di Apps Pekerja, Info Pekerja)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (MO, Info Pekerja, kuasa pengelola, arahan & chat)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -34,6 +34,14 @@ service cloud.firestore {
     // Apps Pekerja baca gambar profil staf (untuk Kad ID & skrin PIN); hanya pengurusan boleh tukar
     match /lionsafari/{cawangan}/staf_foto/{id} {
       allow read: if staffApp();
+    }
+    // Kuasa pengelola yang ditanda oleh pemilik (lionsafari/{c}/staf/{id}.kuasa.{k})
+    function kuasa(c, id, k) {
+      let st = get(/databases/$(database)/documents/lionsafari/$(c)/staf/$(id)).data;
+      return st.get('kuasa', {}).get(k, false) == true && st.get('aktif', true) != false;
+    }
+    function olehKuasa(c, k) {
+      return request.resource.data.olehId is string && kuasa(c, request.resource.data.olehId, k);
     }
     // Apps Pekerja (MO): baca order & kadar komisen; cipta order hanya oleh staf yang diaktifkan MO
     function moSah(cawangan, d) {
@@ -93,18 +101,56 @@ service cloud.firestore {
         && request.resource.data.jenis in ['masuk', 'keluar'];
     }
     match /kakitangan/{cawangan}/kehadiran_gambar/{id} {
+      allow read: if staffApp();
       allow create: if staffApp()
         && exists(/databases/$(database)/documents/kakitangan/$(cawangan)/kehadiran/$(id));
     }
     // Apps Pekerja: hantar permohonan advance / claim / OT (status mesti menunggu)
     match /kakitangan/{cawangan}/permohonan/{id} {
       allow read: if staffApp();
+      // Pengelola: lulus / tolak OT & cuti (kuasa lulus), tukar syif (kuasa roster). Advance & claim: pemilik sahaja.
+      allow update: if staffApp()
+        && resource.data.status == 'menunggu'
+        && resource.data.jenis in ['ot', 'cuti', 'tukar']
+        && request.resource.data.status in ['lulus', 'tolak']
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'diprosesOleh', 'diproses', 'jamLulus', 'catatanLulus', 'olehId', 'olehCaw'])
+        && olehKuasa(cawangan, resource.data.jenis == 'tukar' ? 'roster' : 'lulus');
       allow create: if staffApp()
         && request.resource.data.status == 'menunggu'
         && request.resource.data.masa == request.time;
     }
     match /kakitangan/{cawangan}/roster/{id} {
       allow read: if staffApp();
+      allow create, update: if staffApp() && (olehKuasa(cawangan, 'roster') || olehKuasa(cawangan, 'lulus'));
+    }
+    // Log tindakan pengelola (dibaca pemilik di Akaun)
+    match /kakitangan/{cawangan}/log/{id} {
+      allow create: if staffApp() && request.resource.data.masa == request.time
+        && request.resource.data.stafId == request.resource.data.olehId && olehKuasaMana(cawangan);
+    }
+    function olehKuasaMana(c) {
+      return request.resource.data.olehId is string
+        && get(/databases/$(database)/documents/lionsafari/$(c)/staf/$(request.resource.data.olehId)).data.get('kuasa', {}).size() > 0;
+    }
+    // Arahan pemilik: tugasan & chat (pekerja dengan kuasa chat)
+    match /kakitangan/{cawangan}/tugas/{id} {
+      allow read: if staffApp();
+      allow update: if staffApp()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'nota', 'bukti', 'masaStatus'])
+        && request.resource.data.status in ['diterima', 'sedang', 'selesai']
+        && kuasa(cawangan, resource.data.stafId, 'chat');
+    }
+    match /kakitangan/{cawangan}/mesej/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && request.resource.data.dari == 'staf'
+        && request.resource.data.masa == request.time
+        && request.resource.data.stafId is string
+        && kuasa(cawangan, request.resource.data.stafId, 'chat');
+      allow update: if staffApp()
+        && resource.data.dari == 'pemilik'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dibaca']);
     }
     match /kakitangan/{cawangan}/tetapan/{id} {
       allow read: if staffApp();
@@ -112,6 +158,7 @@ service cloud.firestore {
     // Apps Pekerja: memo, buku peraturan kerja & SOP; pekerja sahkan "sudah baca"
     match /kakitangan/{cawangan}/info/{id} {
       allow read: if staffApp();
+      allow create, update: if staffApp() && olehKuasa(cawangan, 'info');
     }
     match /kakitangan/{cawangan}/info_baca/{id} {
       allow read: if staffApp();
@@ -150,6 +197,9 @@ service cloud.firestore {
     match /promosi/{id} {
       allow read: if true;
       allow write: if dalaman();
+      allow create, update: if staffApp()
+        && request.resource.data.olehCaw in ['mama-lion', 'lion-king']
+        && olehKuasa(request.resource.data.olehCaw, 'promosi');
     }
     // Apps Pelanggan baca pakej, harga & gambar pakej
     match /lionsafari/{cawangan}/tetapan/umum {
