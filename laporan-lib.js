@@ -202,7 +202,7 @@ export function modulTutup(ctx){
     stop(); if(tarikh) st.tarikh = tarikh; st.c = ctx.cawangan(); st.rekod = null; st.foto = ''; st.data = null; st.ralat = '';
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup'), st.tarikh), s => { st.rekod = s.exists() ? s.data() : null; ctx.refresh(); }, e => { st.ralat = e.code || e.message; ctx.refresh(); }));
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup_foto'), st.tarikh), s => { st.foto = s.exists() ? s.data().data : ''; ctx.refresh(); }, () => {}));
-    if(ctx.mod === 'kaunter') muatData();
+    if(ctx.mod === 'kaunter' || ctx.mod === 'lihat') muatData();
   }
   async function muatData(){
     st.muat = true; ctx.refresh();
