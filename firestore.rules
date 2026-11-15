@@ -1,0 +1,163 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
+    function staffApp() {
+      return request.auth != null && request.auth.token.email == 'pekerja@mamalion.app';
+    }
+    // Akaun dalaman: peranti kaunter & pengurusan (bukan akaun Apps Pekerja)
+    function dalaman() {
+      return request.auth != null && !staffApp();
+    }
+    function pemilikAkaun() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/akaun/mama-lion/pemilik/$(request.auth.uid));
+    }
+
+    match /branches/{branchId} {
+      allow read, write: if dalaman();
+    }
+    match /staff/{staffId} {
+      allow read: if dalaman();
+      allow write: if false;
+    }
+
+    // Lion Safari V2 - peranti kaunter
+    match /lionsafari/{cawangan}/{document=**} {
+      allow read, write: if dalaman();
+    }
+    // Apps Pekerja hanya baca senarai staf (untuk semak ID + PIN)
+    match /lionsafari/{cawangan}/staf/{id} {
+      allow read: if staffApp();
+    }
+
+    // Lion Safari V2 hantar jualan (ls-) & petty cash (lsp-) ke Akaun
+    match /akaun/{cawangan}/entri/{id} {
+      allow create, update: if dalaman()
+        && (id.matches('ls-.*') || id.matches('lsp-.*'))
+        && request.resource.data.sumber == 'lionsafari'
+        && request.resource.data.cawangan == cawangan;
+      allow delete: if dalaman()
+        && (id.matches('ls-.*') || id.matches('lsp-.*'));
+    }
+    match /akaun/{cawangan}/entri/{id} {
+      allow read, write: if cawangan != 'mama-lion' && dalaman();
+    }
+
+    // Rekod pekerja (IC, gaji, bank) & advance/OT manual: pemilik sahaja
+    match /akaun/{cawangan}/pekerja/{id} {
+      allow read, write: if pemilikAkaun();
+    }
+    match /akaun/{cawangan}/hr/{id} {
+      allow read, write: if pemilikAkaun();
+    }
+
+    // Kakitangan: kehadiran, permohonan, roster (kaunter & Akaun urus semua)
+    match /kakitangan/{cawangan}/{document=**} {
+      allow read, write: if dalaman();
+    }
+    // Apps Pekerja: punch in/out - masa mesti masa server
+    match /kakitangan/{cawangan}/kehadiran/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && request.resource.data.masa == request.time
+        && request.resource.data.jenis in ['masuk', 'keluar'];
+    }
+    match /kakitangan/{cawangan}/kehadiran_gambar/{id} {
+      allow create: if staffApp()
+        && exists(/databases/$(database)/documents/kakitangan/$(cawangan)/kehadiran/$(id));
+    }
+    // Apps Pekerja: hantar permohonan advance / claim / OT (status mesti menunggu)
+    match /kakitangan/{cawangan}/permohonan/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && request.resource.data.status == 'menunggu'
+        && request.resource.data.masa == request.time;
+    }
+    match /kakitangan/{cawangan}/roster/{id} {
+      allow read: if staffApp();
+    }
+    match /kakitangan/{cawangan}/tetapan/{id} {
+      allow read: if staffApp();
+    }
+
+    // Safari Members (Apps Pelanggan): akses awam terhad
+    function sahAhliBaru(token) {
+      let d = request.resource.data;
+      return token.size() >= 20
+        && d.cop.size() == 0 && d.freeWash.size() == 0
+        && d.jumlahServis == 0 && d.ganjaran == 0 && d.kadSelesai == 0
+        && d.telefon is string
+        && getAfter(/databases/$(database)/documents/ahli_telefon/$(d.telefon)).data.token == token;
+    }
+    match /ahli/{token} {
+      allow get: if true;
+      allow list, delete: if dalaman();
+      allow create: if dalaman() || sahAhliBaru(token);
+      allow update: if dalaman() || request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['nama', 'emel', 'tarikhLahir', 'kenderaan', 'plat', 'cawanganUtama', 'setujuPromosi', 'dikemaskini']);
+      match /sejarah/{id} {
+        allow read: if true;
+        allow write: if dalaman();
+      }
+    }
+    match /ahli_telefon/{tel} {
+      allow read, update, delete: if dalaman();
+      allow create: if dalaman() || (request.resource.data.token is string
+        && getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.telefon == tel);
+    }
+    match /promosi/{id} {
+      allow read: if true;
+      allow write: if dalaman();
+    }
+    // Apps Pelanggan baca pakej, harga & gambar pakej
+    match /lionsafari/{cawangan}/tetapan/umum {
+      allow read: if true;
+    }
+    match /lionsafari/{cawangan}/gambar/{id} {
+      allow read: if true;
+    }
+
+    // Akaun Mama Lion (pemilik & pengurusan)
+    match /akaun/mama-lion {
+      function signedIn() {
+        return request.auth != null;
+      }
+      function owner() {
+        return signedIn() && exists(/databases/$(database)/documents/akaun/mama-lion/pemilik/$(request.auth.uid));
+      }
+      function operator() {
+        return signedIn() && exists(/databases/$(database)/documents/akaun/mama-lion/pengurusan/$(request.auth.uid));
+      }
+      function assigned(data) {
+        return operator() && data.assignedUid == request.auth.uid;
+      }
+      function validEntry(data) {
+        return data.cawangan == 'mama-lion'
+          && data.jenis in ['jualan', 'pembelian', 'belanja', 'petty']
+          && data.amaun is number && data.amaun > 0
+          && data.tarikh is string
+          && data.tarikh.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$')
+          && data.bulan is string
+          && data.bulan.matches('^[0-9]{4}-(0[1-9]|1[0-2])$')
+          && data.tarikh.matches(data.bulan + '-[0-9]{2}');
+      }
+      match /pemilik/{uid} {
+        allow get: if signedIn() && request.auth.uid == uid;
+      }
+      match /pengurusan/{uid} {
+        allow get: if signedIn() && request.auth.uid == uid;
+      }
+      match /entri/{id} {
+        allow read: if owner() || assigned(resource.data);
+        allow create: if owner() || (assigned(request.resource.data) && validEntry(request.resource.data));
+        allow update: if owner() || (assigned(resource.data) && assigned(request.resource.data)
+          && validEntry(request.resource.data)
+          && request.resource.data.jenis == resource.data.jenis
+          && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['oleh', 'dicipta', 'sumber', 'ls_key']));
+        allow delete: if owner();
+      }
+    }
+  }
+}
