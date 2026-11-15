@@ -1,5 +1,5 @@
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml)
 rules_version = '2';
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad

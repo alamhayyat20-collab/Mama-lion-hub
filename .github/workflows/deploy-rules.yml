@@ -32,6 +32,26 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.semak.outputs.ada == 'yes'
+
       - name: Publish rules ke lion-safari
         if: steps.semak.outputs.ada == 'yes'
-        run: npx -y firebase-tools@13 deploy --only firestore:rules --project lion-safari --non-interactive
+        run: |
+          set -euo pipefail
+          P=lion-safari
+          TOKEN=$(gcloud auth print-access-token)
+          API=https://firebaserules.googleapis.com/v1/projects/$P
+          jq -n --rawfile c firestore.rules '{source:{files:[{name:"firestore.rules",content:$c}]}}' > body.json
+          curl -sS --fail-with-body -X POST "$API/rulesets" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d @body.json > ruleset.json || { cat ruleset.json; exit 1; }
+          RS=$(jq -r .name ruleset.json)
+          echo "Ruleset baru: $RS"
+          jq -n --arg n "projects/$P/releases/cloud.firestore" --arg r "$RS" \
+            '{release:{name:$n,rulesetName:$r}}' > rel.json
+          curl -sS --fail-with-body -X PATCH "$API/releases/cloud.firestore" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d @rel.json || exit 1
+          echo
+          echo "Rules berjaya dipublish ke Firestore $P"
