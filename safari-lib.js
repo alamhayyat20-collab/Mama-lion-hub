@@ -182,4 +182,4 @@ export function dataStatus(o, c, tambah = {}){
 
 // Gambar asal servis (ilustrasi Mama Lion) — digunakan jika kaunter belum muat naik gambar sendiri
 const GAMBAR_ADA = new Set(['a-enjin', 'a-enjin-detail', 'a-fogging-promo', 'a-glass-depan', 'a-glass-full', 'a-glass-sisi', 'a-interior-wax', 'a-lampu-1b', 'a-lampu-1d', 'a-lampu-2b', 'a-lampu-2d', 'a-silicone', 'a-vacuum', 'a-water-coating', 'a-waterwax', 'a-wax-tyre', 'p-cuci-luar', 'p-enjin', 'p-enjin-detail', 'p-fogging', 'p-interior-wax', 'p-ld-fogging', 'p-ld-silicone', 'p-ld-vacuum', 'p-ld-waterwax', 'p-ld-ww-fog', 'p-polish', 'p-premium', 'p-promo-a', 'p-promo-b', 'p-seat-1', 'p-seat-2', 'p-vacuum', 'p-water-coating']);
-export const gambarAsal = id => GAMBAR_ADA.has(id) ? new URL(`./gambar-servis/${id}.jpg?f=2`, import.meta.url).href : '';
+export const gambarAsal = id => GAMBAR_ADA.has(id) ? new URL(`./gambar-servis/${id}.jpg?f=3`, import.meta.url).href : '';
