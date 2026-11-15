@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-7">
+<meta name="app-versi" content="2026.11.15-8">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -166,7 +166,8 @@ let TK = {}, GBR = null, KOM = {}, orderHari = [], orderSayaBulan = [], infoList
 let cawO = null; const TKall = {}, KOMall = {}, OHall = {}, OSBall = {};
 const setCawO = c => { cawO = c; TK = TKall[c] || {}; KOM = KOMall[c] || {}; orderHari = OHall[c] || []; orderSayaBulan = Object.values(OSBall).flat(); GBR = null; };
 const pilihCawHtml = () => `<div class="seg" style="grid-template-columns:repeat(${CAW.length},1fr)">${CAW.map(c => `<button class="${c.id===cawO?'on':''}" data-cawo="${c.id}"><b>${c.kod}</b>${c.nama}</button>`).join('')}</div>`;
-const pasangPilihCaw = () => $$('[data-cawo]').forEach(b => b.onclick = () => { setCawO(b.dataset.cawo); render(); });
+let cawODipilih = false;
+const pasangPilihCaw = () => $$('[data-cawo]').forEach(b => b.onclick = () => { cawODipilih = true; setCawO(b.dataset.cawo); render(); });
 let unsubMO = [], unsubChat = [];
 let tugasSaya = [], mesejSaya = [], chatAwal = true, arahanSeg = 'Tugas', pgSeg = null, infoSemua = [], promoSemua = null, unsubPromo = null;
 const itemTK = j => (TK[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, harga: Number(x.harga)||0})).filter(x => x.aktif !== false);
@@ -248,7 +249,7 @@ function skrinPin(st){
   };
   draw();
 }
-function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; $('#app').dataset.sibuk = ''; skrinLogin(); }
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; cawODipilih = false; $('#app').dataset.sibuk = ''; skrinLogin(); }
 
 // ---------------- Selepas log masuk ----------------
 function masuk(st){
@@ -256,7 +257,7 @@ function masuk(st){
   stopAll(unsubSaya); unsubSaya.infoSemua = null; infoSemua = [];
   const c = st.c, t = hariIni();
   unsubSaya.push(onSnapshot(doc(K(c,'tetapan'), 'umum'), s => { tetapan = s.exists() ? s.data() : {}; render(); }, () => {}));
-  unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr));
+  unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); if(!cawODipilih && cawKini() !== cawO) setCawO(cawKini()); kepala(); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'roster'), where('tarikh','>=',t), where('tarikh','<=',tambahHari(t,13))), s => { roster = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'permohonan'), where('stafId','==',st.id)), s => { mohonSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); render(); }, onErr));
   for(const cw of CAW) unsubSaya.push(onSnapshot(doc(store, 'lionsafari', cw.id, 'tetapan', 'umum'), s => { TKall[cw.id] = s.exists() ? s.data() : {}; if(cw.id === cawO){ TK = TKall[cw.id]; if(tab === 'Harga') render(); } }, () => {}));
