@@ -86,6 +86,8 @@ export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
 // Kuasa pengelola yang ditanda oleh pemilik di Akaun → Pekerja → Urus  (lionsafari/{c}/staf/{id}.kuasa)
 export const KUASA = [
   {k:'kaunter', ikon:'💳', label:'Kaunter: queue & bayaran', ket:'Terima tempahan, kemas kini progress servis & terima bayaran dalam Apps Pekerja'},
+  {k:'tutup',   ikon:'🔐', label:'Tutup kaunter (gambar tunai)', ket:'Ambil gambar wang tunai & kira tunai dalam laci semasa tutup kaunter'},
+  {k:'semak',   ikon:'🧮', label:'Semak laporan kewangan', ket:'Semak & sahkan laporan tutup kaunter harian (Daily Sales Report)'},
   {k:'urus',    ikon:'👥', label:'Urus pekerja', ket:'Daftar pekerja baru, ubah maklumat asas, PIN & status (bukan gaji, IC, bank atau kuasa)'},
   {k:'harga',   ikon:'🏷', label:'Harga, pakej & servis', ket:'Buka tab Tetapan di kaunter Lion Safari V2'},
   {k:'roster',  ikon:'📅', label:'Roster & tukar syif', ket:'Susun roster, luluskan tukar syif'},
@@ -326,6 +328,9 @@ export function modulPengurusan(ctx){
       <button class="km-btn" data-km-lokasisaya>📍 Guna lokasi saya sekarang (buat di kedai)</button></div>
       <div class="km-card"><h3>🕘 Syif kerja</h3><div class="km-muted">Satu baris setiap syif: <b>Kod | Nama | Mula | Tamat</b> (masa kosong untuk rehat/cuti)</div>
       <textarea id="kmSyif" rows="6">${esc(senaraiSyif(t).map(s => [s.kod, s.nama, s.mula||'', s.tamat||''].join(' | ')).join('\n'))}</textarea></div>
+      <div class="km-card"><h3>🔐 Tutup kaunter & bayaran staf</h3><div class="km-two"><div><label>Modal float laci setiap hari (RM)</label><input id="kmFloat" type="number" inputmode="decimal" step="0.01" value="${t.modalFloat ?? 150}"></div>
+        <div><label>Hari bayaran mingguan (komisen & part-time)</label><select id="kmHariBayar">${['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'].map((h,i) => `<option value="${i}" ${i === Number(t.hariBayarMingguan ?? 0) ? 'selected' : ''}>${h}</option>`).join('')}</select></div></div>
+        <div class="km-muted">Cara bayaran setiap pekerja (Bulanan / Mingguan / Harian) ditetapkan dalam borang pekerja. Bayaran harian & mingguan diambil dari laci semasa tutup kaunter dan ditolak daripada gaji bulanan.</div></div>
       <button class="km-btn km-primary km-big" data-km-simpantetapan>SIMPAN TETAPAN PEKERJA</button>`;
   }
 
@@ -405,6 +410,8 @@ export function modulPengurusan(ctx){
       const syif = document.querySelector('#kmSyif').value.split('\n').map(x => x.split('|').map(y => y.trim())).filter(x => x[0]).map(([kod, nama, mula, tamat]) => {
         const o = {kod: kod.toUpperCase(), nama: nama || kod}; if(/^\d{1,2}:\d{2}$/.test(mula||'')) o.mula = mula.padStart(5,'0'); if(/^\d{1,2}:\d{2}$/.test(tamat||'')) o.tamat = tamat.padStart(5,'0'); return o; });
       const d = {radius, syif: syif.length ? syif : SYIF_ASAL, dikemaskiniOleh: ctx.pengguna()};
+      const fl = parseFloat(document.querySelector('#kmFloat')?.value); if(isFinite(fl) && fl >= 0) d.modalFloat = Math.round(fl * 100) / 100;
+      const hb = document.querySelector('#kmHariBayar'); if(hb) d.hariBayarMingguan = +hb.value;
       if(isFinite(lat) && isFinite(lng)) d.lokasi = {lat, lng};
       try{ await fs.setDoc(fs.doc(C('tetapan'), 'umum'), d, {merge:true}); ctx.toast('✅ Tetapan pekerja disimpan'); }catch(e){ err(e); }
     };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-7">
+<meta name="app-versi" content="2026.11.16-8">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -160,15 +160,16 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-7';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-8';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-7';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT } from '../pekerja-lib.js?v=2026.11.16-7';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-7';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-7';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-8';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-8';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-8';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-8';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-8';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -193,10 +194,10 @@ const KAT_PETTY = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','B
 // Peranan & tab yang boleh dibuka. Tetapan = Admin sahaja.
 // ID staf, peranan & PIN diberi oleh pemilik dalam apps Akaun (tab Pekerja).
 const PERANAN = {
-  'Admin':      ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan','Tetapan'],
-  'Manager':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan'],
-  'Supervisor': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok','Pekerja','Laporan'],
-  'Cashier':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Stok'],
+  'Admin':      ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Tutup Kaunter','Stok','Pekerja','Laporan','Tetapan'],
+  'Manager':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Tutup Kaunter','Stok','Pekerja','Laporan'],
+  'Supervisor': ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Tutup Kaunter','Stok','Pekerja','Laporan'],
+  'Cashier':    ['Ringkasan','Order Baru','Queue','Bayaran','Petty Cash','Tutup Kaunter','Stok'],
   'Sales':      ['Order Baru','Queue'],
   'Pekerja':    ['Queue','Stok']
 };
@@ -268,7 +269,7 @@ const bolehTetapan = s => s?.peranan === 'Admin' || adaKuasa(s, 'harga');
 const modPK = s => [adaKuasa(s,'hadir') && 'Kehadiran', (adaKuasa(s,'lulus') || adaKuasa(s,'roster')) && 'Permohonan', adaKuasa(s,'roster') && 'Roster'].filter(Boolean);
 const tabsStaf = s => { if(!s) return []; const l = (PERANAN[s.peranan] || []).filter(t => t !== 'Pekerja' && t !== 'Tetapan');
   if(modPK(s).length) l.push('Pekerja'); if(bolehTetapan(s)) l.push('Tetapan'); return l; };
-document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}</style>`);
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}${CSS_TUTUP}</style>`);
 let pkMod = 'Kehadiran';
 
 // =====================================================================
@@ -1186,6 +1187,16 @@ VIEWS['Petty Cash'] = {
 };
 
 // ---------- STOK ----------
+// Tutup kaunter harian (format Daily Sales Report). Gambar tunai diambil dalam Apps Pekerja (kuasa 🔐 Tutup).
+const MT = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
+  cawangan: () => cawangan, pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter',
+  refresh: () => { if(tab === 'Tutup Kaunter') refreshLive(); }});
+VIEWS['Tutup Kaunter'] = {
+  statik(){ if(MT.st.c !== cawangan || !MT.st.data) MT.mula(); else MT.muatData(); return ''; },
+  live: () => MT.html(),
+  pasangLive: () => MT.pasang()
+};
+
 VIEWS['Stok'] = {
   statik: () => PENGURUS_STOK.includes(staf.peranan) ? `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">📦 Kawalan Stok</h3><button class="btn-dark" id="btnItem">+ Item baru</button></div>` : `<h3>📦 Kawalan Stok</h3>`,
   pasang(){ if($('#btnItem')) $('#btnItem').onclick = () => borangItem(); },

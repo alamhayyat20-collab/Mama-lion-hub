@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-7">
+<meta name="app-versi" content="2026.11.16-8">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,14 +115,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-7';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-8';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-7';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-7';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-7';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-7';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-8';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-8';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-8';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP } from '../laporan-lib.js?v=2026.11.16-8';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-8';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -186,7 +187,7 @@ onAuthStateChanged(auth, u => {
     stafSemua[c.id] = s.docs.map(d => ({id:d.id, c:c.id, ...d.data()}));
     const ss = bacaLS('pk_sesi');
     if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
-    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo, kuasaLama = JSON.stringify(saya.kuasa||{}); saya = baru; if(moLama !== !!baru.mo) langganMO(); if(kuasaLama !== JSON.stringify(baru.kuasa||{})){ langganChat(); langganQ(); } if(moLama !== !!baru.mo || kuasaLama !== JSON.stringify(baru.kuasa||{})){ if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran'; kepala(); renderNav(); render(); } } }
+    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo, kuasaLama = JSON.stringify(saya.kuasa||{}); saya = baru; if(moLama !== !!baru.mo) langganMO(); if(kuasaLama !== JSON.stringify(baru.kuasa||{})){ langganChat(); langganQ(); langganTutup(); } if(moLama !== !!baru.mo || kuasaLama !== JSON.stringify(baru.kuasa||{})){ if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran'; kepala(); renderNav(); render(); } } }
     else skrinLogin();
     if(saya && tab === 'Pekerja' && !$('#app').dataset.sibuk) render();
   }, e => { $('#app').innerHTML = `<div class="card notice bad">⚠ ${esc(e.code === 'permission-denied' ? 'Akses ditolak. Firestore Rules untuk Apps Pekerja belum dikemas kini.' : e.message)}</div>`; }));
@@ -253,7 +254,7 @@ function skrinPin(st){
   };
   draw();
 }
-function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubQ); cawO = null; stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; cawODipilih = false; $('#app').dataset.sibuk = ''; skrinLogin(); }
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubQ); stopAll(unsubTutup); MTP.henti(); MTP.st.c = null; cawO = null; stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; cawODipilih = false; $('#app').dataset.sibuk = ''; skrinLogin(); }
 
 // ---------------- Selepas log masuk ----------------
 function masuk(st){
@@ -269,7 +270,7 @@ function masuk(st){
   unsubSaya.push(onSnapshot(K(c,'info'), s => { infoList = s.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.aktif !== false); renderNav(); if(tab === 'Info') render(); }, () => {}));
   unsubSaya.push(onSnapshot(query(K(c,'info_baca'), where('stafId','==',st.id)), s => { bacaSaya = new Set(s.docs.map(d => d.data().infoId)); renderNav(); if(tab === 'Info') render(); }, () => {}));
   GBR = null;
-  langganMO(); langganChat();
+  langganMO(); langganChat(); langganTutup();
   fotoSaya = '';
   unsubSaya.push(onSnapshot(fotoRef(st), d => { fotoSaya = d.exists() ? d.data().data : ''; kepala(); if(tab === 'ID') render(); }, () => {}));
   langganBulan();
@@ -315,21 +316,21 @@ function langganMO(){
 }
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...(adaKuasa(saya,'kaunter') ? [['Queue','💳']] : []), ...(adaKuasa(saya,'urus') ? [['Pekerja','👥']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...(adaKuasa(saya,'kaunter') ? [['Queue','💳']] : []), ...(adaKuasa(saya,'urus') ? [['Pekerja','👥']] : []), ...((adaKuasa(saya,'tutup') || adaKuasa(saya,'semak')) ? [['Tutup','🔐']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
 const arahanBaru = () => tugasSaya.filter(t => t.status === 'baru').length + mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).length;
 const memoBaru = () => infoList.filter(x => x.jenis === 'memo' && !bacaSaya.has(x.id)).length;
 function renderNav(){
   if(!saya) return;
   $('#nav').classList.remove('hidden');
   const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length, baru = memoBaru();
-  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
+  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Tutup' && tutupMenunggu.length ? `<i>${tutupMenunggu.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
 }
 function render(){
   if(!saya) return;
   if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
   if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran';
-  ({Pekerja:viewPekerja, Queue:viewQueue, Kehadiran:viewKehadiran, Arahan:viewArahan, Pengelola:viewPengelola, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
+  ({Tutup:viewTutup, Pekerja:viewPekerja, Queue:viewQueue, Kehadiran:viewKehadiran, Arahan:viewArahan, Pengelola:viewPengelola, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
 }
 
 // ---------------- KAD ID STAF ----------------
@@ -510,6 +511,27 @@ function borangPGPromosi(p){
     try{ await setDoc(p._baru ? doc(collection(store, 'promosi')) : doc(store, 'promosi', p.id), d); logTindakan(`${p._baru ? 'Tambah' : 'Ubah'} promosi`, d.tajuk); $('#app').dataset.sibuk = ''; toast('✅ Promosi disimpan'); render(); }
     catch(e){ $('#prSimpan').disabled = false; onErr(e); }
   };
+}
+
+// ---------------- TUTUP KAUNTER (kuasa 🔐 Tutup / 🧮 Semak) ----------------
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_TUTUP}</style>`);
+let tutupMenunggu = [], unsubTutup = [];
+const MTP = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
+  cawangan: () => cawO, pengguna: () => `${saya?.nama || ''} (${saya?.idStaf || ''})`, tanda: () => ({olehId: saya.id, olehCaw: saya.c}), toast, capGambar, mod: 'foto',
+  get bolehSemak(){ return adaKuasa(saya, 'semak'); }, refresh: () => { if(tab === 'Tutup' && !$('#app').dataset.sibuk) render(); }});
+function langganTutup(){
+  unsubTutup.forEach(f => f()); unsubTutup = []; tutupMenunggu = [];
+  if(!saya || !adaKuasa(saya, 'semak')) return;
+  for(const c of CAW.map(x => x.id)) unsubTutup.push(onSnapshot(query(LS(c, 'tutup'), where('status', '==', 'dihantar')), s => {
+    tutupMenunggu = [...tutupMenunggu.filter(x => x.c !== c), ...s.docs.map(d => ({c, ...d.data()}))].sort((a,b) => a.tarikh.localeCompare(b.tarikh));
+    renderNav(); if(tab === 'Tutup' && !$('#app').dataset.sibuk) render(); }, () => {}));
+}
+function viewTutup(){
+  if(MTP.st.c !== cawO) MTP.mula();
+  const pending = tutupMenunggu.length ? `<div class="card"><h3 style="margin-top:0">🧮 Menunggu semakan (${tutupMenunggu.length})</h3>${tutupMenunggu.map(r => `<button class="btn" style="width:100%;margin:4px 0;text-align:left" data-tsemak="${r.c}|${r.tarikh}">${esc(namaCaw(r.c))} · ${esc(r.tarikh)} · RM ${(r.laporan?.jumlah || 0).toFixed(2)} · ${esc(r.ditutupOleh || '')}</button>`).join('')}</div>` : '';
+  $('#app').innerHTML = pilihCawHtml() + pending + MTP.html();
+  pasangPilihCaw(); MTP.pasang();
+  $$('[data-tsemak]').forEach(b => b.onclick = () => { const [c, t] = b.dataset.tsemak.split('|'); cawODipilih = true; setCawO(c); MTP.mula(t); });
 }
 
 // ---------------- URUS PEKERJA (kuasa 👥) ----------------

@@ -96,6 +96,24 @@ service cloud.firestore {
       allow create: if staffApp()
         && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(id));
     }
+    // Tutup kaunter: kuasa 🔐 Tutup (gambar & kiraan tunai), kuasa 🧮 Semak (sahkan / pulangkan)
+    match /lionsafari/{cawangan}/tutup/{tarikh} {
+      allow read: if staffApp();
+      allow create: if staffApp() && olehKuasa(cawangan, 'tutup')
+        && request.resource.data.status == 'draf'
+        && request.resource.data.keys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'dikemaskini', 'olehId', 'olehCaw']);
+      allow update: if staffApp() && (
+        (olehKuasa(cawangan, 'tutup') && resource.data.get('status', 'draf') == 'draf' && request.resource.data.status == 'draf'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'dikemaskini', 'olehId', 'olehCaw']))
+        || (olehKuasa(cawangan, 'semak') && resource.data.status == 'dihantar' && request.resource.data.status in ['disahkan', 'draf']
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'disemakOleh', 'masaSemak', 'catatanSemak', 'dikemaskini', 'olehId', 'olehCaw'])));
+    }
+    match /lionsafari/{cawangan}/tutup_foto/{tarikh} {
+      allow read: if staffApp();
+      allow write: if staffApp() && olehKuasa(cawangan, 'tutup')
+        && (!exists(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(tarikh))
+            || get(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(tarikh)).data.get('status', 'draf') == 'draf');
+    }
     // Tempahan dari Apps Pelanggan
     match /lionsafari/{cawangan}/tempahan/{id} {
       allow get: if true;
