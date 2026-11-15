@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-11">
+<meta name="app-versi" content="2026.11.16-12">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,15 +115,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-11';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-12';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-11';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-11';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-11';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-11';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-11';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-12';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-12';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-12';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-12';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-12';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -393,7 +393,7 @@ function viewArahan(){
   } else {
     $('#app').innerHTML = `${seg}${tugasSaya.map(t => { const [lbl, kl] = STATUS_TUGAS[t.status] || [t.status, '']; return `<div class="card" style="${t.keutamaan === 'segera' && t.status !== 'selesai' ? 'border:2px solid var(--merah)' : ''}">
       <div class="between"><b style="font-size:16px">${t.keutamaan === 'segera' ? '🔴 ' : ''}${esc(t.tajuk)}</b><span class="tag ${kl}">${lbl}</span></div>
-      <div class="muted">Daripada ${esc(t.oleh || 'Pemilik')} · ${fMasaPenuh(t.masaCipta)}${t.tarikhAkhir ? ` · <b style="color:var(--merah)">Sebelum ${fTarikhPendek(t.tarikhAkhir)}</b>` : ''}</div>
+      <div class="muted">Daripada ${esc(t.oleh || 'Pemilik')}${t.kumpulanId ? ` · 👥 tugasan berkumpulan (${t.bilPenerima || ''} pekerja)` : ''} · ${fMasaPenuh(t.masaCipta)}${t.tarikhAkhir ? ` · <b style="color:var(--merah)">Sebelum ${fTarikhPendek(t.tarikhAkhir)}</b>` : ''}</div>
       ${t.isi ? `<div class="dok" style="margin-top:6px">${teksKeHtml(t.isi)}</div>` : ''}${t.gambar ? `<img class="prev" src="${t.gambar}" alt="">` : ''}
       ${t.nota ? `<div class="notice" style="background:var(--hijau2);margin-top:8px">Nota anda: ${esc(t.nota)}</div>` : ''}${t.bukti ? `<img class="prev" src="${t.bukti}" alt="bukti">` : ''}
       ${t.status === 'baru' ? `<button class="btn pri big" data-tg="${t.id}|diterima">👍 TERIMA ARAHAN</button>` : t.status === 'diterima' ? `<button class="btn emas big" data-tg="${t.id}|sedang">🔧 MULA BUAT</button>` : t.status === 'sedang' ? `<button class="btn pri big" data-tgsiap="${t.id}">✅ TANDA SELESAI</button>` : ''}</div>`; }).join('') || '<div class="card muted center">Tiada tugasan. 🎉</div>'}`;
@@ -408,7 +408,7 @@ function lukisChat(){
   const box = $('#chatBox'); if(!box) return;
   box.innerHTML = mesejSaya.map(m => { const saya_ = m.dari === 'staf';
     return `<div style="align-self:${saya_ ? 'flex-end' : 'flex-start'};max-width:82%;background:${saya_ ? 'var(--hijau)' : '#f1f5f9'};color:${saya_ ? '#fff' : '#0f172a'};border-radius:14px;padding:8px 11px">
-      ${saya_ ? '' : `<b style="font-size:12px;color:var(--hijau)">${esc(m.nama || 'Pemilik')}</b><br>`}${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
+      ${saya_ ? '' : `<b style="font-size:12px;color:var(--hijau)">${esc(m.nama || 'Pemilik')}${m.kumpulanId ? ` · 👥 kepada ${m.bilPenerima || ''} pekerja` : ''}</b><br>`}${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
       <div style="font-size:10px;opacity:.7;text-align:right;margin-top:2px">${fMasaPenuh(m.masaPeranti)}${saya_ && m.dibaca ? ' · ✓✓' : ''}</div></div>`; }).join('') || '<p class="muted center">Mulakan perbualan dengan Dato\' / Datin.</p>';
   box.scrollTop = box.scrollHeight;
 }

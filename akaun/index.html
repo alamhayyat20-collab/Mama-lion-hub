@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-11">
+<meta name="app-versi" content="2026.11.16-12">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,11 +108,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-11';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-11';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-11';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-11';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-11';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-12';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-12';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-12';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-12';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-12';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1035,6 +1035,7 @@ const JENIS_HR = {
 let stafKaunter = [], pekerjaInfo = {}, hrBulan = [], hrError = '', pkMod = 'Senarai';
 let tetapanKaunter = {}, kadarKomisen = {}, orderBulan = [], unsubOrderBulan = null;
 let infoPK = [], infoBaca = [], infoSegAk = 'memo';
+let kumpArahan = [], kumpPilih = new Set(), kumpSeg = 'Mesej', kumpAktif = '', kumpDraf = '', kumpGambar = '';
 let tugasAk = [], mesejAk = [], logPK = [], chatStaf = null, arahanSegAk = 'Chat', unsubLog = null, tkSeg = 'Kaunter';
 const infoCol = () => collection(store, 'kakitangan', PUSAT, 'info');
 const stafCol = () => collection(store, 'lionsafari', PUSAT, 'staf');   // pekerja dikongsi kedua-dua cawangan
@@ -1056,6 +1057,7 @@ function mulaHR(){
   unsubHR.push(onSnapshot(doc(store, 'lionsafari', cawangan, 'tetapan', 'komisen'), s => { kadarKomisen = s.exists() ? (s.data().kadar || {}) : {}; refresh(); }, onErrHR));
   unsubHR.push(onSnapshot(stafCol(), s => { stafKaunter = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; return x; }); refresh(); }, onErrHR));
   infoPK = []; infoBaca = []; tugasAk = []; mesejAk = []; logPK = []; let awalM = true;
+  unsubHR.push(onSnapshot(doc(store, 'kakitangan', PUSAT, 'tetapan', 'kumpulan_arahan'), s => { kumpArahan = s.exists() ? (s.data().senarai || []) : []; refresh(); }, () => {}));
   unsubHR.push(onSnapshot(collection(store, 'kakitangan', PUSAT, 'tugas'), s => { tugasAk = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, () => {}));
   unsubHR.push(onSnapshot(collection(store, 'kakitangan', PUSAT, 'mesej'), s => {
     const lama = new Set(mesejAk.map(m => m.id));
@@ -1356,22 +1358,25 @@ const STATUS_TG = {baru:['🆕 Belum dibuka','warn'], diterima:['👍 Diterima',
 function viewArahanAk(){
   const calon = stafKaunter.filter(x => x.aktif !== false && adaKuasa(x, 'chat'));
   if(!calon.length) return `<div class="card"><h3>💬 Arahan & chat — ${esc(namaCawangan())}</h3><p class="muted">Belum ada pekerja yang diberi kuasa <b>💬 Chat & arahan pemilik</b>. Pergi ke Pekerja → Urus, tandakan suis itu bagi pekerja pilihan.</p><button class="primary" data-ketab="Pekerja">Buka Pekerja</button></div>`;
-  if(!calon.some(x => x.id === chatStaf)) chatStaf = calon[0].id;
+  if(chatStaf !== KUMP && !calon.some(x => x.id === chatStaf)) chatStaf = KUMP;
+  const notif0 = 'Notification' in window && Notification.permission !== 'granted';
+  const navStaf = `<div class="subnav"><button class="${chatStaf===KUMP?'on':''}" data-chatstaf="${KUMP}">👥 Arahan berkumpulan</button>${calon.map(x => { const n = belumBacaAk(x.id), t = tugasAk.filter(t => t.stafId === x.id && t.status !== 'selesai').length; return `<button class="${x.id===chatStaf?'on':''}" data-chatstaf="${x.id}">${esc(x.idStaf||'')} ${esc(x.nama)}${n ? ` 🔴${n}` : ''}${t ? ` · ${t} tugas` : ''}</button>`; }).join('')}</div>`;
+  const kepala = `<div class="card"><div class="section-title"><h3>💬 Arahan & chat — ${esc(namaCawangan())}</h3>${notif0 ? '<button class="small" id="akNotif">🔔 Hidupkan notifikasi</button>' : ''}</div>${navStaf}`;
+  if(chatStaf === KUMP) return viewKumpulanAk(calon, kepala);
   const st = calon.find(x => x.id === chatStaf);
   const tg = tugasAk.filter(t => t.stafId === chatStaf).sort((a,b) => (a.status === 'selesai') - (b.status === 'selesai') || (b.masaCipta||0) - (a.masaCipta||0));
   const ms = mesejAk.filter(m => m.stafId === chatStaf);
   const notif = 'Notification' in window && Notification.permission !== 'granted';
-  return `<div class="card"><div class="section-title"><h3>💬 Arahan & chat — ${esc(namaCawangan())}</h3>${notif ? '<button class="small" id="akNotif">🔔 Hidupkan notifikasi</button>' : ''}</div>
-    <div class="subnav">${calon.map(x => { const n = belumBacaAk(x.id), t = tugasAk.filter(t => t.stafId === x.id && t.status !== 'selesai').length; return `<button class="${x.id===chatStaf?'on':''}" data-chatstaf="${x.id}">${esc(x.idStaf||'')} ${esc(x.nama)}${n ? ` 🔴${n}` : ''}${t ? ` · ${t} tugas` : ''}</button>`; }).join('')}</div>
+  return `${kepala}
     <div class="subnav"><button class="${arahanSegAk==='Chat'?'on':''}" data-arseg="Chat">💬 Chat</button><button class="${arahanSegAk==='Tugas'?'on':''}" data-arseg="Tugas">📋 Tugasan (${tg.filter(t => t.status !== 'selesai').length} aktif)</button></div></div>
     ${arahanSegAk === 'Chat' ? `<div class="card"><div id="akChat" style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto;padding:4px">
       ${ms.map(m => { const p = m.dari === 'pemilik'; return `<div style="align-self:${p?'flex-end':'flex-start'};max-width:78%;background:${p?'#14532d':'#f1f5f9'};color:${p?'#fff':'#0f172a'};border-radius:14px;padding:8px 11px">
-        <b style="font-size:12px;${p?'color:#bbf7d0':'color:#14532d'}">${esc(m.nama||'')}</b><br>${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
+        <b style="font-size:12px;${p?'color:#bbf7d0':'color:#14532d'}">${esc(m.nama||'')}${m.kumpulanId ? ` · 👥 ${esc(m.kumpulanNama||'Kumpulan')}` : ''}</b><br>${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
         <div style="font-size:10px;opacity:.7;text-align:right">${fMasaAk(m.masaPeranti)}${p && m.dibaca ? ' · ✓✓ dibaca' : ''}</div></div>`; }).join('') || `<p class="muted">Belum ada mesej dengan ${esc(st.nama)}.</p>`}</div>
       <div class="row" style="flex-wrap:nowrap;margin-top:10px"><label class="small" style="cursor:pointer;margin:0;padding:10px;background:#e2e8f0;border-radius:10px">📷<input id="akGambar" type="file" accept="image/*" style="display:none"></label>
         <input id="akTeks" data-kekal="1" placeholder="Mesej kepada ${esc(st.nama)}…" style="margin:0;flex:1" autocomplete="off"><button class="primary" id="akHantar">Hantar</button></div></div>`
     : `<div class="card"><div class="section-title"><h3>📋 Tugasan ${esc(st.nama)}</h3><button class="primary" id="akTugasBaru">+ Tugasan baru</button></div>
-      ${tg.map(t => { const [l,k] = STATUS_TG[t.status] || [t.status,'']; return `<div class="pk"><div style="flex:1"><b>${t.keutamaan==='segera'?'🔴 ':''}${esc(t.tajuk)}</b> <span class="tag ${k}">${l}</span>
+      ${tg.map(t => { const [l,k] = STATUS_TG[t.status] || [t.status,'']; return `<div class="pk"><div style="flex:1"><b>${t.keutamaan==='segera'?'🔴 ':''}${esc(t.tajuk)}</b> <span class="tag ${k}">${l}</span>${t.kumpulanId ? ` <span class="tag">👥 ${esc(t.kumpulanNama||'Kumpulan')}</span>` : ''}
         <br><span class="muted">${fMasaAk(t.masaCipta)} · ${esc(t.oleh||'')}${t.tarikhAkhir ? ' · sebelum ' + fmtTarikh(t.tarikhAkhir) : ''}${t.masaStatus ? ' · dikemas kini ' + fMasaAk(t.masaStatus) : ''}</span>
         ${t.nota ? `<br><span>📝 ${esc(t.nota)}</span>` : ''}${t.bukti ? `<br><img src="${t.bukti}" style="max-width:220px;border-radius:10px;margin-top:4px">` : ''}</div>
         <div class="aksi"><button class="small danger" data-tgpadam="${t.id}">Padam</button></div></div>`; }).join('') || '<p class="muted">Tiada tugasan.</p>'}</div>`}`;
@@ -1389,13 +1394,14 @@ function pasangArahanAk(){
   };
   if($('#akHantar')){ $('#akHantar').onclick = () => hantar(); $('#akTeks').onkeydown = e => { if(e.key === 'Enter') hantar(); };
     $('#akGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ hantar(await kecilkanGambarPromo(f)); }catch(_){ toast('Gagal baca gambar'); } }; }
-  if($('#akTugasBaru')) $('#akTugasBaru').onclick = borangTugas;
+  if($('#akTugasBaru')) $('#akTugasBaru').onclick = () => borangTugas();
+  if(chatStaf === KUMP) pasangKumpulanAk();
   $$('[data-tgpadam]').forEach(b => b.onclick = async () => { if(!confirm('Padam tugasan ini?')) return; try{ await deleteDoc(doc(store, 'kakitangan', PUSAT, 'tugas', b.dataset.tgpadam)); }catch(e){ toast('⚠ ' + e.message); } });
 }
-function borangTugas(){
-  const st = stafKaunter.find(x => x.id === chatStaf); if(!st) return;
+function borangTugas(kump){
+  const st = kump ? null : stafKaunter.find(x => x.id === chatStaf); if(!kump && !st) return;
   let gambar = '';
-  bukaModal(`<div class="section-title"><h3>📋 Tugasan untuk ${esc(st.nama)}</h3><button class="small" id="mTutup">✕</button></div>
+  bukaModal(`<div class="section-title"><h3>📋 Tugasan untuk ${kump ? `${kump.staf.length} pekerja (${esc(kump.nama)})` : esc(st.nama)}</h3><button class="small" id="mTutup">✕</button></div>
     <label>Tajuk arahan</label><input id="tgTajuk" placeholder="cth: Susun stok sabun di stor">
     <label>Butiran</label><textarea id="tgIsi" rows="4" placeholder="- langkah 1&#10;- langkah 2"></textarea>
     <div class="two"><div><label>Sebelum tarikh (pilihan)</label><input id="tgAkhir" type="date"></div>
@@ -1407,10 +1413,104 @@ function borangTugas(){
   $('#tgSimpan').onclick = async () => {
     const tajuk = val('#tgTajuk'); if(!tajuk) return toast('Sila isi tajuk');
     $('#tgSimpan').disabled = true;
-    try{ await addDoc(collection(store, 'kakitangan', PUSAT, 'tugas'), {stafId: st.id, idStaf: st.idStaf || '', namaStaf: st.nama, tajuk, isi: $('#tgIsi').value.trim(), tarikhAkhir: val('#tgAkhir'), keutamaan: val('#tgUtama'), gambar, status: 'baru', oleh: nama, masaCipta: Date.now(), dicipta: serverTimestamp()});
+    const asas = {tajuk, isi: $('#tgIsi').value.trim(), tarikhAkhir: val('#tgAkhir'), keutamaan: val('#tgUtama'), gambar, status: 'baru', oleh: nama, masaCipta: Date.now(), dicipta: serverTimestamp()};
+    try{
+      if(kump){
+        const b = writeBatch(store), kid = 'k' + Date.now().toString(36);
+        kump.staf.forEach(x => b.set(doc(collection(store, 'kakitangan', PUSAT, 'tugas')), {...asas, stafId: x.id, idStaf: x.idStaf || '', namaStaf: x.nama, kumpulanId: kid, kumpulanNama: kump.nama, bilPenerima: kump.staf.length}));
+        await b.commit(); tutupModal(); kumpSeg = 'Rekod'; toast(`✅ Tugasan dihantar serentak kepada ${kump.staf.length} pekerja`); refresh(); return;
+      }
+      await addDoc(collection(store, 'kakitangan', PUSAT, 'tugas'), {...asas, stafId: st.id, idStaf: st.idStaf || '', namaStaf: st.nama});
       tutupModal(); arahanSegAk = 'Tugas'; toast(`✅ Arahan dihantar kepada ${st.nama}`); refresh(); }
     catch(e){ toast('⚠ ' + (e.code || e.message)); $('#tgSimpan').disabled = false; }
   };
+}
+
+// ---------------- ARAHAN BERKUMPULAN 👥 ----------------
+// Satu arahan dihantar serentak = satu dokumen mesej / tugas bagi setiap penerima, berkongsi kumpulanId.
+// Kumpulan tersimpan: kakitangan/{PUSAT}/tetapan/kumpulan_arahan {senarai:[{id, nama, ahli:[stafId]}]}
+const KUMP = '__kumpulan';
+const calonArahan = () => stafKaunter.filter(x => x.aktif !== false && adaKuasa(x, 'chat'));
+function namaKumpPilih(calon){
+  const k = kumpArahan.find(k => k.id === kumpAktif);
+  if(k && k.ahli.length === kumpPilih.size && k.ahli.every(id => kumpPilih.has(id))) return k.nama;
+  if(kumpPilih.size === calon.length) return 'Semua pekerja';
+  return 'Pilihan';
+}
+function rekodKumpulan(){
+  const g = {};
+  mesejAk.filter(m => m.kumpulanId && m.dari === 'pemilik').forEach(m => { (g[m.kumpulanId] ||= {jenis:'mesej', id:m.kumpulanId, nama:m.kumpulanNama, masa:m.masaPeranti, oleh:m.nama, tajuk:m.teks || '📷 Gambar', gambar:m.gambar, item:[]}).item.push(m); });
+  tugasAk.filter(t => t.kumpulanId).forEach(t => { (g[t.kumpulanId] ||= {jenis:'tugas', id:t.kumpulanId, nama:t.kumpulanNama, masa:t.masaCipta, oleh:t.oleh, tajuk:t.tajuk, segera:t.keutamaan === 'segera', item:[]}).item.push(t); });
+  return Object.values(g).sort((a,b) => (b.masa||0) - (a.masa||0));
+}
+function viewKumpulanAk(calon, kepala){
+  [...kumpPilih].forEach(id => { if(!calon.some(x => x.id === id)) kumpPilih.delete(id); });
+  const nm = namaKumpPilih(calon), rek = rekodKumpulan();
+  const chip = (on, attr, teks, padam) => `<span style="display:inline-flex;align-items:center;gap:2px"><button class="${on?'on':''}" ${attr}>${teks}</button>${padam || ''}</span>`;
+  return `${kepala}
+    <div class="subnav"><button class="${kumpSeg==='Mesej'?'on':''}" data-kseg="Mesej">💬 Mesej serentak</button><button class="${kumpSeg==='Tugas'?'on':''}" data-kseg="Tugas">📋 Tugasan serentak</button><button class="${kumpSeg==='Rekod'?'on':''}" data-kseg="Rekod">📜 Rekod (${rek.length})</button></div></div>
+    ${kumpSeg === 'Rekod' ? `<div class="card"><h3 style="margin-top:0">📜 Arahan berkumpulan yang dihantar</h3>
+      ${rek.map(r => { const n = r.item.length;
+        const siap = r.jenis === 'tugas' ? r.item.filter(t => t.status === 'selesai').length : r.item.filter(m => m.dibaca).length;
+        return `<div class="pk" style="display:block"><div class="row" style="justify-content:space-between;gap:6px"><b>${r.jenis === 'tugas' ? '📋' : '💬'} ${r.segera ? '🔴 ' : ''}${esc((r.tajuk||'').slice(0,90))}</b>
+          <span class="tag ${siap === n ? 'ok' : 'warn'}">${r.jenis === 'tugas' ? `${siap}/${n} selesai` : `${siap}/${n} dibaca`}</span></div>
+          <span class="muted">👥 ${esc(r.nama || 'Kumpulan')} · ${fMasaAk(r.masa)} · ${esc(r.oleh || '')}</span>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${r.item.map(x => { const st = r.jenis === 'tugas' ? (STATUS_TG[x.status] || [x.status, ''])[0] : (x.dibaca ? '✓✓ dibaca' : '✓ dihantar');
+            const ok = r.jenis === 'tugas' ? x.status === 'selesai' : x.dibaca;
+            return `<span class="tag ${ok ? 'ok' : ''}" title="${esc(st)}">${esc(stafKaunter.find(s => s.id === x.stafId)?.nama || x.namaStaf || x.stafId)} · ${esc(st)}</span>`; }).join('')}</div>
+          <div class="aksi" style="margin-top:6px"><button class="small danger" data-kpadam="${r.jenis}|${r.id}">Padam untuk semua</button></div></div>`; }).join('') || '<p class="muted">Belum ada arahan berkumpulan.</p>'}</div>`
+    : `<div class="card"><div class="section-title"><h3 style="margin:0">👥 Pilih penerima <span class="muted" style="font-weight:400">(${kumpPilih.size} dipilih)</span></h3>
+        ${kumpPilih.size ? '<button class="small" id="kSimpan">💾 Simpan kumpulan</button>' : ''}</div>
+      <div class="subnav" style="margin-top:6px">${chip(kumpPilih.size === calon.length, 'data-ksemua="1"', '✅ Semua')}${chip(false, 'data-kkosong="1"', '✖ Kosongkan')}
+        ${kumpArahan.map(k => chip(kumpAktif === k.id && nm === k.nama, `data-kguna="${k.id}"`, `👥 ${esc(k.nama)} (${k.ahli.filter(id => calon.some(x => x.id === id)).length})`, `<button class="small" data-kbuang="${k.id}" title="Padam kumpulan" style="padding:4px 7px">🗑</button>`)).join('')}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:8px">
+        ${calon.map(x => `<label style="display:flex;align-items:center;gap:8px;margin:0;padding:10px;border-radius:12px;cursor:pointer;border:2px solid ${kumpPilih.has(x.id) ? '#14532d' : '#e2e8f0'};background:${kumpPilih.has(x.id) ? '#f0fdf4' : '#fff'}">
+          <input type="checkbox" data-kpilih="${x.id}" ${kumpPilih.has(x.id) ? 'checked' : ''} style="width:20px;height:20px;margin:0"><span><b>${esc(x.idStaf || '')}</b> ${esc(x.nama)}<br><span class="muted" style="font-size:12px">${esc(x.peranan || '')}</span></span></label>`).join('')}</div>
+      <p class="muted" style="font-size:12px;margin-bottom:0">Senarai ini hanya pekerja yang ada kuasa <b>💬 Chat & arahan pemilik</b>. Untuk tambah pekerja lain, hidupkan kuasa itu di Pekerja → Urus.</p></div>
+      <div class="card">${kumpSeg === 'Mesej' ? `<h3 style="margin-top:0">💬 Mesej kepada ${kumpPilih.size} pekerja · ${esc(nm)}</h3>
+        <textarea id="kTeks" data-kekal="1" rows="4" style="font-family:inherit;font-size:16px" placeholder="Tulis arahan / pengumuman untuk semua penerima…">${esc(kumpDraf)}</textarea>
+        <div class="row" style="gap:8px;align-items:center"><label class="small" style="cursor:pointer;margin:0;padding:10px;background:#e2e8f0;border-radius:10px">📷 Gambar<input id="kGambar" type="file" accept="image/*" style="display:none"></label><img id="kPrev" src="${kumpGambar}" style="max-height:60px;border-radius:8px;display:${kumpGambar ? 'block' : 'none'}">
+          <button class="primary" id="kHantar" style="flex:1;padding:14px" ${kumpPilih.size ? '' : 'disabled'}>HANTAR SERENTAK (${kumpPilih.size})</button></div>
+        <p class="muted" style="font-size:12px;margin-bottom:0">Setiap penerima dapat mesej ini dalam chat mereka sendiri. Status dibaca boleh disemak di 📜 Rekod.</p>`
+      : `<h3 style="margin-top:0">📋 Tugasan kepada ${kumpPilih.size} pekerja · ${esc(nm)}</h3>
+        <p class="muted">Setiap penerima dapat tugasan sendiri dan melaporkan status (terima → mula → selesai) secara berasingan.</p>
+        <button class="primary" id="kTugas" style="width:100%;padding:14px" ${kumpPilih.size ? '' : 'disabled'}>+ TUGASAN BARU UNTUK ${kumpPilih.size} PEKERJA</button>`}</div>`}`;
+}
+function pasangKumpulanAk(){
+  const calon = calonArahan();
+  if($('#kTeks')) $('#kTeks').oninput = e => { kumpDraf = e.target.value; };
+  $$('[data-kseg]').forEach(b => b.onclick = () => { kumpSeg = b.dataset.kseg; refresh(); });
+  $$('[data-kpilih]').forEach(c => c.onchange = () => { c.checked ? kumpPilih.add(c.dataset.kpilih) : kumpPilih.delete(c.dataset.kpilih); refresh(); });
+  $$('[data-ksemua]').forEach(b => b.onclick = () => { kumpPilih = new Set(calon.map(x => x.id)); kumpAktif = ''; refresh(); });
+  $$('[data-kkosong]').forEach(b => b.onclick = () => { kumpPilih = new Set(); kumpAktif = ''; refresh(); });
+  $$('[data-kguna]').forEach(b => b.onclick = () => { const k = kumpArahan.find(k => k.id === b.dataset.kguna); if(!k) return; kumpPilih = new Set(k.ahli.filter(id => calon.some(x => x.id === id))); kumpAktif = k.id; refresh(); });
+  const simpanSenarai = senarai => setDoc(doc(store, 'kakitangan', PUSAT, 'tetapan', 'kumpulan_arahan'), {senarai, dikemaskini: serverTimestamp(), oleh: nama});
+  $$('[data-kbuang]').forEach(b => b.onclick = async () => { const k = kumpArahan.find(k => k.id === b.dataset.kbuang); if(!k || !confirm(`Padam kumpulan "${k.nama}"? (Arahan yang telah dihantar tidak terjejas)`)) return;
+    try{ await simpanSenarai(kumpArahan.filter(x => x.id !== k.id)); if(kumpAktif === k.id) kumpAktif = ''; toast('Kumpulan dipadam'); }catch(e){ toast('⚠ ' + (e.code || e.message)); } });
+  if($('#kSimpan')) $('#kSimpan').onclick = async () => {
+    const ada = kumpArahan.find(k => k.id === kumpAktif);
+    const n = (prompt('Nama kumpulan (cth: Pencuci, Kaunter, Syif pagi). Guna nama sama untuk kemas kini ahli.', ada ? ada.nama : '') || '').trim(); if(!n) return;
+    const sama = kumpArahan.find(k => k.nama.toLowerCase() === n.toLowerCase());
+    const k = {id: sama ? sama.id : 'g' + Date.now().toString(36), nama: n, ahli: [...kumpPilih]};
+    try{ await simpanSenarai([...kumpArahan.filter(x => x.id !== k.id), k]); kumpAktif = k.id; toast(`💾 Kumpulan "${n}" disimpan (${k.ahli.length} ahli)`); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  const penerima = () => calon.filter(x => kumpPilih.has(x.id));
+  if($('#kGambar')) $('#kGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ kumpGambar = await kecilkanGambarPromo(f); $('#kPrev').src = kumpGambar; $('#kPrev').style.display = 'block'; }catch(_){ toast('Gagal baca gambar'); } };
+  if($('#kHantar')) $('#kHantar').onclick = async () => {
+    const teks = $('#kTeks').value.trim(), ps = penerima(); const gambar = kumpGambar; if(!teks && !gambar) return toast('Sila tulis mesej'); if(!ps.length) return toast('Pilih sekurang-kurangnya seorang pekerja');
+    if(!confirm(`Hantar mesej ini kepada ${ps.length} pekerja?\n\n${ps.map(x => '• ' + x.nama).join('\n')}`)) return;
+    $('#kHantar').disabled = true;
+    const kid = 'k' + Date.now().toString(36), kn = namaKumpPilih(calon), b = writeBatch(store), t0 = Date.now();
+    ps.forEach(x => b.set(doc(collection(store, 'kakitangan', PUSAT, 'mesej')), {stafId: x.id, dari: 'pemilik', nama, teks, gambar, masa: serverTimestamp(), masaPeranti: t0, dibaca: false, kumpulanId: kid, kumpulanNama: kn, bilPenerima: ps.length}));
+    try{ await b.commit(); kumpDraf = ''; kumpGambar = ''; kumpSeg = 'Rekod'; toast(`✅ Mesej dihantar serentak kepada ${ps.length} pekerja`); refresh(); }
+    catch(e){ $('#kHantar').disabled = false; toast('⚠ ' + (e.code || e.message)); }
+  };
+  if($('#kTugas')) $('#kTugas').onclick = () => { const ps = penerima(); if(!ps.length) return toast('Pilih sekurang-kurangnya seorang pekerja'); borangTugas({staf: ps, nama: namaKumpPilih(calon)}); };
+  $$('[data-kpadam]').forEach(b => b.onclick = async () => { const [j, kid] = b.dataset.kpadam.split('|');
+    const items = (j === 'tugas' ? tugasAk : mesejAk).filter(x => x.kumpulanId === kid);
+    if(!confirm(`Padam arahan ini daripada ${items.length} pekerja?`)) return;
+    const bt = writeBatch(store); items.forEach(x => bt.delete(doc(store, 'kakitangan', PUSAT, j === 'tugas' ? 'tugas' : 'mesej', x.id)));
+    try{ await bt.commit(); toast('Dipadam'); }catch(e){ toast('⚠ ' + (e.code || e.message)); } });
 }
 
 // ================================================================
