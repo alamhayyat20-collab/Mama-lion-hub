@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-2">
+<meta name="app-versi" content="2026.11.16-4">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -154,9 +154,9 @@ h2{font-size:19px;margin:28px 0 12px}
 .cawangan button img{width:44px;height:44px;object-fit:contain}
 .cawangan button.on{border-color:var(--emas);background:#fffbea}
 .cawangan button b{font-size:14px;color:var(--zamrud)}
-.pakej{display:flex;gap:14px;align-items:stretch;background:#fff;border-radius:var(--r-besar);overflow:hidden;margin-top:12px;box-shadow:0 6px 16px rgba(13,42,32,.1)}
-.pakej .g{width:112px;flex:none;background:var(--zamrud2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:34px}
-.pakej .t{padding:12px 14px 12px 0;flex:1}
+.pakej{display:flex;flex-wrap:wrap;gap:0 14px;align-items:stretch;background:#fff;border-radius:var(--r-besar);overflow:hidden;margin-top:12px;box-shadow:0 6px 16px rgba(13,42,32,.1)}
+.pakej .g{width:100%;aspect-ratio:4/3;flex:none;background:var(--zamrud2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:34px}
+.pakej .t{padding:12px 16px 14px;flex:1}
 .pakej .t b{display:block;color:var(--zamrud);font-size:16px}
 .pakej .h{font-family:var(--serif);font-size:20px;color:var(--emas-gelap);margin-top:2px}
 .pakej .t small{display:block;color:var(--kelabu);font-size:13px;margin-top:4px}
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-2';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER } from '../safari-lib.js?v=2026.11.16-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-4';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal } from '../safari-lib.js?v=2026.11.16-4';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -543,7 +543,7 @@ function viewPakej(){
   $('#app').innerHTML = `<h1 style="margin-top:12px">Pakej & harga</h1>
     <div class="cawangan" style="margin-top:16px">${CAWANGAN.map(c => `<button class="${c.id===cawPakej?'on':''}" data-caw="${c.id}"><img src="${c.logo}" alt=""><b>${c.nama}</b></button>`).join('')}</div>
     ${!T ? '<p class="kosong">Memuatkan…</p>' : `
-      ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${G[p.id] ? `background-image:url('${G[p.id]}')` : ''}">${G[p.id] ? '' : '🚿'}</div>
+      ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${(G[p.id] || gambarAsal(p.id)) ? `background-image:url('${G[p.id] || gambarAsal(p.id)}')` : ''}">${(G[p.id] || gambarAsal(p.id)) ? '' : '🚿'}</div>
         <div class="t"><b>${esc(p.nama)}</b><div class="h">${p.hargaIkut ? `${KD.map(k => { const h = hargaPakejK(p, k); return `<span style="font-size:12px;font-family:var(--sans);color:var(--kelabu);font-weight:700">${esc(k.nama)}</span> ${h == null ? '<small>ikut permintaan</small>' : RM(h)}`; }).join(' · ')}` : RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
       ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>${a.hargaIkut ? 'dari ' + RM(Math.min(...Object.values(a.hargaIkut).filter(v => v != null))) : '+' + RM(a.harga)}</b></span>`).join('')}</div>` : ''}
       <button class="btn btn-emas" style="margin-top:16px" id="pkTempah">📲 Tempah servis</button>

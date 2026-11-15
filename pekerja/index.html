@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-3">
+<meta name="app-versi" content="2026.11.16-4">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,14 +115,14 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-2';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK } from '../safari-lib.js?v=2026.11.16-2';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-2';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-4';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-4';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-4';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -644,7 +644,7 @@ const komTag = x => saya.mo && Number(KOM[x.id]) > 0 ? `<span class="kom">💰 K
 function viewHarga(){
   muatGambar(); setTimeout(pasangPilihCaw);
   const pk = itemTK('pakej'), ad = itemTK('addon'), kd = itemTK('kenderaan'), caw = infoCaw();
-  const img = (x, ikon) => GBR?.[x.id] ? `<img class="img" src="${GBR[x.id]}" alt="">` : `<div class="img">${ikon}</div>`;
+  const img = (x, ikon) => { const g = GBR?.[x.id] || gambarAsal(x.id); return g ? `<img class="img" src="${g}" alt="" loading="lazy">` : `<div class="img">${ikon}</div>`; };
   $('#app').innerHTML = pilihCawHtml() + `<div class="card"><div class="between"><h3 style="margin:0">🏷 Harga & Pakej — ${esc(namaCaw(cawO))}</h3></div>
       <p class="muted" style="margin:6px 0 0">Senarai rasmi dari kaunter. Terangkan kepada pelanggan ikut harga ini.${TK.waktuOperasi ? `<br>🕘 Waktu operasi: <b>${esc(TK.waktuOperasi)}</b>` : ''}</p></div>
     <h3 style="margin:14px 2px 8px">🚿 Pakej cucian</h3>
@@ -662,7 +662,7 @@ function matriksHtml(pk, ad, kd){
   const kat = [...new Set(semua.map(x => x.kategori || (x._j === 'pakej' ? 'Pakej' : 'Tambahan')))];
   return kat.map(k => `<div class="card" style="padding:12px;overflow-x:auto"><h3 style="margin-bottom:6px">${esc(k)}</h3><table style="width:100%;border-collapse:collapse;font-size:13px">
     <tr><th style="text-align:left;padding:4px"></th>${kd.map(c => `<th style="padding:4px;text-align:right">${esc(c.nama)}</th>`).join('')}</tr>
-    ${semua.filter(x => (x.kategori || (x._j === 'pakej' ? 'Pakej' : 'Tambahan')) === k).map(x => `<tr style="border-top:1px solid var(--line)"><td style="padding:6px 4px"><b>${esc(x.nama)}</b>${x.ket ? `<br><small class="muted">${esc(x.ket)}</small>` : ''}${komTag(x) ? '<br>' + komTag(x) : ''}</td>
+    ${semua.filter(x => (x.kategori || (x._j === 'pakej' ? 'Pakej' : 'Tambahan')) === k).map(x => `<tr style="border-top:1px solid var(--line)"><td style="padding:6px 4px">${(GBR?.[x.id] || gambarAsal(x.id)) ? `<img src="${GBR?.[x.id] || gambarAsal(x.id)}" alt="" loading="lazy" style="width:64px;height:48px;object-fit:cover;border-radius:8px;float:left;margin-right:8px">` : ''}<b>${esc(x.nama)}</b>${x.ket ? `<br><small class="muted">${esc(x.ket)}</small>` : ''}${komTag(x) ? '<br>' + komTag(x) : ''}</td>
       ${kd.map(c => { const h = x._j === 'pakej' ? hargaPakejK(x, c) : hargaAddonK(x, c); return `<td style="padding:6px 4px;text-align:right;white-space:nowrap">${h == null ? '<small>ikut<br>permintaan</small>' : RM(h).replace('RM ','')}</td>`; }).join('')}</tr>`).join('')}</table></div>`).join('');
 }
 
@@ -723,7 +723,7 @@ function borangOrder(){
   if(!L.kenderaan.length) L.kenderaan = [{id:'k0', nama:'Kereta', harga:0}];
   const pakejFW = () => L.pakej.find(p => p.id === TK.pakejFreeWash) || L.pakej[0];
   const d = {pakej:null, kenderaan:0, addon:new Set(), ahli:null, calon:[], fw:null, foto:{plat:'', emblem:'', calar:[]}};
-  const gb = x => GBR?.[x.id] ? `<img src="${GBR[x.id]}" alt="">` : '';
+  const gb = x => { const g = GBR?.[x.id] || gambarAsal(x.id); return g ? `<img src="${g}" alt="" loading="lazy">` : ''; };
   $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
   $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">🧾 Order baru — ${esc(namaCaw(cawO))}</h3><button class="btn" id="oBatal" style="padding:8px 12px;font-size:13px">✕ Batal</button></div>
     <label style="display:block;margin-top:10px">No. plat *</label>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-3">
+<meta name="app-versi" content="2026.11.16-4">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -160,15 +160,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK } from '../safari-lib.js?v=2026.11.16-2';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT } from '../pekerja-lib.js?v=2026.11.16-2';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-2';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-4';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT } from '../pekerja-lib.js?v=2026.11.16-4';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-4';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -294,7 +294,7 @@ const JENIS_ITEM = {
 };
 const senarai = j => (T[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, aktif: x.aktif !== false, harga: Number(x.harga)||0}));
 const aktifSahaja = j => senarai(j).filter(x => x.aktif);
-const imgItem = (x, kelas='img', ikon='🚗') => GAMBAR[x.id] ? `<img class="${kelas}" src="${GAMBAR[x.id]}" alt="">` : `<div class="${kelas}">${ikon}</div>`;
+const imgItem = (x, kelas='img', ikon='🚗') => { const g = GAMBAR[x.id] || gambarAsal(x.id); return g ? `<img class="${kelas}" src="${g}" alt="" loading="lazy">` : `<div class="${kelas}">${ikon}</div>`; };
 let pilihPakejAwal = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; });
 
@@ -693,8 +693,8 @@ VIEWS['Order Baru'] = {
         <div><label>No. telefon *</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
       <div id="oDaftarBox"></div>
       <label>Jenis kenderaan</label><div class="choices" id="cKend">${L.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga>0?'+':''}${k.harga?RM(k.harga):'harga asas'}</span></button>`).join('')}</div>
-      <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice ${i===draf.pakej?'sel':''}" data-i="${i}">${GAMBAR[p.id]?imgItem(p,'img'):''}<b>${esc(p.nama)}</b><span data-hp="${i}">${RM(hargaPakejK(p, L.kenderaan[0]))}${p.minit?` · ~${p.minit} min`:''}</span></button>`).join('')}</div>
-      <label>Add-on</label><div class="choices" id="cAddon">${L.addon.map((a,i) => `<button class="choice" data-i="${i}">${GAMBAR[a.id]?imgItem(a,'img'):''}<b>${esc(a.nama)}</b><span data-ha="${i}">+${RM(hargaAddonK(a, L.kenderaan[0]))}</span></button>`).join('')}</div>
+      <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice ${i===draf.pakej?'sel':''}" data-i="${i}">${(GAMBAR[p.id]||gambarAsal(p.id))?imgItem(p,'img'):''}<b>${esc(p.nama)}</b><span data-hp="${i}">${RM(hargaPakejK(p, L.kenderaan[0]))}${p.minit?` · ~${p.minit} min`:''}</span></button>`).join('')}</div>
+      <label>Add-on</label><div class="choices" id="cAddon">${L.addon.map((a,i) => `<button class="choice" data-i="${i}">${(GAMBAR[a.id]||gambarAsal(a.id))?imgItem(a,'img'):''}<b>${esc(a.nama)}</b><span data-ha="${i}">+${RM(hargaAddonK(a, L.kenderaan[0]))}</span></button>`).join('')}</div>
       <label>📸 Gambar kenderaan</label>
       <div class="fotogrid">
         <label class="foto" id="fPlat"><input type="file" accept="image/*" capture="environment" data-foto="plat"><span>📸<b>Plat *</b></span></label>
