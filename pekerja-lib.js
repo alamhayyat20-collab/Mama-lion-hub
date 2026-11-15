@@ -8,6 +8,34 @@
 // Staf (ID, peranan, PIN): lionsafari/{cawangan}/staf
 // =====================================================================
 
+// Pekerja dikongsi kedua-dua cawangan: senarai staf & data kakitangan / gaji disimpan di cawangan PUSAT.
+// Kaunter (order, bayaran, stok, petty cash) kekal ikut cawangan masing-masing.
+export const PUSAT = 'mama-lion';
+export const CAW = [{id:'mama-lion', nama:'Mama Lion', kod:'ML'}, {id:'lion-king', nama:'Lion King', kod:'LK'}];
+export const namaCaw = c => CAW.find(x => x.id === c)?.nama || c || '';
+// Tempat bertugas dalam roster: roster/{tarikh}.tempat[stafId] = {c: cawangan, s: id stesen}
+// Stesen punch card ditetapkan pengurusan: kakitangan/PUSAT/tetapan/umum.stesen = [{id, nama, c, kunci}]
+export const tempatStaf = (rosterHari, id) => rosterHari?.tempat?.[id] || null;
+export function labelTempat(tetapan, t){
+  if(!t?.c) return '';
+  const st = (tetapan?.stesen || []).find(x => x.id === t.s);
+  return `${CAW.find(x => x.id === t.c)?.kod || ''}${st ? ' · ' + st.nama : ''}`;
+}
+export const kodQRStesen = st => `MLPUNCH:${st.id}:${st.kunci}`;
+export const bacaQRStesen = teks => { const m = String(teks || '').match(/MLPUNCH:([A-Za-z0-9_-]+):([A-Za-z0-9]+)/); return m ? {id: m[1], kunci: m[2]} : null; };
+// Gaji ikut jam: kadar sejam = gaji pokok bulanan ÷ 30 ÷ 8
+export const kadarSejam = pokok => Math.round((Number(pokok) || 0) / 30 / 8 * 100) / 100;
+export const JAM_BIASA_SEHARI = 8;
+// Jenis pekerja (Akaun → Pekerja → Urus):
+//  tetap     — gaji pokok bulanan; dibayar ikut jam bekerja (pokok ÷ 30 ÷ 8 sejam), OT diluluskan
+//  pengurusan— gaji bulanan tetap + elaun; tiada OT; boleh "punch bebas"
+//  parttime  — kadar sejam terus; dibayar ikut jam bekerja
+export const JENIS_PEKERJA = {
+  tetap:      {label:'Tetap (gaji ikut jam)', ikon:'👷'},
+  pengurusan: {label:'Pengurusan (bulanan + elaun)', ikon:'🧑‍💼'},
+  parttime:   {label:'Part-time (kadar sejam)', ikon:'⏱'}
+};
+
 export const SYIF_ASAL = [
   {kod:'P', nama:'Pagi', mula:'08:00', tamat:'16:00'},
   {kod:'M', nama:'Petang', mula:'14:00', tamat:'22:00'},
@@ -139,19 +167,21 @@ export function modulPengurusan(ctx){
 
   const namaStaf = id => { const s = st.staf.find(x => x.id === id); return s ? `${s.idStaf ? s.idStaf + ' ' : ''}${s.nama}` : '(tiada)'; };
   const syifStaf = (tarikh, id) => st.roster[tarikh]?.syif?.[id] || '';
+  const stesenCaw = c => (st.tetapan.stesen || []).filter(x => x.c === c);
 
   // Ringkasan bulan seorang staf (untuk gaji di Akaun)
   function ringkasStaf(id){
     const lulus = st.mohonBulan.filter(m => m.stafId === id && m.status === 'lulus');
     const j = k => lulus.filter(m => m.jenis === k);
     const hari = {}; st.hadirBulan.filter(r => r.stafId === id).forEach(r => (hari[r.tarikh] ||= []).push(r));
-    let minit = 0, lewatKali = 0, lewatMinit = 0;
+    let minit = 0, lewatKali = 0, lewatMinit = 0, minitBayar = 0; const ikutCaw = {};
     for(const [t, l] of Object.entries(hari)){
-      const k = jamKerja(l); minit += k.minit;
+      const k = jamKerja(l); minit += k.minit; minitBayar += Math.min(k.minit, JAM_BIASA_SEHARI * 60);
+      for(const [m, kl, mm] of k.pasangan){ const c = m.cawangan || PUSAT; ikutCaw[c] = (ikutCaw[c] || 0) + mm; }
       const lw = minitLewat(k.masuk, t, syifDari(st.tetapan, syifStaf(t, id))); if(lw > 5){ lewatKali++; lewatMinit += lw; }
     }
     return {advance: j('advance').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0), claim: j('claim').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0),
-      otJam: j('ot').reduce((t,m) => t + (Number(m.jamLulus ?? m.jam)||0), 0), hariHadir: Object.keys(hari).length, minit, lewatKali, lewatMinit, permohonan: lulus};
+      otJam: j('ot').reduce((t,m) => t + (Number(m.jamLulus ?? m.jam)||0), 0), hariHadir: Object.keys(hari).length, minit, minitBayar, ikutCaw, lewatKali, lewatMinit, permohonan: lulus};
   }
 
   // ---------------- Paparan ----------------
@@ -169,14 +199,14 @@ export function modulPengurusan(ctx){
       const lw = minitLewat(k.masuk, st.tarikh, sy);
       if(!l.length && (!kod || ['OFF','CUTI'].includes(kod))) return null;
       return `<div class="km-row"><div class="km-nm"><b>${esc(s.idStaf||'')} ${esc(s.nama)}</b>
-        <small>${sy ? `${esc(sy.nama)}${sy.mula ? ` ${sy.mula}–${sy.tamat}` : ''}` : 'Tiada syif'}</small>
+        <small>${sy ? `${esc(sy.nama)}${sy.mula ? ` ${sy.mula}–${sy.tamat}` : ''}` : 'Tiada syif'}${tempatStaf(st.roster[st.tarikh], id) ? ' @ ' + esc(labelTempat(st.tetapan, tempatStaf(st.roster[st.tarikh], id))) : ''}</small>
         ${l.length ? '' : (sy?.mula ? '<span class="km-tag km-bad">Belum / tidak hadir</span>' : '')}
         ${lw > 5 ? `<span class="km-tag km-warn">Lewat ${lw} min</span>` : ''}
         ${k.masihMasuk && st.tarikh === hariIni() ? '<span class="km-tag km-ok">Sedang bekerja</span>' : ''}
         ${l.length ? `<small>Jam kerja: <b>${fMinit(k.minit + (st.tarikh === hariIni() ? k.berjalan : 0))}</b>${k.masihMasuk && st.tarikh === hariIni() ? ' (termasuk sesi sedang berjalan)' : ''}</small>` : ''}</div>
         <div class="km-pics">${k.rekod.map(r => { const jr = r.jarak ?? jarakMeter(r.gps, kedai); const luar = kedai && jr != null && jr > (Number(st.tetapan.radius)||200);
           return `<div class="km-pic"><img data-km-img="${r.id}" alt=""><span class="km-tag ${r.jenis==='masuk'?'km-ok':''}">${r.jenis==='masuk'?'MASUK':'KELUAR'} ${fJam(masaMs(r))}</span>
-          <small>${r.gps ? `📍${jr != null ? jr + 'm' : 'GPS'}${luar ? ' <b class="km-merah">LUAR</b>' : ''}` : '📍 tiada GPS'}</small></div>`; }).join('')}</div></div>`;
+          <small>${r.stesenNama ? `${esc((CAW.find(c => c.id === r.cawangan)?.kod || '') + ' · ' + r.stesenNama)}${r.bukanJadual ? ' <b class="km-merah">bukan jadual</b>' : ''}<br>` : r.bebas ? 'Punch bebas<br>' : ''}${r.gps ? `📍${jr != null ? jr + 'm' : 'GPS'}${luar && !r.stesenNama ? ' <b class="km-merah">LUAR</b>' : ''}` : '📍 tiada GPS'}</small></div>`; }).join('')}</div></div>`;
     }).filter(Boolean);
     return `<div class="km-card"><div class="km-between"><h3>🕘 Kehadiran</h3><input type="date" data-km-tarikh value="${st.tarikh}"></div>
       ${!kedai ? '<div class="km-notice">Lokasi kedai belum ditetapkan — jarak GPS tidak dapat disemak (Akaun → Pekerja → Tetapan Pekerja).</div>' : ''}
@@ -211,7 +241,10 @@ export function modulPengurusan(ctx){
       <div class="km-muted">${SY.map(s => `<b>${esc(s.kod)}</b> ${esc(s.nama)}${s.mula ? ` ${s.mula}–${s.tamat}` : ''}`).join(' · ')}</div>
       <div class="km-scroll"><table class="km-roster"><tr><th>Staf</th>${hari.map(t => `<th class="${t===hariIni()?'km-today':''}">${fTarikhPendek(t).replace(' ','<br>')}</th>`).join('')}</tr>
       ${aktif.map(s => `<tr><td><b>${esc(s.idStaf||'')}</b><br><small>${esc(s.nama)}</small></td>${hari.map(t => { const k = syifStaf(t, s.id);
-        return `<td class="${t===hariIni()?'km-today':''}"><select data-km-syif="${t}|${s.id}" class="km-s-${esc(k||'kosong')}"><option value="">–</option>${SY.map(x => `<option ${x.kod===k?'selected':''} value="${esc(x.kod)}">${esc(x.kod)}</option>`).join('')}</select></td>`; }).join('')}</tr>`).join('')}</table></div>
+        const tp = tempatStaf(st.roster[t], s.id), tv = tp?.c ? `${tp.c}|${tp.s || ''}` : '', rehat = ['OFF','CUTI'].includes(k);
+        return `<td class="${t===hariIni()?'km-today':''}"><select data-km-syif="${t}|${s.id}" class="km-s-${esc(k||'kosong')}"><option value="">–</option>${SY.map(x => `<option ${x.kod===k?'selected':''} value="${esc(x.kod)}">${esc(x.kod)}</option>`).join('')}</select>
+          ${k && !rehat ? `<select data-km-tempat="${t}|${s.id}" class="km-tempat"><option value="">tempat?</option>${CAW.map(c => `<option value="${c.id}|" ${tv === c.id + '|' ? 'selected' : ''}>${c.kod}</option>${stesenCaw(c.id).map(x => `<option value="${c.id}|${esc(x.id)}" ${tv === c.id + '|' + x.id ? 'selected' : ''}>${c.kod} · ${esc(x.nama)}</option>`).join('')}`).join('')}</select>` : ''}</td>`; }).join('')}</tr>`).join('')}</table></div>
+      <div class="km-muted">Setiap sel: <b>syif</b> dan <b>tempat bertugas</b> (cawangan · stesen). Pekerja punch dengan mengimbas QR stesen itu.</div>
       <div class="km-rowbtn" style="margin-top:8px"><button class="km-btn" data-km-salin>📋 Salin roster minggu lepas</button></div>
       <div class="km-muted">Perubahan disimpan serta-merta dan terus dilihat pekerja dalam Apps Pekerja.</div></div>`;
   }
@@ -244,7 +277,8 @@ export function modulPengurusan(ctx){
           while(t <= (m.hingga || m.tarikh) && n < 31){ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), syif:{[m.stafId]:'CUTI'}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); t = tambahHari(t, 1); n++; }
         } else {
           const r = await fs.getDoc(fs.doc(C('roster'), m.tarikh)), sy = r.exists() ? (r.data().syif || {}) : {};
-          await fs.setDoc(fs.doc(C('roster'), m.tarikh), {tarikh:m.tarikh, bulan:m.tarikh.slice(0,7), syif:{[m.stafId]: sy[m.denganId] || '', [m.denganId]: sy[m.stafId] || ''}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true});
+          const tp = r.exists() ? (r.data().tempat || {}) : {};
+          await fs.setDoc(fs.doc(C('roster'), m.tarikh), {tarikh:m.tarikh, bulan:m.tarikh.slice(0,7), syif:{[m.stafId]: sy[m.denganId] || '', [m.denganId]: sy[m.stafId] || ''}, tempat:{[m.stafId]: tp[m.denganId] || null, [m.denganId]: tp[m.stafId] || null}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true});
         }
         await fs.updateDoc(fs.doc(C('permohonan'), id), d);
         if(ctx.log) ctx.log(`Lulus ${JENIS_MOHON[m.jenis].label}`, `${namaStaf(m.stafId)} · ${m.tarikh}${m.hingga ? ' – ' + m.hingga : ''}`);
@@ -276,11 +310,15 @@ export function modulPengurusan(ctx){
       const [t, id] = s.dataset.kmSyif.split('|');
       try{ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), syif:{[id]: s.value}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); if(ctx.log) ctx.log('Ubah roster', `${namaStaf(id)} · ${t} → ${s.value || '–'}`); }catch(e){ err(e); }
     });
+    document.querySelectorAll('[data-km-tempat]').forEach(s => s.onchange = async () => {
+      const [t, id] = s.dataset.kmTempat.split('|'), [c, sid] = s.value.split('|');
+      try{ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), tempat:{[id]: c ? {c, s: sid || ''} : null}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); if(ctx.log) ctx.log('Ubah tempat bertugas', `${namaStaf(id)} · ${t} → ${s.options[s.selectedIndex].text}`); }catch(e){ err(e); }
+    });
     const salin = document.querySelector('[data-km-salin]');
     if(salin) salin.onclick = async () => {
       if(!confirm('Salin roster minggu lepas ke minggu ini? Syif sedia ada minggu ini akan ditimpa.')) return;
-      try{ for(let i = 0; i < 7; i++){ const dari = tambahHari(st.minggu, i - 7), ke = tambahHari(st.minggu, i); const sy = st.roster[dari]?.syif || {};
-          await fs.setDoc(fs.doc(C('roster'), ke), {tarikh:ke, bulan:ke.slice(0,7), syif:sy, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}); }
+      try{ for(let i = 0; i < 7; i++){ const dari = tambahHari(st.minggu, i - 7), ke = tambahHari(st.minggu, i); const sy = st.roster[dari]?.syif || {}, tp = st.roster[dari]?.tempat || {};
+          await fs.setDoc(fs.doc(C('roster'), ke), {tarikh:ke, bulan:ke.slice(0,7), syif:sy, tempat:tp, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}); }
         if(ctx.log) ctx.log('Salin roster', `minggu ${st.minggu}`);
         ctx.toast('✅ Roster disalin'); }catch(e){ err(e); }
     };
@@ -305,6 +343,7 @@ export function modulPengurusan(ctx){
 
 // CSS kongsi untuk modul pengurusan
 export const CSS_MODUL = `
+.km-tempat{display:block;margin-top:3px;font-size:11px;padding:3px;max-width:110px}
 .km-sub{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .km-sub button,.km-btn{border:0;border-radius:9px;padding:8px 11px;cursor:pointer;background:#e5e7eb;font-size:13px;font-family:inherit}
 .km-sub button.km-on{background:#0f172a;color:#fff}

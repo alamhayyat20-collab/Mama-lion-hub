@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-6">
+<meta name="app-versi" content="2026.11.15-7">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -160,14 +160,14 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.15-6';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.15-7';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD } from '../safari-lib.js?v=2026.11.15-6';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa } from '../pekerja-lib.js?v=2026.11.15-6';
-import { pasangSync } from '../sync-lib.js?v=2026.11.15-6';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD } from '../safari-lib.js?v=2026.11.15-7';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT } from '../pekerja-lib.js?v=2026.11.15-7';
+import { pasangSync } from '../sync-lib.js?v=2026.11.15-7';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -250,16 +250,18 @@ const store = initializeFirestore(fbApp, {localCache: persistentLocalCache({tabM
 let cawangan = (() => { try{ const c = localStorage.getItem('ls_cawangan'); return CAWANGAN.some(x => x.id === c) ? c : null; }catch(_){ return null; } })();
 const infoCaw = () => CAWANGAN.find(x => x.id === cawangan) || {id:cawangan, nama:cawangan, kedai:'Premium Carwash', logo:''};
 const col = n => collection(store, 'lionsafari', cawangan, n);
+// Pekerja dikongsi kedua-dua cawangan: senarai staf & gambar profil di cawangan pusat
+const stafCol = n => collection(store, 'lionsafari', PUSAT, n);
 const akaunCol = () => collection(store, 'akaun', cawangan, 'entri');
 const tetapanRef = () => doc(store, 'lionsafari', cawangan, 'tetapan', 'umum');
 const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
 // Modul pekerja (kehadiran, kelulusan, roster) — dikongsi dengan Apps Pekerja & Akaun
 const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
-  cawangan: () => cawangan, pengguna: () => staf ? `${staf.nama}${staf.idStaf ? ' (' + staf.idStaf + ')' : ''}` : '',
+  cawangan: () => PUSAT, pengguna: () => staf ? `${staf.nama}${staf.idStaf ? ' (' + staf.idStaf + ')' : ''}` : '',
   esc, RM, toast, refresh: () => { if(staf) refreshLive(); },
   // Kuasa ditanda oleh pemilik di Akaun. Advance & claim: pemilik sahaja.
   bolehLulus: m => !!staf && MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(staf,'roster') : adaKuasa(staf,'lulus')),
-  log: (tindakan, butiran = '') => { if(!staf) return; const t = today(); setDoc(doc(collection(store, 'kakitangan', cawangan, 'log')), {stafId: staf.id, idStaf: staf.idStaf || '', nama: staf.nama, tindakan, butiran, tarikh: t, bulan: t.slice(0,7), sumber: 'kaunter', masa: serverTimestamp()}).catch(console.error); }});
+  log: (tindakan, butiran = '') => { if(!staf) return; const t = today(); setDoc(doc(collection(store, 'kakitangan', PUSAT, 'log')), {stafId: staf.id, idStaf: staf.idStaf || '', nama: staf.nama, tindakan, butiran, tarikh: t, bulan: t.slice(0,7), sumber: 'kaunter', masa: serverTimestamp()}).catch(console.error); }});
 // Tab ikut peranan + kuasa (Pekerja / Tetapan diberi melalui suis kuasa di Akaun; Admin kekal ada Tetapan)
 const bolehTetapan = s => s?.peranan === 'Admin' || adaKuasa(s, 'harga');
 const modPK = s => [adaKuasa(s,'hadir') && 'Kehadiran', (adaKuasa(s,'lulus') || adaKuasa(s,'roster')) && 'Permohonan', adaKuasa(s,'roster') && 'Roster'].filter(Boolean);
@@ -320,7 +322,7 @@ function mulaCawangan(){
   aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = [];
   T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {}; FOTO = {};
   setHeader();
-  unsubAsas.push(onSnapshot(col('staf'), s => {
+  unsubAsas.push(onSnapshot(stafCol('staf'), s => {
     stafList = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; if(!PERANAN[x.peranan]) x.peranan = 'Pekerja'; return x; }).sort((a,b) => tahap(b.peranan) - tahap(a.peranan) || a.nama.localeCompare(b.nama));
     stafLoaded = true;
     if(!staf){
@@ -334,7 +336,7 @@ function mulaCawangan(){
     }
   }, onErr));
   unsubAsas.push(onSnapshot(doc(col('tetapan'), 'komisen'), s => { KOMISEN = s.exists() ? (s.data().kadar || {}) : {}; }, () => {}));
-  unsubAsas.push(onSnapshot(col('staf_foto'), s => { FOTO = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); segarAvatar(); }, () => {}));
+  unsubAsas.push(onSnapshot(stafCol('staf_foto'), s => { FOTO = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); segarAvatar(); }, () => {}));
   unsubAsas.push(onSnapshot(col('gambar'), s => { GAMBAR = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); if(staf) refreshLive(); }, onErr));
   unsubAsas.push(onSnapshot(tetapanRef(), s => { T = {...asalCaw(), ...(s.exists() ? s.data() : {})};
     if(staf){ if(tab === 'Order Baru' && $('#oPlat') && !val('#oPlat') && !$('#modal:not(.hidden)')) renderShell(); else refreshLive(); } }, onErr));
@@ -1353,13 +1355,13 @@ function borangStaf(s){
   $('#fFotoBuang').onclick = () => { fotoBaru = ''; prevFoto(); };
   $('#fNama').oninput = () => { if(!(fotoBaru || (s && FOTO[s.id]))) prevFoto(); };
   const simpanFoto = async id => {
-    if(fotoBaru) await setDoc(doc(col('staf_foto'), id), {data: fotoBaru, oleh: staf.nama, dikemaskini: serverTimestamp()});
-    else if(fotoBaru === '') await deleteDoc(doc(col('staf_foto'), id));
+    if(fotoBaru) await setDoc(doc(stafCol('staf_foto'), id), {data: fotoBaru, oleh: staf.nama, dikemaskini: serverTimestamp()});
+    else if(fotoBaru === '') await deleteDoc(doc(stafCol('staf_foto'), id));
   };
   $('#fSimpan').onclick = async () => {
     const pin = val('#fPin');
     if((!s || pin) && !/^\d{4,6}$/.test(pin)) return toast('PIN mesti 4–6 digit');
-    const ref = s ? doc(col('staf'), s.id) : doc(col('staf'));
+    const ref = s ? doc(stafCol('staf'), s.id) : doc(stafCol('staf'));
     try{
       if(diri){ if(pin) await updateDoc(ref, {pinHash: await hashPin(ref.id, pin)}); await simpanFoto(ref.id); closeModal(); return toast(pin ? '✅ PIN ditukar' : fotoBaru !== undefined ? '✅ Gambar profil dikemas kini' : 'Tiada perubahan'); }
       const nama = val('#fNama'), peranan = val('#fPeranan'), idStaf = val('#fId').toUpperCase().replace(/\s+/g,''), aktifF = s ? $('#fAktif').checked : true;

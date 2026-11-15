@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (MO, Info Pekerja, kuasa pengelola, arahan & chat)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (pekerja dikongsi, stesen punch card, kuasa, arahan)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -45,7 +45,7 @@ service cloud.firestore {
     }
     // Apps Pekerja (MO): baca order & kadar komisen; cipta order hanya oleh staf yang diaktifkan MO
     function moSah(cawangan, d) {
-      let st = get(/databases/$(database)/documents/lionsafari/$(cawangan)/staf/$(d.moId)).data;
+      let st = get(/databases/$(database)/documents/lionsafari/mama-lion/staf/$(d.moId)).data;
       return st.get('mo', false) == true && st.get('aktif', true) != false;
     }
     match /lionsafari/{cawangan}/order/{id} {
