@@ -109,7 +109,7 @@ export function kiraLaporan(d){
 // ---------------------------------------------------------------------
 export function teksWhatsApp(L, rekod = {}){
   const b = [];
-  b.push(`*${L.namaKedai}*`, `*DAILY SALES REPORT* — ${L.hari}, ${fT(L.tarikh)}`, '');
+  b.push(`*${L.namaKedai}*`, `*DAILY SALES REPORT* — ${L.hari}, ${fT(L.tarikh)}`, ...(rekod.percubaan ? [`🧪 *REKOD PERCUBAAN*${rekod.catatanPemilik ? ' — ' + rekod.catatanPemilik : ''}`] : []), '');
   b.push(`🚗 Kenderaan: ${L.kereta}`);
   LAJUR.forEach(([k, n]) => { if(L.jumLajur[k]) b.push(`• ${n}: RM ${RMx(L.jumLajur[k])}`); });
   b.push('', `💰 *TOTAL SALES: RM ${RMx(L.jumlah)}*`, `• Cash: RM ${RMx(L.tunai)}`, `• QR / E-Wallet: RM ${RMx(L.qr)}`, `• Transfer: RM ${RMx(L.tf)}`, `• Card: RM ${RMx(L.kad)}`);
@@ -146,6 +146,7 @@ export function htmlCetak(L, rekod = {}, foto = ''){
   .sig div{margin-top:38px;padding-top:4px;border-top:1px solid #222}.foto img{max-width:100%;max-height:200px;display:block;margin:4px auto 0;border:1px solid #999}
   .pos{color:#166534}.neg{color:#b91c1c}.small{font-size:9px;color:#444}@media screen{body{padding:14px;max-width:1150px;margin:auto}}
   </style></head><body>
+  ${rekod.percubaan ? `<div style="border:2px dashed #b91c1c;color:#b91c1c;text-align:center;font-weight:800;padding:4px;margin-bottom:6px">REKOD PERCUBAAN — BUKAN JUALAN SEBENAR${rekod.catatanPemilik ? ' · ' + esc(rekod.catatanPemilik) : ''}</div>` : ''}
   <h1>${esc(L.namaKedai)}</h1><div class="top"><span>TARIKH : ${fT(L.tarikh)}</span><span>HARI : ${L.hari}</span><span>DAILY SALES REPORT</span></div>
   <table><tr><th style="width:30px">BIL.</th><th style="width:44px">MASA</th><th>JENIS KENDERAAN &amp; NO. PLAT</th><th style="width:60px">RM</th>${LAJUR.map(([,n]) => `<th style="width:62px">${n}</th>`).join('')}<th style="width:70px">CASH/QR/<br>TRANSFER</th><th style="width:80px">TF. NO</th><th style="width:90px">NAME SERVE</th></tr>
   ${baris.map((b, i) => b ? `<tr><td class="c">${b.bil}</td><td class="c">${b.masa}</td><td>${esc(b.kend)}<br><span class="small">${esc(b.pakej)}</span></td><td class="r">${RMx(b.rm)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(b.nilai[k])}</td>`).join('')}<td class="c">${esc(b.kaedah)}</td><td>${esc(b.tf)}</td><td>${esc(b.serve)}</td></tr>`

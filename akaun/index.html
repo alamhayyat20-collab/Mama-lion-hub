@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-10">
+<meta name="app-versi" content="2026.11.16-11">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,11 +108,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-10';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-10';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-10';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-10';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-10';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-11';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-11';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-11';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-11';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-11';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -597,31 +597,41 @@ async function segerakJualan(){
   const m = jualanHarianOrder[cawangan] || {}, hari = Object.keys(m);
   if(!hari.length) return toast('Tiada jualan kaunter bulan ini');
   if(!confirm(`Segerak semula jualan ${hari.length} hari (${fmtBulan(bulan)}) dari kaunter ${namaCawangan()} ke tab Jualan?`)) return;
+  const uji = new Set(tutupBulan.filter(x => x.cawangan === cawangan && x.percubaan).map(x => x.tarikh));
   try{ for(const t of hari){ const x = m[t], r = v => Math.round(v * 100) / 100;
+      if(uji.has(t)){ await deleteDoc(doc(colFor(cawangan), 'ls-' + t)).catch(() => {}); continue; }
       await setDoc(doc(colFor(cawangan), 'ls-' + t), {jenis:'jualan', tarikh:t, bulan:t.slice(0,7), cawangan, tunai:r(x.tunai), qr:r(x.qr), kad:r(x.kad), ewallet:0, lain:r(x.tf),
         kereta:x.kereta, amaun:r(x.jumlah), catatan:`Auto dari Lion Safari (${x.kereta} order${x.tf ? `, Transfer RM${r(x.tf)}` : ''})`, sumber:'lionsafari', auto:true, guna_petty:false, hutang:false, oleh:'Segerak Akaun', dikemaskini: serverTimestamp()}); }
-    toast(`✅ ${hari.length} hari jualan disegerak`); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+    toast(`✅ ${hari.length - [...uji].filter(t => m[t]).length} hari jualan disegerak${uji.size ? ` · ${uji.size} hari percubaan dikecualikan` : ''}`); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
 }
 const MTA = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
   cawangan: () => tutupBuka?.c || cawangan, pengguna: () => nama, toast, capGambar: null, mod: 'lihat', bolehSemak: true,
   refresh: () => { if(tab === 'Laporan Harian' && tutupBuka) refresh(); muatTutupBulanLambat(); }});
 let _tl = null; const muatTutupBulanLambat = () => { clearTimeout(_tl); _tl = setTimeout(muatTutupBulan, 800); };
 function viewTutupAk(){
-  if(tutupBuka) return `<button class="small" id="tkBalik" style="margin-bottom:10px">← Senarai laporan</button>` + MTA.html();
+  if(tutupBuka){ const r = tutupBulan.find(x => x.cawangan === tutupBuka.c && x.tarikh === tutupBuka.t) || {};
+    return `<button class="small" id="tkBalik" style="margin-bottom:10px">← Senarai laporan</button>
+    <div class="card" style="${r.percubaan ? 'border:2px dashed #b91c1c' : ''}"><label class="row" style="font-weight:700;margin:0;gap:8px"><input type="checkbox" id="tkUji" ${r.percubaan ? 'checked' : ''} style="width:22px;height:22px;margin:0"> 🧪 Tandakan sebagai rekod percubaan (bukan jualan sebenar)</label>
+      <label>Remark pemilik</label><input id="tkRemark" value="${esc(r.catatanPemilik || '')}" placeholder="cth: Rekod percubaan semasa pelancaran apps">
+      <button class="primary small" id="tkSimpanRemark" style="margin-top:8px">💾 Simpan remark</button></div>` + MTA.html(); }
   const tutup = Object.fromEntries(tutupBulan.filter(r => r.cawangan === cawangan).map(r => [r.tarikh, r]));
   const jh = jualanHarianOrder[cawangan] || {};
   const hari = [...new Set([...Object.keys(jh), ...Object.keys(tutup)])].sort().reverse();
-  const T = k => hari.reduce((t,h) => t + (jh[h]?.[k] || 0), 0);
+  const T = k => hari.filter(h => !tutup[h]?.percubaan).reduce((t,h) => t + (jh[h]?.[k] || 0), 0);
   return `<div class="card"><div class="section-title"><h3>📊 Laporan Jualan Harian — ${esc(namaCawangan())}</h3><span class="muted">${fmtBulan(bulan)}</span></div>
     <p class="muted" style="margin-top:0">Semua hari yang ada jualan di kaunter, terus dari order yang dibayar. Tekan satu tarikh untuk lihat laporan penuh (senarai kereta, bayaran, gambar tunai), cetak atau hantar ke WhatsApp. Tukar cawangan di atas & bulan di 📅.</p>
     ${hari.length ? `<div class="scroll"><table><tr><th>Tarikh</th><th class="r">Kereta</th><th class="r">Jualan</th><th class="r">Tunai</th><th class="r">QR</th><th class="r">Kad</th><th class="r">Transfer</th><th class="r">Surplus/(Kurang)</th><th>Tutup kaunter</th></tr>
-    ${hari.map(h => { const x = jh[h] || {}, r = tutup[h] || {}, L = r.laporan || {}; return `<tr data-tkbuka="${h}" style="cursor:pointer"><td><b>${esc(h)}</b></td><td class="r">${x.kereta || 0}</td><td class="r"><b>${RM(x.jumlah || 0)}</b></td><td class="r">${RM(x.tunai || 0)}</td><td class="r">${RM(x.qr || 0)}</td><td class="r">${RM(x.kad || 0)}</td><td class="r">${RM(x.tf || 0)}</td>
+    ${hari.map(h => { const x = jh[h] || {}, r = tutup[h] || {}, L = r.laporan || {}; return `<tr data-tkbuka="${h}" style="cursor:pointer;${r.percubaan ? 'opacity:.6;background:#fff7ed' : ''}"><td><b>${esc(h)}</b>${r.percubaan ? '<br><span class="tag warn" style="text-decoration:none">🧪 Percubaan</span>' : ''}${r.catatanPemilik ? `<br><span class="muted" style="text-decoration:none">${esc(r.catatanPemilik)}</span>` : ''}</td><td class="r">${x.kereta || 0}</td><td class="r"><b>${RM(x.jumlah || 0)}</b></td><td class="r">${RM(x.tunai || 0)}</td><td class="r">${RM(x.qr || 0)}</td><td class="r">${RM(x.kad || 0)}</td><td class="r">${RM(x.tf || 0)}</td>
       <td class="r ${L.beza < 0 ? 'neg' : 'pos'}">${L.beza != null ? (L.beza < 0 ? '(' + RM(-L.beza) + ')' : RM(L.beza)) : '-'}</td><td><span class="tag ${r.status === 'disahkan' ? 'ok' : r.status === 'dihantar' ? 'warn' : ''}">${r.status ? STATUS_TUTUP[r.status] : 'Belum ditutup'}</span>${r.ditutupOleh ? `<br><span class="muted">${esc(r.ditutupOleh)}${r.disemakOleh ? ' · ✔ ' + esc(r.disemakOleh) : ''}</span>` : ''}</td></tr>`; }).join('')}
-    <tr class="tot"><td>Jumlah</td><td class="r">${T('kereta')}</td><td class="r">${RM(T('jumlah'))}</td><td class="r">${RM(T('tunai'))}</td><td class="r">${RM(T('qr'))}</td><td class="r">${RM(T('kad'))}</td><td class="r">${RM(T('tf'))}</td><td colspan="2"></td></tr></table></div>` : '<p class="muted">Tiada jualan kaunter bulan ini.</p>'}
-    <div class="row" style="margin-top:10px"><button class="small" id="tkSegerak">🔄 Segerak jualan ke tab Jualan</button><span class="muted">Guna jika jualan sesuatu hari tidak muncul di tab Jualan / Ringkasan.</span></div></div>`;
+    <tr class="tot"><td>Jumlah${hari.some(h => tutup[h]?.percubaan) ? '<br><span class="muted">tanpa percubaan</span>' : ''}</td><td class="r">${T('kereta')}</td><td class="r">${RM(T('jumlah'))}</td><td class="r">${RM(T('tunai'))}</td><td class="r">${RM(T('qr'))}</td><td class="r">${RM(T('kad'))}</td><td class="r">${RM(T('tf'))}</td><td colspan="2"></td></tr></table></div>` : '<p class="muted">Tiada jualan kaunter bulan ini.</p>'}
+    <div class="row" style="margin-top:10px"><button class="small" id="tkSegerak">🔄 Segerak jualan ke tab Jualan</button><span class="muted">Guna jika jualan sesuatu hari tidak muncul di tab Jualan / Ringkasan. Hari bertanda 🧪 percubaan dikeluarkan daripada tab Jualan.</span></div></div>`;
 }
 function pasangTutupAk(){
-  if(tutupBuka){ $('#tkBalik').onclick = () => { tutupBuka = null; MTA.henti(); refresh(); }; MTA.pasang(); return; }
+  if(tutupBuka){ $('#tkBalik').onclick = () => { tutupBuka = null; MTA.henti(); refresh(); }; MTA.pasang();
+    $('#tkSimpanRemark').onclick = async () => { const {c, t} = tutupBuka;
+      try{ await setDoc(doc(store, 'lionsafari', c, 'tutup', t), {tarikh: t, bulan: t.slice(0,7), cawangan: c, percubaan: $('#tkUji').checked, catatanPemilik: val('#tkRemark'), remarkOleh: nama, remarkMasa: Date.now()}, {merge: true});
+        toast('✅ Remark disimpan'); await muatTutupBulan(); }catch(e){ toast('⚠ ' + (e.code || e.message)); } };
+    return; }
   if($('#tkSegerak')) $('#tkSegerak').onclick = segerakJualan;
   document.querySelectorAll('[data-tkbuka]').forEach(r => r.onclick = () => { tutupBuka = {c: cawangan, t: r.dataset.tkbuka}; MTA.st.c = null; MTA.mula(r.dataset.tkbuka); refresh(); });
 }
