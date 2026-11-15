@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-4">
+<meta name="app-versi" content="2026.11.15-5">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -747,10 +747,10 @@ function viewKehadiran(){
   $('#app').innerHTML = `<div class="card center"><div class="muted">${fTarikhPendek(hariIni())} ${hariIni().slice(0,4)}</div><div class="jam" id="jamBesar"></div>
       <div class="muted">Syif hari ini: <b>${sy ? esc(sy.nama) + (sy.mula ? ` ${sy.mula}–${sy.tamat}` : '') : 'tiada dalam roster'}</b></div></div>
     <button class="punch ${seterus}" id="btnPunch">${seterus === 'masuk' ? '📸 PUNCH IN' : '📸 PUNCH OUT'}<small>Ambil gambar selfie — masa & lokasi direkod</small></button>
-    <div class="card" style="margin-top:12px"><div class="between"><h3 style="margin:0">Hari ini</h3>${k.rekod.length ? `<span class="tag ok">${fMinit(k.minit)}${k.masihMasuk ? ' + sedang bekerja' : ''}</span>` : ''}</div>
+    <div class="card" style="margin-top:12px"><div class="between"><h3 style="margin:0">Hari ini</h3>${k.rekod.length ? `<span class="tag ok" id="jamHari">${fMinit(k.minit + k.berjalan)}${k.masihMasuk ? ' · sedang bekerja' : ''}</span>` : ''}</div>
       ${lw > 5 ? `<div class="notice" style="margin-top:8px">Lewat ${lw} minit</div>` : ''}
       ${k.rekod.map(r => `<div class="item"><div><b>${r.jenis === 'masuk' ? '🟢 MASUK' : '🔴 KELUAR'} ${fJam(masaMs(r))}</b><small>${r.gps ? `📍 ${r.jarak != null ? r.jarak + 'm dari kedai' : 'lokasi direkod'} (±${r.gps.acc}m)` : '📍 tiada GPS'}${r.luarKawasan ? ' · <b style="color:var(--merah)">luar kawasan</b>' : ''}</small></div></div>`).join('') || '<p class="muted">Belum punch in hari ini.</p>'}</div>`;
-  const tick = () => { const j = $('#jamBesar'); if(j) j.textContent = new Date().toLocaleTimeString('en-GB'); };
+  const tick = () => { const j = $('#jamBesar'); if(j) j.textContent = new Date().toLocaleTimeString('en-GB'); const h = $('#jamHari'); if(h && k.masihMasuk){ const k2 = jamKerja(hadirHariIni); h.textContent = `${fMinit(k2.minit + k2.berjalan)} · sedang bekerja`; } };
   tick(); clearInterval(window._jam); window._jam = setInterval(tick, 1000);
   $('#btnPunch').onclick = () => mulaPunch(seterus);
 }

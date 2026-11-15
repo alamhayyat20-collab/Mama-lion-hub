@@ -70,7 +70,8 @@ export function jamKerja(rekod){
     if(r.jenis === 'masuk'){ if(!buka) buka = r; }
     else if(r.jenis === 'keluar' && buka){ const m = (masaMs(r) - masaMs(buka)) / 60000; minit += m; pasangan.push([buka, r, m]); buka = null; }
   }
-  return {minit, pasangan, masihMasuk: !!buka, masuk: l.find(r => r.jenis === 'masuk'), keluar: [...l].reverse().find(r => r.jenis === 'keluar'), rekod: l};
+  const berjalan = buka ? Math.max(0, (Date.now() - masaMs(buka)) / 60000) : 0;   // minit sesi yang masih dibuka
+  return {minit, berjalan, pasangan, masihMasuk: !!buka, masuk: l.find(r => r.jenis === 'masuk'), keluar: [...l].reverse().find(r => r.jenis === 'keluar'), rekod: l};
 }
 
 // Minit lewat berbanding masa mula syif
@@ -172,7 +173,7 @@ export function modulPengurusan(ctx){
         ${l.length ? '' : (sy?.mula ? '<span class="km-tag km-bad">Belum / tidak hadir</span>' : '')}
         ${lw > 5 ? `<span class="km-tag km-warn">Lewat ${lw} min</span>` : ''}
         ${k.masihMasuk && st.tarikh === hariIni() ? '<span class="km-tag km-ok">Sedang bekerja</span>' : ''}
-        ${l.length ? `<small>Jam kerja: <b>${fMinit(k.minit)}</b>${k.masihMasuk ? ' (+ sedang berjalan)' : ''}</small>` : ''}</div>
+        ${l.length ? `<small>Jam kerja: <b>${fMinit(k.minit + (st.tarikh === hariIni() ? k.berjalan : 0))}</b>${k.masihMasuk && st.tarikh === hariIni() ? ' (termasuk sesi sedang berjalan)' : ''}</small>` : ''}</div>
         <div class="km-pics">${k.rekod.map(r => { const jr = r.jarak ?? jarakMeter(r.gps, kedai); const luar = kedai && jr != null && jr > (Number(st.tetapan.radius)||200);
           return `<div class="km-pic"><img data-km-img="${r.id}" alt=""><span class="km-tag ${r.jenis==='masuk'?'km-ok':''}">${r.jenis==='masuk'?'MASUK':'KELUAR'} ${fJam(masaMs(r))}</span>
           <small>${r.gps ? `📍${jr != null ? jr + 'm' : 'GPS'}${luar ? ' <b class="km-merah">LUAR</b>' : ''}` : '📍 tiada GPS'}</small></div>`; }).join('')}</div></div>`;
