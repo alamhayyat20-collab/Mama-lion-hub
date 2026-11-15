@@ -19,7 +19,38 @@ export const tempatStaf = (rosterHari, id) => rosterHari?.tempat?.[id] || null;
 export function labelTempat(tetapan, t){
   if(!t?.c) return '';
   const st = (tetapan?.stesen || []).find(x => x.id === t.s);
-  return `${CAW.find(x => x.id === t.c)?.kod || ''}${st ? ' · ' + st.nama : ''}`;
+  return `${CAW.find(x => x.id === t.c)?.kod || ''}${st ? ' · ' + st.nama : ''}${t.c2 ? ' → ' + (CAW.find(x => x.id === t.c2)?.kod || '') + ' (petang)' : ''}`;
+}
+// Duty roster mingguan Nov 2026 (TIMETABLE CREW, HR & Admin, berkuat kuasa 31/10/2026)
+// Setiap baris: [Isnin..Ahad] bagi Mama Lion (ml) & Lion King (lk). '' = tidak bertugas di cawangan itu.
+// Dua syif sehari (9-6 di satu cawangan + 3-12 di cawangan lain) = syif 9-12 (9 pagi – 12 malam), pagi di cawangan 9-6.
+export const SYIF_ROSTER = [
+  {kod:'9-6', nama:'Pagi 9-6', mula:'09:00', tamat:'18:00'},
+  {kod:'3-12', nama:'Petang 3-12', mula:'15:00', tamat:'24:00'},
+  {kod:'9-12', nama:'Penuh 9-12', mula:'09:00', tamat:'24:00'},
+  {kod:'SPLIT', nama:'Split 11-3 & 7-12', mula:'11:00', tamat:'24:00'}
+];
+export const ROSTER_NOV2026 = {
+  tajuk: 'Duty Roster Nov 2026', dari: '2026-11-01', hingga: '2026-11-30',
+  pengurus: {'mama-lion': 'HAIRUL (ANGAH)', 'lion-king': 'AWIN'},
+  jadual: {
+    WADI:    {ml:['OFF','9-6','3-12','9-6','','',''],        lk:['','','9-6','3-12','9-6','3-12','9-6']},
+    NAZARUL: {ml:['','','OFF','3-12','','9-6','3-12'],       lk:['3-12','3-12','','9-6','3-12','','9-6']},
+    HABIB:   {ml:['3-12','3-12','3-12','OFF','','','9-6'],   lk:['9-6','9-6','9-6','','9-6','9-12','3-12']},
+    AMIR:    {ml:['9-6','9-6','','9-6','3-12','9-12','3-12'],lk:['','3-12','OFF','3-12','','','9-6']},
+    FIZI:    {ml:['9-6','OFF','3-12','3-12','3-12','9-6','9-6'],lk:['3-12','','9-6','9-6','','3-12','3-12']},
+    HELMI:   {ml:['3-12','','9-6','3-12','9-6','3-12','3-12'],lk:['9-6','OFF','3-12','9-6','3-12','9-6','']},
+    KAZA:    {ml:['','3-12','9-6','9-6','9-6','3-12','9-6'], lk:['OFF','9-6','3-12','3-12','','9-6','3-12']}
+  }
+};
+// Gabung syif sehari seorang pekerja → {kod, tempat:{c, s:'', c2?}}
+export function syifRosterHari(baris, i){
+  const a = baris.ml[i] || '', b = baris.lk[i] || '';
+  const kerja = [[a,'mama-lion'],[b,'lion-king']].filter(([k]) => k && k !== 'OFF');
+  if(!kerja.length) return {kod: (a === 'OFF' || b === 'OFF') ? 'OFF' : '', tempat: null};
+  if(kerja.length === 1) return {kod: kerja[0][0], tempat: {c: kerja[0][1], s: ''}};
+  const pagi = kerja.find(([k]) => k === '9-6') || kerja[0], ptg = kerja.find(x => x !== pagi);
+  return {kod: '9-12', tempat: {c: pagi[1], s: '', c2: ptg[1]}};
 }
 export const kodQRStesen = st => `MLPUNCH:${st.id}:${st.kunci}`;
 export const bacaQRStesen = teks => { const m = String(teks || '').match(/MLPUNCH:([A-Za-z0-9_-]+):([A-Za-z0-9]+)/); return m ? {id: m[1], kunci: m[2]} : null; };
@@ -245,10 +276,46 @@ export function modulPengurusan(ctx){
       ${aktif.map(s => `<tr><td><b>${esc(s.idStaf||'')}</b><br><small>${esc(s.nama)}</small></td>${hari.map(t => { const k = syifStaf(t, s.id);
         const tp = tempatStaf(st.roster[t], s.id), tv = tp?.c ? `${tp.c}|${tp.s || ''}` : '', rehat = ['OFF','CUTI'].includes(k);
         return `<td class="${t===hariIni()?'km-today':''}"><select data-km-syif="${t}|${s.id}" class="km-s-${esc(k||'kosong')}"><option value="">–</option>${SY.map(x => `<option ${x.kod===k?'selected':''} value="${esc(x.kod)}">${esc(x.kod)}</option>`).join('')}</select>
-          ${k && !rehat ? `<select data-km-tempat="${t}|${s.id}" class="km-tempat"><option value="">tempat?</option>${CAW.map(c => `<option value="${c.id}|" ${tv === c.id + '|' ? 'selected' : ''}>${c.kod}</option>${stesenCaw(c.id).map(x => `<option value="${c.id}|${esc(x.id)}" ${tv === c.id + '|' + x.id ? 'selected' : ''}>${c.kod} · ${esc(x.nama)}</option>`).join('')}`).join('')}</select>` : ''}</td>`; }).join('')}</tr>`).join('')}</table></div>
+          ${k && !rehat ? `<select data-km-tempat="${t}|${s.id}" class="km-tempat"><option value="">tempat?</option>${CAW.map(c => `<option value="${c.id}|" ${tv === c.id + '|' ? 'selected' : ''}>${c.kod}</option>${stesenCaw(c.id).map(x => `<option value="${c.id}|${esc(x.id)}" ${tv === c.id + '|' + x.id ? 'selected' : ''}>${c.kod} · ${esc(x.nama)}</option>`).join('')}`).join('')}</select>${tp?.c2 ? `<small style="display:block">→ ${CAW.find(c => c.id === tp.c2)?.kod || ''} petang</small>` : ''}` : ''}</td>`; }).join('')}</tr>`).join('')}</table></div>
       <div class="km-muted">Setiap sel: <b>syif</b> dan <b>tempat bertugas</b> (cawangan · stesen). Pekerja punch dengan mengimbas QR stesen itu.</div>
-      <div class="km-rowbtn" style="margin-top:8px"><button class="km-btn" data-km-salin>📋 Salin roster minggu lepas</button></div>
+      <div class="km-rowbtn" style="margin-top:8px"><button class="km-btn" data-km-salin>📋 Salin roster minggu lepas</button><button class="km-btn km-primary" data-km-imbuka>📥 Masukkan ${esc(ROSTER_NOV2026.tajuk)}</button></div>
+      ${st.importBuka ? viewImport() : ''}
       <div class="km-muted">Perubahan disimpan serta-merta dan terus dilihat pekerja dalam Apps Pekerja.</div></div>`;
+  }
+
+  function tekaStaf(nama){
+    const n = nama.toLowerCase(), aktif = st.staf.filter(s => s.aktif !== false);
+    return (aktif.find(s => String(s.nama||'').toLowerCase().split(/[\s()]+/).includes(n)) || aktif.find(s => String(s.nama||'').toLowerCase().includes(n)))?.id || '';
+  }
+  function viewImport(){
+    if(!st.peta) st.peta = Object.fromEntries(Object.keys(ROSTER_NOV2026.jadual).map(n => [n, tekaStaf(n)]));
+    const aktif = st.staf.filter(s => s.aktif !== false), H = ['Isn','Sel','Rab','Kha','Jum','Sab','Aha'];
+    return `<div class="km-card" style="border:2px solid #d7b25a;margin-top:10px"><h3>📥 ${esc(ROSTER_NOV2026.tajuk)} (${fTarikhPendek(ROSTER_NOV2026.dari)} – ${fTarikhPendek(ROSTER_NOV2026.hingga)})</h3>
+      <div class="km-muted">Padankan nama dalam jadual dengan pekerja dalam apps. Jadual mingguan diulang setiap minggu. Dua syif sehari di dua cawangan = <b>9-12</b> (pagi di cawangan 9-6, petang di cawangan lain).</div>
+      <div class="km-scroll"><table class="km-roster"><tr><th>Nama jadual</th><th>Pekerja dalam apps</th>${H.map(h => `<th>${h}</th>`).join('')}</tr>
+      ${Object.entries(ROSTER_NOV2026.jadual).map(([n, b]) => `<tr><td><b>${n}</b></td><td><select data-km-peta="${n}"><option value="">— tidak dimasukkan —</option>${aktif.map(s => `<option value="${s.id}" ${st.peta[n] === s.id ? 'selected' : ''}>${esc(s.idStaf||'')} ${esc(s.nama)}</option>`).join('')}</select></td>
+        ${H.map((_, i) => { const r = syifRosterHari(b, i); return `<td class="km-s-${esc(r.kod||'kosong')}"><b>${esc(r.kod || '–')}</b>${r.tempat ? `<br><small>${labelTempat(st.tetapan, r.tempat).replace(' (petang)','')}</small>` : ''}</td>`; }).join('')}</tr>`).join('')}</table></div>
+      <div class="km-muted">Pengurus operasi: ML ${esc(ROSTER_NOV2026.pengurus['mama-lion'])} · LK ${esc(ROSTER_NOV2026.pengurus['lion-king'])} (tiada syif dalam jadual — guna punch bebas).</div>
+      <div class="km-rowbtn" style="margin-top:8px"><button class="km-btn km-primary" data-km-imlaksana>✅ Masukkan ke roster</button><button class="km-btn" data-km-imtutup>Tutup</button></div></div>`;
+  }
+  async function laksanaImport(){
+    const peta = Object.entries(st.peta || {}).filter(([, id]) => id);
+    if(!peta.length) return ctx.toast('Padankan sekurang-kurangnya seorang pekerja');
+    if(new Set(peta.map(x => x[1])).size !== peta.length) return ctx.toast('Seorang pekerja dipadankan kepada dua nama');
+    if(!confirm(`Masukkan roster untuk ${peta.length} pekerja dari ${ROSTER_NOV2026.dari} hingga ${ROSTER_NOV2026.hingga}? Syif sedia ada pekerja ini dalam tempoh itu akan ditimpa.`)) return;
+    try{
+      const ada = senaraiSyif(st.tetapan), baru = SYIF_ROSTER.filter(x => !ada.some(y => y.kod === x.kod));
+      if(baru.length) await fs.setDoc(fs.doc(C('tetapan'), 'umum'), {syif: [...ada, ...baru], dikemaskiniOleh: ctx.pengguna()}, {merge:true}).catch(e => console.warn('syif', e));
+      let t = ROSTER_NOV2026.dari, n = 0;
+      while(t <= ROSTER_NOV2026.hingga){
+        const i = (new Date(t + 'T00:00:00').getDay() + 6) % 7, syif = {}, tempat = {};
+        for(const [nm, id] of peta){ const r = syifRosterHari(ROSTER_NOV2026.jadual[nm], i); syif[id] = r.kod; tempat[id] = r.tempat; }
+        await fs.setDoc(fs.doc(C('roster'), t), {tarikh: t, bulan: t.slice(0,7), syif, tempat, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true});
+        t = tambahHari(t, 1); n++;
+      }
+      if(ctx.log) ctx.log('Masukkan roster', `${ROSTER_NOV2026.tajuk} · ${peta.length} pekerja · ${n} hari`);
+      st.importBuka = false; ctx.toast(`✅ Roster ${n} hari dimasukkan untuk ${peta.length} pekerja`); ctx.refresh();
+    }catch(e){ err(e); }
   }
 
   function viewTetapan(){
@@ -316,6 +383,10 @@ export function modulPengurusan(ctx){
       const [t, id] = s.dataset.kmTempat.split('|'), [c, sid] = s.value.split('|');
       try{ await fs.setDoc(fs.doc(C('roster'), t), {tarikh:t, bulan:t.slice(0,7), tempat:{[id]: c ? {c, s: sid || ''} : null}, dikemaskiniOleh: ctx.pengguna(), ...(ctx.tanda ? ctx.tanda() : {})}, {merge:true}); if(ctx.log) ctx.log('Ubah tempat bertugas', `${namaStaf(id)} · ${t} → ${s.options[s.selectedIndex].text}`); }catch(e){ err(e); }
     });
+    const imb = document.querySelector('[data-km-imbuka]'); if(imb) imb.onclick = () => { st.importBuka = !st.importBuka; ctx.refresh(); };
+    const imt = document.querySelector('[data-km-imtutup]'); if(imt) imt.onclick = () => { st.importBuka = false; ctx.refresh(); };
+    const iml = document.querySelector('[data-km-imlaksana]'); if(iml) iml.onclick = laksanaImport;
+    document.querySelectorAll('[data-km-peta]').forEach(s => s.onchange = () => { st.peta[s.dataset.kmPeta] = s.value; });
     const salin = document.querySelector('[data-km-salin]');
     if(salin) salin.onclick = async () => {
       if(!confirm('Salin roster minggu lepas ke minggu ini? Syif sedia ada minggu ini akan ditimpa.')) return;
@@ -374,7 +445,7 @@ export const CSS_MODUL = `
 .km-roster td:first-child,.km-roster th:first-child{text-align:left;white-space:nowrap}
 .km-roster select{width:auto;min-width:56px;padding:6px 2px;margin:0;font-size:13px;border-radius:8px}
 .km-roster .km-today{background:#fef9c3}
-.km-s-P{background:#dbeafe}.km-s-M{background:#ede9fe}.km-s-F{background:#dcfce7}.km-s-OFF,.km-s-CUTI{background:#f1f5f9;color:#64748b}
+.km-s-9-6{background:#bbf7d0}.km-s-3-12{background:#fef08a}.km-s-9-12{background:#ddd6fe}.km-s-SPLIT{background:#fed7aa}.km-s-OFF{background:#fecaca!important;color:#991b1b!important}.km-s-P{background:#dbeafe}.km-s-M{background:#ede9fe}.km-s-F{background:#dcfce7}.km-s-OFF,.km-s-CUTI{background:#f1f5f9;color:#64748b}
 .km-two{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 @media(max-width:600px){.km-two{grid-template-columns:1fr}}
 `;
