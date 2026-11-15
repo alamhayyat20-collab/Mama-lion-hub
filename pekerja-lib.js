@@ -54,6 +54,7 @@ export const JENIS_MOHON = {
 export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
 // Kuasa pengelola yang ditanda oleh pemilik di Akaun → Pekerja → Urus  (lionsafari/{c}/staf/{id}.kuasa)
 export const KUASA = [
+  {k:'kaunter', ikon:'💳', label:'Kaunter: queue & bayaran', ket:'Terima tempahan, kemas kini progress servis & terima bayaran dalam Apps Pekerja'},
   {k:'harga',   ikon:'🏷', label:'Harga, pakej & servis', ket:'Buka tab Tetapan di kaunter Lion Safari V2'},
   {k:'roster',  ikon:'📅', label:'Roster & tukar syif', ket:'Susun roster, luluskan tukar syif'},
   {k:'lulus',   ikon:'✅', label:'Lulus OT & cuti', ket:'Luluskan OT dan cuti (bukan advance / claim)'},

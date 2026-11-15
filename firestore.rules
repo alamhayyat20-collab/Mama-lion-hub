@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (pekerja dikongsi, stesen punch card, kuasa, arahan)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 16 Nov 2026 (kuasa kaunter dalam Apps Pekerja, tempahan & status kenderaan Apps Pelanggan)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -37,7 +37,7 @@ service cloud.firestore {
     }
     // Kuasa pengelola yang ditanda oleh pemilik (lionsafari/{c}/staf/{id}.kuasa.{k})
     function kuasa(c, id, k) {
-      let st = get(/databases/$(database)/documents/lionsafari/$(c)/staf/$(id)).data;
+      let st = get(/databases/$(database)/documents/lionsafari/mama-lion/staf/$(id)).data;
       return st.get('kuasa', {}).get(k, false) == true && st.get('aktif', true) != false;
     }
     function olehKuasa(c, k) {
@@ -59,10 +59,42 @@ service cloud.firestore {
         && !('bayar' in request.resource.data)
         && request.resource.data.dibuat == request.time
         && moSah(cawangan, request.resource.data);
+      // Kuasa 💳 Kaunter: terima tempahan pelanggan sebagai order
+      allow create: if staffApp()
+        && request.resource.data.sumber == 'tempahan'
+        && request.resource.data.status == 'Menunggu'
+        && request.resource.data.aktif == true
+        && !('bayar' in request.resource.data)
+        && olehKuasa(cawangan, 'kaunter');
+      // Kuasa 💳 Kaunter: progress servis, bay, bayaran & cop (bukan harga/pakej)
+      allow update: if staffApp()
+        && olehKuasa(cawangan, 'kaunter')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'masaMenunggu', 'masaCuci', 'masaKering', 'masaQC', 'masaSiap', 'bay',
+          'dikemaskiniOleh', 'olehId', 'olehCaw', 'bayar', 'diskaun', 'diskaunLulus', 'jumlah', 'aktif', 'tarikhBayar', 'bulanBayar', 'dibayarOleh', 'masaBayar',
+          'copInfo', 'copGagal', 'cop'])
+        && request.resource.data.status in ['Menunggu', 'Cuci', 'Kering', 'QC', 'Siap', 'Selesai']
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['bayar', 'jumlah', 'diskaun'])
+            || (resource.data.get('freeWash', null) == null && request.resource.data.get('diskaun', 0) == 0
+                && request.resource.data.jumlah == resource.data.jumlahKasar));
     }
     match /lionsafari/{cawangan}/order_gambar/{id} {
+      allow read: if staffApp();
       allow create: if staffApp()
         && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(id));
+    }
+    // Tempahan dari Apps Pelanggan
+    match /lionsafari/{cawangan}/tempahan/{id} {
+      allow get: if true;
+      allow list: if dalaman() || staffApp();
+      allow create: if cawangan in ['mama-lion', 'lion-king']
+        && request.resource.data.status == 'baru'
+        && request.resource.data.ahliId is string
+        && request.resource.data.plat is string && request.resource.data.plat.size() < 20
+        && request.resource.data.telefon == get(/databases/$(database)/documents/ahli/$(request.resource.data.ahliId)).data.telefon;
+      allow update: if dalaman()
+        || (staffApp() && olehKuasa(cawangan, 'kaunter') && resource.data.status == 'baru')
+        || (resource.data.status == 'baru' && request.resource.data.status == 'batal'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'dikemaskini']));
     }
     match /lionsafari/{cawangan}/tetapan/komisen {
       allow read: if staffApp();
@@ -76,6 +108,12 @@ service cloud.firestore {
         && request.resource.data.cawangan == cawangan;
       allow delete: if dalaman()
         && (id.matches('ls-.*') || id.matches('lsp-.*'));
+      // Kuasa 💳 Kaunter (Apps Pekerja): jualan harian hasil bayaran
+      allow get: if staffApp() && id.matches('ls-.*');
+      allow create, update: if staffApp() && id.matches('ls-.*')
+        && request.resource.data.sumber == 'lionsafari'
+        && request.resource.data.cawangan == cawangan
+        && olehKuasa(cawangan, 'kaunter');
     }
     match /akaun/{cawangan}/entri/{id} {
       allow read, write: if cawangan != 'mama-lion' && dalaman();
@@ -182,10 +220,20 @@ service cloud.firestore {
       allow delete: if dalaman();
       allow create: if dalaman() || sahAhliBaru(token);
       allow update: if dalaman() || request.resource.data.diff(resource.data).affectedKeys()
-        .hasOnly(['nama', 'emel', 'tarikhLahir', 'kenderaan', 'plat', 'cawanganUtama', 'setujuPromosi', 'dikemaskini']);
+        .hasOnly(['nama', 'emel', 'tarikhLahir', 'kenderaan', 'plat', 'cawanganUtama', 'setujuPromosi', 'dikemaskini', 'foto', 'tempahan'])
+        || (staffApp() && request.resource.data.olehCaw in ['mama-lion', 'lion-king'] && olehKuasa(request.resource.data.olehCaw, 'kaunter')
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cop', 'ganjaran', 'freeWash', 'kadSelesai', 'copTerakhir', 'jumlahServis', 'dikemaskini', 'olehId', 'olehCaw']));
       match /sejarah/{id} {
         allow read: if true;
         allow write: if dalaman();
+        allow create: if staffApp() && request.resource.data.olehCaw in ['mama-lion', 'lion-king'] && olehKuasa(request.resource.data.olehCaw, 'kaunter');
+      }
+      // Status kenderaan semasa (dipaparkan dalam Apps Pelanggan)
+      match /status/{id} {
+        allow read: if true;
+        allow write: if dalaman()
+          || (staffApp() && ((request.resource.data.olehCaw in ['mama-lion', 'lion-king'] && olehKuasa(request.resource.data.olehCaw, 'kaunter'))
+              || (request.resource.data.cawangan in ['mama-lion', 'lion-king'] && exists(/databases/$(database)/documents/lionsafari/$(request.resource.data.cawangan)/order/$(id)))));
       }
     }
     match /ahli_telefon/{tel} {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-7">
+<meta name="app-versi" content="2026.11.16-1">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -64,29 +64,53 @@ h2{font-size:19px;margin:28px 0 12px}
 .panel{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:var(--r-besar);padding:18px;border:1px solid rgba(195,200,207,.6);margin-top:14px}
 .panel h3{margin:0 0 8px;font-size:16px}
 
-/* ---------- Kad ahli 3D ---------- */
+/* ---------- Kad ahli digital (ikut kad fizikal Mama Lion & Lion King) ---------- */
 .kad-pentas{perspective:1200px;margin:16px 0 4px}
 .kad{position:relative;width:100%;aspect-ratio:1.586;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.7,.2,1);cursor:pointer}
 .kad.balik{transform:rotateY(180deg)}
-.muka{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
-  background:radial-gradient(120% 90% at 85% 10%,#2b6b52 0%,transparent 55%),linear-gradient(135deg,#1a4a38,#0d2a20 55%,#081a14);
-  box-shadow:0 22px 40px rgba(8,26,20,.45),inset 0 0 0 1.5px rgba(246,227,161,.65),inset 0 0 0 5px rgba(13,42,32,.9),inset 0 0 0 6px rgba(215,178,90,.5)}
-.muka::before{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 110% -10%,rgba(246,227,161,.07) 0 1px,transparent 1px 9px);pointer-events:none}
-.kilat{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.28),transparent 45%);mix-blend-mode:soft-light;pointer-events:none}
-.depan{padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;color:#eaf3ee}
-.kad .wm{font-family:var(--serif);font-weight:700;letter-spacing:.16em;font-size:15px;
-  background:linear-gradient(180deg,#fff6cf,#d7b25a 60%,#a47c2c);-webkit-background-clip:text;background-clip:text;color:transparent}
-.kad .wm small{display:block;font-family:var(--sans);letter-spacing:.02em;font-size:11px;font-weight:500;color:#b8cfc4;-webkit-text-fill-color:#b8cfc4}
-.kad .lencana{position:absolute;right:18px;top:16px;width:58px;height:58px;border-radius:50%;box-shadow:0 6px 14px rgba(0,0,0,.4)}
-.kad .nama{font-family:var(--serif);font-size:21px;letter-spacing:.06em;color:#fff7dc;text-shadow:0 1px 0 #000,0 0 1px rgba(255,255,255,.4);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:78%}
-.kad .baris{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;color:#b8cfc4}
-.kad .kod{font-family:var(--serif);font-size:17px;letter-spacing:.18em;color:var(--emas-terang)}
-.belakang{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;gap:18px;padding:18px;color:#eaf3ee}
-.belakang .qr{background:#fff;border-radius:14px;padding:10px;width:46%;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.muka{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;color:#1b1b1b;
+  background:linear-gradient(135deg,#ffffff 0%,#f3f3f1 55%,#e9e8e4 100%);box-shadow:0 22px 40px rgba(20,20,20,.28),inset 0 0 0 1px rgba(184,138,46,.55)}
+.muka::before,.muka::after{content:"";position:absolute;width:46%;height:22px;background:linear-gradient(90deg,#1a1a1a 0 55%,#b8862c 55% 62%,#f4dc8c 62% 78%,#b8862c 78% 100%);transform:rotate(-38deg);pointer-events:none}
+.muka::before{left:-18%;top:6%}
+.muka::after{right:-18%;bottom:6%;transform:rotate(-38deg) scaleX(-1)}
+.kilat{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.55),transparent 45%);mix-blend-mode:soft-light;pointer-events:none;z-index:3}
+.depan{padding:14px 16px 12px;display:flex;flex-direction:column;gap:6px}
+.plak{align-self:center;text-align:center;border-radius:10px;padding:4px;background:linear-gradient(180deg,#fff2bf,#c9a144 45%,#8f6a1e);box-shadow:0 4px 10px rgba(110,80,20,.35);position:relative;z-index:2}
+.plak .a{background:linear-gradient(180deg,#fffaf0,#efe6cf);border-radius:7px;padding:3px 12px;font-family:var(--serif);font-weight:700;font-size:clamp(12px,4vw,16px);color:#151515;letter-spacing:.02em;white-space:nowrap}
+.plak .a i{font-style:normal;color:#a87b22}
+.plak .b{background:#111;color:#f1d27e;font-weight:800;letter-spacing:.18em;font-size:clamp(8px,2.6vw,10.5px);padding:3px 10px;margin-top:3px;border-radius:5px}
+.tagline{text-align:center;font-size:clamp(7px,2.2vw,9px);letter-spacing:.32em;color:#444;font-weight:700;margin-top:-1px;position:relative;z-index:2}
+.medan{display:grid;grid-template-columns:auto 1fr;gap:4px 6px;align-items:center;position:relative;z-index:2;margin-top:2px}
+.medan span{background:linear-gradient(180deg,#f6dc8f,#c99a3a);color:#1b1b1b;font-weight:800;font-size:clamp(9px,2.8vw,11.5px);border-radius:999px 6px 6px 999px;padding:3px 10px;white-space:nowrap}
+.medan b{background:#fff;border:1.5px solid #c99a3a;border-radius:7px;padding:2px 9px;font-size:clamp(10px,3.2vw,13px);color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:800;letter-spacing:.02em}
+.kakikad{display:flex;justify-content:space-between;align-items:flex-end;padding-right:12%;font-size:clamp(9px,2.6vw,11px);color:#444;position:relative;z-index:2;margin-top:auto}
+.kakikad .kod{font-family:var(--serif);font-weight:700;letter-spacing:.16em;color:#8f6a1e;font-size:clamp(11px,3.4vw,14px)}
+.kad .foto{position:absolute;right:14px;top:12px;width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #c99a3a;z-index:2;background:#fff}
+.belakang{transform:rotateY(180deg);display:flex;align-items:center;gap:12px;padding:14px 16px}
+.belakang .qr{background:#fff;border-radius:12px;padding:8px;width:40%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:2px solid #c99a3a;flex:none;position:relative;z-index:2}
 .belakang .qr img,.belakang .qr canvas{width:100%;height:auto;image-rendering:pixelated}
-.belakang p{margin:0;font-size:13px;color:#cfe0d8;max-width:20ch}
-.belakang b{display:block;font-family:var(--serif);color:var(--emas-terang);letter-spacing:.14em;font-size:18px;margin-bottom:6px}
+.belakang .tc{position:relative;z-index:2;font-size:clamp(8px,2.5vw,10.5px);line-height:1.45;color:#222}
+.belakang .tc b{display:inline-block;background:linear-gradient(180deg,#f6dc8f,#c99a3a);border-radius:999px;padding:2px 9px;font-size:clamp(9px,2.7vw,11px);margin-bottom:3px}
+.belakang .tc ol{margin:0;padding-left:15px}
+.belakang .tc .kod{font-family:var(--serif);font-weight:700;letter-spacing:.14em;color:#8f6a1e;font-size:clamp(11px,3.3vw,14px);display:block;margin-bottom:4px}
 .petunjuk{text-align:center;font-size:13px;color:var(--kelabu);margin-top:8px}
+.infokad{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;font-size:13.5px;align-items:start}
+.infokad i{font-style:normal;width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#f6dc8f,#c99a3a);display:flex;align-items:center;justify-content:center}
+.ikonservis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.04em}
+.ikonservis svg{width:30px;height:30px;stroke:#111;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block;margin:0 auto 4px}
+/* ---------- Status kenderaan ---------- */
+.statuskad{background:#fff;border-radius:var(--r-besar);padding:14px 16px;margin-top:12px;box-shadow:0 8px 20px rgba(13,42,32,.12);border:2px solid transparent}
+.statuskad.siap{border-color:var(--emas);background:#fffbea}
+.langkah{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 4px}
+.langkah div{text-align:center;font-size:10.5px;color:var(--kelabu);font-weight:700}
+.langkah div::before{content:"";display:block;height:6px;border-radius:3px;background:#e1e4e2;margin-bottom:4px}
+.langkah div.on{color:var(--zamrud)}.langkah div.on::before{background:linear-gradient(90deg,#d7b25a,#b48a32)}
+.avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid var(--emas);background:#fff;display:block;margin:0 auto}
+.pilih{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pilih button{background:#fff;border:2px solid #e1e4e2;border-radius:12px;padding:10px;text-align:left;cursor:pointer}
+.pilih button.on{border-color:var(--emas);background:#fffbea}
+.pilih button b{display:block;color:var(--zamrud);font-size:14px}.pilih button span{font-size:13px;color:var(--emas-gelap);font-weight:800}
+.pilih button:disabled{opacity:.45}
 
 /* ---------- Dulang cop (syiling emas) ---------- */
 .dulang{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;padding:18px 14px;border-radius:var(--r-besar);
@@ -165,8 +189,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--emas);outline:none;bo
 
 /* ---------- Navigasi bawah ---------- */
 nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(540px,calc(100% - 24px));z-index:30;
-  display:grid;grid-template-columns:repeat(5,1fr);background:rgba(13,42,32,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:24px;padding:6px;box-shadow:0 14px 30px rgba(8,26,20,.4),inset 0 0 0 1px rgba(246,227,161,.25)}
-nav button{background:none;border:0;color:#9fb9ad;padding:8px 2px;border-radius:18px;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  display:grid;grid-template-columns:repeat(6,1fr);background:rgba(13,42,32,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:24px;padding:6px;box-shadow:0 14px 30px rgba(8,26,20,.4),inset 0 0 0 1px rgba(246,227,161,.25)}
+nav button{background:none;border:0;color:#9fb9ad;padding:8px 1px;border-radius:18px;font-size:10.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
 
@@ -207,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.15-7';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, writeBatch, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.15-7';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru } from '../safari-lib.js?v=2026.11.15-7';
+import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-1';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER } from '../safari-lib.js?v=2026.11.16-1';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -232,6 +256,7 @@ const db = getFirestore(app);
 
 // ---------- Keadaan ----------
 let token = null, ahli = null, sejarah = [], promosi = [], tab = 'Utama', cawPakej = 'mama-lion', unsubAhli = null;
+let statusKend = [], unsubStatus = null, tempahanSaya = {}, unsubTp = [];
 const tetapan = {}, gambarPakej = {};
 
 // Pautan kad dari kaunter: .../pelanggan/#k=TOKEN
@@ -241,6 +266,7 @@ token = LS.get('sm_token');
 
 // ---------- Ikon navigasi ----------
 const IKON = {
+  Tempah: '<path d="M4 5h16v15H4z"/><path d="M4 9h16M9 3v4M15 3v4"/><path d="M9 14l2 2 4-4"/>',
   Utama: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/>',
   Kad: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/>',
   Promosi: '<path d="M4 10v4l11 5V5L4 10Z"/><path d="M15 9a3 3 0 0 1 0 6"/><path d="M6.5 14.5 8 20h3l-1.2-4.5"/>',
@@ -251,15 +277,15 @@ const PAW = '<svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="42
 
 function renderNav(){
   const nav = $('#nav'); nav.classList.toggle('hidden', !ahli && tab === 'Alu-aluan');
-  const tabs = ahli ? ['Utama','Kad','Promosi','Pakej','Profil'] : ['Utama','Promosi','Pakej','Kad','Profil'];
+  const tabs = ahli ? ['Utama','Kad','Tempah','Promosi','Pakej','Profil'] : ['Utama','Promosi','Pakej','Tempah','Kad','Profil'];
   nav.innerHTML = tabs.map(t => `<button class="${t===tab?'on':''}" data-t="${t}" aria-label="${t}"><svg viewBox="0 0 24 24">${IKON[t]}</svg>${t}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); window.scrollTo({top:0}); });
 }
 
 function render(){
   renderNav();
-  if(!ahli && (tab === 'Kad' || tab === 'Profil' || tab === 'Utama')) return viewAluan();
-  ({Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
+  if(!ahli && (tab === 'Kad' || tab === 'Profil' || tab === 'Utama' || tab === 'Tempah')) return viewAluan();
+  ({Tempah: viewTempah, Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
 }
 
 // ---------- Data ----------
@@ -269,9 +295,18 @@ function mulaAhli(){
   unsubAhli = onSnapshot(doc(db, 'ahli', token), s => {
     if(!s.exists()){ ahli = null; LS.set('sm_token', null); token = null; tab = 'Utama'; render(); return toast('Kad ahli tidak dijumpai. Sila daftar atau minta pautan kad dari kaunter.'); }
     ahli = {id: s.id, ...s.data()};
+    langganTempahan();
     if(tab === 'Alu-aluan' || tab === 'Daftar') tab = 'Utama';
     render();
   }, e => { console.error(e); toast('Tidak dapat memuatkan kad. Semak sambungan internet.'); });
+  if(unsubStatus) unsubStatus();
+  let awal = true;
+  unsubStatus = onSnapshot(collection(db, 'ahli', token, 'status'), s => {
+    const lama = Object.fromEntries(statusKend.map(x => [x.id, x.status]));
+    statusKend = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.masa||0) - (a.masa||0));
+    if(!awal) statusKend.forEach(x => { if(lama[x.id] !== x.status){ if(x.status === 'Siap') maklumPelanggan('🚗 Kenderaan anda sudah SIAP!', `${x.plat} di ${CAWANGAN.find(c => c.id === x.cawangan)?.nama || ''} — sila ambil kenderaan anda.`); else if(x.status === 'Selesai') maklumPelanggan('✅ Terima kasih!', `${x.plat}: bayaran diterima.`); else if(lama[x.id] === undefined) maklumPelanggan('📋 Pesanan diterima', `${x.plat}: ${x.pakej}`); } });
+    awal = false; if(['Utama','Tempah'].includes(tab)) render();
+  }, () => {});
   getDocs(query(collection(db, 'ahli', token, 'sejarah'), orderBy('masa', 'desc'), limit(30))).then(s => { sejarah = s.docs.map(d => d.data()); if(tab === 'Kad') render(); }).catch(() => {});
 }
 async function muatPromosi(){
@@ -290,16 +325,69 @@ async function muatTetapan(c){
   if(tab === 'Pakej') render();
 }
 
+// ---------- Notifikasi pelanggan (semasa apps dibuka / di latar) ----------
+async function maklumPelanggan(tajuk, isi){
+  toast(`${tajuk} ${isi}`); try{ navigator.vibrate?.([150,80,150]); }catch(_){}
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try{ const r = await navigator.serviceWorker?.getRegistration(); if(r) r.showNotification(tajuk, {body: isi, icon: 'icon-192.png', tag: 'status', renotify: true}); else new Notification(tajuk, {body: isi}); }catch(_){}
+}
+// Tempahan saya: ahli.tempahan = [{c, id}] → dengar setiap dokumen tempahan
+function langganTempahan(){
+  const l = (ahli?.tempahan || []).slice(-6), kunci = l.map(x => x.id).join(',');
+  if(langganTempahan.kunci === kunci) return; langganTempahan.kunci = kunci;
+  unsubTp.forEach(f => f()); unsubTp = [];
+  l.forEach(x => unsubTp.push(onSnapshot(doc(db, 'lionsafari', x.c, 'tempahan', x.id), s => {
+    const lama = tempahanSaya[x.id]?.status;
+    tempahanSaya[x.id] = s.exists() ? {id: s.id, c: x.c, ...s.data()} : null;
+    if(lama && lama !== tempahanSaya[x.id]?.status && tempahanSaya[x.id]?.status === 'ditolak') maklumPelanggan('Tempahan tidak dapat diterima', tempahanSaya[x.id].sebabTolak || 'Sila hubungi kedai.');
+    if(['Utama','Tempah'].includes(tab)) render();
+  }, () => {})));
+}
+const ikonServis = `<div class="ikonservis">
+  <div><svg viewBox="0 0 32 32"><path d="M5 20l2-7c.5-1.6 1.6-2.5 3.2-2.5h11.6c1.6 0 2.7.9 3.2 2.5l2 7v5H5z"/><path d="M5 20h22"/><circle cx="10" cy="25" r="2.2"/><circle cx="22" cy="25" r="2.2"/></svg>CAR WASH</div>
+  <div><svg viewBox="0 0 32 32"><path d="M16 4l10 4v7c0 6.5-4.4 11.5-10 13-5.6-1.5-10-6.5-10-13V8z"/><path d="M11.5 16l3.2 3.2 6-6.4"/></svg>DETAILING</div>
+  <div><svg viewBox="0 0 32 32"><path d="M7 14h15v6a6 6 0 0 1-6 6h-3a6 6 0 0 1-6-6z"/><path d="M22 16h2.5a3 3 0 0 1 0 6H21"/><path d="M12 5c-1 2 1 3 0 5M17 5c-1 2 1 3 0 5"/></svg>CAFÉ</div>
+  <div><svg viewBox="0 0 32 32"><circle cx="11" cy="10" r="3.5"/><circle cx="22" cy="10" r="3.5"/><path d="M4 26c0-4.5 3.2-7.5 7-7.5s7 3 7 7.5"/><path d="M15 26c0-4.5 3.2-7.5 7-7.5s6 3 6 7.5"/></svg>FAMILY FRIENDLY</div></div>`;
+function infoKadHtml(){
+  const T = tetapan[ahli?.cawanganUtama || 'mama-lion'] || {};
+  return `<div class="panel"><div class="infokad"><i>📞</i><div><b>${esc(T.telefon || HARGA_RASMI.telefon)}</b></div>
+    <i>📍</i><div>${esc(T.alamat || HARGA_RASMI.alamat)}</div>
+    <i>🕘</i><div>${esc(T.waktuOperasi || HARGA_RASMI.waktuOperasi)}</div></div>${ikonServis}
+    <p class="muted" style="text-align:center;margin:12px 0 0;font-style:italic">Thank you for your support — Same Car, Brighter Days</p></div>`;
+}
+const STATUS_LABEL = {Menunggu:'Dalam giliran', Cuci:'Sedang dicuci', Kering:'Sedang dikeringkan', QC:'Pemeriksaan akhir', Siap:'SIAP — sila ambil', Selesai:'Selesai & dibayar', Batal:'Dibatalkan'};
+function statusHtml(){
+  const hari = Date.now() - 18*3600e3;
+  const aktif = statusKend.filter(x => x.aktif !== false || (x.masa || 0) > hari).filter(x => x.status !== 'Batal').slice(0, 4);
+  const tp = Object.values(tempahanSaya).filter(t => t && t.status === 'baru');
+  if(!aktif.length && !tp.length) return '';
+  return `<h2>Kenderaan anda sekarang</h2>${tp.map(t => `<div class="statuskad"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:18px;color:var(--zamrud)">${esc(t.plat)}</b><span class="muted">${esc(CAWANGAN.find(c => c.id === t.c)?.nama || '')}</span></div>
+      <div>${esc(t.pakej)} · <b>${RM(t.jumlah)}</b></div><div class="muted">⏳ Menunggu kaunter menerima tempahan anda…</div>
+      <button class="btn btn-garis" style="padding:10px;margin-top:8px" data-tpbatal="${t.c}|${t.id}">Batalkan tempahan</button></div>`).join('')}
+    ${aktif.map(x => { const i = STATUS_ORDER.indexOf(x.status), selesai = x.status === 'Selesai';
+      return `<div class="statuskad ${x.status === 'Siap' ? 'siap' : ''}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:18px;color:var(--zamrud)">${esc(x.plat)}</b><span class="muted">${esc(CAWANGAN.find(c => c.id === x.cawangan)?.nama || '')}${x.bay ? ' · ' + esc(x.bay) : ''}</span></div>
+      <div>${esc(x.pakej)}${(x.addon || []).length ? ' + ' + x.addon.map(esc).join(', ') : ''} · <b>${RM(x.jumlah)}</b></div>
+      <div class="langkah">${STATUS_ORDER.map((st, j) => `<div class="${selesai || j <= i ? 'on' : ''}">${st}</div>`).join('')}</div>
+      <b style="color:${x.status === 'Siap' ? 'var(--emas-gelap)' : 'var(--zamrud)'}">${esc(STATUS_LABEL[x.status] || x.status)}</b></div>`; }).join('')}
+    ${'Notification' in window && Notification.permission !== 'granted' ? '<button class="btn btn-garis" style="margin-top:10px;padding:12px" id="btnNotifPl">🔔 Maklumkan saya bila kenderaan siap</button>' : ''}`;
+}
+function pasangStatus(){
+  if($('#btnNotifPl')) $('#btnNotifPl').onclick = async () => { try{ const r = await Notification.requestPermission(); toast(r === 'granted' ? 'Notifikasi dihidupkan.' : (iOS && !standalone() ? 'iPhone: pasang apps ke skrin utama dahulu.' : 'Notifikasi tidak dibenarkan.')); }catch(_){} render(); };
+  $$('[data-tpbatal]').forEach(b => b.onclick = async () => { if(!confirm('Batalkan tempahan ini?')) return; const [c, id] = b.dataset.tpbatal.split('|');
+    try{ await updateDoc(doc(db, 'lionsafari', c, 'tempahan', id), {status: 'batal', dikemaskini: Date.now()}); toast('Tempahan dibatalkan.'); }catch(e){ toast('Tidak dapat dibatalkan — mungkin sudah diterima kaunter.'); } });
+}
+
 // ---------- Komponen ----------
 function kadHtml(){
-  const k = keadaanKad(ahli);
+  const k = keadaanKad(ahli), plat = (ahli.kenderaan?.[0]?.plat) || (ahli.plat || [])[0] || '';
   return `<div class="kad-pentas"><div class="kad" id="kad" role="button" tabindex="0" aria-label="Kad ahli. Tekan untuk paparkan kod QR.">
-    <div class="muka depan"><div class="kilat"></div><img class="lencana" src="syiling.png" alt="">
-      <div class="wm">SAFARI MEMBERS<small>Mama Lion & Lion King Premium Car Wash</small></div>
-      <div><div class="nama">${esc(ahli.nama)}</div>
-        <div class="baris"><div><span class="kod">${esc(ahli.kod)}</span><br>Ahli sejak ${new Date(ahli.daftarMasa || Date.now()).toLocaleDateString('ms-MY', {month:'short', year:'numeric'})}</div>
-        <div style="text-align:right">${k.bil}/${KAD.saiz} cop${k.freeWash.length ? `<br><span style="color:var(--emas-terang)">${k.freeWash.length} Free Wash</span>` : ''}</div></div></div></div>
-    <div class="muka belakang"><div class="qr" id="qr"></div><div><b>${esc(ahli.kod)}</b><p>Tunjukkan kod ini kepada kaunter atau Marketing Officer setiap kali mencuci.</p></div></div>
+    <div class="muka depan"><div class="kilat"></div>${ahli.foto ? `<img class="foto" src="${ahli.foto}" alt="">` : ''}
+      <div class="plak"><div class="a">MAMA LION <i>&amp;</i> LION KING</div><div class="b">PREMIUM CAR WASH</div></div>
+      <div class="tagline">CLEANER CAR · HAPPIER JOURNEY</div>
+      <div class="medan"><span>Name</span><b>${esc(ahli.nama)}</b><span>Phone No.</span><b>${esc(paparTelefon(ahli.telefon))}</b><span>Vehicle No.</span><b>${esc(paparPlat(plat))}</b></div>
+      <div class="kakikad"><span class="kod">${esc(ahli.kod)}</span><span><b>${k.bil}/${KAD.saiz}</b> stamps${k.freeWash.length ? ` · <b style="color:#8f6a1e">${k.freeWash.length} FREE WASH</b>` : ''}</span></div></div>
+    <div class="muka belakang"><div class="qr" id="qr"></div><div class="tc"><span class="kod">${esc(ahli.kod)}</span><b>Terms &amp; Conditions</b>
+      <ol><li>One stamp per paid wash.</li><li>8 stamps per card.</li><li>FREE wash at stamp 4 &amp; 8.</li><li>Show this card during redemption.</li><li>Non-transferable. Valid 12 months.</li></ol></div></div>
   </div></div><p class="petunjuk">Tekan kad untuk paparkan kod QR</p>`;
 }
 function pasangKad(){
@@ -319,7 +407,7 @@ function lukisQR(){
   const box = $('#qr'); if(!box || box.dataset.siap) return;
   if(!window.qrcode){ box.innerHTML = `<b style="color:#0d2a20;font-size:20px">${esc(ahli.kod)}</b>`; return; }
   const q = window.qrcode(0, 'M'); q.addData(ahli.kod); q.make();
-  box.innerHTML = q.createImgTag(6, 0); box.dataset.siap = '1';
+  box.innerHTML = q.createImgTag(5, 0); box.dataset.siap = '1';
 }
 function dulangHtml(){
   const k = keadaanKad(ahli), lama = Number(LS.get('sm_cop_' + ahli.kod) || 0);
@@ -413,24 +501,28 @@ function viewDaftar(){
 // ---------- Utama ----------
 function viewUtama(){
   const k = keadaanKad(ahli), nama = esc(ahli.nama.split(' ')[0]);
-  $('#app').innerHTML = `<h1 style="margin-top:12px;text-align:left">Hai, ${nama}</h1>
-    <p class="muted" style="margin:4px 0 0">${k.freeWash.length ? `Anda ada ${k.freeWash.length} Free Wash untuk ditebus.` : `Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash.`}</p>
+  $('#app').innerHTML = `<div style="display:flex;gap:12px;align-items:center;margin-top:12px">${ahli.foto ? `<img src="${ahli.foto}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--emas)">` : ''}<div><h1 style="text-align:left">Hai, ${nama}</h1>
+    <p class="muted" style="margin:2px 0 0">${k.freeWash.length ? `Anda ada ${k.freeWash.length} Free Wash untuk ditebus.` : `Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash.`}</p></div></div>
+    ${statusHtml()}
+    <button class="btn btn-emas" style="margin-top:14px" id="keTempah">📲 Tempah servis sekarang</button>
     ${kadHtml()}
     ${promosi.length ? `<h2>Promosi terkini</h2><div class="karusel">${promosi.map(promoHtml).join('')}</div>` : ''}
     <h2>Cawangan kami</h2>
     <div class="cawangan">${CAWANGAN.map(c => `<button data-caw="${c.id}"><img src="${c.logo}" alt=""><div><b>${c.nama}</b><div class="muted" style="font-size:12px">Pakej & lokasi</div></div></button>`).join('')}</div>
     ${pasangHtml()}`;
-  pasangKad();
+  pasangKad(); pasangStatus();
+  $('#keTempah').onclick = () => { tab = 'Tempah'; render(); window.scrollTo({top:0}); };
   $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; tab = 'Pakej'; render(); window.scrollTo({top:0}); });
   pasangPasang();
 }
 
 // ---------- Kad ----------
 function viewKad(){
+  muatTetapan(ahli.cawanganUtama || 'mama-lion');
   $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}
-    <h2>Cop anda</h2>${dulangHtml()}
+    <h2>Cop anda</h2>${dulangHtml()}${infoKadHtml()}
     ${baucarHtml()}
-    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-4 dan ke-8 memberi 1 Free Wash pakej Basic. Selepas cop ke-8, kad bermula semula. Cop dan Free Wash sah selama 12 bulan.</div></div>
+    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-4 dan ke-8 memberi 1 Free Wash (2 Free Wash bagi setiap kad 8 cop). Selepas cop ke-8, kad bermula semula. Cop dan Free Wash sah selama 12 bulan.</div></div>
     <h2>Sejarah cucian</h2><div class="panel sejarah">${sejarah.length ? sejarah.map(h => `<div><span>${tarikhBM(h.tarikh + 'T12:00:00')}<br><span class="muted">${esc(CAWANGAN.find(c => c.id === h.cawangan)?.nama || '')} · ${esc(h.plat)}</span></span><span style="text-align:right">${esc(h.pakej)}<br><span class="muted">${h.freeWash ? 'Free Wash' : '+1 cop'}</span></span></div>`).join('') : '<p class="muted" style="margin:0">Belum ada rekod cucian.</p>'}</div>`;
   pasangKad();
 }
@@ -447,24 +539,78 @@ function viewPakej(){
   const T = tetapan[cawPakej], G = gambarPakej[cawPakej] || {};
   const senarai = j => (T?.[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`})).filter(x => x.aktif !== false);
   const fw = T?.pakejFreeWash || senarai('pakej')[0]?.id;
+  const KD = senarai('kenderaan');
   $('#app').innerHTML = `<h1 style="margin-top:12px">Pakej & harga</h1>
     <div class="cawangan" style="margin-top:16px">${CAWANGAN.map(c => `<button class="${c.id===cawPakej?'on':''}" data-caw="${c.id}"><img src="${c.logo}" alt=""><b>${c.nama}</b></button>`).join('')}</div>
     ${!T ? '<p class="kosong">Memuatkan…</p>' : `
       ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${G[p.id] ? `background-image:url('${G[p.id]}')` : ''}">${G[p.id] ? '' : '🚿'}</div>
-        <div class="t"><b>${esc(p.nama)}</b><div class="h">${RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
-      ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>+${RM(a.harga)}</b></span>`).join('')}</div>` : ''}
+        <div class="t"><b>${esc(p.nama)}</b><div class="h">${p.hargaIkut ? `${KD.map(k => { const h = hargaPakejK(p, k); return `<span style="font-size:12px;font-family:var(--sans);color:var(--kelabu);font-weight:700">${esc(k.nama)}</span> ${h == null ? '<small>ikut permintaan</small>' : RM(h)}`; }).join(' · ')}` : RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
+      ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>${a.hargaIkut ? 'dari ' + RM(Math.min(...Object.values(a.hargaIkut).filter(v => v != null))) : '+' + RM(a.harga)}</b></span>`).join('')}</div>` : ''}
+      <button class="btn btn-emas" style="margin-top:16px" id="pkTempah">📲 Tempah servis</button>
       ${senarai('kenderaan').some(k => k.harga) ? `<p class="muted" style="margin-top:12px">Caj ikut kenderaan: ${senarai('kenderaan').filter(k => k.harga).map(k => `${esc(k.nama)} ${k.harga > 0 ? '+' : ''}${RM(k.harga)}`).join(', ')}.</p>` : ''}
       <div class="panel maklumat"><h3>${esc(T.namaKedai || CAWANGAN.find(c => c.id === cawPakej).nama)}</h3>
         ${T.alamat ? `<div>${esc(T.alamat)}</div>` : ''}${T.waktuOperasi ? `<div class="muted">${esc(T.waktuOperasi)}</div>` : ''}
         <div class="dua" style="margin-top:12px">${urlSelamat(T.mapsUrl) ? `<a class="btn btn-zamrud" style="padding:12px" href="${esc(T.mapsUrl)}" target="_blank" rel="noopener">Arah ke kedai</a>` : ''}
         ${T.whatsapp ? `<a class="btn btn-emas" style="padding:12px" href="https://wa.me/${normTelefon(T.whatsapp)}" target="_blank" rel="noopener">WhatsApp kedai</a>` : ''}</div></div>`}`;
   $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; render(); });
+  if($('#pkTempah')) $('#pkTempah').onclick = () => { tab = 'Tempah'; render(); window.scrollTo({top:0}); };
+}
+
+// ---------- Tempah servis ----------
+let tpDraf = {c: null, kend: 0, pakej: null, addon: new Set(), plat: ''};
+function viewTempah(){
+  if(!tpDraf.c) tpDraf.c = ahli.cawanganUtama || 'mama-lion';
+  muatTetapan(tpDraf.c);
+  const T = tetapan[tpDraf.c];
+  const senarai = j => (T?.[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`})).filter(x => x.aktif !== false);
+  const KD = senarai('kenderaan').length ? senarai('kenderaan') : [{id:'k0', nama:'Kereta', harga:0}], PK = senarai('pakej'), AD = senarai('addon');
+  const k = KD[tpDraf.kend] || KD[0], plats = [...new Set([...(ahli.kenderaan || []).map(x => x.plat), ...(ahli.plat || [])].map(paparPlat).filter(Boolean))];
+  if(!tpDraf.plat) tpDraf.plat = plats[0] || '';
+  const p = PK.find(x => x.id === tpDraf.pakej), hp = p ? hargaPakejK(p, k) : 0;
+  const jum = (hp || 0) + [...tpDraf.addon].reduce((t, id) => t + (hargaAddonK(AD.find(a => a.id === id), k) || 0), 0);
+  const kat = [...new Set(PK.map(x => x.kategori || 'Pakej'))];
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Tempah servis</h1><p class="lead">Pilih servis, kaunter akan menerima pesanan anda. Bayar di kedai selepas pesanan diterima.</p>
+    ${statusHtml()}
+    <div class="panel"><label>Cawangan</label><div class="cawangan">${CAWANGAN.map(c => `<button class="${c.id===tpDraf.c?'on':''}" data-tpc="${c.id}"><img src="${c.logo}" alt=""><b>${c.nama}</b></button>`).join('')}</div>
+      <label for="tpPlat">Kenderaan</label><select id="tpPlat">${plats.map(x => `<option ${x===tpDraf.plat?'selected':''}>${esc(x)}</option>`).join('')}</select>
+      <label>Jenis kenderaan</label><div class="pilih">${KD.map((x,i) => `<button class="${i===tpDraf.kend?'on':''}" data-tpk="${i}"><b>${esc(x.nama)}</b></button>`).join('')}</div>
+      ${!T ? '<p class="kosong">Memuatkan…</p>' : kat.map(kt => `<label>${esc(kt)}</label><div class="pilih">${PK.filter(x => (x.kategori || 'Pakej') === kt).map(x => { const h = hargaPakejK(x, k); return `<button class="${x.id===tpDraf.pakej?'on':''}" data-tpp="${x.id}" ${h == null ? 'disabled' : ''}><b>${esc(x.nama)}</b><span>${h == null ? 'ikut permintaan' : RM(h)}</span></button>`; }).join('')}</div>`).join('')}
+      ${AD.length ? `<label>Servis tambahan</label><div class="pilih">${AD.map(a => { const h = hargaAddonK(a, k); return `<button class="${tpDraf.addon.has(a.id)?'on':''}" data-tpa="${a.id}" ${h == null ? 'disabled' : ''}><b>${esc(a.nama)}</b><span>+${RM(h || 0)}</span></button>`; }).join('')}</div>` : ''}
+      <label for="tpMasa">Bila anda tiba?</label><select id="tpMasa">${['Sekarang (dalam 15 minit)','Dalam 30 minit','Dalam 1 jam','Dalam 2 jam','Lain (nyatakan dalam catatan)'].map(x => `<option>${x}</option>`).join('')}</select>
+      <label for="tpCat">Catatan (pilihan)</label><input id="tpCat" placeholder="cth: calar di pintu kiri">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-weight:800;font-size:18px;color:var(--zamrud)"><span>Anggaran jumlah</span><span style="font-family:var(--serif);color:var(--emas-gelap);font-size:22px">${RM(jum)}</span></div>
+      <button class="btn btn-emas" style="margin-top:12px" id="tpHantar" ${p && hp != null ? '' : 'disabled'}>Hantar tempahan</button>
+      <p class="muted" style="text-align:center;margin-top:8px">Free Wash? Beritahu kaunter semasa tiba.</p></div>`;
+  pasangStatus();
+  $$('[data-tpc]').forEach(b => b.onclick = () => { tpDraf.c = b.dataset.tpc; tpDraf.pakej = null; tpDraf.addon = new Set(); render(); });
+  $$('[data-tpk]').forEach(b => b.onclick = () => { tpDraf.kend = +b.dataset.tpk; render(); });
+  $$('[data-tpp]').forEach(b => b.onclick = () => { tpDraf.pakej = b.dataset.tpp; render(); });
+  $$('[data-tpa]').forEach(b => b.onclick = () => { const id = b.dataset.tpa; tpDraf.addon.has(id) ? tpDraf.addon.delete(id) : tpDraf.addon.add(id); render(); });
+  if($('#tpPlat')) $('#tpPlat').onchange = e => { tpDraf.plat = e.target.value; };
+  if($('#tpHantar')) $('#tpHantar').onclick = async () => {
+    if(!tpDraf.plat) return toast('Sila tambah kenderaan di Profil dahulu.');
+    if(Object.values(tempahanSaya).some(t => t && t.status === 'baru' && normPlat(t.plat) === normPlat(tpDraf.plat))) return toast('Tempahan untuk kenderaan ini masih menunggu kaunter.');
+    $('#tpHantar').disabled = true; $('#tpHantar').textContent = 'Menghantar…';
+    const addon = [...tpDraf.addon].map(id => { const a = AD.find(x => x.id === id); return {id, nama: a.nama, harga: hargaAddonK(a, k) || 0}; });
+    const d = {ahliId: token, ahliKod: ahli.kod, nama: ahli.nama, telefon: ahli.telefon, plat: paparPlat(tpDraf.plat), kenderaan: k.nama, kenderaanId: k.id || '',
+      pakejId: p.id, pakej: p.nama, hargaPakej: hp, addon, jumlah: jum, masaDatang: val('#tpMasa'), catatan: val('#tpCat'), status: 'baru', masa: Date.now()};
+    try{
+      const ref = doc(collection(db, 'lionsafari', tpDraf.c, 'tempahan'));
+      await setDoc(ref, d);
+      await updateDoc(doc(db, 'ahli', token), {tempahan: arrayUnion({c: tpDraf.c, id: ref.id}), dikemaskini: Date.now()});
+      tpDraf.pakej = null; tpDraf.addon = new Set();
+      toast('✅ Tempahan dihantar. Anda akan dimaklumkan bila kaunter menerima.'); tab = 'Utama'; render(); window.scrollTo({top:0});
+    }catch(e){ console.error(e); toast('Tempahan gagal dihantar. Semak sambungan internet.'); $('#tpHantar').disabled = false; $('#tpHantar').textContent = 'Hantar tempahan'; }
+  };
 }
 
 // ---------- Profil ----------
 function viewProfil(){
   const kend = (ahli.kenderaan && ahli.kenderaan.length ? ahli.kenderaan : (ahli.plat || []).map(p => ({plat: p}))).map(k => ({plat: k.plat, model: k.model || k.jenis || ''}));
   $('#app').innerHTML = `<h1 style="margin-top:12px">Profil saya</h1>
+    <div class="panel" style="text-align:center">${ahli.foto ? `<img class="avatar" src="${ahli.foto}" alt="Gambar profil">` : '<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:34px">🙂</div>'}
+      <label class="btn btn-garis" style="padding:10px;margin-top:10px;display:inline-block;width:auto">📷 ${ahli.foto ? 'Tukar' : 'Tambah'} gambar profil<input id="pFoto" type="file" accept="image/*" class="hidden"></label>
+      <div class="muted" style="margin-top:6px">${esc(ahli.kod)} · Ahli sejak ${new Date(ahli.daftarMasa || Date.now()).toLocaleDateString('ms-MY', {month:'short', year:'numeric'})}</div></div>
     <form class="panel" id="fProfil" novalidate>
       <label for="pNama">Nama penuh</label><input id="pNama" data-tetap="1" value="${esc(ahli.nama)}">
       <label>No. telefon</label><input value="${esc(paparTelefon(ahli.telefon))}" disabled>
@@ -479,6 +625,9 @@ function viewProfil(){
     <div class="panel"><h3>Tukar telefon?</h3><div class="muted">Simpan pautan kad ini dan bukanya di telefon baru. Jangan kongsi dengan orang lain.</div>
       <button class="btn btn-zamrud" style="margin-top:12px;padding:12px" id="pSalin">Salin pautan kad saya</button></div>
     <button class="btn btn-garis" style="margin-top:14px" id="pKeluar">Keluar dari kad di telefon ini</button>`;
+  $('#pFoto').onchange = async e => { const f = e.target.files[0]; if(!f) return;
+    try{ const foto = await gambarProfil(f); await updateDoc(doc(db, 'ahli', token), {foto, dikemaskini: Date.now()}); toast('Gambar profil disimpan.'); }
+    catch(err){ console.error(err); toast('Gambar tidak dapat disimpan.'); } };
   const lukis = () => $$('[data-buang]').forEach(b => b.onclick = () => { b.closest('.kenderaan-baris').remove(); });
   lukis();
   $('#pTambahKend').onclick = () => { $('#pKend').insertAdjacentHTML('beforeend', barisKenderaan({plat:'', model:''}, Date.now())); lukis(); };
@@ -495,6 +644,12 @@ function viewProfil(){
   };
   $('#pSalin').onclick = async () => { const u = new URL('#k=' + token, location.href.split('#')[0]).href; try{ await navigator.clipboard.writeText(u); toast('Pautan kad disalin.'); }catch(_){ prompt('Salin pautan kad anda:', u); } };
   $('#pKeluar').onclick = () => { if(!confirm('Keluar dari kad di telefon ini? Anda perlukan pautan kad untuk masuk semula.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
+}
+async function gambarProfil(fail){
+  const img = await new Promise((ok, gagal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = gagal; i.src = URL.createObjectURL(fail); });
+  const sisi = Math.min(img.width, img.height), c = document.createElement('canvas'); c.width = c.height = Math.min(320, sisi);
+  c.getContext('2d').drawImage(img, (img.width - sisi) / 2, (img.height - sisi) / 2.6, sisi, sisi, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.78);
 }
 const barisKenderaan = (k, i) => `<div class="kenderaan-baris" style="margin-top:8px"><input data-p placeholder="No. plat" value="${esc(k.plat)}" style="text-transform:uppercase" aria-label="No. plat"><input data-m placeholder="Jenama & model" value="${esc(k.model)}" aria-label="Jenama dan model"><button type="button" data-buang aria-label="Buang kenderaan">✕</button></div>`;
 

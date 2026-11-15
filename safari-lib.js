@@ -96,3 +96,86 @@ export function pulangFreeWash(a, orderId){
   const freeWash = (a.freeWash || []).map(f => f.guna?.o === orderId ? {...f, guna: null} : f);
   return {freeWash, dikemaskini: Date.now()};
 }
+
+// =====================================================================
+// HARGA IKUT KENDERAAN
+// Item (pakej / add-on) boleh ada  hargaIkut: {sedan, suv, mpv, '4x4', dxl}
+//   - nilai nombor = harga bagi kenderaan itu
+//   - null         = tidak ditawarkan / harga ikut permintaan bagi kenderaan itu
+// Tanpa hargaIkut: pakej = harga + tambahan kenderaan, add-on = harga
+// =====================================================================
+const ada = (o, k) => o && k != null && Object.prototype.hasOwnProperty.call(o, k);
+export function hargaPakejK(p, k){
+  if(!p) return 0;
+  if(ada(p.hargaIkut, k?.id)) return p.hargaIkut[k.id] == null ? null : Number(p.hargaIkut[k.id]) || 0;
+  return Math.max(0, (Number(p.harga) || 0) + (Number(k?.harga) || 0));
+}
+export function hargaAddonK(a, k){
+  if(!a) return 0;
+  if(ada(a.hargaIkut, k?.id)) return a.hargaIkut[k.id] == null ? null : Number(a.hargaIkut[k.id]) || 0;
+  return Number(a.harga) || 0;
+}
+export const adaMatriks = l => (l || []).some(x => x.hargaIkut);
+
+// Senarai harga rasmi Mama Lion × Lion King (Price List)
+const H = (sedan, suv, mpv, x4, dxl) => ({sedan, suv, mpv, '4x4': x4, dxl});
+const PROMO_A = 'Luar & dalam (wax shampoo), glass cleaner, water wax, interior wax, spray essential/sanitizes, vacuum & silicone wax tyre';
+const PROMO_B = 'Luar & dalam (wax shampoo), glass cleaner, water coating, interior wax, spray essential/sanitizes, vacuum & silicone wax tyre';
+const it = (id, nama, kategori, h, extra = {}) => ({id, nama, kategori, harga: h.sedan ?? 0, hargaIkut: h, aktif: true, ...extra});
+export const HARGA_RASMI = {
+  kenderaan: [{id:'sedan', nama:'Sedan', harga:0, aktif:true}, {id:'suv', nama:'SUV', harga:0, aktif:true}, {id:'mpv', nama:'MPV', harga:0, aktif:true},
+    {id:'4x4', nama:'4x4', harga:0, aktif:true}, {id:'dxl', nama:'DXL', harga:0, aktif:true}],
+  pakej: [
+    it('p-cuci-luar', 'Cuci Luar', 'Cucian', H(20, 25, 35, 35, 45), {minit: 20}),
+    it('p-ld-silicone', 'Luar & Dalam + Silicone Tyre', 'Cucian', H(30, 35, 45, 45, 55), {minit: 30}),
+    it('p-ld-waterwax', 'Luar & Dalam + Water Wax', 'Cucian', H(50, 60, 75, 75, 85), {minit: 40}),
+    it('p-ld-fogging', 'Luar & Dalam + Fogging', 'Cucian', H(90, 95, 105, 105, 130), {minit: 45}),
+    it('p-ld-ww-fog', 'Luar & Dalam + Waterwax + Fogging', 'Cucian', H(110, 115, 135, 135, 160), {minit: 50}),
+    it('p-ld-vacuum', 'Luar & Dalam + Details Vacuum', 'Cucian', H(70, 95, 105, 105, 130), {minit: 60}),
+    it('p-promo-a', 'Promo A (MPC)', 'Promo MPC & Premium', H(50, 70, 90, 90, 110), {ket: PROMO_A}),
+    it('p-promo-b', 'Promo B (MPC)', 'Promo MPC & Premium', H(120, 150, 170, 170, 200), {ket: PROMO_B}),
+    it('p-premium', 'Premium Wash', 'Promo MPC & Premium', H(95, 130, 140, 140, 160)),
+    it('p-water-coating', 'Water Coating', 'Servis', H(100, 120, 140, 140, 160)),
+    it('p-interior-wax', 'Interior Wax', 'Servis', H(25, 30, 35, 35, 40)),
+    it('p-fogging', 'Fogging', 'Servis', H(60, 60, 60, 60, 80)),
+    it('p-vacuum', 'Details Vacuum', 'Servis', H(40, 60, 60, 60, 80)),
+    it('p-enjin', 'Cuci Enjin (Biasa)', 'Servis', H(15, 20, 25, 25, 30)),
+    it('p-enjin-detail', 'Cuci Enjin (Detail)', 'Servis', H(25, 30, 35, 35, 40)),
+    it('p-polish', 'Polish (Company Price)', 'Detailing', H(350, 450, 550, 550, null), {ket: 'DXL: harga seperti permintaan'}),
+    it('p-seat-1', 'Seat / Deep Cleaning (Asas)', 'Detailing', H(150, 180, 200, 150, 250)),
+    it('p-seat-2', 'Seat / Deep Cleaning (Penuh)', 'Detailing', H(350, 450, 650, 350, 800))
+  ],
+  addon: [
+    it('a-fogging-promo', 'Tambahan Fogging (Promo A / B)', 'Tambahan', H(20, 20, 20, 20, 20)),
+    it('a-wax-tyre', 'Wax Tyre (Biasa)', 'Tambahan', H(5, 5, 10, 10, 10)),
+    it('a-silicone', 'Silicone Tyre', 'Tambahan', H(10, 10, 15, 15, 15)),
+    it('a-waterwax', 'Waterwax', 'Tambahan', H(20, 25, 30, 30, 40)),
+    it('a-interior-wax', 'Interior Wax', 'Tambahan', H(25, 30, 35, 35, 40)),
+    it('a-water-coating', 'Water Coating', 'Tambahan', H(100, 120, 140, 140, 160)),
+    it('a-vacuum', 'Details Vacuum', 'Tambahan', H(40, 60, 60, 60, 80)),
+    it('a-enjin', 'Cuci Enjin (Biasa)', 'Tambahan', H(15, 20, 25, 25, 30)),
+    it('a-enjin-detail', 'Cuci Enjin (Detail)', 'Tambahan', H(25, 30, 35, 35, 40)),
+    it('a-glass-depan', 'Watermark Glass — cermin depan / belakang', 'Watermark Glass Remover', H(60, 60, 60, 60, 60)),
+    it('a-glass-sisi', 'Watermark Glass — cermin sisi 1 set', 'Watermark Glass Remover', H(50, 50, 50, 50, 50)),
+    it('a-glass-full', 'Watermark Glass — full', 'Watermark Glass Remover', H(200, 200, 200, 200, 200)),
+    it('a-lampu-1d', 'Polish Lampu — 1 biji hadapan', 'Polish Lampu', H(60, 60, 60, 60, 60)),
+    it('a-lampu-2d', 'Polish Lampu — sepasang hadapan', 'Polish Lampu', H(100, 100, 100, 100, 100)),
+    it('a-lampu-1b', 'Polish Lampu — 1 biji belakang', 'Polish Lampu', H(80, 80, 80, 80, 80)),
+    it('a-lampu-2b', 'Polish Lampu — sepasang belakang', 'Polish Lampu', H(150, 150, 150, 150, 150))
+  ],
+  pakejFreeWash: 'p-cuci-luar',
+  waktuOperasi: 'Setiap hari 9.00 pagi – 12.00 malam',
+  telefon: '011-2141 9604',
+  alamat: 'Lot 3 Seksyen 20 (GRN 8392), Jalan Gambut / Tun Ismail 8 / Tun Ismail 10, 25000 Kuantan, Pahang'
+};
+
+// =====================================================================
+// STATUS KENDERAAN UNTUK APPS PELANGGAN
+// ahli/{token}/status/{orderId}: {no, plat, cawangan, pakej, status, jumlah, aktif, masa}
+// Ditulis oleh kaunter / Apps Pekerja setiap kali order dibuat, status berubah atau dibayar.
+// =====================================================================
+export const STATUS_ORDER = ['Menunggu', 'Cuci', 'Kering', 'QC', 'Siap'];
+export function dataStatus(o, c, tambah = {}){
+  return {no: o.no || '', plat: o.plat || '', cawangan: c, pakej: o.pakej || '', addon: (o.addon || []).map(a => a.nama), status: o.status || 'Menunggu',
+    jumlah: Number(o.jumlah) || 0, aktif: o.aktif !== false, bay: o.bay || '', masa: Date.now(), ...tambah};
+}
