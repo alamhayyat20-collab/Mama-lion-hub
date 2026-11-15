@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-2">
+<meta name="app-versi" content="2026.11.16-3">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -313,7 +313,7 @@ const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 onAuthStateChanged(auth, u => {
   dev = u;
   if(!u){ stopAll(unsubAsas); stopAll(unsubHari); modulPK.henti(); staf = null; stafLoaded = false; dataError = ''; setHeader(); return renderDeviceLogin(); }
-  if(u.email === 'pekerja@mamalion.app'){
+  if(['alamhayyat20+pekerja@gmail.com', 'pekerja@mamalion.app'].includes((u.email || '').toLowerCase())){
     $('#app').innerHTML = `<div class="card" style="max-width:460px;margin:16px auto"><h3>⚠ Akaun ini untuk Apps Pekerja</h3>
       <p>Telefon ini log masuk dengan akaun Apps Pekerja, jadi kaunter tidak dapat memaparkan gambar order, bayaran dan laporan.</p>
       <p class="muted">Pekerja yang diberi kuasa <b>💳 Kaunter</b> boleh terima bayaran & kemas kini progress terus dalam <b>Apps Pekerja → tab Queue</b>.</p>

@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
     function staffApp() {
-      return request.auth != null && request.auth.token.email == 'pekerja@mamalion.app';
+      return request.auth != null && request.auth.token.email in ['alamhayyat20+pekerja@gmail.com', 'pekerja@mamalion.app'];
     }
     // Akaun dalaman: peranti kaunter & pengurusan (bukan akaun Apps Pekerja)
     function dalaman() {
