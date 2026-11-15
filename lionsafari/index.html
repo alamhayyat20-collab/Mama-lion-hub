@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-2">
+<meta name="app-versi" content="2026.11.15-3">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -882,6 +882,7 @@ VIEWS['Queue'] = {
           ${i>0 ? `<button class="small" data-st="${o.id}|${STATUS[i-1]}">↩ ${STATUS[i-1]}</button>` : ''}
           ${bolehBayar ? `<button class="btn-ok" data-bayar="${o.id}">💳 Bayar</button>` : ''}
           ${bolehBayar ? `<button class="small btn-bad" data-batal="${o.id}">Batal</button>` : ''}
+          ${PELULUS.includes(staf.peranan) ? `<button class="small" data-tukarmo="${o.id}">🧾 ${o.mo ? 'Tukar MO' : 'Set MO'}</button>` : ''}
         </div></div>`;
     }).join('');
   },
@@ -893,9 +894,31 @@ VIEWS['Queue'] = {
     $$('[data-bay]').forEach(s => s.onchange = () => updateDoc(doc(col('order'), s.dataset.bay), {bay:s.value}).catch(onErr));
     $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar)));
     $$('[data-batal]').forEach(b => b.onclick = () => batalOrder(aktif.find(o => o.id === b.dataset.batal)));
+    $$('[data-tukarmo]').forEach(b => b.onclick = () => tukarMO(aktif.find(o => o.id === b.dataset.tukarmo)));
     muatGambarOrder();
   }
 };
+
+// Supervisor / Manager / Admin: betulkan MO yang dapat komisen (jika pertikaian). Direkod dalam moLog.
+function tukarMO(o){
+  if(!o) return;
+  const calon = stafList.filter(x => x.aktif !== false && (x.mo || x.peranan === 'Sales'));
+  openModal(`<div class="between"><h3 style="margin:0">🧾 MO untuk ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
+    <div class="muted" style="margin:4px 0 10px">Sekarang: <b>${o.mo ? esc(o.mo.nama) : 'tiada MO'}</b> · Komisen ${RM(o.komisen)}. Perubahan direkod.</div>
+    ${calon.map(x => `<button class="big" data-moke="${x.id}" style="margin-bottom:6px;text-align:left">${av(x, 28)} ${esc(x.idStaf||'')} ${esc(x.nama)}${o.mo?.id === x.id ? ' ✓' : ''}</button>`).join('') || '<p class="muted">Tiada pekerja MO. Aktifkan MO di Akaun → Pekerja → Urus.</p>'}
+    <button class="big" data-moke="" style="margin-top:4px">Tiada MO (tiada komisen)</button>`);
+  $('#mTutup').onclick = closeModal;
+  $$('[data-moke]').forEach(b => b.onclick = async () => {
+    const x = stafList.find(s => s.id === b.dataset.moke) || null;
+    if((x?.id || null) === (o.mo?.id || null)) return closeModal();
+    const sebab = prompt('Sebab tukar MO?'); if(sebab === null) return;
+    try{
+      await updateDoc(doc(col('order'), o.id), {mo: x ? {id:x.id, nama:x.nama, idStaf:x.idStaf||''} : null, moId: x ? x.id : null,
+        moLog: arrayUnion({dari: o.mo?.nama || '-', ke: x?.nama || '-', sebab: sebab || '-', oleh: staf.nama, masa: Date.now()})});
+      closeModal(); toast(`✅ MO ${o.plat}: ${x ? x.nama : 'tiada'}`);
+    }catch(e){ onErr(e); }
+  });
+}
 
 async function batalOrder(o){
   if(!o) return;

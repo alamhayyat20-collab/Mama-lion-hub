@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.15-2">
+<meta name="app-versi" content="2026.11.15-3">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20,8 +20,10 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
 header{background:var(--hijau);color:#fff;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
 header b{font-size:17px}header small{display:block;color:#bbf7d0;font-size:12px}
 .hlogo{width:40px;height:40px;border-radius:9px;background:#fff;object-fit:contain}
-nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
-nav button{border:0;background:none;padding:10px 4px;font-size:12px;color:var(--muted);font-family:inherit;position:relative}
+nav{display:flex;overflow-x:auto;scrollbar-width:none;background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:1 0 62px;border:0;background:none;padding:10px 4px;font-size:12px;color:var(--muted);font-family:inherit;position:relative;white-space:nowrap}
+nav button i{position:absolute;top:4px;right:8px;background:var(--merah);color:#fff;border-radius:999px;font-size:10px;font-style:normal;padding:1px 5px;font-weight:700}
 nav button b{display:block;font-size:20px;margin-bottom:2px}
 nav button.on{color:var(--hijau);font-weight:700;box-shadow:inset 0 -3px var(--hijau)}
 main{max-width:640px;margin:auto;padding:12px;padding-bottom:50px}
@@ -64,6 +66,28 @@ label{font-size:13px;font-weight:650}
 .hidden{display:none!important}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90%;text-align:center;display:none}
 .prev{width:100%;border-radius:14px;margin:8px 0}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;margin:4px 0 12px}
+.choice{border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px;text-align:left;font-size:14px;cursor:pointer}
+.choice.sel{border-color:var(--hijau);background:var(--hijau2)}
+.choice b{display:block}.choice span{font-size:12px;color:var(--muted)}
+.choice img{width:100%;height:68px;object-fit:cover;border-radius:8px;margin-bottom:6px;display:block}
+.fotogrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0}
+.foto{border:2px dashed #cbd5e1;border-radius:12px;height:96px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;background:#f8fafc center/cover;cursor:pointer;font-weight:400}
+.foto input{display:none}.foto span b{display:block;font-size:13px}.foto.ada{border-style:solid;border-color:var(--hijau)}.foto.ada span{background:#000a;color:#fff;border-radius:8px;padding:2px 6px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.thumbs img{width:62px;height:62px;object-fit:cover;border-radius:8px}
+.ahlikad{background:linear-gradient(135deg,#0d2a20,#14532d);color:#fff;border-radius:14px;padding:12px;margin:8px 0}
+.ahlikad .muted{color:#cbd5e1}
+.copbar{display:flex;gap:5px;align-items:center;margin:8px 0;flex-wrap:wrap}.copbar i{width:20px;height:20px;border-radius:50%;border:2px solid #d7b25a;display:block}.copbar i.on{background:#d7b25a}.copbar i.g{outline:2px solid #fff6;outline-offset:1px}
+.chk{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#f8fafc;margin:6px 0;font-size:14px;font-weight:400}.chk input{width:22px;height:22px;margin:0;flex:none}
+.ahlikad .chk{background:#ffffff1a;color:#fff}
+.totalbar{display:flex;justify-content:space-between;align-items:center;background:#0f172a;color:#fff;border-radius:14px;padding:12px 14px;margin:12px 0 8px}.totalbar b{font-size:22px}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mk{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px #0000000d;display:flex;flex-direction:column}
+.mk .img{height:104px;width:100%;object-fit:cover;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:34px}
+.mk .isi{padding:10px}.mk .h{color:var(--hijau);font-weight:800;font-size:17px}.mk small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.kom{display:inline-block;margin-top:4px;background:var(--emas2);color:#92400e;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700}
+.memo{border-left:4px solid var(--line);padding-left:10px;cursor:pointer}.memo.baru{border-left-color:var(--merah)}.memo.penting b:first-child::before{content:"❗ "}
+details.bab{border-bottom:1px solid var(--line);padding:10px 0}details.bab summary{font-weight:700;cursor:pointer;list-style:none}details.bab summary::before{content:"▸ ";color:var(--hijau)}details.bab[open] summary::before{content:"▾ "}
 </style>
 </head>
 <body>
@@ -80,8 +104,9 @@ label{font-size:13px;font-weight:650}
 import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
-import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR } from '../pekerja-lib.js';
+import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK } from '../pekerja-lib.js';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD } from '../safari-lib.js';
 import { pasangSync } from '../sync-lib.js';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -113,10 +138,17 @@ let unsubAsas = [], unsubSaya = [];
 let rosterBulan = {}, hadirHariIni = [], tetapan = {}, roster = {}, mohonSaya = [], hadirBulan = [], bulanRekod = hariIni().slice(0,7), mohonJenis = 'advance';
 const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
 const infoCaw = () => CAWANGAN.find(c => c.id === sesi?.c) || CAWANGAN[0];
-document.head.insertAdjacentHTML('beforeend', `<style>${CSS_AVATAR}</style>`);
+document.head.insertAdjacentHTML('beforeend', `<style>${CSS_AVATAR}${CSS_DOK}</style>`);
 // Gambar profil staf (ditetapkan oleh pengurusan): lionsafari/{cawangan}/staf_foto/{id}
 let fotoSaya = '';
 const fotoRef = st => doc(store, 'lionsafari', st.c, 'staf_foto', st.id);
+// Kaunter (Lion Safari V2): harga, pakej, gambar & order — untuk tab Harga & Order (MO)
+const LS = (c, n) => collection(store, 'lionsafari', c, n);
+let TK = {}, GBR = null, KOM = {}, orderHari = [], orderSayaBulan = [], infoList = [], bacaSaya = new Set();
+let unsubMO = [];
+const itemTK = j => (TK[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, harga: Number(x.harga)||0})).filter(x => x.aktif !== false);
+const r2 = n => Math.round((Number(n)||0)*100)/100;
+const pad = (n,l=2) => String(n).padStart(l,'0');
 
 // ---------------- Log masuk telefon (sekali sahaja, oleh pemilik) ----------------
 onAuthStateChanged(auth, u => {
@@ -127,7 +159,7 @@ onAuthStateChanged(auth, u => {
     stafSemua[c.id] = s.docs.map(d => ({id:d.id, c:c.id, ...d.data()}));
     const ss = bacaLS('pk_sesi');
     if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
-    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else saya = baru; }
+    if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo; saya = baru; if(moLama !== !!baru.mo){ if(!baru.mo && tab === 'Order') tab = 'Kehadiran'; langganMO(); renderNav(); render(); } } }
     else skrinLogin();
   }, e => { $('#app').innerHTML = `<div class="card notice bad">⚠ ${esc(e.code === 'permission-denied' ? 'Akses ditolak. Firestore Rules untuk Apps Pekerja belum dikemas kini.' : e.message)}</div>`; }));
   skrinLogin();
@@ -193,7 +225,7 @@ function skrinPin(st){
   };
   draw();
 }
-function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); $('#app').dataset.sibuk = ''; skrinLogin(); }
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); tab = 'Kehadiran'; $('#app').dataset.sibuk = ''; skrinLogin(); }
 
 // ---------------- Selepas log masuk ----------------
 function masuk(st){
@@ -204,6 +236,11 @@ function masuk(st){
   unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'roster'), where('tarikh','>=',t), where('tarikh','<=',tambahHari(t,13))), s => { roster = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'permohonan'), where('stafId','==',st.id)), s => { mohonSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); render(); }, onErr));
+  unsubSaya.push(onSnapshot(doc(store, 'lionsafari', c, 'tetapan', 'umum'), s => { TK = s.exists() ? s.data() : {}; if(tab === 'Harga') render(); }, () => {}));
+  unsubSaya.push(onSnapshot(K(c,'info'), s => { infoList = s.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.aktif !== false); renderNav(); if(tab === 'Info') render(); }, () => {}));
+  unsubSaya.push(onSnapshot(query(K(c,'info_baca'), where('stafId','==',st.id)), s => { bacaSaya = new Set(s.docs.map(d => d.data().infoId)); renderNav(); if(tab === 'Info') render(); }, () => {}));
+  GBR = null;
+  langganMO();
   fotoSaya = '';
   unsubSaya.push(onSnapshot(fotoRef(st), d => { fotoSaya = d.exists() ? d.data().data : ''; kepala(); if(tab === 'ID') render(); }, () => {}));
   langganBulan();
@@ -226,19 +263,31 @@ function langganBulan(){
   if(unsubSaya.bulanR) unsubSaya.bulanR();
   unsubSaya.bulan = f; unsubSaya.bulanR = g; unsubSaya.push(f, g);
 }
+// Langganan khas MO: kadar komisen, order hari ini & order saya bulan ini
+function langganMO(){
+  stopAll(unsubMO); orderHari = []; orderSayaBulan = []; KOM = {};
+  if(!saya?.mo) return;
+  const c = saya.c, t = hariIni();
+  unsubMO.push(onSnapshot(doc(store, 'lionsafari', c, 'tetapan', 'komisen'), s => { KOM = s.exists() ? (s.data().kadar || {}) : {}; if(['Order','Harga'].includes(tab)) render(); }, () => {}));
+  unsubMO.push(onSnapshot(query(LS(c,'order'), where('tarikh','==',t)), s => { orderHari = s.docs.map(d => ({id:d.id, ...d.data()})); if(tab === 'Order') render(); }, onErr));
+  unsubMO.push(onSnapshot(query(LS(c,'order'), where('moId','==',saya.id), where('bulanBayar','==',t.slice(0,7))), s => { orderSayaBulan = s.docs.map(d => ({id:d.id, ...d.data()})); if(tab === 'Order') render(); }, onErr));
+}
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = [['Kehadiran','🕘'],['Mohon','📝'],['Roster','📅'],['Rekod','📊'],['ID','🪪']];
+const TABS = () => [['Kehadiran','🕘'], ...(saya?.mo ? [['Order','🧾']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const memoBaru = () => infoList.filter(x => x.jenis === 'memo' && !bacaSaya.has(x.id)).length;
 function renderNav(){
+  if(!saya) return;
   $('#nav').classList.remove('hidden');
-  const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length;
-  $('#nav').innerHTML = TABS.map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}</button>`).join('');
+  const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length, baru = memoBaru();
+  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
 }
 function render(){
   if(!saya) return;
   if($('#app').dataset.sibuk === '1') return;  // jangan ganggu semasa punch / isi borang
-  ({Kehadiran:viewKehadiran, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
+  if(tab === 'Order' && !saya.mo) tab = 'Kehadiran';
+  ({Kehadiran:viewKehadiran, Order:viewOrder, Harga:viewHarga, Info:viewInfo, Mohon:viewMohon, Roster:viewRoster, Rekod:viewRekod, ID:viewID})[tab]();
 }
 
 // ---------------- KAD ID STAF ----------------
@@ -246,6 +295,273 @@ function viewID(){
   const caw = infoCaw();
   $('#app').innerHTML = `<div style="padding:8px 0 4px">${kadID({foto: fotoSaya, nama: saya.nama, idStaf: saya.idStaf, peranan: saya.peranan, cawangan: `${caw.nama} Premium Carwash`, logo: caw.logo, warna: '#14532d'})}</div>
     <p class="muted center" style="margin-top:14px">${fotoSaya ? 'Tunjukkan kad ini jika diminta. Gambar profil ditetapkan oleh pihak pengurusan.' : 'Belum ada gambar profil. Minta pengurus ambil gambar anda di apps Akaun → Pekerja → Urus.'}</p>`;
+}
+
+// ---------------- HARGA & PAKEJ ----------------
+async function muatGambar(){
+  if(GBR) return; GBR = {};
+  try{ const g = await getDocs(LS(saya.c,'gambar')); GBR = Object.fromEntries(g.docs.map(d => [d.id, d.data().data])); if(['Harga','Order'].includes(tab)) render(); }
+  catch(e){ console.error(e); }
+}
+const komTag = x => saya.mo && Number(KOM[x.id]) > 0 ? `<span class="kom">💰 Komisen ${RM(KOM[x.id])}</span>` : '';
+function viewHarga(){
+  muatGambar();
+  const pk = itemTK('pakej'), ad = itemTK('addon'), kd = itemTK('kenderaan'), caw = infoCaw();
+  const img = (x, ikon) => GBR?.[x.id] ? `<img class="img" src="${GBR[x.id]}" alt="">` : `<div class="img">${ikon}</div>`;
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">🏷 Harga & Pakej — ${esc(caw.nama)}</h3></div>
+      <p class="muted" style="margin:6px 0 0">Senarai rasmi dari kaunter. Terangkan kepada pelanggan ikut harga ini.${TK.waktu ? `<br>🕘 Waktu operasi: <b>${esc(TK.waktu)}</b>` : ''}</p></div>
+    <h3 style="margin:14px 2px 8px">🚿 Pakej cucian</h3>
+    <div class="menu">${pk.map(x => `<div class="mk">${img(x,'🚿')}<div class="isi"><b>${esc(x.nama)}</b><div class="h">${RM(x.harga)}</div>${x.minit ? `<small>⏱ ~${x.minit} min</small>` : ''}${x.ket ? `<small>${esc(x.ket)}</small>` : ''}${komTag(x)}</div></div>`).join('') || '<p class="muted">Belum ada pakej.</p>'}</div>
+    ${ad.length ? `<h3 style="margin:16px 2px 8px">✨ Servis tambahan (add-on)</h3><div class="menu">${ad.map(x => `<div class="mk">${img(x,'✨')}<div class="isi"><b>${esc(x.nama)}</b><div class="h">+${RM(x.harga)}</div>${x.ket ? `<small>${esc(x.ket)}</small>` : ''}${komTag(x)}</div></div>`).join('')}</div>` : ''}
+    ${kd.length ? `<div class="card" style="margin-top:14px"><h3>🚗 Caj ikut jenis kenderaan</h3>${kd.map(k => `<div class="item"><b>${esc(k.nama)}</b><span>${k.harga > 0 ? '+' + RM(k.harga) : k.harga < 0 ? '−' + RM(-k.harga) : 'harga asas'}</span></div>`).join('')}</div>` : ''}
+    <div class="card"><h3>⭐ Safari Members</h3><p class="muted" style="margin:0">Kad cop digital percuma. ${KAD.saiz} cop dalam ${Math.round(KAD.tempohCopHari/30)} bulan — Free Wash pada cop ke-${KAD.ganjaranPada.join(' & ke-')}. 1 cop sehari bagi setiap kenderaan.</p></div>`;
+}
+
+// ---------------- INFO: memo, peraturan kerja, dokumen ----------------
+let infoSeg = 'memo';
+function viewInfo(){
+  const l = infoList.filter(x => x.jenis === infoSeg).sort((a,b) => infoSeg === 'memo' ? (b.tarikh||'').localeCompare(a.tarikh||'') || (b.penting?1:0) - (a.penting?1:0) : (a.susunan||0) - (b.susunan||0) || String(a.tajuk).localeCompare(String(b.tajuk)));
+  const baru = memoBaru(), J = JENIS_INFO[infoSeg];
+  const seg = `<div class="seg" style="grid-template-columns:repeat(4,1fr)">${Object.entries(JENIS_INFO).map(([k,v]) => `<button class="${k===infoSeg?'on':''}" data-iseg="${k}"><b>${v.ikon}</b>${k === 'peraturan' ? 'Peraturan' : k === 'dokumen' ? 'SOP' : v.label}${k === 'memo' && baru ? ` (${baru})` : ''}</button>`).join('')}<button data-iseg="jadual"><b>📅</b>Jadual</button></div>`;
+  let isi;
+  if(infoSeg === 'memo') isi = l.map(m => `<div class="item memo ${bacaSaya.has(m.id)?'':'baru'} ${m.penting?'penting':''}" data-memo="${m.id}"><div><b>${esc(m.tajuk)}</b><small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' ' + m.tarikh.slice(0,4) : ''}${m.oleh ? ' · ' + esc(m.oleh) : ''}</small></div>${bacaSaya.has(m.id) ? '<span class="tag ok">✓ Dibaca</span>' : '<span class="tag bad">Baru</span>'}</div>`).join('');
+  else isi = l.map(b => `<details class="bab"><summary>${esc(b.tajuk)}</summary><div class="dok">${teksKeHtml(b.isi)}${b.gambar ? `<img class="prev" src="${b.gambar}" alt="">` : ''}</div>${b.tarikh ? `<small class="muted">Kemas kini: ${fTarikhPendek(b.tarikh)} ${b.tarikh.slice(0,4)}</small>` : ''}</details>`).join('');
+  $('#app').innerHTML = `${seg}<div class="card"><h3>${J.ikon} ${J.label}</h3>${isi || `<p class="muted">Belum ada ${J.label.toLowerCase()}.</p>`}</div>`;
+  $$('[data-iseg]').forEach(b => b.onclick = () => { if(b.dataset.iseg === 'jadual'){ tab = 'Roster'; renderNav(); render(); return; } infoSeg = b.dataset.iseg; viewInfo(); });
+  $$('[data-memo]').forEach(b => b.onclick = () => bukaMemo(infoList.find(x => x.id === b.dataset.memo)));
+}
+function bukaMemo(m){
+  if(!m) return;
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
+  const dibaca = bacaSaya.has(m.id);
+  $('#app').innerHTML = `<div class="card"><button class="btn" id="mBalik" style="padding:8px 12px;font-size:13px">← Senarai memo</button>
+    <h3 style="margin:12px 0 2px">${m.penting ? '❗ ' : ''}${esc(m.tajuk)}</h3><div class="muted">${m.tarikh ? fTarikhPendek(m.tarikh) + ' ' + m.tarikh.slice(0,4) : ''}${m.oleh ? ' · Daripada: ' + esc(m.oleh) : ''}</div>
+    <div class="dok" style="margin-top:8px">${teksKeHtml(m.isi)}</div>${m.gambar ? `<img class="prev" src="${m.gambar}" alt="">` : ''}
+    ${dibaca ? '<div class="notice" style="background:var(--hijau2)">✓ Anda sudah sahkan membaca memo ini.</div>' : '<button class="btn pri big" id="mBaca">✅ SAYA SUDAH BACA & FAHAM</button>'}</div>`;
+  $('#mBalik').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  if($('#mBaca')) $('#mBaca').onclick = async () => {
+    $('#mBaca').disabled = true;
+    try{ await setDoc(doc(K(saya.c,'info_baca'), idBaca(m.id, saya.id)), {infoId: m.id, stafId: saya.id, idStaf: saya.idStaf||'', nama: saya.nama, masa: serverTimestamp()}); bacaSaya.add(m.id); toast('✅ Terima kasih'); $('#app').dataset.sibuk = ''; renderNav(); render(); }
+    catch(e){ $('#mBaca').disabled = false; onErr(e); }
+  };
+}
+
+// ---------------- ORDER (MO / Sales) ----------------
+const hargaKom = (p, addon, fw) => r2((fw || !p ? 0 : Number(KOM[p.id])||0) + addon.reduce((t,a) => t + (Number(KOM[a.id])||0), 0));
+function viewOrder(){
+  const k = jamKerja(hadirHariIni), saya_ = o => o.moId === saya.id;
+  const bulanIni = orderSayaBulan.filter(o => o.status === 'Selesai');
+  const komBulan = r2(bulanIni.reduce((t,o) => t + (Number(o.komisen)||0), 0));
+  const hariSaya = orderHari.filter(saya_).sort((a,b) => (b.masaDibuat||0) - (a.masaDibuat||0));
+  const komHari = r2(hariSaya.filter(o => o.status === 'Selesai').reduce((t,o) => t + (Number(o.komisen)||0), 0));
+  const tunggu = r2(hariSaya.filter(o => o.aktif).reduce((t,o) => t + (Number(o.komisen)||0), 0));
+  $('#app').innerHTML = `<div class="grid2"><div class="card"><div class="muted">Komisen bulan ini</div><div class="metric" style="color:var(--hijau)">${RM(komBulan)}</div><div class="muted">${bulanIni.length} order dibayar</div></div>
+      <div class="card"><div class="muted">Hari ini</div><div class="metric">${RM(komHari)}</div><div class="muted">${tunggu ? `+ ${RM(tunggu)} tunggu bayaran` : `${hariSaya.length} order`}</div></div></div>
+    ${k.masihMasuk ? `<button class="punch masuk" id="btnOrderBaru">➕ AMBIL ORDER BARU<small>No. plat · pelanggan · pakej · gambar kenderaan</small></button>`
+      : `<div class="card notice">🕘 Anda perlu <b>PUNCH IN</b> dahulu sebelum boleh mengambil order.<br><button class="btn pri" id="btnKeHadir" style="margin-top:8px">Pergi ke Kehadiran</button></div>`}
+    <div class="card" style="margin-top:12px"><h3>Order saya hari ini</h3>${hariSaya.map(o => `<div class="item"><div><b>${esc(o.plat)} ${o.ahli ? '⭐' : ''}${o.freeWash ? '🎁' : ''}</b><small>${fJam(o.masaDibuat)} · ${esc(o.no||'')} · ${esc(o.pakej)}${(o.addon||[]).length ? ' + ' + o.addon.map(a => esc(a.nama)).join(', ') : ''}</small></div>
+      <div style="text-align:right"><span class="tag ${o.status==='Selesai'?'ok':o.status==='Batal'?'bad':'warn'}">${o.status === 'Selesai' ? 'Dibayar' : esc(o.status)}</span><br><small class="muted">${o.status === 'Batal' ? '—' : 'Komisen ' + RM(o.komisen)}</small></div></div>`).join('') || '<p class="muted">Belum ada order hari ini.</p>'}
+      <p class="muted" style="margin-bottom:0">Komisen dikira bila pelanggan <b>sudah bayar</b> di kaunter, dan masuk ke gaji anda di Akaun.</p></div>`;
+  if($('#btnKeHadir')) $('#btnKeHadir').onclick = () => { tab = 'Kehadiran'; renderNav(); render(); };
+  if($('#btnOrderBaru')) $('#btnOrderBaru').onclick = borangOrder;
+}
+
+function borangOrder(){
+  muatGambar();
+  const L = {pakej: itemTK('pakej'), kenderaan: itemTK('kenderaan'), addon: itemTK('addon')};
+  if(!L.pakej.length) return toast('Pakej belum ditetapkan di kaunter');
+  if(!L.kenderaan.length) L.kenderaan = [{id:'k0', nama:'Kereta', harga:0}];
+  const pakejFW = () => L.pakej.find(p => p.id === TK.pakejFreeWash) || L.pakej[0];
+  const d = {pakej:null, kenderaan:0, addon:new Set(), ahli:null, calon:[], fw:null, foto:{plat:'', emblem:'', calar:[]}};
+  const gb = x => GBR?.[x.id] ? `<img src="${GBR[x.id]}" alt="">` : '';
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">🧾 Order baru</h3><button class="btn" id="oBatal" style="padding:8px 12px;font-size:13px">✕ Batal</button></div>
+    <label style="display:block;margin-top:10px">No. plat *</label>
+    <div class="row" style="flex-wrap:nowrap"><input id="oPlat" autocapitalize="characters" autocomplete="off" placeholder="cth VAB 1234" style="text-transform:uppercase;font-size:22px;font-weight:800;flex:1"><button class="btn" id="oCari" title="Cari ahli">🔍</button><button class="btn" id="oImbas" title="Imbas kad ahli">📷</button></div>
+    <div id="oAhli"></div>
+    <div class="grid2"><div><label>Nama pelanggan *</label><input id="oNama" autocomplete="off"></div><div><label>No. telefon *</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
+    <div id="oDaftarBox"></div>
+    <label>Jenis kenderaan</label><div class="choices" id="cKend">${L.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga ? (k.harga > 0 ? '+' : '−') + RM(Math.abs(k.harga)) : 'harga asas'}</span></button>`).join('')}</div>
+    <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice" data-i="${i}">${gb(p)}<b>${esc(p.nama)}</b><span>${RM(p.harga)}${p.minit ? ` · ~${p.minit} min` : ''}</span></button>`).join('')}</div>
+    ${L.addon.length ? `<label>Add-on</label><div class="choices" id="cAddon">${L.addon.map((a,i) => `<button class="choice" data-i="${i}">${gb(a)}<b>${esc(a.nama)}</b><span>+${RM(a.harga)}</span></button>`).join('')}</div>` : ''}
+    <label>📸 Gambar kenderaan</label>
+    <div class="fotogrid">
+      <label class="foto" id="fPlat"><input type="file" accept="image/*" capture="environment" data-foto="plat"><span>📸<b>Plat *</b></span></label>
+      <label class="foto" id="fEmblem"><input type="file" accept="image/*" capture="environment" data-foto="emblem"><span>📸<b>Emblem *</b></span></label>
+      <label class="foto"><input type="file" accept="image/*" capture="environment" data-foto="calar"><span>📸<b>Calar / kemik</b>pilihan</span></label>
+    </div><div class="thumbs" id="fCalarList"></div>
+    <div class="grid2">${(TK.bay||[]).length ? `<div><label>Bay</label><select id="oBay">${TK.bay.map(b => `<option>${esc(b)}</option>`).join('')}</select></div>` : ''}<div><label>Catatan</label><input id="oCat" placeholder="cth calar pintu kiri"></div></div>
+    <div class="totalbar"><span>Jumlah</span><b id="oJum">RM 0.00</b></div>
+    <div class="muted" id="oKom" style="text-align:right;margin:-2px 2px 10px"></div>
+    <button class="btn emas big" id="oSimpan">SIMPAN ORDER</button></div>`;
+
+  const kira = () => {
+    const p = L.pakej[d.pakej], k = L.kenderaan[d.kenderaan], fw = !!d.fw;
+    const asas = p ? Math.max(0, p.harga + (k?.harga||0)) : 0;
+    const addon = [...d.addon].map(i => L.addon[i]);
+    const j = (fw ? 0 : asas) + addon.reduce((t,a) => t + a.harga, 0);
+    $('#oJum').innerHTML = fw ? `${RM(j)} <small style="font-size:12px;font-weight:600">· 🎁 Free Wash</small>` : RM(j);
+    $('#oKom').textContent = p ? `💰 Komisen anda: ${RM(hargaKom(p, addon, fw))}` : '';
+  };
+  const pilih = (box, key, multi) => $$(`${box} .choice`).forEach(b => b.onclick = () => {
+    const i = +b.dataset.i;
+    if(multi){ d.addon.has(i) ? d.addon.delete(i) : d.addon.add(i); b.classList.toggle('sel'); }
+    else {
+      if(key === 'pakej' && d.fw && L.pakej[i]?.id !== pakejFW()?.id) return toast(`Free Wash hanya untuk pakej ${pakejFW()?.nama}. Matikan Free Wash dahulu.`);
+      d[key] = i; $$(`${box} .choice`).forEach(x => x.classList.toggle('sel', x === b));
+    }
+    kira();
+  });
+  pilih('#cKend','kenderaan'); pilih('#cPakej','pakej'); if(L.addon.length) pilih('#cAddon', null, true);
+
+  // ---- Safari Members ----
+  const ahliCol = () => collection(store, 'ahli');
+  const lukisAhli = () => {
+    const box = $('#oAhli'), a = d.ahli;
+    if(!a && d.calon.length > 1){
+      box.innerHTML = `<div class="notice">Beberapa ahli guna plat ini — pilih:<br>${d.calon.map((c,i) => `<button class="btn" data-calon="${i}" style="margin-top:6px;padding:8px 10px;font-size:13px">${esc(c.nama)} · ${esc(paparTelefon(c.telefon))}</button>`).join(' ')}</div>`;
+      $$('[data-calon]').forEach(b => b.onclick = () => pilihAhli(d.calon[+b.dataset.calon]));
+    } else if(!a) box.innerHTML = '';
+    else {
+      const k = keadaanKad(a), fwp = pakejFW();
+      box.innerHTML = `<div class="ahlikad"><div class="between"><div><b>⭐ Safari Member · ${esc(a.kod)}</b><br><span class="muted">${esc(a.nama)} · ${esc(paparTelefon(a.telefon))}</span></div><button class="btn" id="oLepas" style="padding:6px 10px">✕</button></div>
+        <div class="copbar">${Array.from({length:KAD.saiz}, (_,i) => `<i class="${i < k.bil ? 'on' : ''} ${KAD.ganjaranPada.includes(i+1) ? 'g' : ''}"></i>`).join('')}<span>${k.bil}/${KAD.saiz}</span></div>
+        ${k.freeWash.length ? `<label class="chk"><input type="checkbox" id="oFW" ${d.fw ? 'checked' : ''}> 🎁 Guna Free Wash (${k.freeWash.length} ada) — pakej ${esc(fwp?.nama || '')}. Perlu kelulusan Supervisor di kaunter.</label>` : `<div class="muted">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
+      $('#oLepas').onclick = () => { d.ahli = null; d.fw = null; lukisAhli(); lukisDaftar(); kira(); };
+      if($('#oFW')) $('#oFW').onchange = e => {
+        if(e.target.checked){
+          const i = L.pakej.findIndex(p => p.id === fwp?.id);
+          if(i < 0){ e.target.checked = false; return toast('Pakej Free Wash belum ditetapkan di kaunter'); }
+          d.fw = {fwId: [...k.freeWash].sort((x,y) => x.tamat - y.tamat)[0].id}; d.pakej = i;
+          $$('#cPakej .choice').forEach((x,j) => x.classList.toggle('sel', j === i));
+        } else d.fw = null;
+        kira();
+      };
+    }
+  };
+  const lukisDaftar = () => {
+    $('#oDaftarBox').innerHTML = d.ahli ? '' : `<label class="chk"><input type="checkbox" id="oDaftar" checked> ⭐ Daftar pelanggan sebagai Safari Members (kad cop digital percuma)</label>
+      <label class="chk"><input type="checkbox" id="oPromo"> Pelanggan setuju terima promosi melalui WhatsApp</label>`;
+  };
+  const pilihAhli = a => { d.ahli = a; d.calon = []; d.fw = null; $('#oNama').value = a.nama || ''; $('#oTel').value = paparTelefon(a.telefon); lukisAhli(); lukisDaftar(); kira(); };
+  const cariAhli = async (medan, nilai) => {
+    try{ const r = await getDocs(query(ahliCol(), where(medan, medan === 'plat' ? 'array-contains' : '==', nilai))); return r.docs.map(x => ({id:x.id, ...x.data()})); }
+    catch(e){ console.error(e); return []; }
+  };
+  let tunda;
+  $('#oPlat').oninput = () => { clearTimeout(tunda); const p = normPlat(val('#oPlat')); if(p.length < 3 || d.ahli) return;
+    tunda = setTimeout(async () => { const l = await cariAhli('plat', p); if(normPlat(val('#oPlat')) !== p) return; d.calon = l; if(l.length === 1) pilihAhli(l[0]); else lukisAhli(); }, 500); };
+  $('#oTel').onchange = async () => { if(d.ahli) return; const t = normTelefon(val('#oTel')); if(!telefonSah(t)) return;
+    const l = await cariAhli('telefon', t); if(l.length){ pilihAhli(l[0]); toast(`⭐ ${l[0].nama} sudah ahli (${l[0].kod})`); } };
+  $('#oCari').onclick = async () => {
+    const q = prompt('Cari Safari Member: no. telefon atau kod ahli (cth SMAB12CD)'); if(!q) return;
+    const kod = q.trim().toUpperCase();
+    const l = /^SM[A-Z0-9]{6}$/.test(kod) ? await cariAhli('kod', kod) : await cariAhli('telefon', normTelefon(q));
+    if(!l.length) return toast('Ahli tidak dijumpai');
+    pilihAhli(l[0]);
+  };
+  $('#oImbas').onclick = () => imbasKod(async kod => { const l = await cariAhli('kod', kod); if(!l.length) return toast(`Kod ${kod} tidak dijumpai`); pilihAhli(l[0]); });
+  lukisDaftar(); kira();
+
+  // ---- Gambar ----
+  $$('[data-foto]').forEach(inp => inp.onchange = async () => {
+    const f = inp.files[0]; inp.value = ''; if(!f) return;
+    try{
+      const g = await capGambar(f, null, 720, 0.6), jenis = inp.dataset.foto;
+      if(jenis === 'calar'){
+        if(d.foto.calar.length >= 4) return toast('Maksimum 4 gambar calar');
+        d.foto.calar.push(g);
+        $('#fCalarList').innerHTML = d.foto.calar.map((x,i) => `<img src="${x}" data-buang="${i}" title="Tekan untuk buang">`).join('');
+        $$('[data-buang]').forEach(im => im.onclick = () => { d.foto.calar.splice(+im.dataset.buang, 1); im.remove(); });
+      } else { d.foto[jenis] = g; const el = inp.closest('.foto'); el.classList.add('ada'); el.style.backgroundImage = `url(${g})`; }
+    }catch(_){ toast('Gagal membaca gambar'); }
+  });
+
+  $('#oBatal').onclick = () => { if(confirm('Batalkan order ini?')){ $('#app').dataset.sibuk = ''; render(); } };
+
+  // ---- Simpan ----
+  $('#oSimpan').onclick = async () => {
+    const plat = paparPlat(val('#oPlat')), nama = val('#oNama'), tel = normTelefon(val('#oTel'));
+    if(!plat) return toast('Sila masukkan no. plat');
+    if(!nama) return toast('Sila isi nama pelanggan');
+    if(!telefonSah(tel)) return toast('No. telefon tidak sah (cth 012-3456789)');
+    if(d.pakej === null) return toast('Sila pilih pakej');
+    if(!d.foto.plat || !d.foto.emblem) return toast('Sila ambil gambar plat dan emblem kenderaan');
+    if(!jamKerja(hadirHariIni).masihMasuk) return toast('Anda perlu punch in dahulu');
+    const ada = orderHari.find(o => o.aktif && normPlat(o.plat) === normPlat(plat));
+    if(ada) return toast(`${plat} sudah dalam queue (order ${ada.no}${ada.mo ? ' oleh ' + ada.mo.nama : ''})`);
+    if(!navigator.onLine) return toast('⚠ Tiada internet. Order perlu online.');
+    const p = L.pakej[d.pakej], k = L.kenderaan[d.kenderaan] || {nama:'', harga:0};
+    const addon = [...d.addon].map(i => ({id: L.addon[i].id, nama: L.addon[i].nama, harga: L.addon[i].harga}));
+    const tambah = p.harga + k.harga < 0 ? -p.harga : k.harga;
+    const fw = d.fw && d.ahli ? {fwId: d.fw.fwId, nilai: r2(p.harga + tambah)} : null;
+    const kasar = r2((fw ? 0 : p.harga + tambah) + addon.reduce((t,a) => t + a.harga, 0));
+    const t = hariIni(), no = `${t.slice(5,7)}${t.slice(8,10)}-${pad(orderHari.length + 1, 3)}`;
+    $('#oSimpan').disabled = true; $('#oSimpan').textContent = 'Menyimpan…';
+    try{
+      let ahli = d.ahli;
+      if(!ahli && $('#oDaftar')?.checked){
+        const ad = await getDoc(doc(collection(store, 'ahli_telefon'), tel));
+        if(ad.exists()){ const s2 = await getDoc(doc(ahliCol(), ad.data().token)); if(s2.exists()) ahli = {id:s2.id, ...s2.data()}; }
+        if(!ahli){
+          const token = buatToken(), baru = ahliBaru({nama, telefon: tel, plat:[normPlat(plat)], kenderaan:[{plat, jenis:k.nama}], cawanganUtama: saya.c, setujuPromosi: !!$('#oPromo')?.checked, oleh: `${saya.nama} (MO ${saya.c})`});
+          const b = writeBatch(store);
+          b.set(doc(ahliCol(), token), baru); b.set(doc(collection(store, 'ahli_telefon'), tel), {token});
+          await b.commit();
+          ahli = {id: token, ...baru};
+        }
+      }
+      if(ahli && !(ahli.plat || []).includes(normPlat(plat))) updateDoc(doc(ahliCol(), ahli.id), {plat: arrayUnion(normPlat(plat)), kenderaan: arrayUnion({plat, jenis:k.nama})}).catch(console.error);
+      const ref = doc(LS(saya.c,'order'));
+      const data = {no, plat, nama, telefon: tel, kenderaan: k.nama, tambahanKenderaan: fw ? 0 : tambah, pakejId: p.id, pakej: p.nama, hargaPakej: fw ? 0 : p.harga, addon,
+        jumlahKasar: kasar, diskaun: 0, jumlah: kasar, bay: val('#oBay') || '', catatan: val('#oCat'), status: 'Menunggu', aktif: true,
+        ahli: ahli ? {id: ahli.id, kod: ahli.kod, nama: ahli.nama} : null, freeWash: fw,
+        mo: {id: saya.id, nama: saya.nama, idStaf: saya.idStaf || ''}, moId: saya.id, komisen: hargaKom(p, addon, fw),
+        gambar: {plat: true, emblem: true, calar: d.foto.calar.length}, sumber: 'apps-pekerja',
+        tarikh: t, bulan: t.slice(0,7), dibuatOleh: `${saya.nama} (MO)`, dibuat: serverTimestamp(), masaDibuat: Date.now()};
+      await setDoc(ref, data);
+      const foto = {plat: d.foto.plat, emblem: d.foto.emblem, calar: d.foto.calar, tarikh: t};
+      setDoc(doc(LS(saya.c,'order_gambar'), ref.id), foto).catch(onErr);
+      selepasOrder({...data, id: ref.id}, foto);
+    }catch(e){ console.error(e); onErr(e); $('#oSimpan').disabled = false; $('#oSimpan').textContent = 'SIMPAN ORDER'; }
+  };
+}
+
+function selepasOrder(o, foto){
+  const caw = infoCaw();
+  const teks = `🦁 *${caw.nama}* — Order ${o.no}\nPlat: *${o.plat}* (${o.kenderaan})\nPakej: ${o.pakej}${o.freeWash ? ' 🎁 FREE WASH' : ''}${(o.addon||[]).length ? '\nAdd-on: ' + o.addon.map(a => a.nama).join(', ') : ''}\nJumlah: ${RM(o.jumlah)}\nPelanggan: ${o.nama}${o.ahli ? ' ⭐ ' + o.ahli.kod : ''}${o.bay ? '\nBay: ' + o.bay : ''}\nMO: ${saya.idStaf} ${saya.nama}${o.catatan ? '\nCatatan: ' + o.catatan : ''}`;
+  $('#app').innerHTML = `<div class="card center"><h3>✅ Order ${esc(o.no)} disimpan</h3><div class="syif">${esc(o.plat)}</div>
+    <div class="thumbs" style="justify-content:center">${[foto.plat, foto.emblem, ...foto.calar].map(x => `<img src="${x}">`).join('')}</div>
+    <p class="muted">Order sudah masuk ke Queue kaunter. Komisen ${RM(o.komisen)} dikira bila pelanggan bayar.</p>
+    <button class="btn pri big" id="mWa">📤 Kongsi ke WhatsApp group</button>
+    <button class="btn big" id="mOk" style="margin-top:8px">Selesai</button></div>`;
+  $('#mOk').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  $('#mWa').onclick = async () => {
+    try{
+      const fail = await Promise.all([foto.plat, foto.emblem, ...foto.calar].map(async (x,i) => new File([await (await fetch(x)).blob()], `${normPlat(o.plat)}-${i+1}.jpg`, {type:'image/jpeg'})));
+      if(navigator.canShare && navigator.canShare({files: fail})) await navigator.share({files: fail, text: teks});
+      else window.open('https://wa.me/?text=' + encodeURIComponent(teks), '_blank');
+    }catch(e){ if(e.name !== 'AbortError') window.open('https://wa.me/?text=' + encodeURIComponent(teks), '_blank'); }
+  };
+}
+
+// Imbas QR kad Safari Members (kamera belakang)
+async function imbasKod(onKod){
+  if(!('BarcodeDetector' in window)){ const k = prompt('Telefon ini tidak boleh imbas QR. Taip kod ahli (cth SMAB12CD):'); if(k) onKod(k.trim().toUpperCase()); return; }
+  let strim, henti = false;
+  const lapis = document.createElement('div');
+  lapis.style.cssText = 'position:fixed;inset:0;background:#000d;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px';
+  lapis.innerHTML = '<b style="color:#fff">📷 Imbas QR kad Safari Members</b><video playsinline muted style="width:100%;max-width:420px;border-radius:14px;background:#000"></video><button class="btn">Batal</button>';
+  document.body.appendChild(lapis);
+  const tutup = () => { henti = true; strim?.getTracks().forEach(t => t.stop()); lapis.remove(); };
+  lapis.querySelector('button').onclick = tutup;
+  try{
+    strim = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v = lapis.querySelector('video'); v.srcObject = strim; await v.play();
+    const det = new BarcodeDetector({formats:['qr_code']});
+    const loop = async () => { if(henti) return; try{ const r = await det.detect(v); const m = (r[0]?.rawValue || '').match(/SM[A-Z0-9]{6}/); if(m){ tutup(); onKod(m[0]); return; } }catch(_){} requestAnimationFrame(loop); };
+    loop();
+  }catch(e){ tutup(); toast('Kamera tidak dapat dibuka: ' + e.message); }
 }
 
 // ---------------- KEHADIRAN (punch in / out) ----------------

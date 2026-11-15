@@ -350,3 +350,31 @@ export const CSS_AVATAR = `
 .foto-edit{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
 .foto-edit label.foto-btn{display:inline-block;padding:9px 12px;border-radius:10px;background:#0f172a;color:#fff;cursor:pointer;font-size:13px;font-weight:400}
 `;
+
+// =====================================================================
+// INFO PEKERJA — Buku Peraturan Kerja, Memo & Dokumen (SOP)
+// kakitangan/{cawangan}/info/{id}  {jenis, tajuk, isi, tarikh, penting, susunan, aktif, gambar?}
+// kakitangan/{cawangan}/info_baca/{infoId}__{stafId}  {infoId, stafId, idStaf, nama, masa}
+// Diurus di Akaun → Pekerja → Info Pekerja; dibaca di Apps Pekerja → Info
+// =====================================================================
+export const JENIS_INFO = {
+  memo:      {label:'Memo', ikon:'📢', ket:'Pengumuman & arahan terkini. Pekerja tekan "Saya sudah baca".'},
+  peraturan: {label:'Buku Peraturan Kerja', ikon:'📘', ket:'Undang-undang kerja, disiplin, cuti, pakaian, keselamatan.'},
+  dokumen:   {label:'Dokumen & SOP', ikon:'📄', ket:'Cara kerja (SOP), panduan servis, polisi syarikat.'}
+};
+export const idBaca = (infoId, stafId) => `${infoId}__${stafId}`;
+// Teks ringkas → HTML selamat:  "# Tajuk"  ·  "- senarai"  ·  **tebal**
+export function teksKeHtml(t){
+  const tebal = s => s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const out = []; let ul = false;
+  for(const baris of String(t || '').split('\n')){
+    const s = baris.trim();
+    if(/^[-*•]\s+/.test(s)){ if(!ul){ out.push('<ul>'); ul = true; } out.push(`<li>${tebal(_esc(s.replace(/^[-*•]\s+/, '')))}</li>`); continue; }
+    if(ul){ out.push('</ul>'); ul = false; }
+    if(!s) continue;
+    out.push(s.startsWith('# ') ? `<h4>${_esc(s.slice(2))}</h4>` : `<p>${tebal(_esc(s))}</p>`);
+  }
+  if(ul) out.push('</ul>');
+  return out.join('');
+}
+export const CSS_DOK = `.dok h4{margin:14px 0 4px;font-size:15px}.dok p{margin:6px 0;line-height:1.55}.dok ul{margin:6px 0;padding-left:20px;line-height:1.55}`;

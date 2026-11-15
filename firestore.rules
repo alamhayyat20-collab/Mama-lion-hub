@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 15 Nov 2026 (MO di Apps Pekerja, Info Pekerja)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -33,6 +33,30 @@ service cloud.firestore {
     }
     // Apps Pekerja baca gambar profil staf (untuk Kad ID & skrin PIN); hanya pengurusan boleh tukar
     match /lionsafari/{cawangan}/staf_foto/{id} {
+      allow read: if staffApp();
+    }
+    // Apps Pekerja (MO): baca order & kadar komisen; cipta order hanya oleh staf yang diaktifkan MO
+    function moSah(cawangan, d) {
+      let st = get(/databases/$(database)/documents/lionsafari/$(cawangan)/staf/$(d.moId)).data;
+      return st.get('mo', false) == true && st.get('aktif', true) != false;
+    }
+    match /lionsafari/{cawangan}/order/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && request.resource.data.sumber == 'apps-pekerja'
+        && request.resource.data.status == 'Menunggu'
+        && request.resource.data.aktif == true
+        && request.resource.data.moId is string
+        && request.resource.data.mo.id == request.resource.data.moId
+        && !('bayar' in request.resource.data)
+        && request.resource.data.dibuat == request.time
+        && moSah(cawangan, request.resource.data);
+    }
+    match /lionsafari/{cawangan}/order_gambar/{id} {
+      allow create: if staffApp()
+        && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(id));
+    }
+    match /lionsafari/{cawangan}/tetapan/komisen {
       allow read: if staffApp();
     }
 
@@ -85,6 +109,16 @@ service cloud.firestore {
     match /kakitangan/{cawangan}/tetapan/{id} {
       allow read: if staffApp();
     }
+    // Apps Pekerja: memo, buku peraturan kerja & SOP; pekerja sahkan "sudah baca"
+    match /kakitangan/{cawangan}/info/{id} {
+      allow read: if staffApp();
+    }
+    match /kakitangan/{cawangan}/info_baca/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && id == request.resource.data.infoId + '__' + request.resource.data.stafId
+        && request.resource.data.masa == request.time;
+    }
 
     // Safari Members (Apps Pelanggan): akses awam terhad
     function sahAhliBaru(token) {
@@ -97,7 +131,8 @@ service cloud.firestore {
     }
     match /ahli/{token} {
       allow get: if true;
-      allow list, delete: if dalaman();
+      allow list: if dalaman() || staffApp();
+      allow delete: if dalaman();
       allow create: if dalaman() || sahAhliBaru(token);
       allow update: if dalaman() || request.resource.data.diff(resource.data).affectedKeys()
         .hasOnly(['nama', 'emel', 'tarikhLahir', 'kenderaan', 'plat', 'cawanganUtama', 'setujuPromosi', 'dikemaskini']);
@@ -107,6 +142,7 @@ service cloud.firestore {
       }
     }
     match /ahli_telefon/{tel} {
+      allow get: if staffApp();
       allow read, update, delete: if dalaman();
       allow create: if dalaman() || (request.resource.data.token is string
         && getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.telefon == tel);
