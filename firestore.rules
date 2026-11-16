@@ -93,6 +93,12 @@ service cloud.firestore {
                     || (resource.data.get('diskaunBeri', null) != null
                         && request.resource.data.diskaun == resource.data.diskaunBeri.amaun
                         && request.resource.data.jumlah == resource.data.jumlahKasar - resource.data.diskaunBeri.amaun))));
+      // Kuasa 🔧 Progress: kemas kini status servis & bay (tiada bayaran)
+      allow update: if staffApp()
+        && olehKuasa(cawangan, 'progress')
+        && resource.data.aktif == true && !('bayar' in resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'masaMenunggu', 'masaCuci', 'masaKering', 'masaQC', 'masaSiap', 'bay', 'dikemaskiniOleh', 'olehId', 'olehCaw'])
+        && request.resource.data.status in ['Menunggu', 'Cuci', 'Kering', 'QC', 'Siap'];
       // Kuasa 🎟 Lulus diskaun: beri / batal diskaun RM5, RM10, RM20 sebelum bayaran
       allow update: if staffApp()
         && olehKuasa(cawangan, 'diskaun')
@@ -118,6 +124,15 @@ service cloud.firestore {
         && request.resource.data.kaedah in ['QR / eWallet', 'Transfer']
         && request.resource.data.bukti is string && request.resource.data.bukti.size() > 100 && request.resource.data.bukti.size() < 900000
         && request.resource.data.masa == request.time
+        && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(request.resource.data.orderId));
+    }
+    // Gambar keadaan asal kenderaan (dalam, calar, kondisi) oleh pekerja kuasa 🔧 Progress / 💳 Kaunter
+    match /lionsafari/{cawangan}/foto_keadaan/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp()
+        && (olehKuasa(cawangan, 'progress') || olehKuasa(cawangan, 'kaunter'))
+        && request.resource.data.gambar is string && request.resource.data.gambar.size() < 900000
+        && request.resource.data.orderId is string
         && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(request.resource.data.orderId));
     }
     match /lionsafari/{cawangan}/order_gambar/{id} {
@@ -308,6 +323,12 @@ service cloud.firestore {
       allow read, update, delete: if dalaman();
       allow create: if dalaman() || (request.resource.data.token is string
         && getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.telefon == tel);
+    }
+    // Resit PDF untuk pelanggan (pautan WhatsApp): sesiapa dengan id rawak boleh buka
+    match /resit_awam/{id} {
+      allow get: if true;
+      allow create: if dalaman() || staffApp();
+      allow list, update, delete: if dalaman();
     }
     // Log masuk ahli: id = {telefon}_{plat} → {token}. Pelanggan hanya boleh cipta untuk kad sendiri (telefon & plat mesti sepadan)
     match /ahli_masuk/{kunci} {

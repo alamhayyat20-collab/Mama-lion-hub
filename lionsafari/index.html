@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-17">
+<meta name="app-versi" content="2026.11.16-18">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -164,16 +164,16 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-17';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-18';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli } from '../safari-lib.js?v=2026.11.16-17';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-17';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-17';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-17';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-17';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli } from '../safari-lib.js?v=2026.11.16-18';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-18';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-18';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-18';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-18';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -284,7 +284,7 @@ let tab = 'Ringkasan', hari = today();
 let aktif = [], dibuatHari = [], bayarHari = [], stok = [], petty = [];
 let unsubAsas = [], unsubHari = [], dataError = '';
 let pasangPrompt = null;
-let GAMBAR = {}, KOMISEN = {}, FOTO = {}, tempahan = [], bayarPel = [], bayarPelMula = false;
+let GAMBAR = {}, KOMISEN = {}, FOTO = {}, tempahan = [], bayarPel = [], bayarPelMula = false, fotoK = [];
 // Segerak indeks log masuk Apps Pelanggan (ahli_masuk/{telefon}_{plat}) — sekali setiap 12 jam
 async function segerakMasukAhli(){
   try{ if(Date.now() - (+localStorage.getItem('ls_masukSync') || 0) < 12 * 3600e3) return; }catch(_){}
@@ -528,6 +528,7 @@ function langganHari(){
     aktif = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaDibuat||0)-(b.masaDibuat||0));
     aktif.forEach(o => { if(o.id in lama && o.diskaunBeri && o.diskaunBeri.masa !== lama[o.id]) bunyiMaklum(`🎟 Diskaun ${o.plat}`, labelDiskaun(o.diskaunBeri)); });
     refreshLive(); if(kemasBayar) kemasBayar(); }, onErr));
+  unsubHari.push(onSnapshot(query(col('foto_keadaan'), where('tarikh','==',today())), s => { fotoK = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masa||0)-(b.masa||0)); refreshLive(); }, () => {}));
   unsubHari.push(onSnapshot(query(col('bayar_pelanggan'), where('status','==','menunggu')), s => {
     const lama = new Set(bayarPel.map(x => x.id)), awal = !bayarPelMula; bayarPelMula = true;
     bayarPel = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaPeranti||0)-(b.masaPeranti||0));
@@ -686,16 +687,28 @@ function lihatResit(o){
     <div class="resitkertas">${htmlResit(o)}</div>
     <div class="row" style="margin-top:8px"><button class="btn-gold big" style="flex:1" id="rCetak">🖨 CETAK</button><button class="big" style="flex:1" id="rPdf">📄 PDF</button></div>
     <label>No. WhatsApp pelanggan</label><div class="row" style="flex-wrap:nowrap"><input id="rTel" inputmode="tel" value="${esc(paparTelefon(o.telefon || ''))}" placeholder="cth: 012-345 6789" style="margin:0;flex:1"></div>
-    <div class="row" style="margin-top:8px"><button class="btn-ok big" style="flex:1" id="rWa">💬 WhatsApp resit</button><button class="big" style="flex:1" id="rKongsi">📤 Kongsi PDF</button></div>
-    <p class="muted" style="font-size:12px;margin-bottom:0"><b>WhatsApp resit</b> membuka chat nombor pelanggan dengan resit lengkap. <b>Kongsi PDF</b> buka menu kongsi telefon/tablet — pilih WhatsApp & pelanggan untuk hantar fail PDF.</p>`);
+    <div class="row" style="margin-top:8px"><button class="btn-ok big" style="flex:1" id="rKongsi">📄 PDF ke WhatsApp pelanggan</button><button class="big" style="flex:1" id="rWa">💬 Resit teks sahaja</button></div>
+    <p class="muted" style="font-size:12px;margin-bottom:0"><b>PDF ke WhatsApp pelanggan</b> membuka chat WhatsApp nombor di atas dengan resit & pautan PDF resit (pelanggan tekan untuk buka / simpan PDF). Tidak perlu simpan nombor dalam contacts.</p>`);
   $('#mTutup').onclick = closeModal;
   $('#rCetak').onclick = () => cetakResit(o);
   const buatPdf = async btn => { const t = btn.textContent; btn.disabled = true; btn.textContent = 'Menjana…'; try{ return await pdfResit(o); }catch(e){ toast('⚠ ' + e.message); return null; } finally{ btn.disabled = false; btn.textContent = t; } };
   const muatTurun = f => { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
   $('#rPdf').onclick = async () => { const f = await buatPdf($('#rPdf')); if(f){ muatTurun(f); toast('📄 PDF dimuat turun'); } };
-  $('#rKongsi').onclick = async () => { const f = await buatPdf($('#rKongsi')); if(!f) return;
-    if(navigator.canShare && navigator.canShare({files:[f]})){ try{ await navigator.share({files:[f], title: f.name, text: `Resit ${T.namaKedai} — ${o.plat}`}); }catch(_){} }
-    else { muatTurun(f); toast('Peranti ini tidak menyokong kongsi fail — PDF dimuat turun, lampirkan dalam WhatsApp'); } };
+  $('#rKongsi').onclick = async () => {
+    const tel = normTelefon($('#rTel').value); if(!telefonSah(tel)) return toast('No. telefon tidak sah');
+    const w = window.open('about:blank', '_blank');   // buka dahulu (elak sekatan pop-up), isi selepas PDF siap
+    const f = await buatPdf($('#rKongsi')); if(!f){ w?.close(); return; }
+    try{
+      const pdf = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+      if(pdf.length > 950000) throw new Error('Fail PDF terlalu besar');
+      const ref = doc(collection(store, 'resit_awam'));
+      await setDoc(ref, {pdf, namaFail: f.name, no: o.no || '', plat: o.plat || '', jumlah: Number(o.jumlah) || 0, kedai: T.namaKedai || '', cawangan, teks: teksResit(o), masa: Date.now(), tarikh: today()});
+      const pautan = new URL(`../pelanggan/resit.html?id=${ref.id}`, location.href).href;
+      const url = `https://wa.me/${tel}?text=${encodeURIComponent(teksResit(o) + '\n\n📄 Resit PDF: ' + pautan)}`;
+      if(w) w.location.href = url; else location.href = url;
+      toast('💬 WhatsApp dibuka dengan resit PDF pelanggan');
+    }catch(e){ w?.close(); toast('⚠ ' + (e.code || e.message)); }
+  };
   $('#rWa').onclick = () => { const tel = normTelefon($('#rTel').value); if(!telefonSah(tel)) return toast('No. telefon tidak sah');
     window.open(`https://wa.me/${tel}?text=${encodeURIComponent(teksResit(o))}`, '_blank'); };
 }
@@ -1006,8 +1019,9 @@ const tagAhli = o => `${o.ahli ? `<span class="tag gold">⭐ ${esc(o.ahli.kod)}<
 // ---------- QUEUE ----------
 let cari = '';
 VIEWS['Queue'] = {
-  statik: () => `<div class="between" style="margin-bottom:10px"><h3 style="margin:0">🚿 Queue & Bay</h3><input id="qCari" placeholder="🔍 Cari plat" value="${esc(cari)}" style="max-width:200px;margin:0"></div>`,
-  pasang(){ $('#qCari').oninput = e => { cari = e.target.value; refreshLive(); }; },
+  statik: () => `<div class="between" style="margin-bottom:10px;gap:8px;flex-wrap:wrap"><h3 style="margin:0">🚿 Queue & Bay</h3><div class="row" style="flex-wrap:nowrap"><input id="qCari" placeholder="🔍 Cari plat" value="${esc(cari)}" style="max-width:200px;margin:0">${(PERANAN[staf.peranan] || []).includes('Order Baru') ? '<button class="btn-gold" id="qOrderBaru">➕ Order baru</button>' : ''}</div></div>`,
+  pasang(){ $('#qCari').oninput = e => { cari = e.target.value; refreshLive(); };
+    if($('#qOrderBaru')) $('#qOrderBaru').onclick = () => { tab = 'Order Baru'; renderShell(); window.scrollTo(0,0); }; },
   live(){
     const l = aktif.filter(o => !cari || o.plat.toLowerCase().replace(/\s/g,'').includes(cari.toLowerCase().replace(/\s/g,'')));
     const tp = tempahan.length ? `<div class="card" style="border:2px solid var(--gold,#f59e0b)"><h3>📲 Tempahan dari Apps Pelanggan (${tempahan.length})</h3>${tempahan.map(t => `<div class="between" style="padding:8px 0;border-bottom:1px solid #e5e7eb"><div><span class="plate">${esc(t.plat)}</span> <span class="tag gold">⭐ ${esc(t.ahliKod||'')}</span><br>
@@ -1024,6 +1038,7 @@ VIEWS['Queue'] = {
         ${o.diskaunBeri ? `<div><span class="tag gold">🎟 Diskaun ${esc(labelDiskaun(o.diskaunBeri))}</span></div>` : o.diskaunMinta ? `<div><span class="tag">⏳ Minta diskaun RM${esc(o.diskaunMinta.amaun)}</span></div>` : ''}
         ${bayarPel.some(x => x.orderId === o.id) ? `<div><span class="tag ok">📲 Pelanggan dah bayar — semak di atas</span></div>` : ''}
         ${o.catatan?`<div class="muted">📝 ${esc(o.catatan)}</div>`:''}
+        ${fotoK.some(f => f.orderId === o.id) ? `<div><span class="tag">📷 ${fotoK.filter(f => f.orderId === o.id).length} gambar keadaan</span></div>` : ''}
         <div class="steps">${STATUS.map((s,j) => `<span class="${j<=i?'done':''}"></span>`).join('')}</div>
         <div class="row">
           ${seterus ? `<button class="btn-dark" data-st="${o.id}|${seterus}">→ ${seterus}</button>` : ''}
@@ -1032,6 +1047,8 @@ VIEWS['Queue'] = {
           ${bolehBayar ? `<button class="btn-ok" data-bayar="${o.id}">💳 Bayar</button>` : ''}
           ${bolehBayar ? `<button class="small btn-bad" data-batal="${o.id}">Batal</button>` : ''}
           ${PELULUS.includes(staf.peranan) ? `<button class="small" data-tukarmo="${o.id}">🧾 ${o.mo ? 'Tukar MO' : 'Set MO'}</button>` : ''}
+          ${bolehBayar ? `<button class="small" data-edit="${o.id}">✏️ Edit</button>` : ''}
+          <button class="small" data-fotok="${o.id}">📷 Gambar</button>
         </div></div>`;
     }).join('');
   },
@@ -1044,6 +1061,8 @@ VIEWS['Queue'] = {
     $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar))); pasangBayarPel();
     $$('[data-batal]').forEach(b => b.onclick = () => batalOrder(aktif.find(o => o.id === b.dataset.batal)));
     $$('[data-tukarmo]').forEach(b => b.onclick = () => tukarMO(aktif.find(o => o.id === b.dataset.tukarmo)));
+    $$('[data-edit]').forEach(b => b.onclick = () => editOrder(aktif.find(o => o.id === b.dataset.edit)));
+    $$('[data-fotok]').forEach(b => b.onclick = () => gambarKeadaan(aktif.find(o => o.id === b.dataset.fotok)));
     $$('[data-tpterima]').forEach(b => b.onclick = async () => { const t = tempahan.find(x => x.id === b.dataset.tpterima); if(!t) return; b.disabled = true;
       const h = today(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad(dibuatHari.length + 1, 3)}`;
       try{ await KT.terimaTempahan(t, cawangan, {no, bay: T.bay?.[0] || ''}); toast(`✅ Tempahan ${t.plat} diterima — masuk Queue`); }catch(e){ b.disabled = false; onErr(e); } });
@@ -1052,6 +1071,90 @@ VIEWS['Queue'] = {
     muatGambarOrder();
   }
 };
+
+
+// ✏️ Edit order dalam queue: betulkan plat, jenis kenderaan, pakej, add-on & catatan (harga dikira semula)
+function editOrder(o){
+  if(!o) return;
+  const L = {pakej: aktifSahaja('pakej'), kenderaan: aktifSahaja('kenderaan'), addon: aktifSahaja('addon')};
+  if(!L.kenderaan.length) L.kenderaan = [{id:'k0', nama:'Kereta', harga:0}];
+  let ki = Math.max(0, L.kenderaan.findIndex(k => k.nama === o.kenderaan)), pi = L.pakej.findIndex(p => p.id === o.pakejId);
+  const pilihAddon = new Set((o.addon || []).map(a => L.addon.findIndex(x => x.id === a.id)).filter(i => i >= 0));
+  const addonLama = (o.addon || []).filter(a => !L.addon.some(x => x.id === a.id));   // add-on yang tiada lagi dalam tetapan: dikekalkan
+  const fw = !!o.freeWash;
+  openModal(`<div class="between"><h3 style="margin:0">✏️ Edit order ${esc(o.no || '')}</h3><button class="small" id="mTutup">✕</button></div>
+    <label>No. plat</label><input id="eP" value="${esc(o.plat)}" autocapitalize="characters" style="text-transform:uppercase;font-size:20px;font-weight:800">
+    <label>Jenis kenderaan</label><div class="choices" id="eK">${L.kenderaan.map((k,i) => `<button class="choice ${i===ki?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b></button>`).join('')}</div>
+    <label>Pakej${fw ? ' (🎁 Free Wash — pakej dikunci)' : ''}</label><div class="choices" id="eJ">${L.pakej.map((p,i) => `<button class="choice ${i===pi?'sel':''}" data-i="${i}" ${fw && i !== pi ? 'disabled style="opacity:.4"' : ''}><b>${esc(p.nama)}</b><span data-ehp="${i}"></span></button>`).join('')}</div>
+    <label>Add-on</label><div class="choices" id="eA">${L.addon.map((a,i) => `<button class="choice ${pilihAddon.has(i)?'sel':''}" data-i="${i}"><b>${esc(a.nama)}</b><span data-eha="${i}"></span></button>`).join('')}</div>
+    ${addonLama.length ? `<div class="muted">Dikekalkan: ${addonLama.map(a => esc(a.nama) + ' ' + RM(a.harga)).join(', ')}</div>` : ''}
+    <label>Catatan / remarks</label><textarea id="eC" rows="2" placeholder="cth: calar pintu kiri, pelanggan minta fokus sport rim">${esc(o.catatan || '')}</textarea>
+    <div class="totalbar"><span>Jumlah baru</span><b id="eJum"></b></div>
+    ${o.diskaunBeri ? `<div class="muted">🎟 Diskaun ${esc(labelDiskaun(o.diskaunBeri))} kekal & ditolak semasa bayaran.</div>` : ''}
+    <button class="btn-gold big" id="eSimpan">SIMPAN PERUBAHAN</button>`);
+  $('#mTutup').onclick = closeModal;
+  const kira = () => {
+    const k = L.kenderaan[ki];
+    L.pakej.forEach((x,i) => { const h = hargaPakejK(x, k), e = $(`[data-ehp="${i}"]`); if(e) e.textContent = h == null ? 'ikut permintaan' : RM(h); });
+    L.addon.forEach((x,i) => { const h = hargaAddonK(x, k), e = $(`[data-eha="${i}"]`); if(e) e.textContent = h == null ? 'tiada' : '+' + RM(h); });
+    const p = L.pakej[pi], hp = p ? hargaPakejK(p, k) : null;
+    const addon = [...[...pilihAddon].map(i => ({id: L.addon[i].id, nama: L.addon[i].nama, harga: hargaAddonK(L.addon[i], k) ?? 0})), ...addonLama];
+    const kasar = r2((fw ? 0 : (hp ?? 0)) + sum(addon, a => a.harga));
+    $('#eJum').textContent = hp == null && p ? 'Harga pakej ikut permintaan' : RM(kasar) + (kasar !== o.jumlahKasar ? ` (asal ${RM(o.jumlahKasar)})` : '');
+    return {k, p, hp, addon, kasar};
+  };
+  const pilih = (box, fn) => $$(`${box} .choice`).forEach(b => b.onclick = () => { if(b.disabled) return; fn(+b.dataset.i, b); kira(); });
+  pilih('#eK', i => { ki = i; $$('#eK .choice').forEach((x,j) => x.classList.toggle('sel', j === i)); });
+  pilih('#eJ', i => { pi = i; $$('#eJ .choice').forEach((x,j) => x.classList.toggle('sel', j === i)); });
+  pilih('#eA', (i, b) => { pilihAddon.has(i) ? pilihAddon.delete(i) : pilihAddon.add(i); b.classList.toggle('sel'); });
+  kira();
+  $('#eSimpan').onclick = async () => {
+    const plat = paparPlat(val('#eP')), {k, p, hp, addon, kasar} = kira();
+    if(!normPlat(plat)) return toast('No. plat kosong');
+    if(!p) return toast('Pilih pakej');
+    if(hp == null) return toast(`${p.nama}: harga ikut permintaan bagi ${k.nama} — guna item manual semasa bayaran`);
+    const ubah = [];
+    if(normPlat(plat) !== normPlat(o.plat)) ubah.push(`plat ${o.plat}→${plat}`);
+    if(k.nama !== o.kenderaan) ubah.push(`kenderaan ${o.kenderaan}→${k.nama}`);
+    if(p.id !== o.pakejId) ubah.push(`pakej ${o.pakej}→${p.nama}`);
+    const aLama = (o.addon || []).map(a => a.id).sort().join(), aBaru = addon.map(a => a.id).sort().join(); if(aLama !== aBaru) ubah.push('add-on');
+    if(val('#eC') !== (o.catatan || '')) ubah.push('catatan');
+    if(!ubah.length) return closeModal();
+    const komisen = o.mo ? r2((fw ? 0 : Number(KOMISEN[p.id]) || 0) + sum(addon, a => Number(KOMISEN[a.id]) || 0)) : (o.komisen || 0);
+    const data = {plat, kenderaan: k.nama, pakejId: p.id, pakej: p.nama, hargaPakej: fw ? 0 : p.harga, tambahanKenderaan: fw ? 0 : r2(hp - p.harga), addon,
+      jumlahKasar: kasar, jumlah: kasar, catatan: val('#eC'), komisen, ...(fw ? {freeWash: {...o.freeWash, nilai: r2(hp)}} : {}),
+      sejarahEdit: arrayUnion({oleh: staf.nama, masa: Date.now(), ubah: ubah.join(', ')}), dikemaskiniOleh: staf.nama};
+    $('#eSimpan').disabled = true;
+    try{
+      await updateDoc(doc(col('order'), o.id), data);
+      if(normPlat(plat) !== normPlat(o.plat)){
+        deleteDoc(doc(col('bayar_awam'), normPlat(o.plat))).catch(() => {});
+        if(o.ahli?.id){ updateDoc(doc(ahliCol(), o.ahli.id), {plat: arrayUnion(normPlat(plat)), kenderaan: arrayUnion({plat, jenis: k.nama})}).catch(console.error);
+          if(o.telefon) setDoc(doc(store, 'ahli_masuk', kunciMasuk(o.telefon, plat)), {token: o.ahli.id}).catch(console.error); }
+      }
+      KT.cermin({...o, ...data, sejarahEdit: undefined}, cawangan);
+      closeModal(); toast(`✅ ${plat} dikemas kini: ${ubah.join(', ')}`);
+    }catch(e){ $('#eSimpan').disabled = false; onErr(e); }
+  };
+}
+// 📷 Gambar keadaan asal kenderaan (dalam, calar, kondisi) — bukti sebelum servis
+function gambarKeadaan(o){
+  if(!o) return;
+  const lukis = () => { const l = fotoK.filter(f => f.orderId === o.id);
+    $('#gkSenarai').innerHTML = l.length ? l.map(f => `<figure style="margin:0;text-align:center"><img src="${f.gambar}" data-gkbesar="${f.id}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer"><figcaption class="muted" style="font-size:12px">${esc(f.nota || '')}${f.nota ? ' · ' : ''}${esc(f.oleh || '')} ${fMasa(f.masa)}</figcaption></figure>`).join('') : '<p class="muted">Belum ada gambar keadaan.</p>';
+    $$('[data-gkbesar]').forEach(im => im.onclick = () => window.open('', '_blank')?.document.write(`<img src="${im.src}" style="max-width:100%">`)); };
+  openModal(`<div class="between"><h3 style="margin:0">📷 Keadaan asal — ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
+    <p class="muted" style="margin-top:4px">Ambil gambar bahagian dalam, calar, kemik atau barang berharga sebagai bukti keadaan asal sebelum servis.</p>
+    <div id="gkSenarai" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+    <label>Nota gambar (pilihan)</label><input id="gkNota" placeholder="cth: tempat duduk belakang kotor, calar bumper">
+    <label class="btn-gold big" style="display:block;text-align:center;cursor:pointer;margin-top:8px">📸 AMBIL / PILIH GAMBAR<input id="gkFail" type="file" accept="image/*" capture="environment" multiple style="display:none"></label>`);
+  $('#mTutup').onclick = closeModal; lukis();
+  $('#gkFail').onchange = async e => { const fail = [...e.target.files]; e.target.value = ''; if(!fail.length) return;
+    for(const f of fail){ try{ const g = await kecilkanGambar(f, 900, 0.6);
+      const d = {orderId: o.id, plat: o.plat, gambar: g, nota: val('#gkNota'), oleh: staf.nama, masa: Date.now(), tarikh: today()};
+      const ref = doc(col('foto_keadaan')); await setDoc(ref, d); if(!fotoK.some(x => x.id === ref.id)) fotoK.push({id: ref.id, ...d}); }catch(err){ onErr(err); } }
+    $('#gkNota').value = ''; lukis(); toast('📷 Gambar keadaan disimpan'); };
+}
 
 // Supervisor / Manager / Admin: betulkan MO yang dapat komisen (jika pertikaian). Direkod dalam moLog.
 function tukarMO(o){
