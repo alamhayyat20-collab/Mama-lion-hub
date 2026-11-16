@@ -163,10 +163,10 @@ service cloud.firestore {
       allow read: if staffApp();
       allow create: if staffApp() && olehKuasa(cawangan, 'tutup')
         && request.resource.data.status == 'draf'
-        && request.resource.data.keys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'dikemaskini', 'olehId', 'olehCaw']);
+        && request.resource.data.keys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'kiraan2', 'dikemaskini', 'olehId', 'olehCaw']);
       allow update: if staffApp() && (
         (olehKuasa(cawangan, 'tutup') && resource.data.get('status', 'draf') == 'draf' && request.resource.data.status == 'draf'
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'dikemaskini', 'olehId', 'olehCaw']))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'fotoOleh', 'fotoMasa', 'tunaiDikira', 'kiraan2', 'dikemaskini', 'olehId', 'olehCaw']))
         || (olehKuasa(cawangan, 'semak') && resource.data.status == 'dihantar' && request.resource.data.status in ['disahkan', 'draf']
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tarikh', 'bulan', 'cawangan', 'status', 'disemakOleh', 'masaSemak', 'catatanSemak', 'dikemaskini', 'olehId', 'olehCaw'])));
     }

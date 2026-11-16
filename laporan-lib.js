@@ -1,5 +1,5 @@
-import { bukaPaparan, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-08';
-import { hariOperasi } from './safari-lib.js?v=2026.11.17-08';
+import { bukaPaparan, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-09';
+import { hariOperasi } from './safari-lib.js?v=2026.11.17-09';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -133,7 +133,7 @@ export function teksWhatsApp(L, rekod = {}){
 // ---------------------------------------------------------------------
 // Cetakan A4 (format borang Daily Sales)
 // ---------------------------------------------------------------------
-export function htmlCetak(L, rekod = {}, foto = ''){
+export function htmlCetak(L, rekod = {}, foto = '', pra = null){
   const sel = (v, kosong = '') => v ? RMx(v) : kosong;
   const senarai = (l, f, min = 3) => { const a = l.map(f); while(a.length < min) a.push('_____________________________'); return a.map((x,i) => `<div>${i+1}) ${x}</div>`).join(''); };
   const kom = L.bayaran.filter(x => x.dibayar && x.jenis === 'Komisen'), pt = L.bayaran.filter(x => x.dibayar && x.jenis !== 'Komisen');
@@ -149,6 +149,7 @@ export function htmlCetak(L, rekod = {}, foto = ''){
   .pos{color:#166534}.neg{color:#b91c1c}.small{font-size:9px;color:#444}@media screen{body{padding:14px;max-width:1150px;margin:auto}}
   </style></head><body>
   ${rekod.percubaan ? `<div style="border:2px dashed #b91c1c;color:#b91c1c;text-align:center;font-weight:800;padding:4px;margin-bottom:6px">REKOD PERCUBAAN — BUKAN JUALAN SEBENAR${rekod.catatanPemilik ? ' · ' + esc(rekod.catatanPemilik) : ''}</div>` : ''}
+  ${pra ? `<div style="border:2px solid #92400e;background:#fffbeb;color:#92400e;text-align:center;font-weight:800;padding:5px;margin-bottom:6px;letter-spacing:.03em">LAPORAN PRA-TUTUP — DRAF, BELUM DITUTUP · Cetakan No. ${pra.no} · ${new Date(pra.masa).toLocaleString('en-GB')} · Oleh: ${esc(pra.oleh || '')}</div>` : ''}
   <h1>${esc(L.namaKedai)}</h1><div class="top"><span>TARIKH : ${fT(L.tarikh)}</span><span>HARI : ${L.hari}</span><span>DAILY SALES REPORT</span></div>
   <table><tr><th style="width:30px">BIL.</th><th style="width:44px">MASA</th><th>JENIS KENDERAAN &amp; NO. PLAT</th><th style="width:60px">RM</th>${LAJUR.map(([,n]) => `<th style="width:62px">${n}</th>`).join('')}<th style="width:70px">CASH/QR/<br>TRANSFER</th><th style="width:80px">TF. NO</th><th style="width:90px">NAME SERVE</th></tr>
   ${baris.map((b, i) => b ? `<tr><td class="c">${b.bil}</td><td class="c">${b.masa}</td><td>${esc(b.kend)}<br><span class="small">${esc(b.pakej)}</span></td><td class="r">${RMx(b.rm)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(b.nilai[k])}</td>`).join('')}<td class="c">${esc(b.kaedah)}</td><td>${esc(b.tf)}</td><td>${esc(b.serve)}</td></tr>`
@@ -164,14 +165,18 @@ export function htmlCetak(L, rekod = {}, foto = ''){
       <p style="margin:8px 0 2px"><b>ADVANCE STAFF: (NAME &amp; RM)</b></p>${senarai(L.advance.filter(a => a.dibayar), x => `${esc(x.nama)} — RM ${RMx(x.amaun)}`, 2)}</div>
     <div class="box"><p style="margin:0 0 2px"><b>CONSUMABLES / SUPPLIER PRODUCT</b> <span class="small">*attach with receipt*</span></p>${senarai(L.belanjaLaci, x => `${esc(x.perkara)} — RM ${RMx(x.amaun)}`, 2)}
       <div class="ln" style="margin-top:6px"><span>CASH PAID OUT (RM)</span><span>${RMx(L.keluar)}</span></div><div class="ln"><span>FLOAT / MODAL (RM)</span><span>${RMx(L.float)}</span></div>
-      <div class="ln"><span>BALANCE OF PAYMENT (BOP) (RM)</span><span>${RMx(L.bop)}</span></div><div class="ln"><span>CASH COUNTED (RM)</span><span>${L.dikira == null ? '________' : RMx(L.dikira)}</span></div>
-      <div class="ln"><span>SURPLUS (+) / SHORTAGE (−) (RM)</span><span class="${L.beza >= 0 ? 'pos' : 'neg'}">${L.beza == null ? '________' : (L.beza >= 0 ? '+' : '−') + RMx(Math.abs(L.beza))}</span></div>
-      <div class="ln big"><span>NET CASH BALANCE (RM)</span><span>${L.bersih == null ? '________' : RMx(L.bersih)}</span></div>
+      <div class="ln"><span>BALANCE OF PAYMENT (BOP) (RM)</span><span>${pra?.buta ? '________' : RMx(L.bop)}</span></div>
+      <div class="ln"><span>KIRAAN 1 — JURUWANG (RM)</span><span>${rekod.kiraan1 ? RMx(rekod.kiraan1.jumlah) : '________'}</span></div>
+      <div class="ln"><span>KIRAAN 2 — PENYELIA (RM)</span><span>${rekod.kiraan2 ? RMx(rekod.kiraan2.jumlah) : '________'}</span></div>
+      <div class="ln"><span>CASH COUNTED (RM)</span><span>${L.dikira == null ? '________' : RMx(L.dikira)}</span></div>
+      <div class="ln"><span>SURPLUS (+) / SHORTAGE (−) (RM)</span><span class="${L.beza >= 0 ? 'pos' : 'neg'}">${L.beza == null || pra?.buta ? '________' : (L.beza >= 0 ? '+' : '−') + RMx(Math.abs(L.beza))}</span></div>
+      <div class="ln big"><span>NET CASH BALANCE (RM)</span><span>${L.bersih == null || pra?.buta ? '________' : RMx(L.bersih)}</span></div>
       ${L.petty.length ? `<div class="small" style="margin-top:4px">Petty cash hari ini (dana berasingan): RM ${RMx(L.jumPetty)}</div>` : ''}</div>
   </div>
   ${foto ? `<div class="box foto" style="margin-top:8px;page-break-inside:avoid"><b>GAMBAR WANG TUNAI SEMASA TUTUP KAUNTER</b> <span class="small">— diambil oleh ${esc(rekod.fotoOleh || '')} ${rekod.fotoMasa ? new Date(rekod.fotoMasa).toLocaleString('en-GB') : ''}</span><img src="${foto}"></div>` : ''}
   ${rekod.catatan ? `<div class="box" style="margin-top:8px"><b>NOTE / REMARKS:</b> ${esc(rekod.catatan)}</div>` : ''}
   ${rekod.catatanSemak ? `<div class="box" style="margin-top:8px"><b>CATATAN SEMAKAN:</b> ${esc(rekod.catatanSemak)}</div>` : ''}
+  ${pra ? `<div class="sig" style="grid-template-columns:1fr 1fr"><div>DIKIRA OLEH JURUWANG (KIRAAN 1)<br><b>${esc(rekod.kiraan1?.oleh || '')}</b></div><div>DIKIRA & DISAHKAN OLEH PENYELIA (KIRAAN 2)<br><b>${esc(rekod.kiraan2?.oleh || '')}</b></div></div>` : ''}
   <div class="sig"><div>CLOSED BY / CASHIER STAFF<br><b>${esc(rekod.ditutupOleh || '')}</b><br>${rekod.masaTutup ? new Date(rekod.masaTutup).toLocaleString('en-GB') : ''}</div>
     <div>CHECKED BY / ADMIN FINANCIAL<br><b>${esc(rekod.disemakOleh || '')}</b><br>${rekod.masaSemak ? new Date(rekod.masaSemak).toLocaleString('en-GB') : ''}</div>
     <div>APPROVED BY<br><b>DATIN NUR SAFARINI</b><br>DIRECTOR</div><div>APPROVED BY<br><b>DATO' MUHAMMAD ARIS</b><br>CHAIRMAN</div></div>
@@ -195,7 +200,9 @@ export async function kongsiWhatsApp(teks){
 // ---------------------------------------------------------------------
 export function modulTutup(ctx){
   const {store, fs} = ctx;
-  const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null, lampiran: [], queue: null};
+  const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null, lampiran: [], queue: null, k2oleh: null, k1ubah: false, draf: {}, fokus: null};
+  const PECAHAN = [100, 50, 20, 10, 5, 1, 0.5, 0.2, 0.1, 0.05];
+  const jumPecahan = pc => r2(PECAHAN.reduce((t, d) => t + d * (Number(pc?.[d]) || 0), 0));
   const T = () => ctx.tanda ? ctx.tanda() : {};
   const col = (c, n) => fs.collection(store, 'lionsafari', c, n);
   const K = n => fs.collection(store, 'kakitangan', 'mama-lion', n);
@@ -208,8 +215,12 @@ export function modulTutup(ctx){
     st.lampiran = [];
     st.unsub.push(fs.onSnapshot(fs.query(col(st.c, 'tutup_lampiran'), fs.where('tarikh', '==', st.tarikh)), s => { st.lampiran = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.masa||0) - (b.masa||0)); ctx.refresh(); }, () => {}));
     st.queue = null;
+    st.k2oleh = null; st.k1ubah = false;
+    if(ctx.mod === 'kaunter') st.unsub.push(fs.onSnapshot(fs.query(col(st.c, 'order'), fs.where('tarikhBayar', '==', st.tarikh)), s => {
+      const k = s.docs.length + '|' + s.docs.reduce((t, d) => t + (Number(d.data().jumlah) || 0) + (d.data().status === 'Batal' ? 0.001 : 0), 0);
+      if(st._kunciO != null && k !== st._kunciO && !st.muat){ st._kunciO = k; muatData(); } else st._kunciO = k; }, () => {}));
     if(ctx.mod === 'kaunter') st.unsub.push(fs.onSnapshot(fs.query(col(st.c, 'order'), fs.where('tarikh', '==', st.tarikh)), s => { st.queue = s.docs.map(d => d.data()).filter(o => o.status !== 'Batal' && !o.bayar).length; ctx.refresh(); }, () => {}));
-    if(ctx.mod === 'kaunter' || ctx.mod === 'lihat') muatData();
+    if(ctx.mod === 'kaunter' || ctx.mod === 'lihat' || ctx.mod === 'foto') muatData();
   }
   async function muatData(){
     st.muat = true; ctx.refresh();
@@ -243,17 +254,17 @@ export function modulTutup(ctx){
     const kepala = `<div class="lt-card"><div class="lt-between"><h3 style="margin:0">🔐 Tutup Kaunter — ${e(NAMA_CAW[st.c] || st.c)}</h3><span class="lt-tag lt-${status}">${STATUS_TUTUP[status]}</span></div>
       <div class="lt-row" style="margin-top:8px"><label style="margin:0">Tarikh</label><input type="date" data-lt-tarikh value="${st.tarikh}" max="${hariIniT()}" style="width:auto;margin:0"><b>${namaHari(st.tarikh)}</b></div>
       ${st.ralat ? `<div class="lt-notice">⚠ ${e(st.ralat)}</div>` : ''}${r.catatanSemak && status === 'draf' ? `<div class="lt-notice">↩ Dipulangkan oleh ${e(r.disemakOleh || '')}: ${e(r.catatanSemak)}</div>` : ''}</div>`;
-    const fotoBox = `<div class="lt-card"><h3>📸 Gambar wang tunai</h3>${st.foto ? `<img src="${st.foto}" class="lt-foto" data-lt-besar><button class="lt-btn" data-lt-turunfoto style="width:100%;margin-top:6px">⬇ Muat turun gambar</button>` : '<p class="lt-muted">Belum ada gambar. Gambar diambil oleh pekerja yang diberi kuasa 🔐 Tutup dalam Apps Pekerja.</p>'}
+    const fotoBox = `<div class="lt-card"><h3>📸 Gambar wang + Laporan Pra-Tutup</h3>${st.foto ? `<img src="${st.foto}" class="lt-foto" data-lt-besar><button class="lt-btn" data-lt-turunfoto style="width:100%;margin-top:6px">⬇ Muat turun gambar</button>` : '<p class="lt-muted">Belum ada gambar. Gambar diambil oleh pekerja yang diberi kuasa 🔐 Tutup dalam Apps Pekerja.</p>'}
       ${r.fotoOleh ? `<div class="lt-muted">Oleh ${e(r.fotoOleh)} · ${r.fotoMasa ? new Date(r.fotoMasa).toLocaleString('en-GB') : ''}</div>` : ''}
       ${r.tunaiDikira != null ? `<div class="lt-big">Tunai dikira: RM ${RMx(r.tunaiDikira)}</div>` : ''}
-      ${ctx.mod === 'foto' && !kunci() ? `<label>Jumlah tunai dalam laci (RM) — termasuk modal float</label><input type="number" inputmode="decimal" step="0.01" data-lt-dikira value="${r.tunaiDikira ?? ''}" placeholder="cth 1,250.00">
-        <div class="lt-muted" style="margin-top:8px">${st.foto ? 'Ambil semula gambar' : 'Ambil gambar wang tunai'}:</div>
-        <div class="lt-row"><label class="lt-btn lt-pri" style="flex:1;text-align:center">📷 Kamera<input type="file" accept="image/*" capture="environment" data-lt-ambil style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-ambil style="display:none"></label></div>
-        <button class="lt-btn" data-lt-simpandikira style="width:100%;margin-top:6px">💾 Simpan jumlah tunai</button>` : ''}</div>`;
+      ${(ctx.mod === 'foto' || ctx.mod === 'kaunter') && !kunci() && r.kiraan2 ? `<div class="lt-muted" style="margin-top:8px">Ikat wang yang dikira bersama <b>Laporan Pra-Tutup yang sudah ditandatangani</b>, kemudian ambil gambar dalam satu bingkai${st.foto ? ' (ambil semula jika perlu)' : ''}:</div>
+        <div class="lt-row"><label class="lt-btn lt-pri" style="flex:1;text-align:center">📷 Kamera<input type="file" accept="image/*" capture="environment" data-lt-ambil style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-ambil style="display:none"></label></div>`
+        : (ctx.mod === 'foto' || ctx.mod === 'kaunter') && !kunci() ? '<div class="lt-muted" style="margin-top:6px">Gambar diambil selepas Kiraan 2 (penyelia) disimpan.</div>' : ''}</div>`;
+    const kiraanBox = (ctx.mod === 'kaunter' || ctx.mod === 'foto') && !kunci() ? htmlKiraan(L, r) : (r.kiraan1 || r.kiraan2 ? htmlKiraanRingkas(r) : '');
     const bolehLampir = !kunci() || ctx.bolehSemak;
     const lampiranBox = `<div class="lt-card"><h3>📎 Lampiran & dokumen (${st.lampiran.length})</h3><div class="lt-muted">Resit supplier, slip bank, penyata QR, invois atau dokumen lain berkaitan tutup kaunter hari ini.</div>
       ${htmlSenaraiLampiran(st.lampiran, {padam: bolehLampir, kosong: 'Belum ada lampiran.'})}${bolehLampir ? htmlNaikLampiran('tutup') : ''}</div>`;
-    if(ctx.mod === 'foto') return kepala + fotoBox + lampiranBox + (L ? ringkasHtml(L, r) : '') + butangKongsi(L);
+    if(ctx.mod === 'foto') return kepala + kiraanBox + fotoBox + lampiranBox + (L ? ringkasHtml(L, r) : '') + butangKongsi(L);
     if(!L) return kepala + (st.muat ? '<div class="lt-card lt-muted">Memuatkan data jualan…</div>' : '<div class="lt-card lt-muted">Laporan belum ditutup oleh kaunter.</div>') + fotoBox + lampiranBox;
     const ed = ctx.mod === 'kaunter' && !kunci();
     const jadual = `<div class="lt-card lt-scroll"><h3>🚗 Senarai kenderaan (${L.kereta})</h3><table class="lt-t"><tr><th>#</th><th>Masa</th><th>Kenderaan & plat</th><th>RM</th>${LAJUR.map(([,n]) => `<th>${n}</th>`).join('')}<th>Bayar</th><th>TF No</th><th>Serve</th></tr>
@@ -268,28 +279,68 @@ export function modulTutup(ctx){
       ${L.petty.length ? `<div class="lt-muted" style="margin-top:6px">Petty cash hari ini (dana berasingan, sudah direkod): RM ${RMx(L.jumPetty)}</div>` : ''}</div>`;
     const sk = semakan(L, r), siap = sk.every(x => x.ok || !x.wajib);
     const semakHtml = ed ? `<div class="lt-card lt-semak"><h3>✅ Senarai semak tutup kaunter</h3>${sk.map((x, i) => `<div class="lt-langkah ${x.ok ? 'ok' : x.wajib ? 'belum' : 'info'}"><span class="lt-no">${x.ok ? '✓' : i + 1}</span><div><b>${x.t}</b>${x.k ? `<small>${x.k}</small>` : ''}</div></div>`).join('')}</div>` : '';
-    return kepala + semakHtml + jadual + ringkasHtml(L, r) + bayaranHtml + fotoBox + lampiranBox +
+    return kepala + semakHtml + jadual + ringkasHtml(L, r) + bayaranHtml + kiraanBox + fotoBox + lampiranBox +
       `<div class="lt-card"><label>Nota / catatan${L.beza != null && Math.abs(L.beza) >= 1 ? ' * (wajib — terangkan beza tunai)' : ''}</label><textarea data-lt-catatan rows="2" ${ed ? '' : 'disabled'}>${e(r.catatan || '')}</textarea>
       ${ed ? `<button class="lt-btn lt-pri lt-bigbtn" data-lt-hantar ${siap ? '' : 'disabled'}>✅ TUTUP KAUNTER & HANTAR</button>${siap ? '' : '<div class="lt-muted" style="text-align:center">Lengkapkan langkah bertanda dalam senarai semak dahulu.</div>'}` : ''}
       ${r.lewat ? `<div class="lt-notice">🕐 Ditutup lewat${r.lewatSebab ? ' — ' + e(r.lewatSebab) : ''}</div>` : ''}
       ${ctx.mod === 'kaunter' && status === 'dihantar' ? '<div class="lt-muted">Sudah dihantar — menunggu semakan.</div>' : ''}</div>` + butangKongsi(L);
+  }
+  const tandaL = L => `${L.kereta}|${RMx(L.jumlah)}|${RMx(L.keluar)}`;
+  const praTerkini = (L, r) => !!(L && r.praCetak && r.praCetak.tanda === tandaL(L));
+  function gridPecahan(id, pc = {}){
+    pc = st.draf[id] || pc || {};
+    return `<div class="lt-pc" data-lt-pcgrid="${id}">${PECAHAN.map(d => `<label><span>${d >= 1 ? 'RM' + d : (d * 100) + ' sen'}</span><input type="number" inputmode="numeric" min="0" step="1" data-lt-pc="${id}|${d}" value="${pc[d] ?? ''}" placeholder="0"></label>`).join('')}</div>
+      <div class="lt-big" style="margin-top:6px">Jumlah: RM <span data-lt-pcjum="${id}">${RMx(jumPecahan(pc))}</span></div>`;
+  }
+  function htmlKiraanRingkas(r){
+    return `<div class="lt-card"><h3>🧮 Kiraan tunai</h3>${r.kiraan1 ? `<div class="lt-ln"><span>Kiraan 1 — juruwang (${esc(r.kiraan1.oleh || '')})</span><b>RM ${RMx(r.kiraan1.jumlah)}</b></div>` : ''}
+      ${r.kiraan2 ? `<div class="lt-ln"><span>Kiraan 2 — penyelia (${esc(r.kiraan2.oleh || '')})</span><b>RM ${RMx(r.kiraan2.jumlah)}</b></div>${r.kiraan2.sebab ? `<div class="lt-muted">Sebab beza kiraan: ${esc(r.kiraan2.sebab)}</div>` : ''}` : ''}</div>`;
+  }
+  function htmlKiraan(L, r){
+    const k1 = r.kiraan1, k2 = r.kiraan2, pr = r.praCetak, terkini = praTerkini(L, r);
+    const praH = ctx.mod === 'kaunter' ? `<div class="lt-langkah ${pr && terkini ? 'ok' : 'belum'}"><span class="lt-no">${pr && terkini ? '✓' : 'A'}</span><div><b>Laporan Pra-Tutup</b>
+      <small>${pr ? `Cetakan No. ${pr.no} · ${new Date(pr.masa).toLocaleString('en-GB')} · ${esc(pr.oleh || '')}` : 'Belum dicetak.'}</small>
+      ${pr && !terkini ? '<small style="color:#b91c1c;font-weight:700">⚠ Ada transaksi / wang keluar baru selepas cetakan — sila cetak semula.</small>' : ''}
+      <button class="lt-btn lt-pri" data-lt-pracetak style="margin-top:6px">🖨 ${pr ? 'Cetak semula' : 'Cetak'} Laporan Pra-Tutup</button></div></div>` : '';
+    let h1;
+    if(k1 && !st.k1ubah) h1 = `<div class="lt-langkah ok"><span class="lt-no">✓</span><div><b>Kiraan 1 — juruwang: RM ${RMx(k1.jumlah)}</b><small>${esc(k1.oleh || '')} · ${new Date(k1.masa).toLocaleString('en-GB')}</small>
+      ${ctx.mod === 'kaunter' && !k2 ? '<button class="lt-btn" data-lt-k1ulang style="margin-top:6px">↺ Kira semula</button>' : ''}</div></div>`;
+    else if(ctx.mod === 'kaunter') h1 = `<div class="lt-langkah belum"><span class="lt-no">B</span><div style="flex:1"><b>Kiraan 1 — juruwang (kiraan buta)</b><small>Kira semua wang dalam laci termasuk float. Isi bilangan keping bagi setiap nilai.</small>
+      ${gridPecahan('k1', k1?.pecahan)}<button class="lt-btn lt-pri" data-lt-k1simpan style="width:100%;margin-top:6px">💾 Simpan Kiraan 1</button></div></div>`;
+    else h1 = `<div class="lt-langkah belum"><span class="lt-no">B</span><div><b>Menunggu Kiraan 1 oleh juruwang di kaunter</b><small>Kiraan penyelia dibuat selepas juruwang menyimpan kiraannya.</small></div></div>`;
+    let h2 = '';
+    if(k1 && !st.k1ubah){
+      const bolehK2 = ctx.mod === 'foto' || st.k2oleh;
+      if(k2 && !st.k2oleh) h2 = `<div class="lt-langkah ok"><span class="lt-no">✓</span><div><b>Kiraan 2 — penyelia: RM ${RMx(k2.jumlah)}</b><small>${esc(k2.oleh || '')} · ${new Date(k2.masa).toLocaleString('en-GB')}${Math.abs(k2.jumlah - k1.jumlah) >= 0.01 ? ` · beza dengan Kiraan 1: ${k2.jumlah - k1.jumlah >= 0 ? '+' : '−'}RM ${RMx(Math.abs(k2.jumlah - k1.jumlah))}` : ' · sama dengan Kiraan 1'}</small>
+        ${k2.sebab ? `<small>Sebab: ${esc(k2.sebab)}</small>` : ''}<button class="lt-btn" data-lt-k2mula style="margin-top:6px">↺ Kira semula (penyelia)</button></div></div>`;
+      else if(bolehK2) h2 = `<div class="lt-langkah belum"><span class="lt-no">C</span><div style="flex:1"><b>Kiraan 2 — penyelia${st.k2oleh ? ': ' + esc(st.k2oleh) : ''}</b><small>Kiraan 1 juruwang: RM ${RMx(k1.jumlah)}${L ? ` · BOP (patut ada): RM ${RMx(L.bop)}` : ''}. Kira semula secara berasingan.</small>
+        ${gridPecahan('k2', k2?.pecahan)}<label style="margin-top:6px">Sebab jika berbeza dengan Kiraan 1</label><input data-lt-k2sebab placeholder="cth: tersilap kira RM10" value="${esc(st.draf.sebab ?? k2?.sebab ?? '')}">
+        <button class="lt-btn lt-pri" data-lt-k2simpan style="width:100%;margin-top:6px">💾 Simpan Kiraan 2</button></div></div>`;
+      else h2 = `<div class="lt-langkah belum"><span class="lt-no">C</span><div><b>Kiraan 2 — penyelia / pengurus / pekerja kuasa 🔐</b><small>Kira semula di sini dengan PIN, atau dalam Apps Pekerja → tab Tutup.</small>
+        <button class="lt-btn lt-pri" data-lt-k2mula style="margin-top:6px">🔐 Kiraan penyelia (PIN)</button></div></div>`;
+    }
+    return `<div class="lt-card lt-semak"><h3>🧮 Kiraan tunai (2 orang)</h3>${praH}${h1}${h2}</div>`;
   }
   function semakan(L, r){
     const q = st.queue, beza = L.beza;
     return [
       {t: q == null ? 'Semak Queue' : q ? `${q} kenderaan belum dibayar / dibatalkan` : 'Semua kenderaan dalam Queue sudah selesai', k: q ? 'Selesaikan bayaran atau batalkan order di tab Queue / Bayaran.' : '', ok: q === 0, wajib: true},
       {t: 'Rekod petty cash, consumables & bayaran staf hari ini', k: 'Tanda bayaran staf / advance yang diambil dari laci (jika ada).', ok: true, wajib: false},
-      {t: st.foto ? 'Gambar wang tunai sudah diambil' : 'Ambil gambar wang tunai dalam laci', k: st.foto ? '' : 'Oleh pekerja kuasa 🔐 Tutup dalam Apps Pekerja (tab Tutup).', ok: !!st.foto, wajib: true},
-      {t: r.tunaiDikira != null ? `Tunai dikira: RM ${RMx(r.tunaiDikira)}` : 'Isi jumlah tunai yang dikira', k: r.tunaiDikira != null ? '' : 'Termasuk modal float.', ok: r.tunaiDikira != null, wajib: true},
+      {t: !r.praCetak ? 'Cetak Laporan Pra-Tutup' : praTerkini(L, r) ? `Laporan Pra-Tutup dicetak (No. ${r.praCetak.no})` : 'Cetak semula Laporan Pra-Tutup (ada transaksi baru)', k: 'Rekod jualan & wang keluar terkini — untuk ditandatangani & dikepilkan bersama wang.', ok: praTerkini(L, r), wajib: true},
+      {t: r.kiraan1 ? `Kiraan 1 juruwang: RM ${RMx(r.kiraan1.jumlah)}` : 'Kiraan 1 — juruwang kira wang dalam laci', k: r.kiraan1 ? '' : 'Kiraan buta: BOP dipaparkan selepas kiraan disimpan.', ok: !!r.kiraan1, wajib: true},
+      {t: r.kiraan2 ? `Kiraan 2 penyelia: RM ${RMx(r.kiraan2.jumlah)}` : 'Kiraan 2 — penyelia / pengurus / pekerja kuasa 🔐 kira semula', k: r.kiraan2 ? '' : 'Dengan PIN di kaunter atau dalam Apps Pekerja.', ok: !!r.kiraan2, wajib: true},
+      {t: st.foto ? 'Gambar wang + laporan bertandatangan sudah diambil' : 'Ambil gambar wang bersama Laporan Pra-Tutup bertandatangan', k: '', ok: !!st.foto, wajib: true},
       {t: beza == null ? 'Semak beza tunai' : Math.abs(beza) < 1 ? 'Tunai sepadan dengan BOP' : `Beza tunai ${beza >= 0 ? '+' : '−'}RM ${RMx(Math.abs(beza))} — tulis sebab dalam Nota`, k: '', ok: beza != null && (Math.abs(beza) < 1 || !!(r.catatan || '').trim()), wajib: beza != null && Math.abs(beza) >= 1},
       {t: 'Tekan "TUTUP KAUNTER & HANTAR"', k: 'Laporan dikunci & dihantar ke Akaun untuk semakan.', ok: false, wajib: false}
     ];
   }
   function ringkasHtml(L, r){
-    return `<div class="lt-card"><h3>💰 Ringkasan</h3><div class="lt-grid">
+    const buta = ctx.mod === 'kaunter' && !kunci() && !r.kiraan1;
+    if(buta) L = {...L, bop: null, dikira: null, beza: null, bersih: null};
+    return `<div class="lt-card"><h3>💰 Ringkasan</h3>${buta ? '<div class="lt-notice">🔒 BOP (tunai patut ada) & beza dipaparkan selepas Kiraan 1 juruwang disimpan — kiraan buta.</div>' : ''}<div class="lt-grid">
       <div><div class="lt-ln lt-big"><span>TOTAL SALES</span><b>RM ${RMx(L.jumlah)}</b></div><div class="lt-ln"><span>Cash</span><b>${RMx(L.tunai)}</b></div><div class="lt-ln"><span>QR / E-Wallet</span><b>${RMx(L.qr)}</b></div><div class="lt-ln"><span>Transfer</span><b>${RMx(L.tf)}</b></div><div class="lt-ln"><span>Card</span><b>${RMx(L.kad)}</b></div><div class="lt-ln"><span>FOC / LC (${L.foc.length})</span><b>${RMx(L.jumFoc)}</b></div></div>
       <div><div class="lt-ln"><span>Float / modal</span><b>${RMx(L.float)}</b></div><div class="lt-ln"><span>+ Jualan tunai</span><b>${RMx(L.tunai)}</b></div><div class="lt-ln"><span>− Cash paid out</span><b>${RMx(L.keluar)}</b></div>
-      <div class="lt-ln lt-big"><span>BOP (patut ada)</span><b>RM ${RMx(L.bop)}</b></div><div class="lt-ln"><span>Tunai dikira</span><b>${L.dikira == null ? '—' : RMx(L.dikira)}</b></div>
+      <div class="lt-ln lt-big"><span>BOP (patut ada)</span><b>${L.bop == null ? '🔒' : 'RM ' + RMx(L.bop)}</b></div><div class="lt-ln"><span>Tunai dikira</span><b>${L.dikira == null ? '—' : RMx(L.dikira)}</b></div>
       <div class="lt-ln"><span>Surplus / Shortage</span><b class="${L.beza == null ? '' : L.beza >= 0 ? 'lt-pos' : 'lt-neg'}">${L.beza == null ? '—' : (L.beza >= 0 ? '+' : '−') + RMx(Math.abs(L.beza))}</b></div>
       <div class="lt-ln lt-big"><span>NET CASH BALANCE</span><b>${L.bersih == null ? '—' : 'RM ' + RMx(L.bersih)}</b></div></div></div>
       ${r.ditutupOleh ? `<div class="lt-muted" style="margin-top:6px">Ditutup oleh ${esc(r.ditutupOleh)}${r.disemakOleh ? ` · Disemak ${esc(r.disemakOleh)}` : ''}</div>` : ''}
@@ -310,6 +361,38 @@ export function modulTutup(ctx){
       try{ await simpanRekod({belanjaLaci: [...(st.rekod?.belanjaLaci || []), {perkara, amaun: r2(amaun), resit: resitBaru, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitBaru = ''; }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
     qa('[data-lt-buang]').forEach(b => b.onclick = async () => { const l = [...(st.rekod?.belanjaLaci || [])]; l.splice(+b.dataset.ltBuang, 1); await simpanRekod({belanjaLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
+    // ---- kiraan tunai 2 orang ----
+    qa('[data-lt-pc]').forEach(x => { x.oninput = () => { const id = x.dataset.ltPc.split('|')[0]; st.draf[id] = bacaPC(id); const el = q(`[data-lt-pcjum="${id}"]`); if(el) el.textContent = RMx(jumPecahan(st.draf[id])); };
+      x.onfocus = () => { st.fokus = x.dataset.ltPc; }; x.onblur = () => { setTimeout(() => { if(document.activeElement !== x && st.fokus === x.dataset.ltPc) st.fokus = null; }, 0); }; });
+    const sb = q('[data-lt-k2sebab]'); if(sb) sb.oninput = () => { st.draf.sebab = sb.value; };
+    if(st.fokus){ const f = q(`[data-lt-pc="${st.fokus}"]`); if(f && document.activeElement !== f){ f.focus({preventScroll: true}); try{ const n = f.value.length; f.setSelectionRange?.(n, n); }catch(_){} } }
+    const bacaPC = id => { const o = {}; qa(`[data-lt-pc^="${id}|"]`).forEach(x => { const n = parseInt(x.value); if(n > 0) o[x.dataset.ltPc.split('|')[1]] = n; }); return o; };
+    const pc = q('[data-lt-pracetak]'); if(pc) pc.onclick = async () => {
+      const L = laporan(); if(!L) return; const r = st.rekod || {}, no = (r.praCetak?.no || 0) + 1, masa = Date.now(), oleh = ctx.pengguna();
+      const pra = {no, masa, oleh, tanda: tandaL(L), jumlah: L.jumlah, kereta: L.kereta, keluar: L.keluar};
+      const w = window.open('', '_blank');
+      try{ await simpanRekod({praCetak: pra, praSejarah: [...(r.praSejarah || []), pra], status: r.status || 'draf'}); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+      const html = htmlCetak(L, {...r, praCetak: pra}, '', {...pra, buta: !r.kiraan1});
+      if(w){ w.document.open(); w.document.write(html.replace('<body>', '<body>' + BAR_KEMBALI_CETAK)); w.document.close(); setTimeout(() => { try{ w.focus(); w.print(); }catch(_){} }, 400); } else cetak(html);
+    };
+    const k1s = q('[data-lt-k1simpan]'); if(k1s) k1s.onclick = async () => {
+      const pecahan = bacaPC('k1'), jumlah = jumPecahan(pecahan); if(!(jumlah > 0)) return ctx.toast('Isi bilangan wang bagi setiap nilai');
+      if(!confirm(`Simpan Kiraan 1: RM ${RMx(jumlah)}?`)) return;
+      try{ await simpanRekod({kiraan1: {pecahan, jumlah, oleh: ctx.pengguna(), masa: Date.now()}, status: st.rekod?.status || 'draf'}); st.k1ubah = false; delete st.draf.k1; ctx.toast('✅ Kiraan 1 disimpan'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+    };
+    const k1u = q('[data-lt-k1ulang]'); if(k1u) k1u.onclick = () => { st.k1ubah = true; ctx.refresh(); };
+    const k2m = q('[data-lt-k2mula]'); if(k2m) k2m.onclick = async () => {
+      if(ctx.mod === 'foto'){ st.k2oleh = ctx.pengguna(); return ctx.refresh(); }
+      const n = ctx.mintaPinTutup ? await ctx.mintaPinTutup('Kiraan 2 tunai laci — ' + fT(st.tarikh)) : null;
+      if(n){ st.k2oleh = n; ctx.refresh(); }
+    };
+    const k2s = q('[data-lt-k2simpan]'); if(k2s) k2s.onclick = async () => {
+      const pecahan = bacaPC('k2'), jumlah = jumPecahan(pecahan), k1 = st.rekod?.kiraan1, sebab = (q('[data-lt-k2sebab]')?.value || '').trim();
+      if(!(jumlah > 0)) return ctx.toast('Isi bilangan wang bagi setiap nilai');
+      if(k1 && Math.abs(jumlah - k1.jumlah) >= 0.01 && !sebab) return ctx.toast(`Kiraan 2 berbeza RM ${RMx(Math.abs(jumlah - k1.jumlah))} dengan Kiraan 1 — kira semula atau tulis sebab`);
+      if(!confirm(`Simpan Kiraan 2: RM ${RMx(jumlah)}?`)) return;
+      try{ await simpanRekod({kiraan2: {pecahan, jumlah, oleh: st.k2oleh || ctx.pengguna(), masa: Date.now(), ...(sebab ? {sebab} : {})}, tunaiDikira: jumlah, status: st.rekod?.status || 'draf'}); st.k2oleh = null; delete st.draf.k2; delete st.draf.sebab; ctx.toast('✅ Kiraan 2 disimpan'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+    };
     const bf = q('[data-lt-turunfoto]'); if(bf) bf.onclick = () => simpanFail(st.foto, `Tunai-${st.c}-${st.tarikh}`);
     qa('[data-lp-naik="tutup"]').forEach(x => x.onchange = async () => {
       const fl = [...x.files]; x.value = ''; if(!fl.length) return;
@@ -319,10 +402,10 @@ export function modulTutup(ctx){
     qa('[data-lt-ambil]').forEach(amb => amb.onchange = async e => {
       const f = e.target.files[0]; if(!f) return;
       try{
-        const g = await ctx.capGambar(f, [`TUTUP KAUNTER ${NAMA_CAW[st.c] || st.c}`, `${namaHari(st.tarikh)} ${fT(st.tarikh)} ${new Date().toLocaleTimeString('en-GB')}`, `Oleh: ${ctx.pengguna()}`], 1100, 0.66);
+        const g = await ctx.capGambar(f, [`TUTUP KAUNTER ${NAMA_CAW[st.c] || st.c}`, `${namaHari(st.tarikh)} ${fT(st.tarikh)} ${new Date().toLocaleTimeString('en-GB')}`, `Kiraan: RM ${RMx(st.rekod?.kiraan2?.jumlah ?? st.rekod?.tunaiDikira ?? 0)} · Oleh: ${ctx.pengguna()}`], 1100, 0.66);
         await fs.setDoc(fs.doc(col(st.c, 'tutup_foto'), st.tarikh), {data: g, tarikh: st.tarikh, masa: Date.now(), ...T()});
         const v = parseFloat(q('[data-lt-dikira]')?.value);
-        await simpanRekod({fotoOleh: ctx.pengguna(), fotoMasa: Date.now(), ...(isFinite(v) ? {tunaiDikira: r2(v)} : {}), status: st.rekod?.status || 'draf'});
+        await simpanRekod({fotoOleh: ctx.pengguna(), fotoMasa: Date.now(), status: st.rekod?.status || 'draf'});
         ctx.toast('✅ Gambar tunai disimpan');
       }catch(err){ console.error(err); ctx.toast('⚠ Gagal simpan gambar: ' + (err.code || err.message)); }
     });
@@ -337,7 +420,10 @@ export function modulTutup(ctx){
   }
   async function hantar(){
     const L = laporan(); if(!L) return;
-    if(!st.foto || L.dikira == null) return ctx.toast('Perlu gambar & jumlah tunai dahulu');
+    const rr = st.rekod || {};
+    if(!praTerkini(L, rr)) return ctx.toast('Cetak Laporan Pra-Tutup terkini dahulu');
+    if(!rr.kiraan1 || !rr.kiraan2) return ctx.toast('Perlu Kiraan 1 (juruwang) & Kiraan 2 (penyelia) dahulu');
+    if(!st.foto || L.dikira == null) return ctx.toast('Perlu gambar wang + laporan dahulu');
     const cat = (document.querySelector('[data-lt-catatan]')?.value || st.rekod?.catatan || '').trim();
     if(L.beza != null && Math.abs(L.beza) >= 1 && !cat) return ctx.toast('Tulis sebab beza tunai dalam Nota / catatan');
     if(st.queue) return ctx.toast(`${st.queue} kenderaan belum dibayar — selesaikan di Queue / Bayaran dahulu`);
@@ -388,7 +474,9 @@ export const CSS_TUTUP = `
 .lt-semak{border:2px solid #d7b25a}.lt-langkah{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f5f9}.lt-langkah:last-child{border-bottom:0}
 .lt-langkah b{display:block;font-size:14px}.lt-langkah small{display:block;color:#64748b;font-size:12px;margin-top:2px}
 .lt-no{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:#e2e8f0;color:#334155}
-.lt-langkah.ok .lt-no{background:#16a34a;color:#fff}.lt-langkah.belum .lt-no{background:#f59e0b;color:#fff}.lt-langkah.ok b{color:#166534}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
+.lt-langkah.ok .lt-no{background:#16a34a;color:#fff}
+.lt-pc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}.lt-pc label{display:flex;flex-direction:column;font-size:11px;font-weight:700;color:#334155;margin:0}
+.lt-pc input{margin:2px 0 0;padding:8px 4px;text-align:center;font-size:16px}@media(max-width:420px){.lt-pc{grid-template-columns:repeat(3,1fr)}}.lt-langkah.belum .lt-no{background:#f59e0b;color:#fff}.lt-langkah.ok b{color:#166534}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
 .lt-tag{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#e2e8f0}.lt-dihantar{background:#fef3c7;color:#92400e}.lt-disahkan{background:#dcfce7;color:#166534}
 .lt-scroll{overflow-x:auto}.lt-t{border-collapse:collapse;width:100%;font-size:12px;min-width:820px}.lt-t th,.lt-t td{border-bottom:1px solid #e2e8f0;padding:5px 4px;text-align:left;vertical-align:top}
 .lt-t th{background:#fff7d6;font-size:11px}.lt-t td.r{text-align:right;white-space:nowrap}.lt-tot td{font-weight:800;background:#fffbea}
