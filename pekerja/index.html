@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-09">
+<meta name="app-versi" content="2026.11.17-10">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,18 +115,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-09';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-10';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-09';
-import { bukaPaparan } from '../paparan-lib.js?v=2026.11.17-09';
-import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-09';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-09';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-09';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-09';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-09';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-09';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-10';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.17-10';
+import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-10';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-10';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-10';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-10';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-10';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-10';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -886,10 +886,17 @@ function viewInfo(){
   const seg = `<div class="seg" style="grid-template-columns:repeat(4,1fr)">${Object.entries(JENIS_INFO).map(([k,v]) => `<button class="${k===infoSeg?'on':''}" data-iseg="${k}"><b>${v.ikon}</b>${k === 'peraturan' ? 'Peraturan' : k === 'dokumen' ? 'SOP' : v.label}${k === 'memo' && baru ? ` (${baru})` : ''}</button>`).join('')}<button data-iseg="jadual"><b>📅</b>Jadual</button></div>`;
   let isi;
   if(infoSeg === 'memo') isi = l.map(m => `<div class="item memo ${bacaSaya.has(m.id)?'':'baru'} ${m.penting?'penting':''}" data-memo="${m.id}"><div><b>${esc(m.tajuk)}</b><small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' ' + m.tarikh.slice(0,4) : ''}${m.oleh ? ' · ' + esc(m.oleh) : ''}</small></div>${bacaSaya.has(m.id) ? '<span class="tag ok">✓ Dibaca</span>' : '<span class="tag bad">Baru</span>'}</div>`).join('');
-  else isi = l.map(b => `<details class="bab"><summary>${esc(b.tajuk)}</summary><div class="dok">${teksKeHtml(b.isi)}${b.gambar ? `<img class="prev" src="${b.gambar}" alt="">` : ''}</div>${b.tarikh ? `<small class="muted">Kemas kini: ${fTarikhPendek(b.tarikh)} ${b.tarikh.slice(0,4)}</small>` : ''}</details>`).join('');
+  else isi = l.map(b => `<details class="bab"><summary>${esc(b.tajuk)}${b.lampiran?.length ? ` 📎${b.lampiran.length}` : ''}</summary><div class="dok">${teksKeHtml(b.isi)}${b.gambar ? `<img class="prev" src="${b.gambar}" alt="">` : ''}${b.lampiran?.length ? `<div data-lpinfo="${b.id}">${htmlSenaraiLampiran(b.lampiran)}</div>` : ''}</div>${b.tarikh ? `<small class="muted">Kemas kini: ${fTarikhPendek(b.tarikh)} ${b.tarikh.slice(0,4)}</small>` : ''}</details>`).join('');
   $('#app').innerHTML = `${seg}<div class="card"><h3>${J.ikon} ${J.label}</h3>${isi || `<p class="muted">Belum ada ${J.label.toLowerCase()}.</p>`}</div>`;
   $$('[data-iseg]').forEach(b => b.onclick = () => { if(b.dataset.iseg === 'jadual'){ tab = 'Roster'; renderNav(); render(); return; } infoSeg = b.dataset.iseg; viewInfo(); });
   $$('[data-memo]').forEach(b => b.onclick = () => bukaMemo(infoList.find(x => x.id === b.dataset.memo)));
+  pasangLpInfo();
+}
+const lpCache = {};
+function pasangLpInfo(){
+  $$('[data-lpinfo]').forEach(el => { const x = [...infoList, ...(infoSemua || [])].find(i => i.id === el.dataset.lpinfo); if(!x) return;
+    const l = (x.lampiran || []).map(a => ({...a, data: lpCache[a.id]}));
+    pasangSenaraiLampiran(el, l, {tajuk: x.tajuk, muat: async a => lpCache[a.id] ||= (await getDoc(doc(K(PUSAT, 'info_lampiran'), a.id))).data()?.data}); });
 }
 function bukaMemo(m){
   if(!m) return;
@@ -897,9 +904,10 @@ function bukaMemo(m){
   const dibaca = bacaSaya.has(m.id);
   $('#app').innerHTML = `<div class="card"><button class="btn" id="mBalik" style="padding:8px 12px;font-size:13px">← Senarai memo</button>
     <h3 style="margin:12px 0 2px">${m.penting ? '❗ ' : ''}${esc(m.tajuk)}</h3><div class="muted">${m.tarikh ? fTarikhPendek(m.tarikh) + ' ' + m.tarikh.slice(0,4) : ''}${m.oleh ? ' · Daripada: ' + esc(m.oleh) : ''}</div>
-    <div class="dok" style="margin-top:8px">${teksKeHtml(m.isi)}</div>${m.gambar ? `<img class="prev" src="${m.gambar}" alt="">` : ''}
+    <div class="dok" style="margin-top:8px">${teksKeHtml(m.isi)}</div>${m.gambar ? `<img class="prev" src="${m.gambar}" alt="">` : ''}${m.lampiran?.length ? `<div data-lpinfo="${m.id}" style="margin-top:8px"><b>📎 Lampiran</b>${htmlSenaraiLampiran(m.lampiran)}</div>` : ''}
     ${dibaca ? '<div class="notice" style="background:var(--hijau2)">✓ Anda sudah sahkan membaca memo ini.</div>' : '<button class="btn pri big" id="mBaca">✅ SAYA SUDAH BACA & FAHAM</button>'}</div>`;
   $('#mBalik').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
+  pasangLpInfo();
   if($('#mBaca')) $('#mBaca').onclick = async () => {
     $('#mBaca').disabled = true;
     try{ await setDoc(doc(K(saya.c,'info_baca'), idBaca(m.id, saya.id)), {infoId: m.id, stafId: saya.id, idStaf: saya.idStaf||'', nama: saya.nama, masa: serverTimestamp()}); bacaSaya.add(m.id); toast('✅ Terima kasih'); $('#app').dataset.sibuk = ''; renderNav(); render(); }

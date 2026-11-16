@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-09">
+<meta name="app-versi" content="2026.11.17-10">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -133,15 +133,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-09';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-09';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-09';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-09';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-09';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-09';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-10';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-10';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-10';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-10';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-10';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-10';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-09';
-import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-09';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-10';
+import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-10';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -392,7 +392,7 @@ function refresh(){
   if(tab === 'Tetapan Apps') pasangTetapanApps();
   badgeArahan(); badgeQueue();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
-  const pr = $('#btnPrint'); if(pr) pr.onclick = () => window.print();
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(`Laporan-${namaCawangan()}-${bulan}`);
 }
 
 // ---------- Borang ----------
@@ -1264,9 +1264,17 @@ function pasangPekerja(){
   $$('[data-pkbelanja]').forEach(b => b.onclick = () => rekodGajiBelanja(b.dataset.pkbelanja));
   $$('[data-hrpadam]').forEach(b => b.onclick = async () => { if(!confirm('Padam rekod ini?')) return; try{ await deleteDoc(doc(hrCol(), b.dataset.hrpadam)); toast('🗑 Dipadam'); }catch(e){ onErrHR(e); } });
   if($('#btnCsvGaji')) $('#btnCsvGaji').onclick = csvGaji;
-  if($('#btnPrintGaji')) $('#btnPrintGaji').onclick = () => window.print();
+  if($('#btnPrintGaji')) $('#btnPrintGaji').onclick = () => cetakHalaman(`Gaji-${bulan}`);
 }
 
+// Paparan cetak dalam apps (ganti tetingkap pop-up yang tidak boleh cetak dalam apps terpasang)
+const tetingkapCetak = () => { let h = ''; return {document: {write: x => { h += x; }, close: () => { const t = (h.match(/<title>([^<]*)<\/title>/i)?.[1] || 'Cetak').trim(); bukaCetak(h, {tajuk: t, nama: t.replace(/\s+/g, '-')}); }}}; };
+// Cetak / PDF kandungan halaman semasa (tanpa nav & butang)
+function cetakHalaman(tajuk){
+  const gaya = [...document.querySelectorAll('style')].map(x => x.outerHTML).join('');
+  const isi = $('#app').cloneNode(true); isi.querySelectorAll('.noprint, button, .navkat, .navsub, input[type=file], select').forEach(e => e.remove());
+  bukaCetak(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(tajuk)}</title>${gaya}<style>body{background:#fff;padding:12px}.card{box-shadow:none;border:1px solid #e2e8f0}</style></head><body><h2 style="margin:0 0 8px">🦁 ${esc(tajuk)}</h2>${isi.innerHTML}</body></html>`, {tajuk, nama: tajuk.replace(/\s+/g, '-')});
+}
 function bukaModal(html){ $('#modalBox').innerHTML = html; $('#modal').classList.remove('hidden'); $('#modalBox').scrollTop = 0; kemasModal($('#modalBox'), tutupModal); }
 function tutupModal(){ lepasModal($('#modalBox')); $('#modal').classList.add('hidden'); $('#modalBox').innerHTML = ''; }
 $('#modal').addEventListener('click', e => { if(e.target.id === 'modal') tutupModal(); });
@@ -1892,7 +1900,7 @@ function kadQrMembers(){
 }
 function cetakPosterMembers(){
   const T = tetapanKaunter, logo = new URL(cawangan === 'lion-king' ? 'logo-lionking.jpg' : 'logo-mamalion.jpg', location.href).href, syiling = new URL('../pelanggan/syiling.png', location.href).href;
-  const w = window.open('', '_blank'); if(!w) return toast('Benarkan pop-up untuk cetak');
+  const w = tetingkapCetak();
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Poster Safari Members ${esc(namaCawangan())}</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:system-ui,sans-serif;color:#0f2d1e;margin:0;text-align:center}
     .atas{display:flex;align-items:center;justify-content:center;gap:14px}.atas img{height:80px}h1{font-size:42px;margin:6px 0 0;letter-spacing:3px}.sub{color:#475569;font-size:17px;margin-bottom:8px}
     .qr{width:330px;border:5px solid #14532d;border-radius:22px;padding:8px}.senarai{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;max-width:600px;margin:14px auto}
@@ -1910,7 +1918,7 @@ function cetakPosterMembers(){
 }
 function cetakPosterBayar(){
   const T = tetapanKaunter, B = T.terimaBayaran || {}, logo = new URL(cawangan === 'lion-king' ? 'logo-lionking.jpg' : 'logo-mamalion.jpg', location.href).href;
-  const w = window.open('', '_blank'); if(!w) return toast('Benarkan pop-up untuk cetak');
+  const w = tetingkapCetak();
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bayaran ${esc(namaCawangan())}</title><style>@page{size:A5;margin:10mm}body{font-family:system-ui,sans-serif;text-align:center;color:#0f172a;margin:0}
     h1{color:#14532d;margin:6px 0 2px;font-size:26px}.qr{width:78%;max-width:340px;border:3px solid #14532d;border-radius:14px;padding:6px;margin:10px auto;display:block}
     .no{font-size:28px;font-weight:800;letter-spacing:2px;margin:4px 0}.k{color:#475569}.box{border-top:2px dashed #94a3b8;margin-top:12px;padding-top:10px}</style></head><body>${BAR_KEMBALI_CETAK}
@@ -1952,7 +1960,7 @@ async function cetakQRStesen(){
   if(!window.qrcode){ await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'; sc.onload = ok; sc.onerror = gagal; document.head.appendChild(sc); }).catch(() => {}); }
   if(!window.qrcode) return toast('⚠ Penjana QR tidak dapat dimuat — semak internet');
   const svg = t => { const q = window.qrcode(0, 'M'); q.addData(t); q.make(); return q.createSvgTag({cellSize: 6, margin: 2, scalable: true}); };
-  const w = window.open('', '_blank'); if(!w) return toast('Benarkan pop-up untuk mencetak');
+  const w = tetingkapCetak();
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>QR Stesen Punch Card</title><style>
     body{font-family:system-ui,Arial;margin:0;padding:10mm}.g{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
     .k{border:2px solid #0d2a20;border-radius:6mm;padding:6mm;text-align:center;break-inside:avoid}.k svg{width:62mm;height:62mm}
@@ -2101,7 +2109,7 @@ function viewInfoPK(){
     <p class="muted" style="margin-top:0">${esc(J.ket)} Dipaparkan di Apps Pekerja → 📢 Info. Jadual kerja diurus di <b>Roster</b>.</p>
     ${infoSegAk === 'peraturan' && !l.length ? `<div class="notice">Belum ada Buku Peraturan Kerja. <button class="small primary" id="ipContoh">Isi contoh 9 bab (boleh diubah)</button></div>` : ''}
     ${l.map(x => { const b = baca(x.id), belum = aktifStaf.filter(s => !b.some(r => r.stafId === s.id));
-      return `<div class="pk" style="align-items:flex-start${x.aktif===false?';opacity:.55':''}"><div style="flex:1"><b>${x.penting?'❗ ':''}${esc(x.tajuk)}</b>${x.aktif===false?' <span class="tag warn">disembunyi</span>':''}
+      return `<div class="pk" style="align-items:flex-start${x.aktif===false?';opacity:.55':''}"><div style="flex:1"><b>${x.penting?'❗ ':''}${esc(x.tajuk)}</b>${x.lampiran?.length ? ` <span class="tag">📎 ${x.lampiran.length}</span>` : ''}${x.aktif===false?' <span class="tag warn">disembunyi</span>':''}
         <br><span class="muted">${x.tarikh ? fmtTarikh(x.tarikh) : ''}${x.oleh ? ' · ' + esc(x.oleh) : ''}${x.jenis !== 'memo' && x.susunan ? ' · susunan ' + x.susunan : ''}</span>
         ${x.jenis === 'memo' ? `<br><span class="tag ${belum.length ? 'warn' : ''}">Dibaca ${aktifStaf.length - belum.length}/${aktifStaf.length}</span>${belum.length ? `<span class="muted"> Belum: ${belum.map(s => esc(s.nama)).join(', ')}</span>` : ''}` : ''}</div>
         <div class="aksi"><button class="small" data-ipubah="${x.id}">Ubah</button><button class="small danger" data-ippadam="${x.id}">Padam</button></div></div>`; }).join('') || `<p class="muted">Tiada ${esc(J.label.toLowerCase())}.</p>`}</div>`;
@@ -2121,6 +2129,7 @@ function borangInfo(id){
   const x = id ? infoPK.find(i => i.id === id) : null, jenis = x?.jenis || infoSegAk, J = JENIS_INFO[jenis];
   let gambar = x?.gambar || '';
   const seterus = Math.max(0, ...infoPK.filter(i => i.jenis === jenis).map(i => i.susunan || 0)) + 1;
+  let lpLama = [...(x?.lampiran || [])], lpBaru = [], lpBuang = [];
   bukaModal(`<div class="section-title"><h3>${J.ikon} ${x ? 'Ubah' : 'Tambah'} ${esc(J.label)}</h3><button class="small" id="mTutup">✕</button></div>
     <label>Tajuk</label><input id="iTajuk" value="${esc(x?.tajuk||'')}" placeholder="${jenis === 'memo' ? 'cth: Mesyuarat staf Isnin 9 pagi' : jenis === 'peraturan' ? 'cth: 1. Waktu kerja & kehadiran' : 'cth: SOP cucian Premium Wash'}">
     <div class="two"><div><label>Tarikh</label><input id="iTarikh" type="date" value="${esc(x?.tarikh || today())}"></div>
@@ -2129,9 +2138,18 @@ function borangInfo(id){
     <div class="muted" style="margin:-6px 0 8px">Format ringkas: baris bermula <b># </b> = tajuk kecil, <b>- </b> = senarai, <b>**teks**</b> = tebal.</div>
     <label>Gambar (pilihan — cth poster, jadual, carta)</label><input id="iGambar" type="file" accept="image/*"><img id="iPrev" src="${gambar}" style="max-width:100%;border-radius:10px;${gambar?'':'display:none'}"><button class="small danger ${gambar?'':'hidden'}" id="iBuangG">Buang gambar</button>
 
+    <label>📎 Lampiran dokumen (PDF, Word, Excel atau gambar — pekerja boleh buka & muat turun)</label>
+    <div id="iLpSenarai"></div>${htmlNaikLampiran('info')}
     <label class="row" style="font-weight:400;margin:10px 0"><input type="checkbox" id="iAktif" ${x?.aktif===false?'':'checked'} style="width:22px;height:22px;margin:0"> Papar di Apps Pekerja</label>
     <div class="card" style="background:#f8fafc;box-shadow:none"><b>Pratonton</b><div class="dok" id="iPrevTeks"></div></div>
     <button class="primary" style="width:100%;padding:14px" id="iSimpan">SIMPAN</button>`);
+  const lpCol = () => collection(store, 'kakitangan', PUSAT, 'info_lampiran');
+  const lukisLp = () => { const l = [...lpLama, ...lpBaru]; $('#iLpSenarai').innerHTML = htmlSenaraiLampiran(l, {padam: true, kosong: 'Belum ada lampiran.'});
+    pasangSenaraiLampiran($('#iLpSenarai'), l, {tajuk: val('#iTajuk') || 'Lampiran', muat: async a => (await getDoc(doc(lpCol(), a.id))).data()?.data,
+      onPadam: a => { if(lpBaru.includes(a)) lpBaru = lpBaru.filter(y => y !== a); else { lpLama = lpLama.filter(y => y.id !== a.id); lpBuang.push(a.id); } lukisLp(); }}); };
+  lukisLp();
+  $$('[data-lp-naik="info"]').forEach(inp => inp.onchange = async () => { const fl = [...inp.files]; inp.value = '';
+    for(const f of fl){ try{ const d = await bacaLampiran(f); lpBaru.push({...d, id: 'baru-' + Math.random().toString(36).slice(2)}); lukisLp(); }catch(e){ toast('⚠ ' + e.message); } } });
   const pra = () => $('#iPrevTeks').innerHTML = teksKeHtml(val('#iIsi')) || '<span class="muted">—</span>';
   pra(); $('#iIsi').oninput = pra; $('#mTutup').onclick = tutupModal;
   $('#iGambar').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ gambar = await kecilkanGambarPromo(f); $('#iPrev').src = gambar; $('#iPrev').style.display = 'block'; $('#iBuangG').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
@@ -2139,12 +2157,15 @@ function borangInfo(id){
   $('#iSimpan').onclick = async () => {
     const tajuk = val('#iTajuk'), isi = $('#iIsi').value.trim();
     if(!tajuk) return toast('Sila isi tajuk');
-    if(!isi && !gambar) return toast('Sila isi kandungan atau gambar');
+    if(!isi && !gambar && !lpLama.length && !lpBaru.length) return toast('Sila isi kandungan, gambar atau lampiran');
     const d = {jenis, tajuk, isi, tarikh: val('#iTarikh') || today(), aktif: $('#iAktif').checked, gambar, oleh: nama, dikemaskini: serverTimestamp()};
     if(jenis === 'memo') d.penting = $('#iPenting').checked; else d.susunan = parseInt(val('#iSusun')) || 0;
     $('#iSimpan').disabled = true;
     try{
       const ref = x ? doc(infoCol(), x.id) : doc(infoCol());
+      for(const a of lpBaru){ const r2 = doc(lpCol()); const {id: _i, ...isiLp} = a; await setDoc(r2, {...isiLp, infoId: ref.id, oleh: nama, masa: Date.now()}); lpLama.push({id: r2.id, nama: a.nama, jenis: a.jenis, saiz: a.saiz}); }
+      for(const id of lpBuang) await deleteDoc(doc(lpCol(), id)).catch(() => {});
+      d.lampiran = lpLama.map(a => ({id: a.id, nama: a.nama, jenis: a.jenis, saiz: a.saiz || 0}));
       if(!x && $('#iDua')?.checked){
         const b = writeBatch(store);
         ['mama-lion','lion-king'].forEach(c => b.set(doc(store, 'kakitangan', c, 'info', ref.id), d));

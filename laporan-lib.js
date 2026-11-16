@@ -1,5 +1,5 @@
-import { bukaPaparan, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-09';
-import { hariOperasi } from './safari-lib.js?v=2026.11.17-09';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-10';
+import { hariOperasi } from './safari-lib.js?v=2026.11.17-10';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -183,10 +183,9 @@ export function htmlCetak(L, rekod = {}, foto = '', pra = null){
   <div class="small" style="margin-top:6px;text-align:right">Dijana oleh apps Mama Lion · Status: ${STATUS_TUTUP[rekod.status || 'draf']}</div>
   <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`;
 }
-export function cetak(html){
-  const w = window.open('', '_blank');
-  if(!w) return alert('Benarkan pop-up untuk mencetak.');
-  w.document.open(); w.document.write(html.replace(/<body([^>]*)>/i, m => m + BAR_KEMBALI_CETAK)); w.document.close();
+export function cetak(html, nama){
+  const t = (String(html).match(/<title>([^<]*)<\/title>/i)?.[1] || 'Laporan').trim();
+  return bukaCetak(html, {tajuk: t, nama: nama || t.replace(/[^\w\- ]+/g, '').replace(/\s+/g, '-')});
 }
 export async function kongsiWhatsApp(teks){
   try{ if(navigator.share){ await navigator.share({text: teks}); return; } }catch(e){ if(e.name === 'AbortError') return; }
@@ -370,10 +369,8 @@ export function modulTutup(ctx){
     const pc = q('[data-lt-pracetak]'); if(pc) pc.onclick = async () => {
       const L = laporan(); if(!L) return; const r = st.rekod || {}, no = (r.praCetak?.no || 0) + 1, masa = Date.now(), oleh = ctx.pengguna();
       const pra = {no, masa, oleh, tanda: tandaL(L), jumlah: L.jumlah, kereta: L.kereta, keluar: L.keluar};
-      const w = window.open('', '_blank');
       try{ await simpanRekod({praCetak: pra, praSejarah: [...(r.praSejarah || []), pra], status: r.status || 'draf'}); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
-      const html = htmlCetak(L, {...r, praCetak: pra}, '', {...pra, buta: !r.kiraan1});
-      if(w){ w.document.open(); w.document.write(html.replace('<body>', '<body>' + BAR_KEMBALI_CETAK)); w.document.close(); setTimeout(() => { try{ w.focus(); w.print(); }catch(_){} }, 400); } else cetak(html);
+      cetak(htmlCetak(L, {...r, praCetak: pra}, '', {...pra, buta: !r.kiraan1}), `Pra-Tutup-${st.c}-${st.tarikh}-${no}`);
     };
     const k1s = q('[data-lt-k1simpan]'); if(k1s) k1s.onclick = async () => {
       const pecahan = bacaPC('k1'), jumlah = jumPecahan(pecahan); if(!(jumlah > 0)) return ctx.toast('Isi bilangan wang bagi setiap nilai');
@@ -414,7 +411,7 @@ export function modulTutup(ctx){
     const hn = q('[data-lt-hantar]'); if(hn) hn.onclick = hantar;
     const sh = q('[data-lt-sahkan]'); if(sh) sh.onclick = () => semak(true);
     const pl = q('[data-lt-pulang]'); if(pl) pl.onclick = () => semak(false);
-    const ct = q('[data-lt-cetak]'); if(ct) ct.onclick = () => { const L = laporan(); if(L) cetak(htmlCetak(L, st.rekod || {}, st.foto)); };
+    const ct = q('[data-lt-cetak]'); if(ct) ct.onclick = () => { const L = laporan(); if(L) cetak(htmlCetak(L, st.rekod || {}, st.foto), `Daily-Sales-${st.c}-${st.tarikh}`); };
     const wa = q('[data-lt-wa]'); if(wa) wa.onclick = () => { const L = laporan(); if(L) kongsiWhatsApp(teksWhatsApp(L, st.rekod || {})); };
     const bs = q('[data-lt-besar]'); if(bs) bs.onclick = () => bukaPaparan(st.foto, {tajuk: `Wang tunai ${st.tarikh || ''}`, nama: `Tunai-${st.tarikh || ''}`});
   }

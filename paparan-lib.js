@@ -3,7 +3,7 @@
 const CSS = `
 .pp-latar{position:fixed;inset:0;z-index:9999;background:rgba(10,15,13,.96);display:flex;flex-direction:column;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .pp-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top));background:#0d2a20;border-bottom:3px solid #d7b25a}
-.pp-bar b{flex:1;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.pp-bar b{flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
 .pp-btn{border:0;border-radius:999px;padding:11px 16px;font-size:15px;font-weight:800;cursor:pointer;min-height:44px;white-space:nowrap}
 .pp-kembali{background:#fff;color:#0d2a20}.pp-simpan{background:linear-gradient(#f6e3a1,#d7b25a);color:#0d2a20}
 .pp-isi{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:10px;touch-action:pinch-zoom}
@@ -15,6 +15,7 @@ const CSS = `
 .pp-sticky-atas{position:sticky;top:-18px;z-index:6;background:inherit;background-color:#fff;padding-top:6px;padding-bottom:6px;margin-top:-6px}
 .pp-sticky-bawah{position:sticky;bottom:-18px;z-index:6;background:#fff;padding:10px 0 6px;margin-bottom:-6px;box-shadow:0 -10px 14px -10px rgba(0,0,0,.25)}
 .pp-zoom{cursor:zoom-in}
+@media(max-width:520px){.pp-bar .pp-btn{padding:9px 11px;font-size:13px}.pp-bar b{font-size:13px}}
 .pf-btns{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
 .pf-btns label{flex:1;min-width:96px;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 12px;border-radius:12px;background:#0d2a20;color:#fff;font-weight:700;font-size:14px;cursor:pointer;min-height:44px;text-align:center}
 .pf-btns label.pf-2{background:#475569}.pf-btns label.pf-3{background:#e2e8f0;color:#0d2a20}
@@ -48,7 +49,7 @@ async function simpanFail(src, nama){
     const ext = jenis.includes('pdf') ? 'pdf' : jenis.includes('png') ? 'png' : 'jpg';
     const fail = new File([blob], /\.\w{3,4}$/.test(nama || '') ? nama : `${nama || 'Gambar'}.${ext}`, {type: jenis || 'image/jpeg'});
     // Telefon / tablet: menu kongsi → "Simpan imej" / Fail; PC: muat turun terus
-    if(navigator.canShare?.({files: [fail]}) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ try{ await navigator.share({files: [fail]}); return; }catch(e){ if(e.name === 'AbortError') return; } }
+    if(!/pdf|officedocument|msword|excel|csv/i.test(jenis) && navigator.canShare?.({files: [fail]}) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ try{ await navigator.share({files: [fail]}); return; }catch(e){ if(e.name === 'AbortError') return; } }
     const a = document.createElement('a'); a.href = URL.createObjectURL(fail); a.download = fail.name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }catch(e){ console.error(e); window.open(src, '_blank'); }
@@ -143,23 +144,25 @@ export function htmlNaikLampiran(id, {gambar = true, dokumen = true} = {}){
   return `<div class="pf-btns">${gambar ? `<label class="pf-1">📷 Kamera<input type="file" accept="image/*" capture="environment" data-lp-naik="${esc(id)}" data-pf-abai></label><label class="pf-2">🖼 Galeri<input type="file" accept="image/*" multiple data-lp-naik="${esc(id)}" data-pf-abai></label>` : ''}${dokumen ? `<label class="pf-3">📄 Dokumen<input type="file" accept="${DOK_TERIMA}" multiple data-lp-naik="${esc(id)}" data-pf-abai></label>` : ''}</div>`;
 }
 const saizMB = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
-const ikonJenis = j => /pdf/.test(j) ? '📄' : /sheet|excel|xls/.test(j) ? '📊' : /word|doc/.test(j) ? '📝' : '📎';
+const ikonJenis = j => /image/.test(j) ? '🖼' : /pdf/.test(j) ? '📄' : /sheet|excel|xls/.test(j) ? '📊' : /word|doc/.test(j) ? '📝' : '📎';
 /** Senarai lampiran: [{id, nama, jenis, data, saiz, oleh, masa}] dengan 👁 Lihat, ⬇ Muat turun, ✕ Padam */
 export function htmlSenaraiLampiran(senarai, {padam = false, kosong = 'Tiada lampiran.'} = {}){
   pasangGaya();
   if(!senarai?.length) return `<div class="pf-nama" style="margin:4px 0">${esc(kosong)}</div>`;
   return `<div class="lp-senarai">${senarai.map(x => { const gbr = /^image\//.test(x.jenis || '') || /^data:image/.test(x.data || '');
-    return `<div class="lp-item">${gbr ? `<img src="${esc(x.data)}" data-lp-lihat="${esc(x.id)}" alt="">` : `<span class="lp-ikon" data-lp-lihat="${esc(x.id)}">${ikonJenis(x.jenis || '')}</span>`}
+    return `<div class="lp-item">${gbr && x.data ? `<img src="${esc(x.data)}" data-lp-lihat="${esc(x.id)}" alt="">` : `<span class="lp-ikon" data-lp-lihat="${esc(x.id)}">${ikonJenis(x.jenis || '')}</span>`}
       <div class="lp-n"><b>${esc(x.nama || 'Lampiran')}</b><small>${x.saiz ? saizMB(x.saiz) + ' · ' : ''}${esc(x.oleh || '')}${x.masa ? ' · ' + new Date(x.masa).toLocaleString('en-GB', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : ''}</small></div>
-      <button type="button" data-lp-turun="${esc(x.id)}" title="Muat turun">⬇</button>${padam ? `<button type="button" data-lp-padam="${esc(x.id)}" title="Padam">✕</button>` : ''}</div>`; }).join('')}</div>`;
+      <button type="button" data-lp-lihat="${esc(x.id)}" title="Lihat">👁</button><button type="button" data-lp-turun="${esc(x.id)}" title="Muat turun">⬇</button>${padam ? `<button type="button" data-lp-padam="${esc(x.id)}" title="Padam">✕</button>` : ''}</div>`; }).join('')}</div>`;
 }
 /** Pasang tindakan senarai lampiran dalam root. */
-export function pasangSenaraiLampiran(root, senarai, {onPadam, tajuk = 'Lampiran'} = {}){
-  const cari = id => senarai.find(x => x.id === id);
-  root.querySelectorAll('[data-lp-lihat]').forEach(b => b.onclick = () => { const x = cari(b.dataset.lpLihat); if(!x) return;
+export function pasangSenaraiLampiran(root, senarai, {onPadam, tajuk = 'Lampiran', muat} = {}){
+  const cari0 = id => senarai.find(x => x.id === id);
+  const cari = id => cari0(id);
+  const pastikan = async x => { if(x && !x.data && muat){ try{ x.data = await muat(x); }catch(e){ alert('Gagal memuat lampiran: ' + (e.code || e.message)); } } return x?.data ? x : null; };
+  root.querySelectorAll('[data-lp-lihat]').forEach(b => b.onclick = async () => { const x = await pastikan(cari(b.dataset.lpLihat)); if(!x) return;
     if(/^image\/|pdf/.test(x.jenis || '') || /^data:(image|application\/pdf)/.test(x.data)) bukaPaparan({src: x.data, jenis: /pdf/.test(x.jenis || x.data.slice(0, 30)) ? 'pdf' : '', nama: x.nama}, {tajuk: x.nama || tajuk, nama: x.nama});
     else simpanFail(x.data, x.nama); });
-  root.querySelectorAll('[data-lp-turun]').forEach(b => b.onclick = () => { const x = cari(b.dataset.lpTurun); if(x) simpanFail(x.data, x.nama); });
+  root.querySelectorAll('[data-lp-turun]').forEach(b => b.onclick = async () => { const x = await pastikan(cari(b.dataset.lpTurun)); if(x) simpanFail(x.data, x.nama); });
   root.querySelectorAll('[data-lp-padam]').forEach(b => b.onclick = () => { const x = cari(b.dataset.lpPadam); if(x && onPadam && confirm(`Padam "${x.nama}"?`)) onPadam(x); });
 }
 /** Baca fail → {nama, jenis, data (data URL), saiz}. Gambar dimampatkan (maks 1400px). Dokumen maks ~700 KB. */
@@ -179,3 +182,66 @@ export async function bacaLampiran(f, {maks = 1400, kualiti = 0.72, hadDok = 700
   return {nama: f.name, jenis: f.type || 'application/octet-stream', data, saiz: f.size};
 }
 export { simpanFail };
+
+// =====================================================================
+// CETAK / SIMPAN PDF dalam apps (tanpa tetingkap pop-up)
+// Pop-up tidak boleh mencetak bila apps dipasang (PWA) di telefon — paparan ini guna iframe dalam halaman,
+// butang 🖨 Cetak (dialog cetak telefon / PC, termasuk "Save as PDF") & ⬇ Simpan PDF (fail PDF sebenar, boleh dikongsi).
+// =====================================================================
+const VENDOR = new URL('./vendor/', import.meta.url).href;
+const muatSkrip = (() => { const c = {}; return src => c[src] ||= new Promise((ok, x) => { const s = document.createElement('script'); s.src = VENDOR + src; s.onload = ok; s.onerror = () => { delete c[src]; x(new Error('Gagal memuat ' + src + ' (semak internet)')); }; document.head.appendChild(s); }); })();
+const bersihHtml = html => String(html).replace(/<script[\s\S]*?<\/script>/gi, '');
+const landskap = html => /size:\s*A4\s+landscape/i.test(html);
+async function janaPdf(html){
+  await Promise.all([muatSkrip('html2canvas.min.js'), muatSkrip('jspdf.umd.min.js')]);
+  const lanskap = landskap(html), lebar = lanskap ? 1123 : 794;
+  const f = document.createElement('iframe');
+  f.style.cssText = `position:fixed;left:-20000px;top:0;width:${lebar}px;height:1200px;border:0;background:#fff`;
+  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>body{max-width:none!important;padding:16px!important;margin:0!important;background:#fff}.tiada-cetak{display:none!important}</style></head>');
+  document.body.appendChild(f);
+  try{
+    await new Promise(ok => { f.onload = ok; setTimeout(ok, 4000); });
+    const d = f.contentDocument; await Promise.all([...d.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; setTimeout(ok, 3000); })));
+    await new Promise(ok => setTimeout(ok, 150));
+    const kanvas = await window.html2canvas(d.body, {scale: 2, backgroundColor: '#fff', useCORS: true, windowWidth: lebar, width: lebar, height: d.body.scrollHeight});
+    const {jsPDF} = window.jspdf, pdf = new jsPDF({unit: 'mm', format: 'a4', orientation: lanskap ? 'landscape' : 'portrait'});
+    const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight(), M = 6, lw = W - 2 * M, lh = H - 2 * M;
+    const pxSeHalaman = Math.floor(kanvas.width * lh / lw);
+    for(let y = 0, n = 0; y < kanvas.height; y += pxSeHalaman, n++){
+      const h = Math.min(pxSeHalaman, kanvas.height - y), c = document.createElement('canvas'); c.width = kanvas.width; c.height = h;
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, h); g.drawImage(kanvas, 0, y, kanvas.width, h, 0, 0, kanvas.width, h);
+      if(n) pdf.addPage(); pdf.addImage(c.toDataURL('image/jpeg', 0.9), 'JPEG', M, M, lw, h * lw / kanvas.width);
+    }
+    return pdf.output('blob');
+  } finally { f.remove(); }
+}
+/** Paparan cetak penuh: ← Kembali · 🖨 Cetak · ⬇ Simpan PDF. html = dokumen HTML lengkap. */
+export function bukaCetak(html, {tajuk = 'Laporan', nama = 'Laporan', auto = false} = {}){
+  pasangGaya();
+  const w = document.createElement('div'); w.className = 'pp-latar'; w.setAttribute('role', 'dialog'); w.style.background = '#334155';
+  w.innerHTML = `<div class="pp-bar"><button class="pp-btn pp-kembali" data-pc="tutup">← Kembali</button><b>${esc(tajuk)}</b>
+    <button class="pp-btn pp-simpan" data-pc="cetak">🖨 Cetak</button><button class="pp-btn pp-simpan" data-pc="pdf">⬇ PDF</button>${navigator.canShare ? '<button class="pp-btn pp-kembali" data-pc="kongsi" title="Kongsi PDF">📤</button>' : ''}</div>
+    <div class="pp-isi" style="padding:0;display:block;background:#64748b"><iframe title="${esc(tajuk)}" style="width:100%;height:100%;border:0;background:#fff;border-radius:0"></iframe></div>`;
+  const f = w.querySelector('iframe');
+  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>@media screen{body{overflow-x:auto}}.tiada-cetak{display:none!important}</style></head>');
+  const kunci = e => { if(e.key === 'Escape') tutup(); };
+  const tutup = (dariBack = false) => { w.remove(); document.removeEventListener('keydown', kunci); if(!dariBack) tarikSejarah(tutup); };
+  w.querySelector('[data-pc="tutup"]').onclick = () => tutup();
+  const cetakNow = () => { try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){ alert('Cetakan tidak dapat dibuka di sini. Guna ⬇ PDF, kemudian cetak dari fail PDF.'); } };
+  w.querySelector('[data-pc="cetak"]').onclick = cetakNow;
+  const bp = w.querySelector('[data-pc="pdf"]');
+  bp.onclick = async () => {
+    const t = bp.textContent; bp.disabled = true; bp.textContent = '⏳ Menjana…';
+    try{ const b = await janaPdf(html); const url = URL.createObjectURL(b); await simpanFail(url, /\.pdf$/i.test(nama) ? nama : nama + '.pdf'); setTimeout(() => URL.revokeObjectURL(url), 60000); }
+    catch(e){ console.error(e); alert('⚠ PDF gagal dijana: ' + e.message); }
+    finally { bp.disabled = false; bp.textContent = t; }
+  };
+  const bk = w.querySelector('[data-pc="kongsi"]');
+  if(bk) bk.onclick = async () => { bk.disabled = true; try{ const b = await janaPdf(html), fail = new File([b], /\.pdf$/i.test(nama) ? nama : nama + '.pdf', {type: 'application/pdf'});
+      if(navigator.canShare?.({files: [fail]})) await navigator.share({files: [fail], title: tajuk}); else { const u = URL.createObjectURL(b); simpanFail(u, fail.name); } }
+    catch(e){ if(e.name !== 'AbortError') alert('⚠ ' + e.message); } finally { bk.disabled = false; } };
+  document.body.appendChild(w); document.addEventListener('keydown', kunci); tolakSejarah(tutup);
+  if(auto) f.onload = () => setTimeout(cetakNow, 300);
+  return {tutup, pdf: () => janaPdf(html)};
+}
+export { janaPdf };

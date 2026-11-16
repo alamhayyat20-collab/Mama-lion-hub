@@ -301,6 +301,9 @@ service cloud.firestore {
       allow read: if staffApp();
       allow create, update: if staffApp() && olehKuasa(cawangan, 'info');
     }
+    match /kakitangan/{cawangan}/info_lampiran/{id} {
+      allow read: if staffApp();
+    }
     match /kakitangan/{cawangan}/info_baca/{id} {
       allow read: if staffApp();
       allow create: if staffApp()
