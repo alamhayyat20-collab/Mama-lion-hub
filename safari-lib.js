@@ -215,3 +215,19 @@ export function pasangTerimaBayar(root = document, toast = null){
     if(toast) toast('No. akaun disalin');
   });
 }
+
+// ---------- Diskaun berkuasa & bayaran sendiri oleh pelanggan ----------
+// order.diskaunBeri = {amaun, sebab, oleh, olehId, sumber:'akaun'|'pekerja', masa}  (diluluskan; kaunter tidak boleh ubah)
+// order.diskaunMinta = {amaun, sebab, oleh, masa}  (permintaan dari kaunter, menunggu kelulusan)
+export const DISKAUN_KUASA = [5, 10, 20];   // pekerja kuasa 🎟 boleh lulus terus; jumlah lain: Dato' / Datin di Apps Akaun
+const r2_ = n => Math.round((Number(n) || 0) * 100) / 100;
+export const itemOrder = o => [[o.pakej, o.hargaPakej], ...(o.tambahanKenderaan ? [[`Kenderaan: ${o.kenderaan}`, o.tambahanKenderaan]] : []), ...(o.addon || []).map(a => [a.nama, a.harga]), ...(o.itemManual || []).map(a => [a.nama, a.harga])];
+// lionsafari/{c}/bayar_awam/{normPlat} — cermin order untuk Apps Pelanggan (tanpa nama & telefon), dibaca dengan no. plat
+export function dataAwam(o, c){
+  const aktif = o.aktif !== false && o.status !== 'Selesai' && o.status !== 'Batal';
+  const diskaun = aktif ? (Number(o.diskaunBeri?.amaun) || 0) : (Number(o.diskaun) || 0);
+  return {orderId: o.id, no: o.no || '', plat: o.plat || '', kenderaan: o.kenderaan || '', cawangan: c,
+    item: itemOrder(o).map(([n, h]) => ({n: String(n || ''), h: Number(h) || 0})), freeWash: !!o.freeWash,
+    jumlahKasar: Number(o.jumlahKasar) || 0, diskaun, jumlah: aktif ? Math.max(0, r2_((Number(o.jumlahKasar) || 0) - diskaun)) : (Number(o.jumlah) || 0),
+    status: o.status || '', aktif, masa: Date.now()};
+}

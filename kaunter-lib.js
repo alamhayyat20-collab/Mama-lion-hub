@@ -5,7 +5,7 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, dataStatus, KAD } from './safari-lib.js?v=2026.11.16-15';
+import { tambahCop, dataStatus, KAD, dataAwam, normPlat } from './safari-lib.js?v=2026.11.16-16';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
@@ -20,6 +20,7 @@ export function kaunter(ctx){
 
   // Status kenderaan untuk Apps Pelanggan
   async function cermin(o, c, tambah = {}){
+    if(o?.plat && o?.id) fs.setDoc(fs.doc(store, 'lionsafari', c, 'bayar_awam', normPlat(o.plat)), {...dataAwam({...o, ...tambah}, c), ...T()}).catch(e => console.warn('bayar_awam', e));
     if(!o?.ahli?.id) return;
     try{ await fs.setDoc(fs.doc(store, 'ahli', o.ahli.id, 'status', o.id), {...dataStatus(o, c, tambah), ...T()}, {merge: true}); }catch(e){ console.warn('status pelanggan', e); }
   }
@@ -73,10 +74,10 @@ export function kaunter(ctx){
   }
 
   // Bayaran biasa (Free Wash & diskaun melebihi had: di kaunter V2 dengan PIN)
-  async function bayar(o, c, {kaedah, rujukan = '', bukti = '', diterima = 0, diskaun = 0}){
+  async function bayar(o, c, {kaedah, rujukan = '', bukti = '', diterima = 0, diskaun = 0, diskaunLulus = ''}){
     const t = hariIni(), jumlah = Math.max(0, r2((Number(o.jumlahKasar) || 0) - (Number(diskaun) || 0)));
     const data = {bayar: {kaedah, rujukan, bukti, diterima: kaedah === 'Tunai' ? (diterima || jumlah) : 0, baki: kaedah === 'Tunai' ? Math.max(0, r2((diterima || jumlah) - jumlah)) : 0},
-      diskaun: Number(diskaun) || 0, diskaunLulus: '', jumlah, status: 'Selesai', aktif: false, tarikhBayar: t, bulanBayar: t.slice(0,7),
+      diskaun: Number(diskaun) || 0, diskaunLulus, jumlah, status: 'Selesai', aktif: false, tarikhBayar: t, bulanBayar: t.slice(0,7),
       dibayarOleh: ctx.pengguna(), masaBayar: Date.now(), ...T()};
     await fs.updateDoc(fs.doc(col(c, 'order'), o.id), data);
     const baru = {...o, ...data};

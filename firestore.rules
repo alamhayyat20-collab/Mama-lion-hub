@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 16 Nov 2026 (kuasa kaunter dalam Apps Pekerja, tempahan & status kenderaan Apps Pelanggan)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 16 Nov 2026 (diskaun berkuasa, bayar sendiri Apps Pelanggan)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -88,8 +88,37 @@ service cloud.firestore {
           'copInfo', 'copGagal', 'cop'])
         && request.resource.data.status in ['Menunggu', 'Cuci', 'Kering', 'QC', 'Siap', 'Selesai']
         && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['bayar', 'jumlah', 'diskaun'])
-            || (resource.data.get('freeWash', null) == null && request.resource.data.get('diskaun', 0) == 0
-                && request.resource.data.jumlah == resource.data.jumlahKasar));
+            || (resource.data.get('freeWash', null) == null
+                && ((request.resource.data.get('diskaun', 0) == 0 && request.resource.data.jumlah == resource.data.jumlahKasar)
+                    || (resource.data.get('diskaunBeri', null) != null
+                        && request.resource.data.diskaun == resource.data.diskaunBeri.amaun
+                        && request.resource.data.jumlah == resource.data.jumlahKasar - resource.data.diskaunBeri.amaun))));
+      // Kuasa 🎟 Lulus diskaun: beri / batal diskaun RM5, RM10, RM20 sebelum bayaran
+      allow update: if staffApp()
+        && olehKuasa(cawangan, 'diskaun')
+        && resource.data.aktif == true && !('bayar' in resource.data)
+        && (resource.data.get('diskaunBeri', null) == null || resource.data.diskaunBeri.get('sumber', '') != 'akaun')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['diskaunBeri', 'diskaunMinta', 'olehId', 'olehCaw', 'dikemaskiniOleh'])
+        && (request.resource.data.get('diskaunBeri', null) == null
+            || (request.resource.data.diskaunBeri.amaun in [5, 10, 20] && request.resource.data.diskaunBeri.olehId == request.resource.data.olehId));
+    }
+    // Cermin order untuk Apps Pelanggan bayar sendiri (dibaca dengan no. plat; tiada nama / telefon)
+    match /lionsafari/{cawangan}/bayar_awam/{plat} {
+      allow get: if true;
+      allow write: if staffApp();
+    }
+    // Bayaran oleh pelanggan melalui Apps Pelanggan (QR / Transfer + bukti) — disahkan oleh kaunter
+    match /lionsafari/{cawangan}/bayar_pelanggan/{id} {
+      allow get: if true;
+      allow read: if staffApp();
+      allow create: if request.resource.data.status == 'menunggu'
+        && request.resource.data.keys().hasOnly(['orderId', 'plat', 'no', 'jumlah', 'kaedah', 'rujukan', 'bukti', 'nama', 'telefon', 'ahliKod', 'status', 'masa', 'masaPeranti'])
+        && request.resource.data.orderId is string
+        && request.resource.data.jumlah is number
+        && request.resource.data.kaedah in ['QR / eWallet', 'Transfer']
+        && request.resource.data.bukti is string && request.resource.data.bukti.size() > 100 && request.resource.data.bukti.size() < 900000
+        && request.resource.data.masa == request.time
+        && exists(/databases/$(database)/documents/lionsafari/$(cawangan)/order/$(request.resource.data.orderId));
     }
     match /lionsafari/{cawangan}/order_gambar/{id} {
       allow read: if staffApp();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-15">
+<meta name="app-versi" content="2026.11.16-16">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-15';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-16';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-15';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-15';
+import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-16';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-16';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -285,7 +285,7 @@ function renderNav(){
 function render(){
   renderNav();
   if(!ahli && (tab === 'Kad' || tab === 'Profil' || tab === 'Utama' || tab === 'Tempah')) return viewAluan();
-  ({Tempah: viewTempah, Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
+  ({Bayar: viewBayar, Tempah: viewTempah, Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
 }
 
 // ---------- Data ----------
@@ -322,7 +322,7 @@ async function muatTetapan(c){
     const s = await getDoc(doc(db, 'lionsafari', c, 'tetapan', 'umum')); tetapan[c] = s.exists() ? s.data() : {};
     const g = await getDocs(collection(db, 'lionsafari', c, 'gambar')); gambarPakej[c] = Object.fromEntries(g.docs.map(d => [d.id, d.data().data]));
   }catch(e){ console.error(e); tetapan[c] = {}; gambarPakej[c] = {}; }
-  if(tab === 'Pakej' || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
+  if(tab === 'Pakej' || tab === 'Bayar' || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
 }
 
 // ---------- Notifikasi pelanggan (semasa apps dibuka / di latar) ----------
@@ -435,6 +435,7 @@ function promoHtml(p){
 // ---------- Alu-aluan (belum ahli) ----------
 function viewAluan(){
   $('#app').innerHTML = `<div class="pentas"><div class="syiling"><img src="syiling.png" alt="Lencana Animal Safari"></div></div>
+    <button class="btn" id="keBayar" style="margin:6px 0 4px;background:#14532d;color:#fff">💳 Bayar cucian kenderaan saya</button>
     <h1>Safari Members</h1>
     <p class="lead">Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.</p>
     <div class="panel"><ul class="kelebihan">
@@ -447,6 +448,7 @@ function viewAluan(){
     <p class="muted" style="text-align:center;margin-top:16px">Sudah didaftarkan di kaunter? Minta kaunter hantar pautan kad anda melalui WhatsApp.</p>
     ${pasangHtml()}`;
   $('#keDaftar').onclick = () => { tab = 'Daftar'; render(); window.scrollTo({top:0}); };
+  $('#keBayar').onclick = () => { tab = 'Bayar'; render(); window.scrollTo({top:0}); };
   $('#kePromo').onclick = () => { tab = 'Promosi'; render(); };
   pasangPasang();
 }
@@ -499,6 +501,91 @@ function viewDaftar(){
 }
 
 // ---------- Utama ----------
+
+// ---------- 💳 Bayar sendiri: masukkan no. kenderaan → semak resit → bayar QR / transfer → muat naik bukti → kaunter sahkan ----------
+let byC = null, byPlat = '', byData = null, byRalat = '', byKaedah = 'QR / eWallet', byBukti = '', byUnsub = null, byHantar = null;
+try{ byHantar = JSON.parse(LS.get('sm_bayar') || 'null'); }catch(_){ byHantar = null; }
+function langganBayaran(){
+  if(byUnsub){ byUnsub(); byUnsub = null; }
+  if(!byHantar) return;
+  byUnsub = onSnapshot(doc(db, 'lionsafari', byHantar.c, 'bayar_pelanggan', byHantar.id), s => { byHantar = {...byHantar, ...(s.exists() ? s.data() : {status: 'hilang'})}; if(tab === 'Bayar') render(); }, () => {});
+}
+function viewBayar(){
+  CAWANGAN.forEach(c => { if(!tetapan[c.id]) muatTetapan(c.id); });
+  if(!byC) byC = ahli?.cawanganUtama || CAWANGAN[0].id;
+  if(byHantar && !byUnsub) langganBayaran();
+  const T = tetapan[byC] || {}, c = CAWANGAN.find(x => x.id === byC);
+  const kepala = `<h1 style="margin-top:14px">💳 Bayar cucian</h1>`;
+  // Status bayaran yang telah dihantar
+  if(byHantar && byHantar.status !== 'hilang'){
+    const h = byHantar, st = {menunggu: ['⏳ Menunggu semakan kaunter', 'Kaunter sedang menyemak bayaran anda. Sila tunggu sebentar — tidak perlu bayar sekali lagi.'], disahkan: ['✅ Bayaran disahkan', `Terima kasih! Bayaran ${RM(h.jumlahSah ?? h.jumlah)} untuk ${h.plat} telah diterima oleh ${esc(h.disahkanOleh || 'kaunter')}.`], ditolak: ['❌ Bayaran tidak dapat disahkan', `Sebab: ${esc(h.sebabTolak || '-')}. Sila hubungi kaunter.`]}[h.status] || ['', ''];
+    $('#app').innerHTML = kepala + `<div class="panel" style="text-align:center"><h2 style="margin-top:0">${st[0]}</h2><p>${st[1]}</p>
+      <div class="muted">${esc(h.plat)} · ${esc(CAWANGAN.find(x => x.id === h.c)?.nama || '')} · ${RM(h.jumlah)} (${esc(h.kaedah || '')})</div>
+      ${h.status !== 'menunggu' ? '<button class="btn btn-emas" id="byBaru" style="margin-top:12px">Selesai</button>' : '<button class="btn btn-garis" id="byBaru" style="margin-top:12px">Tutup paparan ini</button>'}</div>`;
+    $('#byBaru').onclick = () => { if(h.status === 'menunggu' && !confirm('Tutup paparan? Bayaran anda masih akan disemak oleh kaunter.')) return; if(byUnsub){ byUnsub(); byUnsub = null; } byHantar = null; LS.set('sm_bayar', null); byData = null; byPlat = ''; tab = ahli ? 'Utama' : 'Bayar'; render(); };
+    return;
+  }
+  const platAhli = (ahli?.kenderaan || []).map(k => k.plat).filter(Boolean);
+  let isi = '';
+  if(byData){
+    const d = byData, B = T.terimaBayaran;
+    if(!d.aktif) isi = `<div class="panel" style="text-align:center"><b>${esc(d.plat)}</b><p>${d.status === 'Batal' ? 'Order ini telah dibatalkan.' : `Cucian ini telah dibayar (${RM(d.jumlah)}). Terima kasih!`}</p></div>`;
+    else if(d.freeWash && !d.jumlah) isi = `<div class="panel" style="text-align:center">🎁 Cucian ini menggunakan <b>Free Wash</b> — tiada bayaran. Sila sahkan di kaunter.</div>`;
+    else isi = `<div class="panel"><div style="text-align:center"><img src="${c.logo}" alt="" style="width:110px;display:block;margin:0 auto 4px"><b>${esc(T.namaKedai || c.nama)}</b></div>
+        <div style="font-family:ui-monospace,monospace;font-size:14px;margin-top:8px;border-top:1px dashed #94a3b8;padding-top:8px">
+        <div>No: ${esc(d.no)} · Status: <b>${esc(d.status)}</b><br>Plat: <b>${esc(d.plat)}</b> (${esc(d.kenderaan)})</div>
+        <div style="border-top:1px dashed #94a3b8;margin:6px 0"></div>
+        ${d.item.map(x => `<div style="display:flex;justify-content:space-between;gap:8px"><span>${esc(x.n)}</span><span>${(+x.h).toFixed(2)}</span></div>`).join('')}
+        ${d.diskaun ? `<div style="display:flex;justify-content:space-between;color:#b45309"><span>Diskaun</span><span>-${(+d.diskaun).toFixed(2)}</span></div>` : ''}
+        <div style="border-top:1px dashed #94a3b8;margin:6px 0"></div><div style="display:flex;justify-content:space-between;font-size:18px"><b>JUMLAH</b><b>RM ${(+d.jumlah).toFixed(2)}</b></div></div></div>
+      ${B && (B.qr || B.noAkaun) ? `<div class="panel"><div style="display:flex;gap:6px">${['QR / eWallet', 'Transfer'].filter(k => k === 'Transfer' ? B.noAkaun : B.qr).map(k => `<button data-bykaedah="${k}" style="flex:1;padding:10px;border-radius:999px;font-weight:700;border:2px solid ${byKaedah === k ? 'var(--emas)' : '#e2e8f0'};background:${byKaedah === k ? '#fffbeb' : '#fff'}">${k === 'Transfer' ? '🏦 Transfer bank' : '📱 Imbas QR'}</button>`).join('')}</div>
+          ${htmlTerimaBayar(B, {mod: byKaedah === 'Transfer' ? 'transfer' : 'qr', jumlah: d.jumlah, fail: 'QR-' + byC})}
+          <label style="display:block;margin-top:12px;font-weight:700">No. rujukan transaksi (pilihan)</label><input id="byRuj" placeholder="cth: ID transaksi / 4 digit terakhir" style="width:100%">
+          <label style="display:block;margin-top:10px;font-weight:700">Gambar / screenshot resit bayaran *</label><input id="byFail" type="file" accept="image/*" style="width:100%">
+          <img id="byPrev" src="${byBukti}" style="max-width:100%;border-radius:10px;margin-top:6px;display:${byBukti ? 'block' : 'none'}">
+          <button class="btn btn-emas" id="byHantarBtn" style="margin-top:12px">Hantar bukti bayaran ${RM(d.jumlah)}</button>
+          <p class="muted" style="font-size:12px;text-align:center">Kaunter akan menyemak dan mengesahkan bayaran anda. Jika diskaun atau item berubah, kaunter akan menyelaraskan jumlah.</p></div>`
+        : `<div class="panel" style="text-align:center">Bayaran melalui apps belum dibuka untuk ${esc(c.nama)}. Sila bayar di kaunter.</div>`}`;
+  }
+  $('#app').innerHTML = kepala + `<p class="muted" style="margin-top:-6px">Masukkan no. kenderaan yang sedang dicuci untuk melihat resit & bayar terus dari telefon.</p>
+    <div style="display:flex;gap:6px;margin:8px 0">${CAWANGAN.map(x => `<button data-bycaw="${x.id}" style="flex:1;padding:9px;border-radius:999px;font-weight:700;border:2px solid ${x.id === byC ? 'var(--emas)' : '#e2e8f0'};background:${x.id === byC ? '#fffbeb' : '#fff'}">${esc(x.nama)}</button>`).join('')}</div>
+    <div style="display:flex;gap:6px"><input id="byPlatIn" value="${esc(byPlat)}" placeholder="No. kenderaan cth: VAB 1234" style="flex:1;text-transform:uppercase;margin:0" autocomplete="off"><button class="btn btn-emas" id="byCari" style="width:auto;margin:0;padding:0 18px">Cari</button></div>
+    ${platAhli.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${platAhli.map(p => `<button data-byplat="${esc(p)}" style="padding:6px 12px;border-radius:999px;border:1px solid #e2e8f0;background:#fff">${esc(p)}</button>`).join('')}</div>` : ''}
+    ${byRalat ? `<div class="panel" style="text-align:center;margin-top:10px">${byRalat}</div>` : ''}${isi}`;
+  pasangTerimaBayar(document, toast);
+  const cari = async () => { byPlat = ($('#byPlatIn').value || '').trim().toUpperCase(); byData = null; byRalat = ''; byBukti = '';
+    if(!normPlat(byPlat)) return toast('Masukkan no. kenderaan');
+    $('#byCari').disabled = true;
+    try{ const s = await getDoc(doc(db, 'lionsafari', byC, 'bayar_awam', normPlat(byPlat)));
+      if(s.exists() && Date.now() - (s.data().masa || 0) < 3 * 86400e3) byData = s.data(); else byRalat = `Tiada cucian untuk <b>${esc(byPlat)}</b> di ${esc(CAWANGAN.find(x => x.id === byC).nama)} sekarang. Pastikan kenderaan telah didaftarkan di kaunter & cawangan betul.`;
+      if(byData?.aktif && byData.item?.length && !tetapan[byC]?.terimaBayaran?.qr) byKaedah = 'Transfer';
+    }catch(e){ console.error(e); byRalat = 'Tidak dapat menyemak sekarang. Semak internet & cuba lagi.'; }
+    render(); };
+  $('#byCari').onclick = cari; $('#byPlatIn').onkeydown = e => { if(e.key === 'Enter') cari(); };
+  $$('[data-bycaw]').forEach(b => b.onclick = () => { byC = b.dataset.bycaw; byData = null; byRalat = ''; render(); });
+  $$('[data-byplat]').forEach(b => b.onclick = () => { $('#byPlatIn').value = b.dataset.byplat; cari(); });
+  $$('[data-bykaedah]').forEach(b => b.onclick = () => { byKaedah = b.dataset.bykaedah; render(); });
+  if($('#byFail')) $('#byFail').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ byBukti = await gambarBukti(f); $('#byPrev').src = byBukti; $('#byPrev').style.display = 'block'; }catch(_){ toast('Gagal baca gambar'); } };
+  if($('#byHantarBtn')) $('#byHantarBtn').onclick = async () => {
+    if(!byBukti) return toast('Sila muat naik gambar resit bayaran');
+    const d = byData; $('#byHantarBtn').disabled = true; $('#byHantarBtn').textContent = 'Menghantar…';
+    try{
+      const ref = doc(collection(db, 'lionsafari', byC, 'bayar_pelanggan'));
+      await setDoc(ref, {orderId: d.orderId, plat: d.plat, no: d.no || '', jumlah: Number(d.jumlah) || 0, kaedah: byKaedah, rujukan: ($('#byRuj').value || '').trim(), bukti: byBukti,
+        nama: ahli?.nama || '', telefon: ahli?.telefon || '', ahliKod: ahli?.kod || '', status: 'menunggu', masa: serverTimestamp(), masaPeranti: Date.now()});
+      byHantar = {c: byC, id: ref.id, plat: d.plat, jumlah: d.jumlah, kaedah: byKaedah, status: 'menunggu'}; LS.set('sm_bayar', JSON.stringify({c: byC, id: ref.id}));
+      byBukti = ''; langganBayaran(); toast('✅ Bukti bayaran dihantar ke kaunter'); render(); window.scrollTo({top:0});
+    }catch(e){ console.error(e); toast('⚠ Gagal hantar: ' + (e.code || e.message)); $('#byHantarBtn').disabled = false; $('#byHantarBtn').textContent = 'Hantar bukti bayaran'; }
+  };
+}
+async function gambarBukti(fail){
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(fail); });
+  const s = Math.min(1, 1100 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.7);
+}
+
 // ---------- 💳 Bayar tanpa tunai (QR DuitNow / transfer) — ditetapkan di Apps Akaun ----------
 let bayarCaw = null;
 function bayarHtml(){
@@ -507,12 +594,13 @@ function bayarHtml(){
   if(!ada.length) return '';
   if(!ada.some(c => c.id === bayarCaw)) bayarCaw = (ada.find(c => c.id === ahli?.cawanganUtama) || ada[0]).id;
   const T = tetapan[bayarCaw] || {}, c = ada.find(x => x.id === bayarCaw);
-  return `<h2>💳 Bayar tanpa tunai</h2><div class="panel">
+  return `<h2>💳 Bayar tanpa tunai</h2><button class="btn" data-kebayar="1" style="background:#14532d;color:#fff;margin-bottom:8px">💳 Bayar cucian kenderaan saya →</button><div class="panel">
     ${ada.length > 1 ? `<div style="display:flex;gap:6px;margin-bottom:4px">${ada.map(x => `<button data-bayarcaw="${x.id}" style="flex:1;padding:9px;border-radius:999px;border:2px solid ${x.id === bayarCaw ? 'var(--emas)' : '#e2e8f0'};background:${x.id === bayarCaw ? '#fffbeb' : '#fff'};font-weight:700">${esc(x.nama)}</button>`).join('')}</div>` : ''}
     ${htmlTerimaBayar(T.terimaBayaran, {namaKedai: T.namaKedai || c.nama, fail: 'QR-' + bayarCaw})}
     <p class="muted" style="font-size:12px;text-align:center;margin:8px 0 0">Bayar selepas kereta siap & tunjukkan resit kepada cashier.</p></div>`;
 }
 function pasangBayar(){
+  $$('[data-kebayar]').forEach(b => b.onclick = () => { tab = 'Bayar'; render(); window.scrollTo({top:0}); });
   $$('[data-bayarcaw]').forEach(b => b.onclick = () => { bayarCaw = b.dataset.bayarcaw; render(); });
   pasangTerimaBayar(document, typeof toast === 'function' ? toast : null);
 }

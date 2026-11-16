@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-15">
+<meta name="app-versi" content="2026.11.16-16">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -164,16 +164,16 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-15';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-16';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-15';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-15';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-15';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-15';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-15';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-16';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-16';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-16';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-16';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-16';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -284,7 +284,27 @@ let tab = 'Ringkasan', hari = today();
 let aktif = [], dibuatHari = [], bayarHari = [], stok = [], petty = [];
 let unsubAsas = [], unsubHari = [], dataError = '';
 let pasangPrompt = null;
-let GAMBAR = {}, KOMISEN = {}, FOTO = {}, tempahan = [];
+let GAMBAR = {}, KOMISEN = {}, FOTO = {}, tempahan = [], bayarPel = [], bayarPelMula = false;
+// Notifikasi kaunter: bunyi + getar + notifikasi sistem (jika dibenarkan) + toast
+function bunyiMaklum(tajuk, isi){
+  toast(`${tajuk}: ${isi}`);
+  try{ navigator.vibrate?.([120,60,120]); }catch(_){}
+  try{ const a = new (window.AudioContext || window.webkitAudioContext)(), g = a.createGain(); g.connect(a.destination); g.gain.value = .15;
+    [880, 1175].forEach((f, i) => { const o = a.createOscillator(); o.frequency.value = f; o.connect(g); o.start(a.currentTime + i*.18); o.stop(a.currentTime + i*.18 + .15); }); }catch(_){}
+  try{ if('Notification' in window && Notification.permission === 'granted') navigator.serviceWorker?.getRegistration().then(r => r ? r.showNotification(tajuk, {body: isi, icon: 'icon-192.png', tag: 'kaunter-' + Date.now()}) : new Notification(tajuk, {body: isi})); }catch(_){}
+}
+// Bayaran dari Apps Pelanggan menunggu semakan kaunter
+const htmlBayarPel = () => bayarPel.length ? `<div class="card" style="border:2px solid #14532d;background:#f0fdf4"><h3 style="margin-top:0">📲 Bayaran dari Apps Pelanggan — perlu disemak (${bayarPel.length})</h3>
+  ${bayarPel.map(x => { const o = aktif.find(a => a.id === x.orderId); return `<div class="between" style="padding:8px 0;border-bottom:1px solid #d1fae5;gap:8px">
+    <div style="display:flex;gap:8px;align-items:center">${x.bukti ? `<img src="${x.bukti}" data-bpgambar="${x.id}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;cursor:pointer">` : ''}
+      <div><b>${esc(x.plat)}</b> <span class="muted">${esc(x.no || '')}</span><br><b>${RM(x.jumlah)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''}<br><span class="muted">${fMasa(x.masaPeranti)}${o ? ` · Order ${RM(Math.max(0, r2(o.jumlahKasar - (o.diskaunBeri?.amaun || 0))))}` : ' · ⚠ order tiada dalam queue'}</span></div></div>
+    <div class="row" style="justify-content:flex-end">${o ? `<button class="btn-ok small" data-bpsah="${x.id}">✅ Semak & sahkan</button>` : ''}<button class="small btn-bad" data-bptolak="${x.id}">Tolak</button></div></div>`; }).join('')}</div>` : '';
+function pasangBayarPel(){
+  $$('[data-bpgambar]').forEach(im => im.onclick = () => { const x = bayarPel.find(b => b.id === im.dataset.bpgambar); openModal(`<div class="between"><h3 style="margin:0">Bukti bayaran ${esc(x.plat)}</h3><button class="small" id="mTutup">✕</button></div><img src="${x.bukti}" style="width:100%;border-radius:10px">`); $('#mTutup').onclick = closeModal; });
+  $$('[data-bpsah]').forEach(b => b.onclick = () => { const x = bayarPel.find(y => y.id === b.dataset.bpsah); bukaBayar(aktif.find(o => o.id === x.orderId), x); });
+  $$('[data-bptolak]').forEach(b => b.onclick = async () => { const x = bayarPel.find(y => y.id === b.dataset.bptolak); const sebab = prompt(`Tolak bayaran ${x.plat} (${RM(x.jumlah)})?\nSebab (dimaklumkan kepada pelanggan):`); if(sebab === null) return;
+    try{ await updateDoc(doc(col('bayar_pelanggan'), x.id), {status: 'ditolak', sebabTolak: sebab, ditolakOleh: staf.nama, masaTolak: Date.now()}); toast('Bayaran pelanggan ditolak'); }catch(e){ onErr(e); } });
+}
 const KT = kaunter({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp}, pengguna: () => staf?.nama || 'Kaunter'});
 // Avatar staf yang dikemas kini sendiri bila gambar profil berubah (tanpa lukis semula skrin)
 const av = (s, px = 40) => s ? `<span data-av="${s.id}" data-px="${px}" data-nm="${esc(s.nama)}">${avatar(FOTO[s.id], s.nama, px)}</span>` : '';
@@ -335,7 +355,7 @@ onAuthStateChanged(auth, u => {
 function mulaCawangan(){
   stopAll(unsubAsas); stopAll(unsubHari); modulPK.henti();
   staf = null; stafLoaded = false; stafList = []; dataError = '';
-  aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = [];
+  aktif = []; dibuatHari = []; bayarHari = []; stok = []; petty = []; bayarPel = []; bayarPelMula = false;
   T = asalCaw(); tab = 'Ringkasan'; GAMBAR = {}; FOTO = {};
   setHeader();
   unsubAsas.push(onSnapshot(stafCol('staf'), s => {
@@ -493,7 +513,16 @@ function kunci(){ modulPK.henti(); staf = null; try{ localStorage.removeItem('ls
 function langganHari(){
   stopAll(unsubHari);
   hari = today();
-  unsubHari.push(onSnapshot(query(col('order'), where('aktif','==',true)), s => { aktif = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaDibuat||0)-(b.masaDibuat||0)); refreshLive(); }, onErr));
+  unsubHari.push(onSnapshot(query(col('order'), where('aktif','==',true)), s => {
+    const lama = Object.fromEntries(aktif.map(o => [o.id, o.diskaunBeri?.masa || 0]));
+    aktif = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaDibuat||0)-(b.masaDibuat||0));
+    aktif.forEach(o => { if(o.id in lama && o.diskaunBeri && o.diskaunBeri.masa !== lama[o.id]) bunyiMaklum(`🎟 Diskaun ${o.plat}`, labelDiskaun(o.diskaunBeri)); });
+    refreshLive(); if(kemasBayar) kemasBayar(); }, onErr));
+  unsubHari.push(onSnapshot(query(col('bayar_pelanggan'), where('status','==','menunggu')), s => {
+    const lama = new Set(bayarPel.map(x => x.id)), awal = !bayarPelMula; bayarPelMula = true;
+    bayarPel = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masaPeranti||0)-(b.masaPeranti||0));
+    if(!awal) bayarPel.filter(x => !lama.has(x.id)).forEach(x => bunyiMaklum('📲 Pelanggan telah bayar', `${x.plat} — ${RM(x.jumlah)} (${x.kaedah}). Sila semak.`));
+    refreshLive(); renderNav(); }, () => {}));
   unsubHari.push(onSnapshot(query(col('order'), where('tarikh','==',hari)), s => { dibuatHari = s.docs.map(d => ({id:d.id, ...d.data()})); refreshLive(); }, onErr));
   unsubHari.push(onSnapshot(query(col('order'), where('tarikhBayar','==',hari)), s => { bayarHari = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.masaBayar||0)-(a.masaBayar||0)); refreshLive(); }, onErr));
   unsubHari.push(onSnapshot(col('stok'), s => { stok = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => a.nama.localeCompare(b.nama)); refreshLive(); }, onErr));
@@ -536,7 +565,7 @@ $('#modal').addEventListener('click', e => { if(e.target.id === 'modal') closeMo
 // =====================================================================
 function badge(t){
   if(t === 'Queue' && (aktif.length || tempahan.length)) return aktif.length + tempahan.length;
-  if(t === 'Bayaran'){ const n = aktif.filter(o => o.status === 'Siap').length; if(n) return n; }
+  if(t === 'Bayaran'){ const n = aktif.filter(o => o.status === 'Siap').length + bayarPel.length; if(n) return n; }
   if(t === 'Pekerja'){ const n = modulPK.st.menunggu.filter(m => modulPK_bolehLulus(m)).length; if(n) return n; }
   if(t === 'Stok'){ const n = stok.filter(s => (s.baki||0) <= (s.min||0)).length; if(n) return n; }
   return 0;
@@ -974,13 +1003,15 @@ VIEWS['Queue'] = {
       <span class="muted">${esc(t.nama)} · ${esc(t.kenderaan||'')} · ${esc(t.pakej)}${(t.addon||[]).length ? ' + ' + t.addon.map(a => esc(a.nama)).join(', ') : ''} · <b>${RM(t.jumlah)}</b><br>Datang: ${esc(t.masaDatang || 'sekarang')}${t.catatan ? ' · 📝 ' + esc(t.catatan) : ''}</span></div>
       <div class="row"><button class="btn-ok" data-tpterima="${t.id}">✅ Terima pesanan</button><button class="small btn-bad" data-tptolak="${t.id}">Tolak</button></div></div>`).join('')}
       <div class="muted" style="margin-top:6px">Bayaran boleh dibuat selepas pesanan diterima (masuk ke Queue).</div></div>` : '';
-    if(!l.length) return tp + `<div class="card muted" style="text-align:center;padding:30px">${aktif.length ? 'Tiada plat sepadan.' : 'Tiada kenderaan dalam queue. 🎉'}</div>`;
+    if(!l.length) return htmlBayarPel() + tp + `<div class="card muted" style="text-align:center;padding:30px">${aktif.length ? 'Tiada plat sepadan.' : 'Tiada kenderaan dalam queue. 🎉'}</div>`;
     const bolehBayar = !['Pekerja','Sales'].includes(staf.peranan);
-    return tp + l.map(o => {
+    return (bolehBayar ? htmlBayarPel() : '') + tp + l.map(o => {
       const i = STATUS.indexOf(o.status), seterus = STATUS[i+1];
       return `<div class="card qcard ${o.status==='Siap'?'siap':''}">
         <div class="between"><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><span class="plate">${esc(o.plat)}</span> <span class="muted">${esc(o.no)}</span><br>${tagAhli(o)}</div></div><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)} · ${minit(o.masaDibuat)} min</span></div>
         <div class="muted" style="margin-top:3px">${esc(o.pakej)}${(o.addon||[]).length?' + '+o.addon.map(a=>esc(a.nama)).join(', '):''} · ${esc(o.kenderaan)} · <b>${RM(o.jumlah)}</b></div>
+        ${o.diskaunBeri ? `<div><span class="tag gold">🎟 Diskaun ${esc(labelDiskaun(o.diskaunBeri))}</span></div>` : o.diskaunMinta ? `<div><span class="tag">⏳ Minta diskaun RM${esc(o.diskaunMinta.amaun)}</span></div>` : ''}
+        ${bayarPel.some(x => x.orderId === o.id) ? `<div><span class="tag ok">📲 Pelanggan dah bayar — semak di atas</span></div>` : ''}
         ${o.catatan?`<div class="muted">📝 ${esc(o.catatan)}</div>`:''}
         <div class="steps">${STATUS.map((s,j) => `<span class="${j<=i?'done':''}"></span>`).join('')}</div>
         <div class="row">
@@ -999,7 +1030,7 @@ VIEWS['Queue'] = {
       try{ await KT.tukarStatus(aktif.find(o => o.id === id) || {id}, cawangan, st); if(st === 'Siap') toast('✅ Siap — pelanggan dimaklumkan dalam Apps Pelanggan'); }catch(e){ onErr(e); }
     });
     $$('[data-bay]').forEach(s => s.onchange = () => updateDoc(doc(col('order'), s.dataset.bay), {bay:s.value}).catch(onErr));
-    $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar)));
+    $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar))); pasangBayarPel();
     $$('[data-batal]').forEach(b => b.onclick = () => batalOrder(aktif.find(o => o.id === b.dataset.batal)));
     $$('[data-tukarmo]').forEach(b => b.onclick = () => tukarMO(aktif.find(o => o.id === b.dataset.tukarmo)));
     $$('[data-tpterima]').forEach(b => b.onclick = async () => { const t = tempahan.find(x => x.id === b.dataset.tpterima); if(!t) return; b.disabled = true;
@@ -1050,14 +1081,16 @@ async function batalOrder(o){
 VIEWS['Bayaran'] = {
   live(){
     const l = [...aktif].sort((a,b) => (b.status==='Siap') - (a.status==='Siap') || (a.masaDibuat||0)-(b.masaDibuat||0));
-    return `<div class="card"><h3>💳 Belum dibayar (${l.length})</h3>${l.length ? `<table>${l.map(o => `<tr><td><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><b>${esc(o.plat)}</b><br><span class="muted">${esc(o.pakej)}</span><br>${tagAhli(o)}</div></div></td>
+    const notif = 'Notification' in window && Notification.permission === 'default' ? `<div class="notice">🔔 Hidupkan notifikasi supaya kaunter dimaklumkan bila pelanggan bayar melalui apps. <button class="small" id="kNotif">Hidupkan</button></div>` : '';
+    return notif + htmlBayarPel() + `<div class="card"><h3>💳 Belum dibayar (${l.length})</h3>${l.length ? `<table>${l.map(o => `<tr><td><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><b>${esc(o.plat)}</b><br><span class="muted">${esc(o.pakej)}</span><br>${tagAhli(o)}</div></div></td>
         <td><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)}</span></td><td class="r"><b>${RM(o.jumlah)}</b><br><button class="btn-ok small" data-bayar="${o.id}" style="margin-top:4px">Bayar</button></td></tr>`).join('')}</table>` : '<p class="muted">Tiada bayaran tertunggak.</p>'}</div>
       <div class="card"><h3>✅ Dibayar hari ini (${bayarHari.filter(o=>o.status!=='Batal').length})</h3>${bayarHari.length ? `<table>${bayarHari.map(o => `<tr><td>${fMasa(o.masaBayar)}<br><span class="muted">${esc(o.no)}</span></td>
         <td><b>${esc(o.plat)}</b><br>${o.status==='Batal'?`<span class="tag bad">Batal: ${esc(o.batal?.sebab||'')}</span>`:`<span class="tag">${esc(o.bayar?.kaedah)}</span>`}${o.diskaun?` <span class="tag gold">Diskaun ${RM(o.diskaun)}</span>`:''}${tagAhli(o)}${o.copInfo ? `<br><span class="muted">${esc(o.copInfo)}</span>` : ''}${o.copGagal && o.status !== 'Batal' ? `<br><button class="small" data-copsemula="${o.id}">⚠ Cop belum diberi — cuba lagi</button>` : ''}</td>
         <td class="r"><b>${RM(o.jumlah)}</b><br>${o.status!=='Batal'?`<button class="small" data-resit="${o.id}">🧾 Resit</button> <button class="small btn-bad" data-batalb="${o.id}">Batal</button>`:''}</td></tr>`).join('')}</table>` : '<p class="muted">Belum ada.</p>'}</div>`;
   },
   pasangLive(){
-    $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar)));
+    $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar))); pasangBayarPel();
+    if($('#kNotif')) $('#kNotif').onclick = async () => { try{ await Notification.requestPermission(); }catch(_){} refreshLive(); };
     $$('[data-resit]').forEach(b => b.onclick = () => lihatResit(bayarHari.find(o => o.id === b.dataset.resit)));
     $$('[data-batalb]').forEach(b => b.onclick = () => batalOrder(bayarHari.find(o => o.id === b.dataset.batalb)));
     $$('[data-copsemula]').forEach(b => b.onclick = async () => { b.disabled = true; const o = bayarHari.find(x => x.id === b.dataset.copsemula); const r = await beriCop(o); toast(r); });
@@ -1120,9 +1153,13 @@ async function kecilkanGambar(fail, maks=900, kualiti=0.6){
   return c.toDataURL('image/jpeg', kualiti);
 }
 
-function bukaBayar(o){
+let kemasBayar = null;   // dipanggil apabila order dalam modal bayaran berubah (diskaun diluluskan dari Akaun / Apps Pekerja)
+const labelDiskaun = d => `RM${(+d.amaun).toFixed(d.amaun % 1 ? 2 : 0)} oleh ${d.oleh || ''}${d.sumber === 'akaun' ? ' (Akaun)' : d.sumber === 'pekerja' ? ' (Apps Pekerja)' : ''}${d.sebab ? ' — ' + d.sebab : ''}`;
+function bukaBayar(o, pra = null){
   if(!o) return;
-  let kaedah = 'Tunai', bukti = '';
+  let kaedah = 'Tunai', bukti = pra?.bukti || '';
+  const semasa = () => aktif.find(x => x.id === o.id) || o;
+  const dis = () => Math.min(Number(semasa().diskaunBeri?.amaun) || 0, kasar());
   const manual = [...(o.itemManual || [])], asas = r2(o.jumlahKasar - sum(manual, a => a.harga));
   const kasar = () => r2(asas + sum(manual, a => a.harga));
   openModal(`<div class="between"><h3 style="margin:0">💳 Bayaran — ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
@@ -1130,8 +1167,8 @@ function bukaBayar(o){
     <table style="margin:8px 0">${barisItem(o).map(([n,h]) => `<tr><td>${esc(n)}</td><td class="r">${RM(h)}</td></tr>`).join('')}${o.freeWash ? `<tr><td>🎁 Free Wash (nilai ${RM(o.freeWash.nilai)}) — perlu PIN Supervisor</td><td class="r">${RM(0)}</td></tr>` : ''}</table>
     <label>➕ Item manual (di luar pakej / cucian spot tertentu)</label><div id="pManual"></div>
     <div class="row" style="flex-wrap:nowrap;gap:6px"><input id="pMNama" placeholder="cth: Buang tahi burung bumbung" style="margin:0;flex:1"><input id="pMHarga" type="number" inputmode="decimal" step="0.01" placeholder="RM" style="margin:0;width:90px"><button class="small" id="pMTambah">+ Tambah</button></div>
-    <label>Diskaun (RM)</label><div class="row" style="flex-wrap:nowrap;gap:6px"><input id="pDis" type="number" inputmode="decimal" step="0.01" value="" placeholder="0.00" style="margin:0;flex:1">
-      <button class="small" data-dis="5">RM5</button><button class="small" data-dis="10">RM10</button><button class="small" data-dis="0">Tiada</button></div>
+    <label>🎟 Diskaun</label><div id="pDiskaun"></div>
+    ${pra ? `<div class="notice" style="background:#ecfdf5;border-color:#14532d"><b>📲 Pelanggan telah bayar melalui Apps Pelanggan: ${RM(pra.jumlah)}</b> (${esc(pra.kaedah)}${pra.rujukan ? ' · Ruj: ' + esc(pra.rujukan) : ''})<br>Semak duit telah masuk ke akaun bank / QR sebelum simpan.${pra.bukti ? `<img src="${pra.bukti}" style="width:100%;max-width:320px;border-radius:10px;margin-top:6px;display:block">` : ''}</div>` : ''}
     <div class="totalbar"><span>Perlu dibayar</span><b id="pJum">${RM(o.jumlahKasar)}</b></div>
     <label>Cara bayar</label><div class="choices" id="pKaedah">${KAEDAH.map(k => `<button class="choice ${k==='Tunai'?'sel':''}" data-k="${k}"><b>${k}</b></button>`).join('')}</div>
     <div id="pTunai"><label>Wang diterima (RM)</label><input id="pTerima" type="number" inputmode="decimal" step="0.01" placeholder="0.00">
@@ -1139,7 +1176,21 @@ function bukaBayar(o){
     <div id="pBukan" class="hidden"><div id="pInfoBayar"></div><label>No. rujukan transaksi</label><input id="pRuj" placeholder="cth: 4 digit terakhir / ID transaksi">
       <label>Bukti bayaran (gambar, pilihan)</label><input id="pBukti" type="file" accept="image/*" capture="environment"><img id="pThumb" class="thumb hidden"></div>
     <div class="row" style="margin-top:6px"><button class="btn-ok big" style="flex:1" id="pSimpan">SIMPAN BAYARAN</button><button class="btn-gold big" style="flex:1" id="pCetak">SIMPAN & PAPAR RESIT</button></div>`);
-  const jum = () => Math.max(0, r2(kasar() - numVal('#pDis')));
+  const jum = () => Math.max(0, r2(kasar() - dis()));
+  const lukisDiskaun = () => { const c = semasa(), d = c.diskaunBeri, m = c.diskaunMinta;
+    $('#pDiskaun').innerHTML = d ? `<div class="mrow" style="background:#fef3c7"><span>✅ ${esc(labelDiskaun(d))}</span><b>-${RM(dis())}</b></div>`
+      : m ? `<div class="mrow" style="background:#e0f2fe"><span>⏳ Menunggu kelulusan diskaun RM${esc(m.amaun)}${m.sebab ? ' — ' + esc(m.sebab) : ''}</span><button class="small" id="pMintaBatal">Batal</button></div>`
+      : `<div class="mrow"><span class="muted">Tiada diskaun. Diskaun hanya diberi oleh Dato' / Datin (Apps Akaun) atau pekerja berkuasa 🎟.</span><button class="small" id="pMinta">🙋 Minta</button></div>`;
+    if($('#pMintaBatal')) $('#pMintaBatal').onclick = () => updateDoc(doc(col('order'), o.id), {diskaunMinta: null}).catch(onErr);
+    if($('#pMinta')) $('#pMinta').onclick = () => {
+      $('#pDiskaun').insertAdjacentHTML('beforeend', `<div class="row" id="pMintaBox" style="gap:6px;margin-top:4px">${[5,10,20].map(x => `<button class="small" data-minta="${x}">RM${x}</button>`).join('')}<input id="pMintaLain" type="number" inputmode="decimal" placeholder="Lain RM" style="width:90px;margin:0"><input id="pMintaSebab" placeholder="Sebab" style="flex:1;margin:0;min-width:120px"><button class="small btn-ok" id="pMintaHantar">Hantar</button></div>`);
+      $('#pMinta').remove(); let amaun = 0;
+      $$('[data-minta]').forEach(b => b.onclick = () => { amaun = +b.dataset.minta; $('#pMintaLain').value = ''; $$('[data-minta]').forEach(x => x.classList.toggle('btn-gold', x === b)); });
+      $('#pMintaHantar').onclick = async () => { const a = numVal('#pMintaLain') || amaun; if(!(a > 0)) return toast('Pilih jumlah diskaun');
+        try{ await updateDoc(doc(col('order'), o.id), {diskaunMinta: {amaun: r2(a), sebab: val('#pMintaSebab'), oleh: staf.nama, masa: Date.now()}}); toast('🙋 Permintaan diskaun dihantar ke Dato\' / Datin & pekerja berkuasa'); }catch(e){ onErr(e); } };
+    };
+  };
+  kemasBayar = () => { if(!$('#pDiskaun')) { kemasBayar = null; return; } if(!$('#pMintaBox')) lukisDiskaun(); kira(); };
   const lukisManual = () => { $('#pManual').innerHTML = manual.map((a, i) => `<div class="mrow"><span>${esc(a.nama)}</span><span><b>${RM(a.harga)}</b> <button class="small btn-bad" data-mbuang="${i}">✕</button></span></div>`).join('');
     $$('[data-mbuang]').forEach(b => b.onclick = () => { manual.splice(+b.dataset.mbuang, 1); lukisManual(); kira(); }); };
   const paparInfoBayar = () => { const mod = kaedah === 'QR / eWallet' ? 'qr' : kaedah === 'Transfer' ? 'transfer' : '';
@@ -1151,10 +1202,9 @@ function bukaBayar(o){
     $('#pCepat').innerHTML = cadang.map(x => `<button class="small" data-c="${x}">${RM(x)}</button>`).join('');
     $$('#pCepat [data-c]').forEach(b => b.onclick = () => { $('#pTerima').value = b.dataset.c; kira(); });
   };
-  kira(); lukisManual();
+  kira(); lukisManual(); lukisDiskaun();
   $('#mTutup').onclick = closeModal;
-  $('#pDis').oninput = kira; $('#pTerima').oninput = kira;
-  $$('[data-dis]').forEach(b => b.onclick = () => { $('#pDis').value = +b.dataset.dis ? b.dataset.dis : ''; kira(); });
+  $('#pTerima').oninput = kira;
   $('#pMTambah').onclick = () => { const n = val('#pMNama'), h = r2(numVal('#pMHarga')); if(!n) return toast('Isi nama item'); if(!(h > 0)) return toast('Isi harga item');
     manual.push({nama: n, harga: h}); $('#pMNama').value = ''; $('#pMHarga').value = ''; lukisManual(); kira(); };
   $$('#pKaedah .choice').forEach(b => b.onclick = () => {
@@ -1162,10 +1212,10 @@ function bukaBayar(o){
     $('#pTunai').classList.toggle('hidden', kaedah !== 'Tunai'); $('#pBukan').classList.toggle('hidden', kaedah === 'Tunai');
     paparInfoBayar();
   });
+  if(pra){ $(`#pKaedah [data-k="${pra.kaedah}"]`)?.click(); $('#pRuj').value = pra.rujukan || ''; if(pra.bukti){ $('#pThumb').src = pra.bukti; $('#pThumb').classList.remove('hidden'); } }
   $('#pBukti').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ bukti = await kecilkanGambar(f); $('#pThumb').src = bukti; $('#pThumb').classList.remove('hidden'); }catch(_){ toast('Gagal membaca gambar'); } };
   const simpan = async cetak => {
-    const dis = numVal('#pDis');
-    if(dis < 0 || dis > kasar()) return toast('Diskaun tidak sah');
+    const cur = semasa(), dis_ = dis();
     if(val('#pMNama') && !confirm('Item manual belum ditambah (tekan "+ Tambah"). Teruskan tanpa item itu?')) return;
     const j = jum();
     let diterima = 0, baki = 0;
@@ -1174,11 +1224,7 @@ function bukaBayar(o){
       if(diterima < j) return toast('Wang diterima kurang daripada jumlah');
       baki = r2(diterima - j);
     }
-    let diskaunLulus = '';
-    if(dis > (Number(T.hadDiskaun)||0)){
-      diskaunLulus = await perluLulus(`Diskaun ${RM(dis)} untuk ${o.plat}`);
-      if(!diskaunLulus) return;
-    }
+    const diskaunLulus = cur.diskaunBeri ? labelDiskaun(cur.diskaunBeri) : '';
     let fwLulus = '';
     if(o.freeWash){
       fwLulus = await perluLulus(`Tebus Free Wash ${o.ahli?.kod || ''} — ${o.plat}`);
@@ -1188,14 +1234,15 @@ function bukaBayar(o){
     $('#pSimpan').disabled = $('#pCetak').disabled = true;
     const t = today();
     const data = {bayar:{kaedah, rujukan: kaedah==='Tunai' ? '' : val('#pRuj'), bukti: kaedah==='Tunai' ? '' : bukti, diterima, baki},
-      diskaun: dis, diskaunLulus, jumlah: j, itemManual: manual, jumlahKasar: kasar(), status:'Selesai', aktif:false, tarikhBayar:t, bulanBayar:t.slice(0,7), dibayarOleh: staf.nama, masaBayar: Date.now()};
+      diskaun: dis_, diskaunLulus, diskaunMinta: null, jumlah: j, itemManual: manual, jumlahKasar: kasar(), status:'Selesai', aktif:false, tarikhBayar:t, bulanBayar:t.slice(0,7), dibayarOleh: staf.nama, masaBayar: Date.now()};
     if(o.freeWash) data.freeWash = {...o.freeWash, lulus: fwLulus};
     try{
       await updateDoc(doc(col('order'), o.id), data);
-      KT.cermin({...o, ...data}, cawangan, {status:'Selesai', aktif:false});
-      closeModal();
+      KT.cermin({...cur, ...data}, cawangan, {status:'Selesai', aktif:false});
+      if(pra?.id) updateDoc(doc(col('bayar_pelanggan'), pra.id), {status: 'disahkan', disahkanOleh: staf.nama, masaSah: Date.now(), jumlahSah: j, no: o.no || ''}).catch(console.error);
+      kemasBayar = null; closeModal();
       toast(`✅ ${o.plat} dibayar ${RM(j)}${baki ? ' — baki ' + RM(baki) : ''}`);
-      if(cetak) lihatResit({...o, ...data});
+      if(cetak) lihatResit({...cur, ...data});
       kemaskiniAkaunHari(t);
       if(o.ahli && !o.freeWash) beriCop({...o, ...data}).then(m => m && toast(m));
       if(o.freeWash) setDoc(doc(collection(store, 'ahli', o.ahli.id, 'sejarah'), o.id), {tarikh: t, cawangan, plat: o.plat, pakej: o.pakej, jumlah: j, freeWash: true, masa: Date.now()}).catch(console.error);

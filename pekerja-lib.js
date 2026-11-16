@@ -86,6 +86,7 @@ export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
 // Kuasa pengelola yang ditanda oleh pemilik di Akaun → Pekerja → Urus  (lionsafari/{c}/staf/{id}.kuasa)
 export const KUASA = [
   {k:'kaunter', ikon:'💳', label:'Kaunter: queue & bayaran', ket:'Terima tempahan, kemas kini progress servis & terima bayaran dalam Apps Pekerja'},
+  {k:'diskaun', ikon:'🎟', label:'Lulus diskaun RM5 / RM10 / RM20', ket:'Beri diskaun terus kepada kenderaan dalam queue (sahkan dengan PIN). Jumlah lain: Dato\' / Datin di Apps Akaun'},
   {k:'tutup',   ikon:'🔐', label:'Tutup kaunter (gambar tunai)', ket:'Ambil gambar wang tunai & kira tunai dalam laci semasa tutup kaunter'},
   {k:'semak',   ikon:'🧮', label:'Semak laporan kewangan', ket:'Semak & sahkan laporan tutup kaunter harian (Daily Sales Report)'},
   {k:'urus',    ikon:'👥', label:'Urus pekerja', ket:'Daftar pekerja baru, ubah maklumat asas, PIN & status (bukan gaji, IC, bank atau kuasa)'},
