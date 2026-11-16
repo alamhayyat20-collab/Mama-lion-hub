@@ -5,11 +5,11 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, dataStatus, KAD, dataAwam, normPlat } from './safari-lib.js?v=2026.11.17-06';
+import { tambahCop, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.17-07';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
-const hariIni = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const hariIni = () => hariOperasi();   // hari operasi (cut-off 4 pagi)
 export const KAEDAH_BAYAR = ['Tunai', 'QR / eWallet', 'Kad', 'Transfer'];
 export const STATUS_TEMPAHAN = {baru: '⏳ Menunggu pengesahan', diterima: '✅ Diterima', ditolak: '❌ Ditolak', batal: 'Dibatalkan'};
 

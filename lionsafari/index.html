@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-06">
+<meta name="app-versi" content="2026.11.17-07">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -54,6 +54,7 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 .tag{display:inline-block;padding:3px 8px;border-radius:999px;background:#f1f5f9;font-size:11px;white-space:nowrap}
 .tag.gold{background:var(--gold2)}.tag.ok{background:#dcfce7}.tag.bad{background:#fee2e2}
 .notice{background:var(--gold2);border-radius:10px;padding:10px;font-size:13px;margin-bottom:10px}
+.panduan-bar{display:flex;justify-content:flex-end;margin:-4px 0 6px}.panduan{padding-left:22px;line-height:1.55}.panduan li{margin:8px 0}
 .notice.bad{background:#fee2e2}
 .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:4px 0 12px}
 .choice{background:#f8fafc;border:2px solid #e2e8f0;text-align:left;padding:11px}
@@ -164,19 +165,19 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-06';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-07';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-06';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-06';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-06';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-06';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-06';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-06';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-06';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-06';
+import { bukaPaparan, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-07';
+import { hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-07';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-07';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-07';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-07';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-07';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-07';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-07';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -232,7 +233,7 @@ const RM = n => 'RM ' + (Number(n)||0).toLocaleString('en-MY',{minimumFractionDi
 const r2 = n => Math.round((Number(n)||0)*100)/100;
 const pad = (n,l=2) => String(n).padStart(l,'0');
 const isoDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const today = () => isoDate(new Date());
+const today = () => hariOperasi();   // hari operasi: 00:00–03:59 = semalam
 const sum = (a,f) => a.reduce((t,x) => t + (Number(f ? f(x) : x)||0), 0);
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
 const fTarikh = t => t ? `${+t.slice(8,10)} ${BLN[+t.slice(5,7)-1]} ${t.slice(0,4)}` : '';
@@ -524,9 +525,91 @@ function bukaKadId(){
 }
 function kunci(){ modulPK.henti(); staf = null; try{ localStorage.removeItem('ls_staf'); }catch(_){} stopAll(unsubHari); closeModal(); renderPinScreen(); }
 
+// ---------- Panduan penggunaan setiap tab (BM / EN) ----------
+const PANDUAN = {
+  'Ringkasan': {ms: ['Paparan ringkas jualan, bilangan kenderaan dan bayaran hari operasi ini.', 'Hari operasi bermula 4:00 pagi hingga 3:59 pagi esok — bayaran selepas 12 malam masih dikira hari ini.', 'Tekan tab lain di atas untuk mula bekerja.'],
+    en: ["A quick view of this operating day's sales, vehicles and payments.", "The operating day runs from 4:00 am to 3:59 am the next day — payments after midnight still count as today.", 'Tap another tab above to start working.']},
+  'Order Baru': {ms: ['Masukkan no. plat kenderaan (atau imbas kad Safari Members).', 'Pilih jenis kenderaan, kemudian pakej. Tambah servis tambahan atau item manual jika perlu.', 'Ambil gambar plat & emblem (wajib) dan calar jika ada.', 'Pilih MO jika order dibawa oleh Marketing Officer.', 'Tekan Simpan — order masuk ke Queue.'],
+    en: ['Enter the vehicle plate no. (or scan the Safari Members card).', 'Choose the vehicle type, then the package. Add add-ons or manual items if needed.', 'Take photos of the plate & emblem (required) and any scratches.', 'Choose the MO if the order was brought in by a Marketing Officer.', 'Tap Save — the order goes to the Queue.']},
+  'Queue': {ms: ['Senarai kenderaan sedang diservis. Tekan status (Cuci → Kering → QC → Siap) untuk kemas kini — pelanggan nampak dalam Apps Pelanggan.', 'Pilih Bay untuk setiap kenderaan.', '✏️ Edit untuk betulkan plat, pakej, add-on, item manual atau catatan.', '💲 Betulkan harga perlu PIN Supervisor / pekerja kuasa 🏷 dan sebab.', '📷 Gambar untuk rekod keadaan asal kenderaan sebelum servis.', 'Tempahan dari Apps Pelanggan muncul di atas — tekan Terima atau Tolak.'],
+    en: ['Vehicles being serviced. Tap the status (Washing → Drying → QC → Ready) to update — customers see it in the Customer App.', 'Choose a Bay for each vehicle.', '✏️ Edit to correct the plate, package, add-ons, manual items or notes.', '💲 Correct price needs a Supervisor PIN / staff with 🏷 permission and a reason.', '📷 Photo to record the original vehicle condition before service.', 'Bookings from the Customer App appear at the top — tap Accept or Reject.']},
+  'Bayaran': {ms: ['Kenderaan berstatus Siap menunggu bayaran di sini. Tekan 💳 Bayar.', 'Semak item & jumlah. Diskaun hanya muncul jika diluluskan (🙋 Minta untuk memohon).', 'Pilih cara bayar: Tunai (isi wang diterima), QR / Transfer (semak duit sudah masuk & isi no. rujukan).', 'Tekan SIMPAN & PAPAR RESIT — cetak, PDF atau hantar ke WhatsApp pelanggan. Pilih bahasa resit BM / English.', 'Bayaran dari Apps Pelanggan muncul di atas — semak bukti, kemudian Sahkan atau Tolak.'],
+    en: ['Vehicles marked Ready wait for payment here. Tap 💳 Pay.', 'Check the items & total. Discounts only appear when approved (🙋 Request to ask for one).', 'Choose the payment method: Cash (enter cash received), QR / Transfer (check the money has arrived & enter the reference no.).', 'Tap SAVE & SHOW RECEIPT — print, PDF or send to the customer WhatsApp. Choose the receipt language BM / English.', 'Payments from the Customer App appear at the top — check the proof, then Confirm or Reject.']},
+  'Petty Cash': {ms: ['Petty cash ialah tabung berasingan, bukan laci jualan.', '➕ Top-up bila tabung ditambah. ➖ Belanja untuk setiap perbelanjaan kecil (isi tujuan & amaun).', 'Belanja melebihi had perlu PIN Supervisor.', 'Setiap rekod masuk terus ke Apps Akaun.'],
+    en: ['Petty cash is a separate fund, not the sales drawer.', '➕ Top-up when the fund is refilled. ➖ Expense for each small purchase (enter purpose & amount).', 'Expenses above the limit need a Supervisor PIN.', 'Every record goes straight to the Account App.']},
+  'Tutup Kaunter': {ms: ['Selesaikan semua kenderaan dalam Queue — bayar atau batalkan.', 'Tanda bayaran staf / advance yang diambil dari laci, dan rekod consumables / supplier (lampirkan resit).', 'Pekerja kuasa 🔐 Tutup kira wang dalam laci (termasuk float) dan ambil gambar dalam Apps Pekerja → tab Tutup.', 'Semak Ringkasan: BOP (patut ada) vs Tunai dikira. Jika ada beza, tulis sebab dalam Nota.', 'Muat naik lampiran lain (slip bank, penyata QR) di 📎 Lampiran & dokumen.', 'Tekan ✅ TUTUP KAUNTER & HANTAR. Laporan dikunci & dihantar ke Akaun untuk semakan.', 'Tutup sebelum 4:00 pagi. Selepas itu laporan ditanda "Tutup lewat".'],
+    en: ['Finish every vehicle in the Queue — pay or cancel.', 'Tick staff payments / advances taken from the drawer, and record consumables / suppliers (attach receipts).', 'Staff with 🔐 Close permission count the drawer cash (including float) and take a photo in the Staff App → Close tab.', 'Check the Summary: BOP (expected) vs Cash counted. If there is a difference, write the reason in Notes.', 'Upload other attachments (bank slip, QR statement) under 📎 Attachments & documents.', 'Tap ✅ CLOSE COUNTER & SUBMIT. The report is locked & sent to Accounts for review.', 'Close before 4:00 am. After that the report is marked "Closed late".']},
+  'Stok': {ms: ['➕ Terima stok bila barang sampai. ➖ Guna bila barang dikeluarkan untuk kerja.', '⚖ Laras kiraan jika kiraan fizikal berbeza.', 'Item bertanda ⚠ sudah di bawah paras minimum — maklumkan pengurus.'],
+    en: ['➕ Receive stock when goods arrive. ➖ Use when goods are taken out for work.', '⚖ Adjust the count if the physical count differs.', 'Items marked ⚠ are below the minimum level — tell the manager.']},
+  'Pekerja': {ms: ['Lihat & luluskan permohonan pekerja ikut kuasa anda.', 'Gaji, IC, bank & kuasa diurus dalam Apps Akaun.'], en: ['View & approve staff requests according to your permissions.', 'Salary, IC, bank & permissions are managed in the Account App.']},
+  'Laporan': {ms: ['Laporan Jualan Harian & Bulanan cawangan ini.', 'Tukar tarikh / bulan untuk melihat rekod lama. ⬇ CSV untuk Excel.'], en: ['Daily & Monthly Sales Reports for this branch.', 'Change the date / month to view older records. ⬇ CSV for Excel.']},
+  'Tetapan': {ms: ['Maklumat kedai & nota resit (BM & English), bay, had diskaun & petty cash.', 'Menu pakej & servis: harga baru terpakai serta-merta di semua peranti cawangan ini. Order lama tidak berubah.'], en: ['Shop details & receipt notes (BM & English), bays, discount & petty cash limits.', 'Package & service menu: new prices apply immediately on all devices at this branch. Existing orders do not change.']}
+};
+function bukaPanduan(t){
+  const p = PANDUAN[t] || {ms: ['Tiada panduan untuk tab ini.'], en: ['No guide for this tab.']}, en = BHS.bahasa() === 'en', l = en ? p.en : p.ms;
+  openModal(`<div data-tiada-terjemah><div class="between"><h3 style="margin:0">❓ ${en ? 'Guide' : 'Panduan'} — ${esc(window.tr ? tr(t) : t)}</h3><button class="small" id="mTutup">✕</button></div>
+    <ol class="panduan">${l.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+    <p class="muted" style="font-size:12px">${en ? 'Need help? Contact the Supervisor / Manager.' : 'Perlu bantuan? Hubungi Supervisor / Manager.'}</p></div>`);
+  $('#mTutup').onclick = closeModal;
+}
+
+// ---------- Amaran kaunter belum ditutup (hari operasi, cut-off 4 pagi) ----------
+let tutupKini = null, tutupSemalam = null, semalamAdaJualan = false;
+const kelmarin = () => { const d = new Date(today() + 'T12:00:00'); d.setDate(d.getDate() - 1); return isoDate(d); };
+const sudahTutup = r => ['dihantar', 'disahkan'].includes(r?.status);
+const kunciTeruskan = () => `ls_teruskan_${cawangan}_${kelmarin()}`;
+const sudahTeruskan = () => { try{ return !!localStorage.getItem(kunciTeruskan()); }catch(_){ return false; } };
+function waktuTutup(){ const d = new Date(); return lepasTengahMalam() || (d.getHours() === 23 && d.getMinutes() >= 30); }
+function bannerTutup(){
+  if(!staf) return '';
+  const bolehTutup = tabsStaf(staf).includes('Tutup Kaunter'), btn = t => bolehTutup ? `<button class="small btn-gold" data-ketutup="${t}" style="margin-top:6px">🔐 Pergi ke Tutup Kaunter</button>` : '';
+  let h = '';
+  if(semalamAdaJualan && !sudahTutup(tutupSemalam)) h += `<div class="notice bad"><b>⚠ Kaunter ${esc(fTarikh(kelmarin()))} belum ditutup.</b><br>Laporan akan ditanda "Tutup lewat". Sila tutup secepat mungkin.${btn(kelmarin())}</div>`;
+  if(waktuTutup() && !sudahTutup(tutupKini)) h += lepasTengahMalam()
+    ? `<div class="notice bad"><b>🕛 Sudah lepas 12 malam — kaunter belum ditutup.</b><br>Transaksi sehingga ${POTONG_JAM}:00 pagi masih dikira hari operasi ${esc(fTarikh(today()))}.${btn(today())}</div>`
+    : `<div class="notice"><b>🕦 Kaunter akan ditutup.</b> Mula proses tutup kaunter: selesaikan Queue, kira tunai & hantar laporan.${btn(today())}</div>`;
+  return h;
+}
+function kemasBanner(){ const e = $('#errBox'); if(!e) return; const h = (dataError ? `<div class="notice bad">⚠ ${esc(dataError)}</div>` : '') + bannerTutup(); if(e._h !== h){ e._h = h; e.innerHTML = h; pasangBannerTutup(); } }
+function pasangBannerTutup(){ $$('[data-ketutup]').forEach(b => b.onclick = () => { tab = 'Tutup Kaunter'; MT.mula(b.dataset.ketutup); renderShell(); window.scrollTo(0,0); }); }
+function semakSekatPagi(){
+  if(!staf || $('#sekatTutup') || !semalamAdaJualan || sudahTutup(tutupSemalam) || lepasTengahMalam() || sudahTeruskan()) return;
+  const t = kelmarin(), bolehTutup = tabsStaf(staf).includes('Tutup Kaunter');
+  const ov = document.createElement('div'); ov.id = 'sekatTutup'; ov.className = 'overlay';
+  ov.innerHTML = `<div class="box" style="text-align:center"><div style="font-size:46px">📋</div><h3>Laporan ${esc(fTarikh(t))} belum ditutup</h3>
+    <p class="muted">Kaunter semalam ada jualan tetapi belum "Tutup & Hantar". Tutup dahulu supaya akaun tidak bercampur dengan hari ini.</p>
+    ${bolehTutup ? `<button class="btn-gold big" style="width:100%" id="stTutup">🔐 Tutup kaunter ${esc(fTarikh(t))} sekarang</button>` : ''}
+    <button class="big" style="width:100%;margin-top:8px" id="stTeruskan">Teruskan dahulu (PIN Supervisor)</button>
+    <p class="muted" style="font-size:12px">"Teruskan" direkod dengan nama pelulus & sebab, dan laporan semalam ditanda "Tutup lewat".</p></div>`;
+  document.body.appendChild(ov);
+  const st = $('#stTutup'); if(st) st.onclick = () => { ov.remove(); tab = 'Tutup Kaunter'; MT.mula(t); renderShell(); };
+  $('#stTeruskan').onclick = async () => {
+    ov.classList.add('hidden');
+    const oleh = await perluLulus(`Teruskan tanpa menutup kaunter ${fTarikh(t)}`);
+    if(!oleh){ ov.classList.remove('hidden'); return; }
+    const sebab = (prompt('Sebab kaunter semalam belum ditutup?') || '').trim();
+    if(!sebab){ ov.classList.remove('hidden'); return toast('Sila isi sebab'); }
+    try{
+      await setDoc(doc(col('tutup'), t), {tarikh: t, bulan: t.slice(0,7), cawangan, status: tutupSemalam?.status || 'draf', lewat: true, lewatSebab: sebab, lewatLulus: oleh, lewatMasa: Date.now(), lewatStaf: staf.nama, dikemaskini: Date.now()}, {merge: true});
+      try{ localStorage.setItem(kunciTeruskan(), '1'); }catch(_){}
+      ov.remove(); toast(`✅ Diteruskan — diluluskan ${oleh}`);
+    }catch(e){ ov.classList.remove('hidden'); toast('⚠ ' + (e.code || e.message)); }
+  };
+}
+let maklumTutup = '';
+function semakMaklumTutup(){
+  if(!staf) return;
+  const k = today() + (lepasTengahMalam() ? 'm' : '');
+  if(lepasTengahMalam() && !sudahTutup(tutupKini) && maklumTutup !== k){ maklumTutup = k; bunyiMaklum('🕛 Kaunter belum ditutup', `${infoCaw().nama} — ${fTarikh(today())}. Sila tutup kaunter.`); }
+}
+
 function langganHari(){
   stopAll(unsubHari);
   hari = today();
+  tutupKini = null; tutupSemalam = null; semalamAdaJualan = false;
+  unsubHari.push(onSnapshot(doc(col('tutup'), hari), s => { tutupKini = s.exists() ? s.data() : null; refreshLive(); }, () => {}));
+  unsubHari.push(onSnapshot(doc(col('tutup'), kelmarin()), s => { tutupSemalam = s.exists() ? s.data() : null; if(sudahTutup(tutupSemalam)) $('#sekatTutup')?.remove(); refreshLive(); semakSekatPagi(); }, () => {}));
+  getDocs(query(col('order'), where('tarikhBayar','==',kelmarin()))).then(r => { semalamAdaJualan = r.docs.some(d => d.data().status !== 'Batal'); refreshLive(); semakSekatPagi(); }).catch(() => {});
   segerakMasukAhli();
   unsubHari.push(onSnapshot(query(col('order'), where('aktif','==',true)), s => {
     const lama = Object.fromEntries(aktif.map(o => [o.id, o.diskaunBeri?.masa || 0]));
@@ -612,14 +695,15 @@ function renderShell(){
   $('#btnKadId').onclick = bukaKadId;
   renderNav();
   const v = VIEWS[tab];
-  $('#app').innerHTML = `<div id="errBox"></div>${v.statik ? v.statik() : ''}<div id="live"></div>`;
+  $('#app').innerHTML = `<div class="panduan-bar"><button class="small" id="btnPanduan">❓ Panduan</button></div><div id="errBox"></div>${v.statik ? v.statik() : ''}<div id="live"></div>`;
+  $('#btnPanduan').onclick = () => bukaPanduan(tab);
   if(v.pasang) v.pasang();
   refreshLive();
 }
 function refreshLive(){
   if(!staf || !$('#live')) return;
   renderNav();
-  $('#errBox').innerHTML = dataError ? `<div class="notice bad">⚠ ${esc(dataError)}</div>` : '';
+  kemasBanner();
   const v = VIEWS[tab];
   if(v.live){ $('#live').innerHTML = v.live(); v.pasangLive && v.pasangLive(); }
 }
@@ -1508,7 +1592,7 @@ VIEWS['Petty Cash'] = {
 
 // ---------- STOK ----------
 // Tutup kaunter harian (format Daily Sales Report). Gambar tunai diambil dalam Apps Pekerja (kuasa 🔐 Tutup).
-const MT = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
+const MT = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp},
   cawangan: () => cawangan, pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter',
   refresh: () => { if(tab === 'Tutup Kaunter') refreshLive(); }});
 VIEWS['Tutup Kaunter'] = {
@@ -1875,6 +1959,7 @@ function borangMenu(j, id){
 function tick(){
   $('#jam').textContent = new Date().toLocaleTimeString('en-GB');
   if(staf && today() !== hari){ langganHari(); renderShell(); }
+  const d = new Date(); if(staf && d.getSeconds() === 0){ semakMaklumTutup(); kemasBanner(); semakSekatPagi(); }
 }
 function net(){ const on = navigator.onLine; $('#net').textContent = on ? '● Online' : '● Offline — data disimpan & dihantar bila online'; $('#net').className = 'pill ' + (on ? 'on' : 'off'); }
 setInterval(tick, 1000); tick(); net();

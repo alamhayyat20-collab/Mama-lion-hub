@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-06">
+<meta name="app-versi" content="2026.11.17-07">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -96,7 +96,7 @@ details.bab{border-bottom:1px solid var(--line);padding:10px 0}details.bab summa
   <div style="display:flex;gap:6px;align-items:center"><span id="bahasaBox" style="color:#fff"></span><span id="syncBox"></span><div id="hKanan"></div></div>
 </header>
 <nav id="nav" class="hidden"></nav>
-<main id="app"><div class="card muted">Memuatkan…</div></main>
+<div id="bannerTutupPK" style="max-width:640px;margin:0 auto"></div><main id="app"><div class="card muted">Memuatkan…</div></main>
 <input id="kamera" type="file" accept="image/*" capture="user" class="hidden">
 <div id="toast"></div>
 
@@ -115,18 +115,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-06';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-07';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-06';
-import { bukaPaparan } from '../paparan-lib.js?v=2026.11.17-06';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-06';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-06';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-06';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-06';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-06';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-06';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-07';
+import { bukaPaparan } from '../paparan-lib.js?v=2026.11.17-07';
+import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-07';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-07';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-07';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-07';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-07';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-07';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -265,7 +265,7 @@ function skrinPin(st){
   };
   draw();
 }
-function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubQ); stopAll(unsubTutup); MTP.henti(); MTP.st.c = null; cawO = null; stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; cawODipilih = false; $('#app').dataset.sibuk = ''; skrinLogin(); }
+function keluar(){ simpanLS('pk_sesi', null); stopAll(unsubSaya); stopAll(unsubMO); stopAll(unsubQ); stopAll(unsubTutup); unsubTPK.forEach(f => f()); unsubTPK = []; tutupPK = {}; kemasBannerPK(); MTP.henti(); MTP.st.c = null; cawO = null; stopAll(unsubChat); modulPG.henti(); pgMula = false; if(unsubPromo){ unsubPromo(); unsubPromo = null; } tab = 'Kehadiran'; cawODipilih = false; $('#app').dataset.sibuk = ''; skrinLogin(); }
 
 // ---------------- Selepas log masuk ----------------
 function masuk(st){
@@ -282,7 +282,7 @@ function masuk(st){
   unsubSaya.push(onSnapshot(K(c,'info'), s => { infoList = s.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.aktif !== false); renderNav(); if(tab === 'Info') render(); }, () => {}));
   unsubSaya.push(onSnapshot(query(K(c,'info_baca'), where('stafId','==',st.id)), s => { bacaSaya = new Set(s.docs.map(d => d.data().infoId)); renderNav(); if(tab === 'Info') render(); }, () => {}));
   GBR = null;
-  langganMO(); langganChat(); langganTutup();
+  langganMO(); langganChat(); langganTutup(); langganTutupPK();
   fotoSaya = '';
   unsubSaya.push(onSnapshot(fotoRef(st), d => { fotoSaya = d.exists() ? d.data().data : ''; kepala(); if(tab === 'ID') render(); }, () => {}));
   langganBulan();
@@ -309,7 +309,7 @@ function langganBulan(){
 function langganQ(){
   stopAll(unsubQ); aktifQ = []; tempahanQ = []; fotoKQ = [];
   if(!saya || !(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'diskaun') || adaKuasa(saya, 'progress') || adaKuasa(saya, 'edit')) || !cawO) return;
-  if(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'progress')) unsubQ.push(onSnapshot(query(LS(cawO,'foto_keadaan'), where('tarikh','==',hariIni())), s => { fotoKQ = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masa||0)-(b.masa||0)); if(tab === 'Queue' && !$('#app').dataset.sibuk) render(); }, () => {}));
+  if(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'progress')) unsubQ.push(onSnapshot(query(LS(cawO,'foto_keadaan'), where('tarikh','==',hariOperasi())), s => { fotoKQ = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masa||0)-(b.masa||0)); if(tab === 'Queue' && !$('#app').dataset.sibuk) render(); }, () => {}));
   const c = cawO; let awal = true, awalO = true;
   unsubQ.push(onSnapshot(query(LS(c,'order'), where('aktif','==',true)), s => {
     const lama = Object.fromEntries(aktifQ.map(o => [o.id, o.diskaunMinta?.masa || 0]));
@@ -325,7 +325,7 @@ function langganQ(){
 function langganMO(){
   stopAll(unsubMO); orderHari = []; orderSayaBulan = []; KOM = {};
   if(!saya?.mo) return;
-  const t = hariIni();
+  const t = hariOperasi();
   for(const cw of CAW){ const c = cw.id;
     unsubMO.push(onSnapshot(doc(store, 'lionsafari', c, 'tetapan', 'komisen'), s => { KOMall[c] = s.exists() ? (s.data().kadar || {}) : {}; if(c === cawO){ KOM = KOMall[c]; if(['Order','Harga'].includes(tab)) render(); } }, () => {}));
     unsubMO.push(onSnapshot(query(LS(c,'order'), where('tarikh','==',t)), s => { OHall[c] = s.docs.map(d => ({id:d.id, cawangan:c, ...d.data()})); if(c === cawO){ orderHari = OHall[c]; if(tab === 'Order') render(); } }, onErr));
@@ -537,7 +537,7 @@ function borangPGPromosi(p){
 // ---------------- TUTUP KAUNTER (kuasa 🔐 Tutup / 🧮 Semak) ----------------
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS_TUTUP}</style>`);
 let tutupMenunggu = [], unsubTutup = [];
-const MTP = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
+const MTP = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp},
   cawangan: () => cawO, pengguna: () => `${saya?.nama || ''} (${saya?.idStaf || ''})`, tanda: () => ({olehId: saya.id, olehCaw: saya.c}), toast, capGambar, mod: 'foto',
   get bolehSemak(){ return adaKuasa(saya, 'semak'); }, refresh: () => { if(tab === 'Tutup' && !$('#app').dataset.sibuk) render(); }});
 function langganTutup(){
@@ -547,6 +547,42 @@ function langganTutup(){
     tutupMenunggu = [...tutupMenunggu.filter(x => x.c !== c), ...s.docs.map(d => ({c, ...d.data()}))].sort((a,b) => a.tarikh.localeCompare(b.tarikh));
     renderNav(); if(tab === 'Tutup' && !$('#app').dataset.sibuk) render(); }, () => {}));
 }
+// ---------- Amaran kaunter belum ditutup (Supervisor / Manager / kuasa 🔐 / 🧮) ----------
+let tutupPK = {}, unsubTPK = [], hariTPK = '', maklumTPK = {};
+const kelmarinPK = () => tambahHari(hariOperasi(), -1);
+const ditutupPK = r => ['dihantar', 'disahkan'].includes(r?.status);
+const perluAmaranTutup = () => saya && (adaKuasa(saya, 'tutup') || adaKuasa(saya, 'semak') || ['Supervisor', 'Manager', 'Admin'].includes(saya.peranan));
+function langganTutupPK(){
+  unsubTPK.forEach(f => f()); unsubTPK = []; tutupPK = {}; hariTPK = hariOperasi(); kemasBannerPK();
+  if(!perluAmaranTutup()) return;
+  const t = hariTPK, k = kelmarinPK();
+  CAW.forEach(c => { const x = tutupPK[c.id] = {kini: null, semalam: null, jualanSemalam: true, jualanKini: true};
+    unsubTPK.push(onSnapshot(query(LS(c.id, 'order'), where('tarikh', '==', t)), r => { x.jualanKini = r.docs.some(d => d.data().status !== 'Batal'); kemasBannerPK(); }, () => {}));
+    unsubTPK.push(onSnapshot(doc(LS(c.id, 'tutup'), t), s => { x.kini = s.exists() ? s.data() : null; kemasBannerPK(); }, () => {}));
+    unsubTPK.push(onSnapshot(doc(LS(c.id, 'tutup'), k), s => { x.semalam = s.exists() ? s.data() : null; kemasBannerPK(); }, () => {}));
+    getDocs(query(LS(c.id, 'order'), where('tarikhBayar', '==', k))).then(r => { x.jualanSemalam = r.docs.some(d => d.data().status !== 'Batal'); kemasBannerPK(); }).catch(() => {});
+  });
+}
+function senaraiAmaranPK(){
+  const L = [], d = new Date(), malam = lepasTengahMalam() || (d.getHours() === 23 && d.getMinutes() >= 30);
+  CAW.forEach(c => { const x = tutupPK[c.id]; if(!x) return;
+    if(x.jualanSemalam && !ditutupPK(x.semalam)) L.push({teruk: true, teks: `${c.nama} ${fTarikhPendek(kelmarinPK())}: kaunter belum ditutup`});
+    if(malam && x.jualanKini && !ditutupPK(x.kini)) L.push({teruk: lepasTengahMalam(), teks: `${c.nama}: ${lepasTengahMalam() ? 'sudah lepas 12 malam — kaunter belum ditutup' : 'waktu tutup kaunter — mula proses tutup'}`});
+  });
+  return L;
+}
+function kemasBannerPK(){
+  const el = $('#bannerTutupPK'); if(!el) return;
+  const L = perluAmaranTutup() ? senaraiAmaranPK() : [], ada = TABS().some(([t]) => t === 'Tutup');
+  const h = L.length ? `<div class="card" style="margin:10px 12px 0;border:2px solid ${L.some(x => x.teruk) ? '#dc2626' : '#d97706'};background:${L.some(x => x.teruk) ? '#fef2f2' : '#fffbeb'}">${L.map(x => `<div>${x.teruk ? '🔴' : '🟠'} ${esc(x.teks)}</div>`).join('')}${ada ? '<button class="btn small" id="keTutupPK" style="margin-top:6px">🔐 Pergi ke Tutup</button>' : ''}</div>` : '';
+  if(el._h !== h){ el._h = h; el.innerHTML = h; const b = $('#keTutupPK'); if(b) b.onclick = () => { tab = 'Tutup'; render(); }; }
+}
+setInterval(() => {
+  if(!saya) return;
+  if(hariOperasi() !== hariTPK) langganTutupPK();
+  kemasBannerPK();
+  senaraiAmaranPK().filter(x => x.teruk).forEach(x => { const kk = x.teks + hariTPK + (lepasTengahMalam() ? 'm' : ''); if(!maklumTPK[kk]){ maklumTPK[kk] = 1; maklum('📋 Kaunter belum ditutup', x.teks); } });
+}, 30000);
 const MDP = modulDuty({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, onSnapshot}, pengguna: () => `${saya?.nama || ''} (${saya?.idStaf || ''})`,
   tanda: () => ({olehId: saya.id, olehCaw: saya.c}), toast, bolehSahkan: false, refresh: () => { if(tab === 'Pengelola' && pgSeg === 'Duty' && !$('#app').dataset.sibuk) render(); }});
 function viewTutup(){
@@ -681,7 +717,7 @@ function viewQueue(){
   $$('[data-qfoto]').forEach(b => b.onclick = () => fotoKeadaanQ(aktifQ.find(o => o.id === b.dataset.qfoto)));
   $$('[data-qedit]').forEach(b => b.onclick = () => editQ(aktifQ.find(o => o.id === b.dataset.qedit)));
   $$('[data-tpok]').forEach(b => b.onclick = async () => { const t = tempahanQ.find(x => x.id === b.dataset.tpok); b.disabled = true;
-    const h = hariIni(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad((OHall[cawO] || []).length + 1, 3)}`;
+    const h = hariOperasi(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad((OHall[cawO] || []).length + 1, 3)}`;
     try{ await KT.terimaTempahan(t, cawO, {no, bay: TK.bay?.[0] || ''}); toast(`✅ Tempahan ${t.plat} diterima — masuk Queue`); }catch(e){ b.disabled = false; onErr(e); } });
   $$('[data-tpno]').forEach(b => b.onclick = async () => { const t = tempahanQ.find(x => x.id === b.dataset.tpno); const sebab = prompt('Sebab tolak (dimaklumkan kepada pelanggan):'); if(sebab === null) return;
     try{ await KT.tolakTempahan(t, cawO, sebab); toast('Tempahan ditolak'); }catch(e){ onErr(e); } });
@@ -705,7 +741,7 @@ function fotoKeadaanQ(o){
   const simpan = async e => { const fail = [...e.target.files]; e.target.value = ''; if(!fail.length) return;
     for(const f of fail){ try{
       const g = await capGambar(f, [`${o.plat} · ${new Date().toLocaleString('en-GB')}`, `${saya.idStaf || ''} ${saya.nama}`], 900, 0.62);
-      const d = {orderId: o.id, plat: o.plat, gambar: g, nota: ($('#fkNota').value || '').trim(), oleh: saya.nama, masa: Date.now(), tarikh: hariIni(), ...tanda()};
+      const d = {orderId: o.id, plat: o.plat, gambar: g, nota: ($('#fkNota').value || '').trim(), oleh: saya.nama, masa: Date.now(), tarikh: hariOperasi(), ...tanda()};
       const ref = doc(LS(cawO, 'foto_keadaan')); await setDoc(ref, d); if(!fotoKQ.some(x => x.id === ref.id)) fotoKQ.push({id: ref.id, ...d});
     }catch(err){ onErr(err); } }
     $('#fkNota').value = ''; lukis(); toast('📷 Gambar keadaan disimpan'); };
@@ -1026,7 +1062,7 @@ function borangOrder(){
     const tambah = r2(hp - p.harga);
     const fw = d.fw && d.ahli ? {fwId: d.fw.fwId, nilai: r2(hp)} : null;
     const kasar = r2((fw ? 0 : hp) + addon.reduce((t,a) => t + a.harga, 0));
-    const t = hariIni(), no = `${t.slice(5,7)}${t.slice(8,10)}-${pad(orderHari.length + 1, 3)}`;
+    const t = hariOperasi(), no = `${t.slice(5,7)}${t.slice(8,10)}-${pad(orderHari.length + 1, 3)}`;
     $('#oSimpan').disabled = true; $('#oSimpan').textContent = 'Menyimpan…';
     try{
       let ahli = d.ahli;

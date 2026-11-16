@@ -1,4 +1,5 @@
-import { bukaPaparan, BAR_KEMBALI_CETAK } from './paparan-lib.js?v=2026.11.17-06';
+import { bukaPaparan, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-07';
+import { hariOperasi } from './safari-lib.js?v=2026.11.17-07';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -9,7 +10,7 @@ import { bukaPaparan, BAR_KEMBALI_CETAK } from './paparan-lib.js?v=2026.11.17-06
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = n => String(n).padStart(2, '0');
 const tarikhLocal = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-export const hariIniT = () => tarikhLocal(new Date());
+export const hariIniT = () => hariOperasi();   // hari operasi (cut-off 4 pagi)
 export const tambahHariT = (t, n) => { const d = new Date(t + 'T00:00:00'); d.setDate(d.getDate() + n); return tarikhLocal(d); };
 const HARI = ['AHAD','ISNIN','SELASA','RABU','KHAMIS','JUMAAT','SABTU'];
 export const namaHari = t => HARI[new Date(t + 'T00:00:00').getDay()];
@@ -194,7 +195,7 @@ export async function kongsiWhatsApp(teks){
 // ---------------------------------------------------------------------
 export function modulTutup(ctx){
   const {store, fs} = ctx;
-  const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null};
+  const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null, lampiran: [], queue: null};
   const T = () => ctx.tanda ? ctx.tanda() : {};
   const col = (c, n) => fs.collection(store, 'lionsafari', c, n);
   const K = n => fs.collection(store, 'kakitangan', 'mama-lion', n);
@@ -204,6 +205,10 @@ export function modulTutup(ctx){
     stop(); if(tarikh) st.tarikh = tarikh; st.c = ctx.cawangan(); st.rekod = null; st.foto = ''; st.data = null; st.ralat = '';
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup'), st.tarikh), s => { st.rekod = s.exists() ? s.data() : null; ctx.refresh(); }, e => { st.ralat = e.code || e.message; ctx.refresh(); }));
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup_foto'), st.tarikh), s => { st.foto = s.exists() ? s.data().data : ''; ctx.refresh(); }, () => {}));
+    st.lampiran = [];
+    st.unsub.push(fs.onSnapshot(fs.query(col(st.c, 'tutup_lampiran'), fs.where('tarikh', '==', st.tarikh)), s => { st.lampiran = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.masa||0) - (b.masa||0)); ctx.refresh(); }, () => {}));
+    st.queue = null;
+    if(ctx.mod === 'kaunter') st.unsub.push(fs.onSnapshot(fs.query(col(st.c, 'order'), fs.where('tarikh', '==', st.tarikh)), s => { st.queue = s.docs.map(d => d.data()).filter(o => o.status !== 'Batal' && !o.bayar).length; ctx.refresh(); }, () => {}));
     if(ctx.mod === 'kaunter' || ctx.mod === 'lihat') muatData();
   }
   async function muatData(){
@@ -238,14 +243,18 @@ export function modulTutup(ctx){
     const kepala = `<div class="lt-card"><div class="lt-between"><h3 style="margin:0">🔐 Tutup Kaunter — ${e(NAMA_CAW[st.c] || st.c)}</h3><span class="lt-tag lt-${status}">${STATUS_TUTUP[status]}</span></div>
       <div class="lt-row" style="margin-top:8px"><label style="margin:0">Tarikh</label><input type="date" data-lt-tarikh value="${st.tarikh}" max="${hariIniT()}" style="width:auto;margin:0"><b>${namaHari(st.tarikh)}</b></div>
       ${st.ralat ? `<div class="lt-notice">⚠ ${e(st.ralat)}</div>` : ''}${r.catatanSemak && status === 'draf' ? `<div class="lt-notice">↩ Dipulangkan oleh ${e(r.disemakOleh || '')}: ${e(r.catatanSemak)}</div>` : ''}</div>`;
-    const fotoBox = `<div class="lt-card"><h3>📸 Gambar wang tunai</h3>${st.foto ? `<img src="${st.foto}" class="lt-foto" data-lt-besar>` : '<p class="lt-muted">Belum ada gambar. Gambar diambil oleh pekerja yang diberi kuasa 🔐 Tutup dalam Apps Pekerja.</p>'}
+    const fotoBox = `<div class="lt-card"><h3>📸 Gambar wang tunai</h3>${st.foto ? `<img src="${st.foto}" class="lt-foto" data-lt-besar><button class="lt-btn" data-lt-turunfoto style="width:100%;margin-top:6px">⬇ Muat turun gambar</button>` : '<p class="lt-muted">Belum ada gambar. Gambar diambil oleh pekerja yang diberi kuasa 🔐 Tutup dalam Apps Pekerja.</p>'}
       ${r.fotoOleh ? `<div class="lt-muted">Oleh ${e(r.fotoOleh)} · ${r.fotoMasa ? new Date(r.fotoMasa).toLocaleString('en-GB') : ''}</div>` : ''}
       ${r.tunaiDikira != null ? `<div class="lt-big">Tunai dikira: RM ${RMx(r.tunaiDikira)}</div>` : ''}
       ${ctx.mod === 'foto' && !kunci() ? `<label>Jumlah tunai dalam laci (RM) — termasuk modal float</label><input type="number" inputmode="decimal" step="0.01" data-lt-dikira value="${r.tunaiDikira ?? ''}" placeholder="cth 1,250.00">
-        <label class="lt-btn lt-pri" style="display:block;text-align:center;margin-top:8px">📷 ${st.foto ? 'Ambil semula gambar' : 'Ambil gambar wang tunai'}<input type="file" accept="image/*" capture="environment" data-lt-ambil style="display:none"></label>
+        <div class="lt-muted" style="margin-top:8px">${st.foto ? 'Ambil semula gambar' : 'Ambil gambar wang tunai'}:</div>
+        <div class="lt-row"><label class="lt-btn lt-pri" style="flex:1;text-align:center">📷 Kamera<input type="file" accept="image/*" capture="environment" data-lt-ambil style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-ambil style="display:none"></label></div>
         <button class="lt-btn" data-lt-simpandikira style="width:100%;margin-top:6px">💾 Simpan jumlah tunai</button>` : ''}</div>`;
-    if(ctx.mod === 'foto') return kepala + fotoBox + (L ? ringkasHtml(L, r) : '') + butangKongsi(L);
-    if(!L) return kepala + (st.muat ? '<div class="lt-card lt-muted">Memuatkan data jualan…</div>' : '<div class="lt-card lt-muted">Laporan belum ditutup oleh kaunter.</div>') + fotoBox;
+    const bolehLampir = !kunci() || ctx.bolehSemak;
+    const lampiranBox = `<div class="lt-card"><h3>📎 Lampiran & dokumen (${st.lampiran.length})</h3><div class="lt-muted">Resit supplier, slip bank, penyata QR, invois atau dokumen lain berkaitan tutup kaunter hari ini.</div>
+      ${htmlSenaraiLampiran(st.lampiran, {padam: bolehLampir, kosong: 'Belum ada lampiran.'})}${bolehLampir ? htmlNaikLampiran('tutup') : ''}</div>`;
+    if(ctx.mod === 'foto') return kepala + fotoBox + lampiranBox + (L ? ringkasHtml(L, r) : '') + butangKongsi(L);
+    if(!L) return kepala + (st.muat ? '<div class="lt-card lt-muted">Memuatkan data jualan…</div>' : '<div class="lt-card lt-muted">Laporan belum ditutup oleh kaunter.</div>') + fotoBox + lampiranBox;
     const ed = ctx.mod === 'kaunter' && !kunci();
     const jadual = `<div class="lt-card lt-scroll"><h3>🚗 Senarai kenderaan (${L.kereta})</h3><table class="lt-t"><tr><th>#</th><th>Masa</th><th>Kenderaan & plat</th><th>RM</th>${LAJUR.map(([,n]) => `<th>${n}</th>`).join('')}<th>Bayar</th><th>TF No</th><th>Serve</th></tr>
       ${L.baris.map(b => `<tr><td>${b.bil}</td><td>${b.masa}</td><td>${e(b.kend)}<br><small>${e(b.pakej)}</small></td><td class="r">${RMx(b.rm)}</td>${LAJUR.map(([k]) => `<td class="r">${b.nilai[k] ? RMx(b.nilai[k]) : ''}</td>`).join('')}<td>${e(b.kaedah)}</td><td>${e(b.tf)}</td><td>${e(b.serve)}</td></tr>`).join('') || `<tr><td colspan="13" class="lt-muted">Tiada jualan.</td></tr>`}
@@ -255,12 +264,26 @@ export function modulTutup(ctx){
       ${L.advance.length ? `<h4>💸 Advance diluluskan</h4>${L.advance.map(a => `<label class="lt-chk"><input type="checkbox" data-lt-bayar="${a.k}" ${a.dibayar ? 'checked' : ''} ${ed ? '' : 'disabled'}> <span><b>${e(a.nama)}</b> <small>dibayar dari laci hari ini?</small></span><b>RM ${RMx(a.amaun)}</b></label>`).join('')}` : ''}
       <h4>🧾 Consumables / supplier (dibayar dari laci)</h4>${L.belanjaLaci.map((x,i) => `<div class="lt-chk"><span>${e(x.perkara)}${x.resit ? ' 🧾' : ''}</span><b>RM ${RMx(x.amaun)}</b>${ed ? `<button class="lt-btn lt-x" data-lt-buang="${i}">✕</button>` : ''}</div>`).join('') || '<p class="lt-muted">Tiada.</p>'}
       ${ed ? `<div class="lt-row"><input data-lt-bperkara placeholder="Perkara (cth Sabun 20L)" style="flex:2;margin:0"><input data-lt-bamaun type="number" inputmode="decimal" step="0.01" placeholder="RM" style="flex:1;margin:0"></div>
-        <div class="lt-row"><label class="lt-btn" style="flex:1;text-align:center">📷 Resit<input type="file" accept="image/*" capture="environment" data-lt-bresit style="display:none"></label><button class="lt-btn" data-lt-btambah style="flex:1">+ Tambah</button></div>` : ''}
+        <div class="lt-row"><label class="lt-btn" style="flex:1;text-align:center">📷 Resit<input type="file" accept="image/*" capture="environment" data-lt-bresit style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-bresit style="display:none"></label><button class="lt-btn" data-lt-btambah style="flex:1">+ Tambah</button></div>` : ''}
       ${L.petty.length ? `<div class="lt-muted" style="margin-top:6px">Petty cash hari ini (dana berasingan, sudah direkod): RM ${RMx(L.jumPetty)}</div>` : ''}</div>`;
-    return kepala + jadual + ringkasHtml(L, r) + bayaranHtml + fotoBox +
-      `<div class="lt-card"><label>Nota / catatan</label><textarea data-lt-catatan rows="2" ${ed ? '' : 'disabled'}>${e(r.catatan || '')}</textarea>
-      ${ed ? `<button class="lt-btn lt-pri lt-bigbtn" data-lt-hantar ${st.foto && r.tunaiDikira != null ? '' : 'disabled'}>✅ TUTUP KAUNTER & HANTAR</button>${st.foto && r.tunaiDikira != null ? '' : '<div class="lt-muted" style="text-align:center">Perlu gambar & jumlah tunai dari Apps Pekerja (kuasa 🔐 Tutup) dahulu.</div>'}` : ''}
+    const sk = semakan(L, r), siap = sk.every(x => x.ok || !x.wajib);
+    const semakHtml = ed ? `<div class="lt-card lt-semak"><h3>✅ Senarai semak tutup kaunter</h3>${sk.map((x, i) => `<div class="lt-langkah ${x.ok ? 'ok' : x.wajib ? 'belum' : 'info'}"><span class="lt-no">${x.ok ? '✓' : i + 1}</span><div><b>${x.t}</b>${x.k ? `<small>${x.k}</small>` : ''}</div></div>`).join('')}</div>` : '';
+    return kepala + semakHtml + jadual + ringkasHtml(L, r) + bayaranHtml + fotoBox + lampiranBox +
+      `<div class="lt-card"><label>Nota / catatan${L.beza != null && Math.abs(L.beza) >= 1 ? ' * (wajib — terangkan beza tunai)' : ''}</label><textarea data-lt-catatan rows="2" ${ed ? '' : 'disabled'}>${e(r.catatan || '')}</textarea>
+      ${ed ? `<button class="lt-btn lt-pri lt-bigbtn" data-lt-hantar ${siap ? '' : 'disabled'}>✅ TUTUP KAUNTER & HANTAR</button>${siap ? '' : '<div class="lt-muted" style="text-align:center">Lengkapkan langkah bertanda dalam senarai semak dahulu.</div>'}` : ''}
+      ${r.lewat ? `<div class="lt-notice">🕐 Ditutup lewat${r.lewatSebab ? ' — ' + e(r.lewatSebab) : ''}</div>` : ''}
       ${ctx.mod === 'kaunter' && status === 'dihantar' ? '<div class="lt-muted">Sudah dihantar — menunggu semakan.</div>' : ''}</div>` + butangKongsi(L);
+  }
+  function semakan(L, r){
+    const q = st.queue, beza = L.beza;
+    return [
+      {t: q == null ? 'Semak Queue' : q ? `${q} kenderaan belum dibayar / dibatalkan` : 'Semua kenderaan dalam Queue sudah selesai', k: q ? 'Selesaikan bayaran atau batalkan order di tab Queue / Bayaran.' : '', ok: q === 0, wajib: true},
+      {t: 'Rekod petty cash, consumables & bayaran staf hari ini', k: 'Tanda bayaran staf / advance yang diambil dari laci (jika ada).', ok: true, wajib: false},
+      {t: st.foto ? 'Gambar wang tunai sudah diambil' : 'Ambil gambar wang tunai dalam laci', k: st.foto ? '' : 'Oleh pekerja kuasa 🔐 Tutup dalam Apps Pekerja (tab Tutup).', ok: !!st.foto, wajib: true},
+      {t: r.tunaiDikira != null ? `Tunai dikira: RM ${RMx(r.tunaiDikira)}` : 'Isi jumlah tunai yang dikira', k: r.tunaiDikira != null ? '' : 'Termasuk modal float.', ok: r.tunaiDikira != null, wajib: true},
+      {t: beza == null ? 'Semak beza tunai' : Math.abs(beza) < 1 ? 'Tunai sepadan dengan BOP' : `Beza tunai ${beza >= 0 ? '+' : '−'}RM ${RMx(Math.abs(beza))} — tulis sebab dalam Nota`, k: '', ok: beza != null && (Math.abs(beza) < 1 || !!(r.catatan || '').trim()), wajib: beza != null && Math.abs(beza) >= 1},
+      {t: 'Tekan "TUTUP KAUNTER & HANTAR"', k: 'Laporan dikunci & dihantar ke Akaun untuk semakan.', ok: false, wajib: false}
+    ];
   }
   function ringkasHtml(L, r){
     return `<div class="lt-card"><h3>💰 Ringkasan</h3><div class="lt-grid">
@@ -280,14 +303,20 @@ export function modulTutup(ctx){
     const t = q('[data-lt-tarikh]'); if(t) t.onchange = e => { if(e.target.value) mula(e.target.value); };
     qa('[data-lt-bayar]').forEach(x => x.onchange = async () => { try{ await simpanRekod({bayar: {...(st.rekod?.bayar || {}), [x.dataset.ltBayar]: x.checked}, status: st.rekod?.status || 'draf'}); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } });
     const cat = q('[data-lt-catatan]'); if(cat && !cat.disabled) cat.onchange = () => simpanRekod({catatan: cat.value, status: st.rekod?.status || 'draf'}).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
-    const res = q('[data-lt-bresit]'); if(res) res.onchange = async e => { const f = e.target.files[0]; if(f){ resitBaru = await ctx.capGambar(f, null, 900, 0.6); ctx.toast('🧾 Resit dilampirkan'); } };
+    qa('[data-lt-bresit]').forEach(res => res.onchange = async e => { const f = e.target.files[0]; if(f){ resitBaru = await ctx.capGambar(f, null, 900, 0.6); ctx.toast('🧾 Resit dilampirkan'); } });
     const bt = q('[data-lt-btambah]'); if(bt) bt.onclick = async () => {
       const perkara = q('[data-lt-bperkara]').value.trim(), amaun = parseFloat(q('[data-lt-bamaun]').value);
       if(!perkara || !(amaun > 0)) return ctx.toast('Isi perkara & amaun');
       try{ await simpanRekod({belanjaLaci: [...(st.rekod?.belanjaLaci || []), {perkara, amaun: r2(amaun), resit: resitBaru, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitBaru = ''; }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
     qa('[data-lt-buang]').forEach(b => b.onclick = async () => { const l = [...(st.rekod?.belanjaLaci || [])]; l.splice(+b.dataset.ltBuang, 1); await simpanRekod({belanjaLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
-    const amb = q('[data-lt-ambil]'); if(amb) amb.onchange = async e => {
+    const bf = q('[data-lt-turunfoto]'); if(bf) bf.onclick = () => simpanFail(st.foto, `Tunai-${st.c}-${st.tarikh}`);
+    qa('[data-lp-naik="tutup"]').forEach(x => x.onchange = async () => {
+      const fl = [...x.files]; x.value = ''; if(!fl.length) return;
+      for(const f of fl){ try{ const d = await bacaLampiran(f); await fs.setDoc(fs.doc(col(st.c, 'tutup_lampiran')), {...d, tarikh: st.tarikh, cawangan: st.c, oleh: ctx.pengguna(), masa: Date.now(), ...T()}); ctx.toast('📎 ' + d.nama + ' dimuat naik'); }catch(err){ ctx.toast('⚠ ' + (err.code || err.message)); } }
+    });
+    const lpRoot = document.querySelector('.lp-senarai')?.parentElement; if(lpRoot) pasangSenaraiLampiran(lpRoot, st.lampiran, {tajuk: 'Lampiran tutup kaunter', onPadam: x => fs.deleteDoc ? fs.deleteDoc(fs.doc(col(st.c, 'tutup_lampiran'), x.id)).catch(e => ctx.toast('⚠ ' + (e.code || e.message))) : ctx.toast('⚠ Tidak boleh padam di sini')});
+    qa('[data-lt-ambil]').forEach(amb => amb.onchange = async e => {
       const f = e.target.files[0]; if(!f) return;
       try{
         const g = await ctx.capGambar(f, [`TUTUP KAUNTER ${NAMA_CAW[st.c] || st.c}`, `${namaHari(st.tarikh)} ${fT(st.tarikh)} ${new Date().toLocaleTimeString('en-GB')}`, `Oleh: ${ctx.pengguna()}`], 1100, 0.66);
@@ -296,7 +325,7 @@ export function modulTutup(ctx){
         await simpanRekod({fotoOleh: ctx.pengguna(), fotoMasa: Date.now(), ...(isFinite(v) ? {tunaiDikira: r2(v)} : {}), status: st.rekod?.status || 'draf'});
         ctx.toast('✅ Gambar tunai disimpan');
       }catch(err){ console.error(err); ctx.toast('⚠ Gagal simpan gambar: ' + (err.code || err.message)); }
-    };
+    });
     const sd = q('[data-lt-simpandikira]'); if(sd) sd.onclick = async () => { const v = parseFloat(q('[data-lt-dikira]').value); if(!isFinite(v) || v < 0) return ctx.toast('Isi jumlah tunai');
       try{ await simpanRekod({tunaiDikira: r2(v), fotoOleh: st.rekod?.fotoOleh || ctx.pengguna(), status: st.rekod?.status || 'draf'}); ctx.toast('✅ Jumlah tunai disimpan'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     const hn = q('[data-lt-hantar]'); if(hn) hn.onclick = hantar;
@@ -309,9 +338,13 @@ export function modulTutup(ctx){
   async function hantar(){
     const L = laporan(); if(!L) return;
     if(!st.foto || L.dikira == null) return ctx.toast('Perlu gambar & jumlah tunai dahulu');
+    const cat = (document.querySelector('[data-lt-catatan]')?.value || st.rekod?.catatan || '').trim();
+    if(L.beza != null && Math.abs(L.beza) >= 1 && !cat) return ctx.toast('Tulis sebab beza tunai dalam Nota / catatan');
+    if(st.queue) return ctx.toast(`${st.queue} kenderaan belum dibayar — selesaikan di Queue / Bayaran dahulu`);
     if(!confirm(`Tutup kaunter ${fT(st.tarikh)}?\n\nTotal sales: RM ${RMx(L.jumlah)}\nBOP: RM ${RMx(L.bop)}\nTunai dikira: RM ${RMx(L.dikira)}\n${L.beza >= 0 ? 'Surplus' : 'Shortage'}: RM ${RMx(Math.abs(L.beza))}\n\nSelepas dihantar, laporan dikunci untuk semakan.`)) return;
     try{
-      await simpanRekod({status: 'dihantar', laporan: L, ditutupOleh: ctx.pengguna(), masaTutup: Date.now(), catatanSemak: ''});
+      const lewat = hariOperasi() !== st.tarikh;
+      await simpanRekod({status: 'dihantar', laporan: L, ditutupOleh: ctx.pengguna(), masaTutup: Date.now(), catatanSemak: '', catatan: cat, ...(lewat ? {lewat: true} : {})});
       // Consumables / supplier → Belanja di Apps Akaun
       const ref = fs.doc(fs.collection(store, 'akaun', st.c, 'entri'), 'tk-' + st.tarikh);
       if(L.jumBelanja > 0) await fs.setDoc(ref, {jenis: 'belanja', tarikh: st.tarikh, bulan: st.tarikh.slice(0,7), cawangan: st.c, kategori: 'Barang Guna Habis (Laci)',
@@ -351,7 +384,11 @@ export const CSS_TUTUP = `
 .lt-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(15,23,42,.08)}
 .lt-card h3{margin:0 0 8px;font-size:16px}.lt-card h4{margin:12px 0 6px;font-size:14px}
 .lt-between{display:flex;justify-content:space-between;align-items:center;gap:8px}.lt-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
-.lt-muted{color:#64748b;font-size:13px}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
+.lt-muted{color:#64748b;font-size:13px}
+.lt-semak{border:2px solid #d7b25a}.lt-langkah{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f5f9}.lt-langkah:last-child{border-bottom:0}
+.lt-langkah b{display:block;font-size:14px}.lt-langkah small{display:block;color:#64748b;font-size:12px;margin-top:2px}
+.lt-no{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:#e2e8f0;color:#334155}
+.lt-langkah.ok .lt-no{background:#16a34a;color:#fff}.lt-langkah.belum .lt-no{background:#f59e0b;color:#fff}.lt-langkah.ok b{color:#166534}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
 .lt-tag{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#e2e8f0}.lt-dihantar{background:#fef3c7;color:#92400e}.lt-disahkan{background:#dcfce7;color:#166534}
 .lt-scroll{overflow-x:auto}.lt-t{border-collapse:collapse;width:100%;font-size:12px;min-width:820px}.lt-t th,.lt-t td{border-bottom:1px solid #e2e8f0;padding:5px 4px;text-align:left;vertical-align:top}
 .lt-t th{background:#fff7d6;font-size:11px}.lt-t td.r{text-align:right;white-space:nowrap}.lt-tot td{font-weight:800;background:#fffbea}

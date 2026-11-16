@@ -15,6 +15,10 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/akaun/mama-lion/pemilik/$(request.auth.uid));
     }
 
+    // Dokumen peribadi pekerja (IC, kontrak, sijil) — pemilik Akaun sahaja
+    match /dokumen_staf/{id} {
+      allow read, write: if pemilikAkaun();
+    }
     match /branches/{branchId} {
       allow read, write: if dalaman();
     }
@@ -171,6 +175,15 @@ service cloud.firestore {
       allow write: if staffApp() && olehKuasa(cawangan, 'tutup')
         && (!exists(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(tarikh))
             || get(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(tarikh)).data.get('status', 'draf') == 'draf');
+    }
+    // Lampiran / dokumen tutup kaunter (resit supplier, slip bank, penyata QR…)
+    match /lionsafari/{cawangan}/tutup_lampiran/{id} {
+      allow read: if staffApp();
+      allow create: if staffApp() && (olehKuasa(cawangan, 'tutup') || olehKuasa(cawangan, 'semak'))
+        && request.resource.data.tarikh is string && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
+      allow delete: if staffApp()
+        && (!exists(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(resource.data.tarikh))
+            || get(/databases/$(database)/documents/lionsafari/$(cawangan)/tutup/$(resource.data.tarikh)).data.get('status', 'draf') == 'draf');
     }
     // Tempahan dari Apps Pelanggan
     match /lionsafari/{cawangan}/tempahan/{id} {

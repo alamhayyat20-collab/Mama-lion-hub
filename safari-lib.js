@@ -14,6 +14,12 @@
 // =====================================================================
 
 // Tetapan kad loyalti (lalai). Nilai sebenar dari tetapan_ahli/kad (diedit di Apps Akaun → Tetapan Apps → Safari Members).
+// Hari Operasi: kedai buka hingga 12 malam — transaksi 00:00–03:59 dikira hari operasi sebelumnya.
+export const POTONG_JAM = 4;
+const isoT = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+export const hariOperasi = (ms = Date.now()) => isoT(new Date(ms - POTONG_JAM * 3600e3));
+export const tarikhKalendar = (ms = Date.now()) => isoT(new Date(ms));
+export const lepasTengahMalam = (ms = Date.now()) => hariOperasi(ms) !== tarikhKalendar(ms);
 export const KAD = {saiz: 10, ganjaranPada: [5, 10], tempohCopHari: 365, tempohFreeWashHari: 365,
   pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone'};
 export const MEDAN_PROFIL = {nama: 'Nama penuh', emel: 'E-mel', tarikhLahir: 'Tarikh lahir', cawanganUtama: 'Cawangan utama'};

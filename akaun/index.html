@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-06">
+<meta name="app-versi" content="2026.11.17-07">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -133,12 +133,12 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-06';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-06';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-06';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-06';
-import { bukaPaparan, kemasModal, lepasModal, BAR_KEMBALI_CETAK } from '../paparan-lib.js?v=2026.11.17-06';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-06';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-07';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-07';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-07';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-07';
+import { bukaPaparan, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-07';
+import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-07';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -553,6 +553,46 @@ function viewPetty(){
 }
 
 // ---------- Ringkasan ----------
+// ---------- Amaran tutup kaunter (hari operasi, cut-off 4 pagi) ----------
+let tutupAk = {}, unsubTA = [], hariTA = '';
+const kelmarinOp = () => { const d = new Date(hariOperasi() + 'T12:00:00'); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const ditutupAk = r => ['dihantar', 'disahkan'].includes(r?.status);
+function langganTutupAk(){
+  unsubTA.forEach(f => f()); unsubTA = []; tutupAk = {}; hariTA = hariOperasi();
+  const t = hariTA, k = kelmarinOp();
+  CAW.forEach(c => {
+    const x = tutupAk[c.id] = {kini: null, semalam: null, jualanSemalam: false, jualanKini: false};
+    unsubTA.push(onSnapshot(doc(store, 'lionsafari', c.id, 'tutup', t), s => { x.kini = s.exists() ? s.data() : null; refreshAmaranTutup(); }, () => {}));
+    unsubTA.push(onSnapshot(doc(store, 'lionsafari', c.id, 'tutup', k), s => { x.semalam = s.exists() ? s.data() : null; refreshAmaranTutup(); }, () => {}));
+    getDocs(query(collection(store, 'lionsafari', c.id, 'order'), where('tarikhBayar', '==', k))).then(r => { x.jualanSemalam = r.docs.some(d => d.data().status !== 'Batal'); refreshAmaranTutup(); }).catch(() => {});
+    unsubTA.push(onSnapshot(query(collection(store, 'lionsafari', c.id, 'order'), where('tarikhBayar', '==', t)), r => { x.jualanKini = r.docs.some(d => d.data().status !== 'Batal'); refreshAmaranTutup(); }, () => {}));
+  });
+}
+function senaraiAmaranTutup(){
+  const L = [], k = kelmarinOp(), t = hariOperasi(), d = new Date(), malam = lepasTengahMalam() || (d.getHours() === 23 && d.getMinutes() >= 30);
+  CAW.forEach(c => { const x = tutupAk[c.id]; if(!x) return;
+    if(x.jualanSemalam && !ditutupAk(x.semalam)) L.push({c, t: k, teruk: true, teks: `${c.nama} ${fmtTarikh(k)}: kaunter BELUM ditutup${x.semalam?.lewatSebab ? ` — diteruskan oleh ${x.semalam.lewatLulus || ''}: "${x.semalam.lewatSebab}"` : ''}`});
+    else if(x.semalam?.lewat) L.push({c, t: k, teruk: false, teks: `${c.nama} ${fmtTarikh(k)}: ditutup lewat${x.semalam.lewatSebab ? ` — "${x.semalam.lewatSebab}"` : ''}`});
+    if(malam && x.jualanKini && !ditutupAk(x.kini)) L.push({c, t, teruk: lepasTengahMalam(), teks: `${c.nama} ${fmtTarikh(t)}: ${lepasTengahMalam() ? 'sudah lepas 12 malam, kaunter belum ditutup' : 'kaunter belum ditutup (waktu tutup)'}`});
+  });
+  return L;
+}
+function htmlAmaranTutup(){
+  const L = senaraiAmaranTutup(); if(!L.length) return '';
+  return `<div class="card noprint" id="amaranTutup" style="border:2px solid ${L.some(x => x.teruk) ? '#dc2626' : '#d97706'}"><h3 style="margin-top:0">📋 Tutup kaunter</h3>
+    ${L.map(x => `<div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span>${x.teruk ? '🔴' : '🟠'} ${esc(x.teks)}</span><button class="small" data-lihattutup="${x.c.id}|${x.t}">Lihat laporan</button></div>`).join('')}</div>`;
+}
+function refreshAmaranTutup(){ const el = document.getElementById('amaranTutup'), h = htmlAmaranTutup(); if(el) el.outerHTML = h || '<span id="amaranTutup"></span>'; else if(tab === 'Ringkasan') refresh(); }
+let maklumTA = {};
+setInterval(() => {
+  if(!unsubTA.length) return;
+  if(hariOperasi() !== hariTA) langganTutupAk();
+  if(new Date().getSeconds() > 5) return;
+  senaraiAmaranTutup().filter(x => x.teruk).forEach(x => { const kk = x.c.id + x.t + (lepasTengahMalam() ? 'm' : ''); if(!maklumTA[kk]){ maklumTA[kk] = 1; maklumAk('📋 Kaunter belum ditutup', x.teks); } });
+  refreshAmaranTutup();
+}, 5000);
+document.addEventListener('click', e => { const b = e.target.closest?.('[data-lihattutup]'); if(!b) return; const [c, t] = b.dataset.lihattutup.split('|'); bukaLaporanTutup(c, t); });
+
 function viewRingkasan(){
   if(!monthLoaded) return '<div class="card muted">Menunggu data bulan dipilih.</div>';
   const k = kira(entri);
@@ -564,7 +604,7 @@ function viewRingkasan(){
   const hariAda = harian.filter(x=>x>0).length;
   const terkini = entri.slice(0,6);
   const label = {jualan:'Jualan', pembelian:'Pembelian', belanja:'Belanja', petty:'Petty'};
-  return menuUtama() + kadPelancar() + `<div class="grid">
+  return (htmlAmaranTutup() || '<span id="amaranTutup"></span>') + menuUtama() + kadPelancar() + `<div class="grid">
     ${bulanIni?`<div class="card"><div class="muted">Jualan hari ini</div><div class="metric">${RM(jualanHariIni)}</div></div>`:''}
     <div class="card"><div class="muted">Jualan ${fmtBulan(bulan)}</div><div class="metric pos">${RM(k.jumJualan)}</div><div class="muted">${k.kereta} kenderaan</div></div>
     <div class="card"><div class="muted">Pembelian + Belanja</div><div class="metric neg">${RM(k.jumBeli + k.jumBelanja)}</div></div>
@@ -611,6 +651,7 @@ function ringkasanTempoh(mingguan){
 // ---------- Tutup Kaunter (Daily Sales Report) ----------
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS_TUTUP}</style>`);
 let tutupBulan = [], tutupBuka = null;
+function bukaLaporanTutup(c, t){ tab = 'Laporan Harian'; tutupBuka = {c, t}; MTA.st.c = null; MTA.mula(t); renderShell(); window.scrollTo(0,0); }
 let jualanHarianOrder = {};   // {cawangan: {tarikh: {kereta, jumlah, tunai, qr, kad, tf}}} — terus dari order kaunter
 async function muatTutupBulan(){
   try{ const l = []; for(const c of CAW) l.push(...(await senaraiTutup({collection, doc, query, where, getDocs}, store, c.id, bulan)).map(x => ({...x, cawangan: x.cawangan || c.id})));
@@ -632,7 +673,7 @@ async function segerakJualan(){
         kereta:x.kereta, amaun:r(x.jumlah), catatan:`Auto dari Lion Safari (${x.kereta} order${x.tf ? `, Transfer RM${r(x.tf)}` : ''})`, sumber:'lionsafari', auto:true, guna_petty:false, hutang:false, oleh:'Segerak Akaun', dikemaskini: serverTimestamp()}); }
     toast(`✅ ${hari.length - [...uji].filter(t => m[t]).length} hari jualan disegerak${uji.size ? ` · ${uji.size} hari percubaan dikecualikan` : ''}`); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
 }
-const MTA = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, onSnapshot, serverTimestamp},
+const MTA = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp},
   cawangan: () => tutupBuka?.c || cawangan, pengguna: () => nama, toast, capGambar: null, mod: 'lihat', bolehSemak: true,
   refresh: () => { if(tab === 'Laporan Harian' && tutupBuka) refresh(); muatTutupBulanLambat(); }});
 let _tl = null; const muatTutupBulanLambat = () => { clearTimeout(_tl); _tl = setTimeout(muatTutupBulan, 800); };
@@ -1088,6 +1129,7 @@ function mulaHR(){
   unsubHR.push(onSnapshot(stafCol(), s => { stafKaunter = s.docs.map(d => { const x = {id:d.id, ...d.data()}; x.peranan = PERANAN_LAMA[x.peranan] || x.peranan; return x; }); refresh(); }, onErrHR));
   infoPK = []; infoBaca = []; tugasAk = []; mesejAk = []; logPK = []; let awalM = true;
   queueAk = {}; bayarPelAk = {}; let awalQ = {}, awalBP = {};
+  langganTutupAk();
   CAW.forEach(c => {
     unsubHR.push(onSnapshot(query(collection(store, 'lionsafari', c.id, 'order'), where('aktif','==',true)), s => {
       const lama = Object.fromEntries((queueAk[c.id] || []).map(o => [o.id, o.diskaunMinta?.masa || 0]));
@@ -1260,7 +1302,19 @@ function borangPekerja(id){
  <label>Alamat</label><input id="pAlamat" value="${esc(i.alamat||'')}" placeholder="Alamat rumah">
     <label>Kenalan kecemasan</label><input id="pKecemasan" value="${esc(i.kecemasan||'')}" placeholder="Nama & no. telefon">
     <label>Catatan</label><textarea id="pCatatan" rows="2">${esc(i.catatan||'')}</textarea>
+    ${p ? `<div class="card" style="background:#f8fafc;box-shadow:none"><b>📎 Dokumen pekerja</b><div class="muted" style="font-size:12px;margin:2px 0 6px">Salinan IC, kontrak / surat tawaran, sijil, lesen, slip bank dll. Dilihat oleh pemilik sahaja.</div>
+      <div id="pDokSenarai"><div class="muted">Memuatkan…</div></div>${htmlNaikLampiran('dokstaf')}</div>` : '<div class="muted" style="margin:8px 0">📎 Dokumen pekerja boleh dimuat naik selepas pekerja disimpan.</div>'}
     <button class="primary" style="width:100%;padding:14px" id="pSimpan">SIMPAN</button>`);
+  if(p){
+    let dok = [];
+    const lukisDok = () => { const el = $('#pDokSenarai'); if(!el) return; el.innerHTML = htmlSenaraiLampiran(dok, {padam: true, kosong: 'Belum ada dokumen.'});
+      pasangSenaraiLampiran(el, dok, {tajuk: p.nama, onPadam: async x => { try{ await deleteDoc(doc(store, 'dokumen_staf', x.id)); dok = dok.filter(y => y.id !== x.id); lukisDok(); toast('🗑 Dokumen dipadam'); }catch(e){ toast('⚠ ' + (e.code || e.message)); } }}); };
+    getDocs(query(collection(store, 'dokumen_staf'), where('stafId', '==', p.id))).then(r => { dok = r.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.masa||0) - (b.masa||0)); lukisDok(); })
+      .catch(e => { const el = $('#pDokSenarai'); if(el) el.innerHTML = `<div class="muted">⚠ ${e.code === 'permission-denied' ? 'Hanya pemilik boleh melihat dokumen pekerja.' : esc(e.message)}</div>`; });
+    $$('[data-lp-naik="dokstaf"]').forEach(x => x.onchange = async () => { const fl = [...x.files]; x.value = '';
+      for(const f of fl){ try{ const d = await bacaLampiran(f); const ref = doc(collection(store, 'dokumen_staf')); const r = {...d, stafId: p.id, stafNama: p.nama, oleh: nama, masa: Date.now()};
+        await setDoc(ref, r); dok.push({id: ref.id, ...r}); lukisDok(); toast('📎 ' + d.nama + ' disimpan'); }catch(e){ toast('⚠ ' + (e.code || e.message)); } } });
+  }
   const gaji = () => { const jn = val('#pJenis');
     $('#pGajiBox').innerHTML = jn === 'harian' ? `<label>Kadar harian (RM)</label><input id="pGaji" type="number" inputmode="decimal" step="0.01" value="${i.kadarHarian??''}">`
       : jn === 'parttime' ? `<label>Kadar sejam (RM)</label><input id="pKadarJam" type="number" inputmode="decimal" step="0.01" value="${i.kadarJam??''}"><label>Kadar OT sejam (RM, kosong = kadar biasa)</label><input id="pOT" type="number" inputmode="decimal" step="0.01" value="${i.kadarOT??''}">`
