@@ -355,6 +355,11 @@ service cloud.firestore {
       allow list, update, delete: if dalaman();
     }
     // Log masuk ahli: id = {telefon}_{plat} → {token}. Pelanggan hanya boleh cipta untuk kad sendiri (telefon & plat mesti sepadan)
+    // Rekod pelanggan lama (import MONZ) — dibaca kaunter & Apps Pekerja, ditulis oleh Akaun / kaunter
+    match /pelanggan_lama/{id} {
+      allow read: if dalaman() || staffApp();
+      allow write: if dalaman();
+    }
     match /ahli_masuk/{kunci} {
       allow get: if true;
       allow list, delete: if dalaman();

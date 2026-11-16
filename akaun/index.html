@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-13">
+<meta name="app-versi" content="2026.11.17-14">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -134,20 +134,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-13';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-14';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-13';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-13';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-13';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-13';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-13';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-13';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-14';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-14';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-14';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-14';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-14';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-14';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-13';
-import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-13';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-14';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-14';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 // ---------- Senarai kategori (boleh ubah di sini) ----------
 const KAT_PEMBELIAN = ['Sabun & Kimia','Wax & Polish','Peralatan & Mesin','Tuala & Span','Barang Jualan (Minuman/Snek)','Alat Ganti','Lain-lain'];
@@ -2232,7 +2232,57 @@ function viewPelanggan(){
     <div class="card"><div class="section-title"><h3>⭐ Safari Members</h3><div class="row"><button class="small" id="plMuat">↻ Muat semula</button><button class="small" id="plCsv">⬇ CSV</button></div></div>
     <input id="plCari" data-kekal="1" placeholder="🔍 Cari nama, telefon, plat atau kod ahli" value="${esc(plCari)}">
     <p class="muted" style="margin-top:0">Kad: ${KAD.saiz} cop · cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = 1 Free Wash · luput 12 bulan. Ahli dikongsi Mama Lion & Lion King.</p>
-    <div id="plList">${senaraiAhliHtml(l)}</div></div>`;
+    <div id="plList">${senaraiAhliHtml(l)}</div></div>` + kadRekodLama();
+}
+// ---------------- Rekod pelanggan lama (MONZ) ----------------
+let metaLama;
+function kadRekodLama(){
+  if(metaLama === undefined){ metaLama = null; getDoc(doc(store, 'pelanggan_lama', '_meta')).then(s => { metaLama = s.exists() ? s.data() : false; if(tab === 'Pelanggan') refresh(); }).catch(() => { metaLama = false; }); }
+  return `<div class="card noprint"><div class="section-title"><h3>🕘 Rekod pelanggan lama</h3></div>
+    ${metaLama ? `<div class="muted">${Number(metaLama.plat || 0).toLocaleString('en-MY')} plat · ${metaLama.ahli || 0} jadi Safari Members · dari ${esc(metaLama.sumber || '')} · diimport ${new Date(metaLama.masa).toLocaleString('en-GB')} oleh ${esc(metaLama.oleh || '')}</div>` : '<div class="muted">Belum ada rekod lama diimport.</div>'}
+    <p class="muted" style="margin:6px 0">Bila plat ditaip di kaunter / Apps Pekerja, maklumat pelanggan lama dipaparkan & dicadangkan daftar Safari Members.</p>
+    <input id="plLamaCari" placeholder="🔍 Semak plat dalam rekod lama (cth CEF2000)"><div id="plLamaHasil"></div>
+    <label class="small" style="display:inline-block;cursor:pointer;margin-top:8px;padding:10px 12px;background:#e2e8f0;border-radius:10px">📥 Import fail pelanggan lama (.json)<input type="file" id="plLamaFail" accept=".json,application/json" data-pf-abai style="display:none"></label>
+    <div id="plLamaStatus" class="muted"></div></div>`;
+}
+function pasangRekodLama(){
+  let t; const c = $('#plLamaCari');
+  if(c) c.oninput = () => { clearTimeout(t); t = setTimeout(async () => { const p = normPlat(c.value); if(p.length < 3) return $('#plLamaHasil').innerHTML = '';
+    const x = await cariRekodLama(store, {getDoc, doc}, p); const ahli = (ahliSemua || []).find(a => (a.plat || []).includes(p));
+    $('#plLamaHasil').innerHTML = x ? htmlRekodLama(x, {daftar: !ahli}) + (ahli ? `<div class="muted">⭐ Sudah ahli: ${esc(ahli.kod)} · ${esc(ahli.nama)}</div>` : '') : '<div class="muted">Tiada dalam rekod lama.</div>'; }, 400); };
+  const f = $('#plLamaFail'); if(f) f.onchange = async () => { const fl = f.files[0]; f.value = ''; if(fl) importLama(fl); };
+}
+async function importLama(fl){
+  const st = m => { const e = $('#plLamaStatus'); if(e) e.innerHTML = m; };
+  let D; try{ D = JSON.parse(await fl.text()); }catch(_){ return toast('⚠ Fail tidak sah (bukan JSON)'); }
+  if(!D?.lama || !Array.isArray(D.ahli)) return toast('⚠ Format fail pelanggan lama tidak dikenali');
+  const shard = Object.entries(D.lama), nPlat = shard.reduce((t, [, m]) => t + Object.keys(m).length, 0);
+  if(!confirm(`Import pelanggan lama?\n\n• ${nPlat.toLocaleString('en-MY')} plat → Rekod pelanggan lama\n• ${D.ahli.length} pelanggan ada no. telefon → Safari Members (promosi WhatsApp: tidak)\n\nSumber: ${D.sumber || fl.name}`)) return;
+  try{
+    for(let i = 0; i < shard.length; i += 200){
+      const b = writeBatch(store);
+      shard.slice(i, i + 200).forEach(([k, m]) => b.set(doc(store, 'pelanggan_lama', k), {p: m, dikemaskini: Date.now()}, {merge: true}));
+      await b.commit(); st(`⏳ Rekod lama: ${Math.min(i + 200, shard.length)}/${shard.length} kumpulan…`);
+    }
+    let baru = 0, gabung = 0;
+    for(const [i, a] of D.ahli.entries()){
+      st(`⏳ Safari Members: ${i + 1}/${D.ahli.length}…`);
+      const ada = await getDoc(doc(store, 'ahli_telefon', a.telefon));
+      let token = ada.exists() ? ada.data().token : null;
+      if(token && (await getDoc(doc(store, 'ahli', token))).exists()){
+        await updateDoc(doc(store, 'ahli', token), {plat: arrayUnion(...a.plat), kenderaan: arrayUnion(...a.kenderaan), belanjaLama: a.inv || 0, pelangganSejak: a.tarikh || '', dikemaskini: Date.now()}); gabung++;
+      } else {
+        token = buatToken();
+        const d = {...ahliBaru({nama: a.nama || 'Pelanggan', telefon: a.telefon, plat: a.plat, kenderaan: a.kenderaan, setujuPromosi: false, oleh: 'Import MONZ'}), sumber: 'monz', belanjaLama: a.inv || 0, pelangganSejak: a.tarikh || ''};
+        await setDoc(doc(store, 'ahli', token), d); await setDoc(doc(store, 'ahli_telefon', a.telefon), {token}); baru++;
+      }
+      await Promise.all(a.plat.map(p => setDoc(doc(store, 'ahli_masuk', kunciMasuk(a.telefon, p)), {token})));
+    }
+    await setDoc(doc(store, 'pelanggan_lama', '_meta'), {plat: nPlat, ahli: D.ahli.length, ahliBaru: baru, ahliGabung: gabung, sumber: D.sumber || fl.name, oleh: nama, masa: Date.now()});
+    metaLama = undefined; ahliSemua = null;
+    st(`✅ Selesai: ${nPlat.toLocaleString('en-MY')} plat rekod lama · ${baru} ahli baru · ${gabung} digabung dengan ahli sedia ada.`);
+    toast('✅ Import pelanggan lama selesai'); setTimeout(() => { if(tab === 'Pelanggan') refresh(); }, 1500);
+  }catch(e){ console.error(e); st('⚠ Import terhenti: ' + esc(e.code || e.message) + '. Import semula fail yang sama — rekod tidak akan berulang.'); toast('⚠ ' + (e.code || e.message)); }
 }
 function senaraiAhliHtml(l){
   return l.slice(0, 200).map(({a, k}) => `<div class="pk"><div><b>${esc(a.kod)}</b> · ${esc(a.nama)}<br>
@@ -2245,7 +2295,7 @@ function pasangPelanggan(){
     $('#plList').innerHTML = senaraiAhliHtml((ahliSemua||[]).map(a => ({a, k: keadaanKad(a, kini)})).filter(({a}) => !q || (a.nama||'').toLowerCase().includes(q) || (a.kod||'').toLowerCase().includes(q) || (qn.length > 2 && (a.plat||[]).some(p => p.includes(qn))) || (qt.length > 4 && (a.telefon||'').includes(qt)))); pasangSenaraiAhli(); };
   if($('#plMuat')) $('#plMuat').onclick = () => { ahliSemua = null; muatAhli(); };
   if($('#plCsv')) $('#plCsv').onclick = csvAhli;
-  pasangSenaraiAhli();
+  pasangSenaraiAhli(); pasangRekodLama();
 }
 function pasangSenaraiAhli(){
   $$('[data-plhantar]').forEach(b => b.onclick = () => { const a = ahliSemua.find(x => x.id === b.dataset.plhantar);

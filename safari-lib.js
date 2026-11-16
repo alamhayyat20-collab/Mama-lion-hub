@@ -271,3 +271,23 @@ export function dokMasukAhli(a){   // senarai [kunci, {token}] bagi semua kender
   const plat = [...new Set([...(a.plat || []), ...(a.kenderaan || []).map(k => k.plat)].map(normPlat).filter(Boolean))];
   return plat.map(p => [kunciMasuk(a.telefon, p), {token: a.id}]);
 }
+
+// ---------------- Rekod pelanggan lama (import MONZ) ----------------
+// pelanggan_lama/{2 huruf awal plat} = {p: {PLAT: {p: papar, m: model, n: nama, inv: RM, d1, d2: 'YYYY-MM-DD', k?: bil. rekod, pic?, co?, nota?}}}
+const cacheLama = {};
+export async function cariRekodLama(store, fs, plat){
+  const p = normPlat(plat); if(p.length < 3) return null;
+  const k = p.slice(0, 2);
+  if(!(k in cacheLama)){ try{ const s = await fs.getDoc(fs.doc(store, 'pelanggan_lama', k)); cacheLama[k] = s.exists() ? (s.data().p || {}) : {}; }catch(_){ cacheLama[k] = {}; } }
+  const x = cacheLama[k][p]; return x ? {plat: p, ...x} : null;
+}
+const BLN_L = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+const blnThn = d => d ? `${BLN_L[+d.slice(5,7) - 1]} ${d.slice(0,4)}` : '';
+export function htmlRekodLama(x, {daftar = true} = {}){
+  if(!x) return '';
+  const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return `<div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px;color:#0f172a">
+    <b>🕘 Pelanggan lama sejak ${e(blnThn(x.d1))}</b>${x.co ? ' · 🏢 Syarikat' : ''}<br>
+    ${x.n ? `👤 ${e(x.n)} · ` : ''}${x.m ? `🚗 ${e(x.m)} · ` : ''}belanja <b>RM${Math.round(x.inv || 0).toLocaleString('en-MY')}</b>${x.d2 && x.d2 !== x.d1 ? ` · terakhir ${e(blnThn(x.d2))}` : ''}${x.nota ? ` · ${e(x.nota)}` : ''}
+    ${daftar ? '<div style="margin-top:4px;color:#1d4ed8;font-weight:700">⭐ Belum ahli — minta no. telefon & daftar Safari Members.</div>' : ''}</div>`;
+}

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-13">
+<meta name="app-versi" content="2026.11.17-14">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -166,21 +166,21 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-13';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-14';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-13';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-14';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-13';
-import { hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-13';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-13';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-13';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-13';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-13';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-13';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-13';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-14';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-14';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-14';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-14';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-14';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-14';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-14';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-14';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -939,7 +939,7 @@ VIEWS['Order Baru'] = {
       <label>No. Plat *</label>
       <div class="row" style="flex-wrap:nowrap"><input id="oPlat" autocapitalize="characters" autocomplete="off" placeholder="cth: VAB 1234" style="text-transform:uppercase;font-size:22px;font-weight:800;margin:0;flex:1">
         <button class="small" id="oCari" title="Cari ahli">🔍</button><button class="small" id="oImbas" title="Imbas kad ahli">📷 Kad</button></div>
-      <div id="oAhli" style="margin:10px 0"></div>
+      <div id="oLama"></div><div id="oAhli" style="margin:10px 0"></div>
       <div class="two"><div><label>Nama pelanggan *</label><input id="oNama" autocomplete="off"></div>
         <div><label>No. telefon *</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
       <div id="oDaftarBox"></div>
@@ -1024,8 +1024,10 @@ VIEWS['Order Baru'] = {
       catch(e){ console.error(e); return []; }
     };
     let tunda;
-    $('#oPlat').oninput = () => { clearTimeout(tunda); const p = normPlat(val('#oPlat')); if(p.length < 3 || draf.ahli) return;
-      tunda = setTimeout(async () => { const l = await cariAhli('plat', p); if(normPlat(val('#oPlat')) !== p) return; draf.calon = l; if(l.length === 1) pilihAhli(l[0]); else lukisAhli(); }, 500); };
+    $('#oPlat').oninput = () => { clearTimeout(tunda); const p = normPlat(val('#oPlat')); if($('#oLama')) $('#oLama').innerHTML = ''; if(p.length < 3 || draf.ahli) return;
+      tunda = setTimeout(async () => { const l = await cariAhli('plat', p); if(normPlat(val('#oPlat')) !== p) return; draf.calon = l; if(l.length === 1) pilihAhli(l[0]); else lukisAhli();
+        const lm = l.length ? null : await cariRekodLama(store, {getDoc, doc}, p); if(normPlat(val('#oPlat')) !== p) return;
+        $('#oLama').innerHTML = htmlRekodLama(lm); if(lm?.n && !val('#oNama')) $('#oNama').value = lm.n; }, 500); };
     $('#oTel').onchange = async () => { if(draf.ahli) return; const t = normTelefon(val('#oTel')); if(!telefonSah(t)) return;
       const l = await cariAhli('telefon', t); if(l.length){ pilihAhli(l[0]); toast(`⭐ ${l[0].nama} sudah ahli (${l[0].kod})`); } };
     $('#oCari').onclick = async () => {

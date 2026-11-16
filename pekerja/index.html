@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-13">
+<meta name="app-versi" content="2026.11.17-14">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -116,20 +116,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-13';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-14';
 bannerPelayarDalaman({nama: 'Apps Pekerja'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-13';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-14';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-13';
-import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.17-13';
-import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-13';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-13';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-13';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-13';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-13';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-13';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-14';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.17-14';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-14';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-14';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-14';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-14';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-14';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-14';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -951,7 +951,7 @@ function borangOrder(){
   $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">🧾 Order baru — ${esc(namaCaw(cawO))}</h3><button class="btn" id="oBatal" style="padding:8px 12px;font-size:13px">✕ Batal</button></div>
     <label style="display:block;margin-top:10px">No. plat *</label>
     <div class="row" style="flex-wrap:nowrap"><input id="oPlat" autocapitalize="characters" autocomplete="off" placeholder="cth VAB 1234" style="text-transform:uppercase;font-size:22px;font-weight:800;flex:1"><button class="btn" id="oCari" title="Cari ahli">🔍</button><button class="btn" id="oImbas" title="Imbas kad ahli">📷</button></div>
-    <div id="oAhli"></div>
+    <div id="oLama"></div><div id="oAhli"></div>
     <div class="grid2"><div><label>Nama pelanggan *</label><input id="oNama" autocomplete="off"></div><div><label>No. telefon *</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
     <div id="oDaftarBox"></div>
     <label>Jenis kenderaan</label><div class="choices" id="cKend">${L.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga ? (k.harga > 0 ? '+' : '−') + RM(Math.abs(k.harga)) : 'harga asas'}</span></button>`).join('')}</div>
@@ -1024,8 +1024,10 @@ function borangOrder(){
     catch(e){ console.error(e); return []; }
   };
   let tunda;
-  $('#oPlat').oninput = () => { clearTimeout(tunda); const p = normPlat(val('#oPlat')); if(p.length < 3 || d.ahli) return;
-    tunda = setTimeout(async () => { const l = await cariAhli('plat', p); if(normPlat(val('#oPlat')) !== p) return; d.calon = l; if(l.length === 1) pilihAhli(l[0]); else lukisAhli(); }, 500); };
+  $('#oPlat').oninput = () => { clearTimeout(tunda); const p = normPlat(val('#oPlat')); if($('#oLama')) $('#oLama').innerHTML = ''; if(p.length < 3 || d.ahli) return;
+    tunda = setTimeout(async () => { const l = await cariAhli('plat', p); if(normPlat(val('#oPlat')) !== p) return; d.calon = l; if(l.length === 1) pilihAhli(l[0]); else lukisAhli();
+        const lm = l.length ? null : await cariRekodLama(store, {getDoc, doc}, p); if(normPlat(val('#oPlat')) !== p) return;
+        $('#oLama').innerHTML = htmlRekodLama(lm); if(lm?.n && !val('#oNama')) $('#oNama').value = lm.n; }, 500); };
   $('#oTel').onchange = async () => { if(d.ahli) return; const t = normTelefon(val('#oTel')); if(!telefonSah(t)) return;
     const l = await cariAhli('telefon', t); if(l.length){ pilihAhli(l[0]); toast(`⭐ ${l[0].nama} sudah ahli (${l[0].kod})`); } };
   $('#oCari').onclick = async () => {
