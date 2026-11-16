@@ -231,3 +231,12 @@ export function dataAwam(o, c){
     jumlahKasar: Number(o.jumlahKasar) || 0, diskaun, jumlah: aktif ? Math.max(0, r2_((Number(o.jumlahKasar) || 0) - diskaun)) : (Number(o.jumlah) || 0),
     status: o.status || '', aktif, masa: Date.now()};
 }
+
+// ---------- Log masuk ahli: no. telefon + no. kenderaan → token kad ----------
+// ahli_masuk/{tel_plat} = {token}. Ditulis semasa daftar / order kaunter / kemas kini profil / segerak harian kaunter.
+export const kunciMasuk = (tel, plat) => `${normTelefon(tel)}_${normPlat(plat)}`;
+export function dokMasukAhli(a){   // senarai [kunci, {token}] bagi semua kenderaan ahli
+  if(!a?.telefon) return [];
+  const plat = [...new Set([...(a.plat || []), ...(a.kenderaan || []).map(k => k.plat)].map(normPlat).filter(Boolean))];
+  return plat.map(p => [kunciMasuk(a.telefon, p), {token: a.id}]);
+}

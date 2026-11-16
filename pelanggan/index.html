@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-16">
+<meta name="app-versi" content="2026.11.16-17">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-16';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-17';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-16';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-16';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-17';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli } from '../safari-lib.js?v=2026.11.16-17';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -263,6 +263,9 @@ const tetapan = {}, gambarPakej = {};
 const m = location.hash.match(/k=([A-Za-z0-9]{20,40})/);
 if(m){ LS.set('sm_token', m[1]); history.replaceState(null, '', location.pathname); }
 token = LS.get('sm_token');
+// Pautan / QR umum: ?c=mama-lion|lion-king  &buka=bayar|daftar|masuk
+const QS = new URLSearchParams(location.search), bukaQS = QS.get('buka');
+if(['mama-lion', 'lion-king'].includes(QS.get('c'))){ cawPakej = QS.get('c'); }
 
 // ---------- Ikon navigasi ----------
 const IKON = {
@@ -433,8 +436,23 @@ function promoHtml(p){
 }
 
 // ---------- Alu-aluan (belum ahli) ----------
+// ---------- Log masuk ahli: no. telefon + no. kenderaan ----------
+function simpanMasuk(a){ dokMasukAhli(a).forEach(([k, v]) => setDoc(doc(db, 'ahli_masuk', k), v).catch(e => console.warn('ahli_masuk', e))); }
+async function logMasuk(){
+  const tel = normTelefon(val('#mTel')), plat = normPlat(val('#mPlat')), ralat = t => { $('#mRalat').textContent = t; };
+  if(!telefonSah(tel)) return ralat('No. telefon tidak sah. Contoh: 012-345 6789.');
+  if(plat.length < 2) return ralat('Sila isi no. kenderaan yang didaftarkan.');
+  $('#mMasuk').disabled = true; $('#mMasuk').textContent = 'Menyemak…'; ralat('');
+  try{
+    const s = await getDoc(doc(db, 'ahli_masuk', kunciMasuk(tel, plat)));
+    if(!s.exists()){ $('#mMasuk').disabled = false; $('#mMasuk').textContent = 'Log masuk';
+      return ralat('Tiada kad ahli untuk no. telefon & kenderaan ini. Semak semula, atau minta kaunter kemas kini maklumat anda. Belum ahli? Tekan "Daftar ahli percuma".'); }
+    token = s.data().token; LS.set('sm_token', token); tab = 'Kad';
+    toast('✅ Log masuk berjaya. Selamat kembali!'); mulaAhli(); window.scrollTo({top:0});
+  }catch(e){ console.error(e); $('#mMasuk').disabled = false; $('#mMasuk').textContent = 'Log masuk'; ralat('Tidak dapat menyemak sekarang. Semak sambungan internet dan cuba lagi.'); }
+}
 function viewAluan(){
-  $('#app').innerHTML = `<div class="pentas"><div class="syiling"><img src="syiling.png" alt="Lencana Animal Safari"></div></div>
+  $('#app').innerHTML = `<div class="pentas"><div class="syiling"><img src="syiling.png" alt="Lencana Safari Members"></div></div>
     <button class="btn" id="keBayar" style="margin:6px 0 4px;background:#14532d;color:#fff">💳 Bayar cucian kenderaan saya</button>
     <h1>Safari Members</h1>
     <p class="lead">Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.</p>
@@ -445,10 +463,17 @@ function viewAluan(){
     </ul></div>
     <div style="margin-top:20px"><button class="btn btn-emas" id="keDaftar">Daftar ahli percuma</button>
       <button class="btn btn-garis" id="kePromo">Lihat promosi & pakej</button></div>
-    <p class="muted" style="text-align:center;margin-top:16px">Sudah didaftarkan di kaunter? Minta kaunter hantar pautan kad anda melalui WhatsApp.</p>
+    <h2 id="masukAhli">Sudah ahli? Log masuk</h2>
+    <div class="panel"><p class="muted" style="margin-top:0">Untuk ahli yang telah mendaftar di kaunter atau dalam apps.</p>
+      <label style="display:block;font-weight:700">No. telefon</label><input id="mTel" inputmode="tel" autocomplete="tel" placeholder="cth: 012-345 6789" style="width:100%">
+      <label style="display:block;font-weight:700;margin-top:8px">No. kenderaan berdaftar</label><input id="mPlat" placeholder="cth: VAB 1234" style="width:100%;text-transform:uppercase" autocomplete="off">
+      <div id="mRalat" class="muted" style="color:#b91c1c;margin-top:6px"></div>
+      <button class="btn btn-emas" id="mMasuk" style="margin-top:10px">Log masuk</button></div>
     ${pasangHtml()}`;
   $('#keDaftar').onclick = () => { tab = 'Daftar'; render(); window.scrollTo({top:0}); };
   $('#keBayar').onclick = () => { tab = 'Bayar'; render(); window.scrollTo({top:0}); };
+  $('#mMasuk').onclick = logMasuk; $('#mPlat').onkeydown = e => { if(e.key === 'Enter') logMasuk(); };
+  if(bukaQS === 'masuk') setTimeout(() => { $('#masukAhli')?.scrollIntoView({behavior:'smooth'}); $('#mTel')?.focus(); }, 300);
   $('#kePromo').onclick = () => { tab = 'Promosi'; render(); };
   pasangPasang();
 }
@@ -489,13 +514,14 @@ function viewDaftar(){
       b.set(doc(db, 'ahli', t), data);
       b.set(doc(db, 'ahli_telefon', tel), {token: t});
       await b.commit();
+      simpanMasuk({id: t, ...data});
       token = t; LS.set('sm_token', t); tab = 'Kad';
       toast(`Selamat datang ke Safari Members, ${nama.split(' ')[0]}!`);
       mulaAhli();
     }catch(e){
       console.error(e);
       $('#dHantar').disabled = false; $('#dHantar').textContent = 'Daftar ahli';
-      ralat(e.code === 'permission-denied' ? 'Nombor telefon ini sudah berdaftar. Minta kaunter hantar pautan kad anda melalui WhatsApp.' : 'Pendaftaran gagal. Semak sambungan internet dan cuba lagi.');
+      ralat(e.code === 'permission-denied' ? 'Nombor telefon ini sudah berdaftar. Sila guna "Log masuk ahli" di skrin utama dengan no. telefon & no. kenderaan anda.' : 'Pendaftaran gagal. Semak sambungan internet dan cuba lagi.');
     }
   };
 }
@@ -746,10 +772,11 @@ function viewProfil(){
       await updateDoc(doc(db, 'ahli', token), {nama: val('#pNama'), emel: val('#pEmel'), tarikhLahir: val('#pLahir'), kenderaan, plat: [...new Set(kenderaan.map(k => normPlat(k.plat)))],
         cawanganUtama: val('#pCaw'), setujuPromosi: $('#pPromo').checked, dikemaskini: Date.now()});
       toast('Profil disimpan.');
+      simpanMasuk({...ahli, kenderaan, plat: [...new Set(kenderaan.map(k => normPlat(k.plat)))]});
     }catch(err){ console.error(err); toast('Profil tidak dapat disimpan. Semak sambungan internet.'); }
   };
   $('#pSalin').onclick = async () => { const u = new URL('#k=' + token, location.href.split('#')[0]).href; try{ await navigator.clipboard.writeText(u); toast('Pautan kad disalin.'); }catch(_){ prompt('Salin pautan kad anda:', u); } };
-  $('#pKeluar').onclick = () => { if(!confirm('Keluar dari kad di telefon ini? Anda perlukan pautan kad untuk masuk semula.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
+  $('#pKeluar').onclick = () => { if(!confirm('Keluar dari kad di telefon ini? Anda boleh log masuk semula dengan no. telefon & no. kenderaan.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
 }
 async function gambarProfil(fail){
   const img = await new Promise((ok, gagal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = gagal; i.src = URL.createObjectURL(fail); });
@@ -778,7 +805,9 @@ function pasangPasang(){
 }
 
 // ---------- Mula ----------
-tab = 'Utama';
+tab = bukaQS === 'bayar' ? 'Bayar' : (bukaQS === 'daftar' && !token) ? 'Daftar' : 'Utama';
+if(bukaQS === 'bayar' && ['mama-lion', 'lion-king'].includes(QS.get('c'))) byC = QS.get('c');
+if(bukaQS) history.replaceState(null, '', location.pathname + location.hash);
 mulaAhli();
 muatPromosi();
 render();

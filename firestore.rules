@@ -309,6 +309,15 @@ service cloud.firestore {
       allow create: if dalaman() || (request.resource.data.token is string
         && getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.telefon == tel);
     }
+    // Log masuk ahli: id = {telefon}_{plat} → {token}. Pelanggan hanya boleh cipta untuk kad sendiri (telefon & plat mesti sepadan)
+    match /ahli_masuk/{kunci} {
+      allow get: if true;
+      allow list, delete: if dalaman();
+      allow create, update: if dalaman() || staffApp()
+        || (request.resource.data.keys().hasOnly(['token']) && request.resource.data.token is string
+            && getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.telefon == kunci.split('_')[0]
+            && kunci.split('_')[1] in getAfter(/databases/$(database)/documents/ahli/$(request.resource.data.token)).data.plat);
+    }
     match /promosi/{id} {
       allow read: if true;
       allow write: if dalaman();

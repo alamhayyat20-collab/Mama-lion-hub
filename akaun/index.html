@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-16">
+<meta name="app-versi" content="2026.11.16-17">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,11 +108,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-16';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-16';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-16';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-16';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder } from '../safari-lib.js?v=2026.11.16-16';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-17';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-17';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-17';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-17';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder } from '../safari-lib.js?v=2026.11.16-17';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1605,7 +1605,7 @@ function viewTetapanApps(){
   const fw = (T.pakej || []).find(p => p.id === T.pakejFreeWash);
   return head + `<div class="card" style="background:#fffbeb;box-shadow:none"><div class="section-title"><h3>📋 Senarai harga rasmi (Price List)</h3><button class="primary" id="tkRasmi">Muat ke ${esc(namaCawangan())}</button></div>
       <p class="muted" style="margin:0">${HARGA_RASMI.pakej.length} pakej & ${HARGA_RASMI.addon.length} add-on dengan harga ikut kenderaan (Sedan, SUV, MPV, 4x4, DXL) — Promo A/B, Premium Wash, Water Coating, Polish, Seat / Deep Cleaning, Enjin, Watermark Glass, Polish Lampu. Pakej & add-on sedia ada cawangan ini akan diganti. Kadar komisen perlu ditetapkan semula.</p></div>` + Object.entries(JENIS_TK).map(([j, J]) => `<div class="card"><div class="section-title"><h3>${J.ikon} ${J.label}</h3><button class="primary" data-tkubah="${j}">Ubah</button></div><div>${ringkas(j)}</div></div>`).join('')
-    + kadTerimaBayar(T)
+    + kadTerimaBayar(T) + kadQrMembers()
     + `<div class="card"><div class="section-title"><h3>🏪 Maklumat kedai & Safari Members</h3><button class="primary" id="tkKedai">Ubah</button></div>
       <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
       <div class="card"><p class="muted" style="margin:0">Pekerja dengan kuasa 🏷 juga boleh ubah harga di kaunter (Lion Safari V2 → Tetapan). Petty cash, float tunai & had diskaun kekal di kaunter V2 (Admin).</p></div>`;
@@ -1617,6 +1617,8 @@ function pasangTetapanApps(){
   if($('#tkKedai')) $('#tkKedai').onclick = borangKedai;
   if($('#tbUbah')) $('#tbUbah').onclick = borangTerimaBayar;
   if($('#tbCetak')) $('#tbCetak').onclick = cetakPosterBayar;
+  if($('#qrPoster')) $('#qrPoster').onclick = cetakPosterMembers;
+  if($('#qrSalin')) $('#qrSalin').onclick = async () => { try{ await navigator.clipboard.writeText(urlMembers()); toast('Pautan disalin'); }catch(_){ prompt('Salin pautan:', urlMembers()); } };
   if($('#tbSalinCaw')) $('#tbSalinCaw').onclick = async () => {
     const lain = CAW.find(x => x.id !== cawangan); if(!lain) return;
     if(!confirm(`Guna akaun penerima & QR yang sama untuk ${lain.nama}? (Tetapan ${lain.nama} sedia ada akan diganti)`)) return;
@@ -1672,6 +1674,35 @@ function borangTerimaBayar(){
     try{ await setDoc(doc(store, 'lionsafari', cawangan, 'tetapan', 'umum'), {terimaBayaran: d, dikemaskiniOleh: nama}, {merge: true}); tutupModal(); toast(`✅ Akaun penerima ${namaCawangan()} disimpan — terus dipapar di kaunter & Apps Pelanggan`); }
     catch(e){ $('#tbSimpan').disabled = false; toast('⚠ ' + (e.code || e.message)); }
   };
+}
+
+// ---------- 📱 QR Safari Members (umum): bayar tanpa tempahan, daftar ahli, log masuk, pasang apps ----------
+const urlMembers = (bayar = false) => `https://alamhayyat20-collab.github.io/Mama-lion-hub/pelanggan/?c=${cawangan}${bayar ? '&buka=bayar' : ''}`;
+const qrMembers = (bayar = false) => new URL(`../pelanggan/qr/qr-${cawangan}${bayar ? '-bayar' : ''}.png`, location.href).href;
+function kadQrMembers(){
+  return `<div class="card"><div class="section-title"><h3>📱 QR Safari Members — ${esc(namaCawangan())}</h3><div class="row"><button class="primary" id="qrPoster">🖨 Cetak poster QR</button><button class="small" id="qrSalin">📋 Salin pautan</button></div></div>
+    <p class="muted" style="margin-top:0">Untuk orang ramai: imbas untuk <b>bayar cucian tanpa tempahan</b>, <b>daftar ahli percuma</b>, <b>log masuk ahli</b> (no. telefon + no. kenderaan) & <b>pasang apps</b>.</p>
+    <div class="row" style="gap:16px;align-items:flex-start">
+      <div style="text-align:center"><img src="${qrMembers()}" style="width:170px;border:1px solid #e2e8f0;border-radius:12px"><br><b>Safari Members</b><br><a href="${qrMembers()}" download="QR-SafariMembers-${cawangan}.png">⬇ Muat turun</a></div>
+      <div style="text-align:center"><img src="${qrMembers(true)}" style="width:170px;border:1px solid #e2e8f0;border-radius:12px"><br><b>Bayar terus</b><br><a href="${qrMembers(true)}" download="QR-Bayar-${cawangan}.png">⬇ Muat turun</a></div></div></div>`;
+}
+function cetakPosterMembers(){
+  const T = tetapanKaunter, logo = new URL(cawangan === 'lion-king' ? 'logo-lionking.jpg' : 'logo-mamalion.jpg', location.href).href, syiling = new URL('../pelanggan/syiling.png', location.href).href;
+  const w = window.open('', '_blank'); if(!w) return toast('Benarkan pop-up untuk cetak');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Poster Safari Members ${esc(namaCawangan())}</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:system-ui,sans-serif;color:#0f2d1e;margin:0;text-align:center}
+    .atas{display:flex;align-items:center;justify-content:center;gap:14px}.atas img{height:80px}h1{font-size:42px;margin:6px 0 0;letter-spacing:3px}.sub{color:#475569;font-size:17px;margin-bottom:8px}
+    .qr{width:330px;border:5px solid #14532d;border-radius:22px;padding:8px}.senarai{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;max-width:600px;margin:14px auto}
+    .senarai div{border:2px solid #e2e8f0;border-radius:14px;padding:10px 12px;font-size:15px}.senarai b{display:block;font-size:17px;color:#14532d}
+    .bawah{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px;border-top:2px dashed #94a3b8;padding-top:12px}.bawah img{width:150px}</style></head><body>
+    <div class="atas"><img src="${logo}"><img src="${syiling}"></div><h1>SAFARI MEMBERS</h1><div class="sub">${esc(T.namaKedai || namaCawangan())} — imbas dengan kamera telefon</div>
+    <img class="qr" src="${qrMembers()}">
+    <div class="senarai"><div><b>💳 Bayar cucian</b>Tanpa tempahan — masukkan no. kenderaan, imbas QR bank & muat naik resit.</div>
+      <div><b>⭐ Daftar ahli percuma</b>Kumpul cop setiap cucian. Cop ke-4 & ke-8 = Free Wash!</div>
+      <div><b>🔑 Log masuk ahli</b>Guna no. telefon & no. kenderaan yang didaftarkan.</div>
+      <div><b>📲 Pasang apps</b>Tekan butang Pasang — apps terus ada di skrin telefon.</div></div>
+    <div class="bawah"><img src="${qrMembers(true)}"><div style="text-align:left"><b style="font-size:20px">Nak bayar terus?</b><br>Imbas QR ini untuk terus ke<br>halaman bayaran cucian.</div></div>
+    <script>window.onload=()=>setTimeout(()=>print(),500)<\/script></body></html>`);
+  w.document.close();
 }
 function cetakPosterBayar(){
   const T = tetapanKaunter, B = T.terimaBayaran || {}, logo = new URL(cawangan === 'lion-king' ? 'logo-lionking.jpg' : 'logo-mamalion.jpg', location.href).href;
