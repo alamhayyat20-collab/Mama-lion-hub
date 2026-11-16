@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-14">
+<meta name="app-versi" content="2026.11.17-15">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -134,17 +134,17 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-14';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-15';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-14';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-14';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-14';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-14';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-14';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-14';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-15';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-15';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-15';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-15';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-15';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-15';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-14';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-14';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-15';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-15';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -2259,10 +2259,11 @@ async function importLama(fl){
   const shard = Object.entries(D.lama), nPlat = shard.reduce((t, [, m]) => t + Object.keys(m).length, 0);
   if(!confirm(`Import pelanggan lama?\n\n• ${nPlat.toLocaleString('en-MY')} plat → Rekod pelanggan lama\n• ${D.ahli.length} pelanggan ada no. telefon → Safari Members (promosi WhatsApp: tidak)\n\nSumber: ${D.sumber || fl.name}`)) return;
   try{
-    for(let i = 0; i < shard.length; i += 200){
+    for(let i = 0; i < shard.length; i += 50){
       const b = writeBatch(store);
-      shard.slice(i, i + 200).forEach(([k, m]) => b.set(doc(store, 'pelanggan_lama', k), {p: m, dikemaskini: Date.now()}, {merge: true}));
-      await b.commit(); st(`⏳ Rekod lama: ${Math.min(i + 200, shard.length)}/${shard.length} kumpulan…`);
+      // disimpan sebagai satu teks JSON setiap kumpulan — elak had Firestore (bilangan medan / indeks dalam satu dokumen)
+      shard.slice(i, i + 50).forEach(([k, m]) => b.set(doc(store, 'pelanggan_lama', k), {j: JSON.stringify(m), n: Object.keys(m).length, dikemaskini: Date.now()}));
+      await b.commit(); st(`⏳ Rekod lama: ${Math.min(i + 50, shard.length)}/${shard.length} kumpulan…`);
     }
     let baru = 0, gabung = 0;
     for(const [i, a] of D.ahli.entries()){

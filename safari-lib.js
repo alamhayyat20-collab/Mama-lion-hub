@@ -278,7 +278,7 @@ const cacheLama = {};
 export async function cariRekodLama(store, fs, plat){
   const p = normPlat(plat); if(p.length < 3) return null;
   const k = p.slice(0, 2);
-  if(!(k in cacheLama)){ try{ const s = await fs.getDoc(fs.doc(store, 'pelanggan_lama', k)); cacheLama[k] = s.exists() ? (s.data().p || {}) : {}; }catch(_){ cacheLama[k] = {}; } }
+  if(!(k in cacheLama)){ try{ const s = await fs.getDoc(fs.doc(store, 'pelanggan_lama', k)); const d = s.exists() ? s.data() : null; cacheLama[k] = d ? (d.j ? JSON.parse(d.j) : (d.p || {})) : {}; }catch(_){ cacheLama[k] = {}; } }
   const x = cacheLama[k][p]; return x ? {plat: p, ...x} : null;
 }
 const BLN_L = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
