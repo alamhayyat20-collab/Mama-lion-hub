@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-15">
+<meta name="app-versi" content="2026.11.17-16">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -134,17 +134,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-15';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-16';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-15';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-15';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-15';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-15';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-15';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-15';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-16';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-16';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-16';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-16';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-16';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-16';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-15';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-15';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-16';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-16';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-16';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -2209,6 +2210,9 @@ function pasangKomisen(){
 // ================================================================
 let ahliSemua = null, plCari = '', plMuat = false;
 const pautanKad = token => new URL('../pelanggan/#k=' + token, location.href).href;
+const MP = modulPelanggan({store, fs: {collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion}, mod: 'akaun',
+  buka: bukaModal, tutup: () => { tutupModal(); if(tab === 'Pelanggan' && ahliSemua === null) refresh(); }, toast, pengguna: () => nama, cawangan: () => cawangan, pautanKad,
+  lihatKad: a => bukaLive('pelanggan', {lihat: a.id, tajuk: `⭐ Kad ${a.kod} — ${a.nama || ''} (lihat sahaja)`}), selepasUbah: () => { ahliSemua = null; }});
 async function muatAhli(){
   plMuat = true; refresh();
   try{ const s = await getDocs(collection(store, 'ahli')); ahliSemua = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.daftarMasa||0) - (a.daftarMasa||0)); }
@@ -2224,7 +2228,7 @@ function viewPelanggan(){
   const fwBulan = orderBulan.filter(o => o.freeWash && o.status === 'Selesai');
   const q = plCari.trim().toLowerCase(), qn = normPlat(plCari), qt = normTelefon(plCari);
   const l = k.filter(({a}) => !q || (a.nama||'').toLowerCase().includes(q) || (a.kod||'').toLowerCase().includes(q) || (qn.length > 2 && (a.plat||[]).some(p => p.includes(qn))) || (qt.length > 4 && (a.telefon||'').includes(qt)));
-  return `<div class="grid noprint" style="margin-bottom:12px">
+  return MP.htmlKotak() + `<div class="grid noprint" style="margin-bottom:12px">
       <div class="card"><div class="muted">Jumlah ahli</div><div class="metric">${ahliSemua.length}</div></div>
       <div class="card"><div class="muted">Ahli baru ${fmtBulan(bulan)}</div><div class="metric">${ahliSemua.filter(a => (a.daftarMasa||0) >= awalBulan && (a.daftarMasa||0) < awalBulan + 31*864e5 && new Date(a.daftarMasa).toISOString().slice(0,7) === bulan).length}</div></div>
       <div class="card"><div class="muted">Free Wash belum ditebus</div><div class="metric">${sum(k, x => x.k.freeWash.length)}</div></div>
@@ -2289,20 +2293,20 @@ function senaraiAhliHtml(l){
   return l.slice(0, 200).map(({a, k}) => `<div class="pk"><div><b>${esc(a.kod)}</b> · ${esc(a.nama)}<br>
       <span class="muted">${esc(paparTelefon(a.telefon))} · ${(a.plat||[]).map(esc).join(', ')}${a.setujuPromosi ? ' · 📣 promosi' : ''}</span><br>
       <span class="tag">⭐ ${k.bil}/${KAD.saiz} cop</span>${k.freeWash.length ? `<span class="tag ok">🎁 ${k.freeWash.length} Free Wash</span>` : ''}<span class="tag">${a.jumlahServis||0} servis</span></div>
-    <div class="aksi"><button class="small primary" data-plhantar="${a.id}">📤 Hantar kad</button><button class="small" data-plurus="${a.id}">Urus</button></div></div>`).join('') || '<p class="muted">Tiada ahli sepadan.</p>';
+    <div class="aksi"><button class="small primary" data-plhantar="${a.id}">📤 Hantar kad</button><button class="small" data-plurus="${a.id}">Profil ›</button></div></div>`).join('') || '<p class="muted">Tiada ahli sepadan.</p>';
 }
 function pasangPelanggan(){
   if($('#plCari')) $('#plCari').oninput = e => { plCari = e.target.value; const kini = Date.now(); const q = plCari.trim().toLowerCase(), qn = normPlat(plCari), qt = normTelefon(plCari);
     $('#plList').innerHTML = senaraiAhliHtml((ahliSemua||[]).map(a => ({a, k: keadaanKad(a, kini)})).filter(({a}) => !q || (a.nama||'').toLowerCase().includes(q) || (a.kod||'').toLowerCase().includes(q) || (qn.length > 2 && (a.plat||[]).some(p => p.includes(qn))) || (qt.length > 4 && (a.telefon||'').includes(qt)))); pasangSenaraiAhli(); };
   if($('#plMuat')) $('#plMuat').onclick = () => { ahliSemua = null; muatAhli(); };
   if($('#plCsv')) $('#plCsv').onclick = csvAhli;
-  pasangSenaraiAhli(); pasangRekodLama();
+  pasangSenaraiAhli(); pasangRekodLama(); MP.pasang(document.getElementById('app') || document);
 }
 function pasangSenaraiAhli(){
   $$('[data-plhantar]').forEach(b => b.onclick = () => { const a = ahliSemua.find(x => x.id === b.dataset.plhantar);
     const teks = `Salam ${a.nama}, ini kad digital Safari Members anda (${a.kod}) — Mama Lion & Lion King Premium Car Wash.\nBuka & pasang apps: ${pautanKad(a.id)}\n\nSetiap cucian berbayar = 1 cop. Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH!`;
     window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(teks)}`, '_blank'); });
-  $$('[data-plurus]').forEach(b => b.onclick = () => urusAhli(b.dataset.plurus));
+  $$('[data-plurus]').forEach(b => b.onclick = () => MP.bukaProfil({ahli: b.dataset.plurus}));
 }
 function urusAhli(id){
   const a = ahliSemua.find(x => x.id === id); if(!a) return;

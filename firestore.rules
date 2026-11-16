@@ -360,6 +360,13 @@ service cloud.firestore {
       allow read: if dalaman() || staffApp();
       allow write: if dalaman();
     }
+    // Catatan dalaman & log tindakan ahli — Akaun / kaunter sahaja (pelanggan tidak boleh baca)
+    match /ahli_nota/{id} {
+      allow read, write: if dalaman();
+    }
+    match /ahli_log/{id} {
+      allow read, create: if dalaman();
+    }
     match /ahli_masuk/{kunci} {
       allow get: if true;
       allow list, delete: if dalaman();

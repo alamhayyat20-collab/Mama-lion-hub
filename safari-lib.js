@@ -275,6 +275,17 @@ export function dokMasukAhli(a){   // senarai [kunci, {token}] bagi semua kender
 // ---------------- Rekod pelanggan lama (import MONZ) ----------------
 // pelanggan_lama/{2 huruf awal plat} = {p: {PLAT: {p: papar, m: model, n: nama, inv: RM, d1, d2: 'YYYY-MM-DD', k?: bil. rekod, pic?, co?, nota?}}}
 const cacheLama = {};
+export async function muatShardLama(store, fs, k){
+  if(!(k in cacheLama)){ try{ const s = await fs.getDoc(fs.doc(store, 'pelanggan_lama', k)); const d = s.exists() ? s.data() : null; cacheLama[k] = d ? (d.j ? JSON.parse(d.j) : (d.p || {})) : {}; }catch(_){ cacheLama[k] = {}; } }
+  return cacheLama[k];
+}
+let semuaLama = null;
+export async function muatSemuaLama(store, fs){
+  if(semuaLama) return semuaLama;
+  const s = await fs.getDocs(fs.collection(store, 'pelanggan_lama')); const m = {};
+  s.docs.forEach(d => { if(d.id === '_meta') return; const x = d.data(); const peta = x.j ? JSON.parse(x.j) : (x.p || {}); cacheLama[d.id] = peta; Object.assign(m, peta); });
+  return semuaLama = m;
+}
 export async function cariRekodLama(store, fs, plat){
   const p = normPlat(plat); if(p.length < 3) return null;
   const k = p.slice(0, 2);
