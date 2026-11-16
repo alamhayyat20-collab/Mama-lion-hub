@@ -46,7 +46,7 @@ export function kiraLaporan(d){
   const hariBayar = Number(d.tetapanPK?.hariBayarMingguan ?? 0), hariIni = new Date(d.tarikh + 'T00:00:00').getDay() === hariBayar;
   const sah = (d.orders || []).filter(o => o.status !== 'Batal' && (o.bayar || o.freeWash)).sort((a,b) => (a.masaBayar||a.masaDibuat||0) - (b.masaBayar||b.masaDibuat||0));
   const baris = sah.map((o, i) => {
-    const addon = r2((o.addon || []).reduce((t,a) => t + (Number(a.harga)||0), 0)), jumlah = r2(o.jumlah);
+    const addon = r2([...(o.addon || []), ...(o.itemManual || [])].reduce((t,a) => t + (Number(a.harga)||0), 0)), jumlah = r2(o.jumlah);   // item manual → lajur Lain-lain
     const lj = lajurPakej(o), nilai = {luar:0, ld:0, promo:0, polish:0, lain:0};
     const pakejAmt = o.freeWash ? 0 : r2(Math.max(0, jumlah - addon));
     nilai[lj] = r2(nilai[lj] + pakejAmt); nilai.lain = r2(nilai.lain + (o.freeWash ? Math.min(addon, jumlah) : Math.min(addon, jumlah)));
