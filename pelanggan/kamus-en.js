@@ -64,7 +64,7 @@ export const KAMUS = {
   '✅ Tempahan dihantar. Anda akan dimaklumkan bila kaunter menerima.': '✅ Booking sent. You will be notified when the counter accepts it.',
   'Tempahan gagal dihantar. Semak sambungan internet.': 'Booking failed to send. Check your internet connection.', 'Tempahan dibatalkan.': 'Booking cancelled.',
   'Tidak dapat dibatalkan — mungkin sudah diterima kaunter.': 'Cannot cancel — the counter may have already accepted it.',
-  'ikut permintaan': 'on request', 'harga ikut permintaan': 'price on request', 'Caj ikut kenderaan:': 'Charges by vehicle:',
+  'ikut permintaan': 'on request', 'DXL: harga seperti permintaan': 'DXL: price on request', 'harga ikut permintaan': 'price on request', 'Caj ikut kenderaan:': 'Charges by vehicle:',
   // Promosi & pakej
   'Tawaran terkini di Mama Lion & Lion King.': 'Latest offers at Mama Lion & Lion King.', 'Tiada promosi buat masa ini. Semak semula tidak lama lagi.': 'No promos right now. Check back soon.',
   'Pakej & harga': 'Packages & prices', 'Cucian': 'Washes', 'Senarai pakej akan dikemas kini.': 'The package list will be updated.',
