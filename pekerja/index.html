@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-02">
+<meta name="app-versi" content="2026.11.17-03">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,19 +115,25 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-02';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-03';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-02';
-import { bukaPaparan } from '../paparan-lib.js?v=2026.11.17-02';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-02';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-02';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-02';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-02';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-03';
+import { bukaPaparan } from '../paparan-lib.js?v=2026.11.17-03';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-03';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-03';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-03';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-03';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
+// Mod Admin: dibuka dari Apps Akaun dengan akaun pemilik (bukan akaun Apps Pekerja) — hanya ID Admin (Dato' / Datin) boleh masuk
+const EMAIL_STAF = [EMAIL_PEKERJA, 'pekerja@mamalion.app'];
+const modAdmin = () => !!dev && !EMAIL_STAF.includes(String(dev.email || '').toLowerCase());
+const dalamAkaun = (() => { try{ return window.top !== window; }catch(_){ return true; } })();
+const keAkaun = () => { if(dalamAkaun) window.parent.postMessage('tutupLiveAk', location.origin); else location.href = '../akaun/'; };
+const btnKeAkaun = () => modAdmin() ? `<button class="btn" id="btnKeAkaun" style="padding:8px 10px;font-size:12px;background:#d7b25a;color:#14532d;font-weight:800">← Akaun</button>` : '';
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
   {id:'lion-king', nama:'Lion King', logo:'logo-lionking.jpg'}
@@ -187,7 +193,7 @@ onAuthStateChanged(auth, u => {
   for(const c of CAWANGAN.filter(x => x.id === PUSAT)) unsubAsas.push(onSnapshot(collection(store, 'lionsafari', c.id, 'staf'), s => {
     stafSemua[c.id] = s.docs.map(d => ({id:d.id, c:c.id, ...d.data()}));
     const ss = bacaLS('pk_sesi');
-    if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st){ masuk(st); return; } }
+    if(!saya && ss && Date.now() - ss.t < 30*864e5){ const st = (stafSemua[ss.c]||[]).find(x => x.id === ss.id && x.aktif !== false); if(st && (!modAdmin() || st.peranan === 'Admin')){ masuk(st); return; } }
     if(saya){ const baru = (stafSemua[saya.c]||[]).find(x => x.id === saya.id); if(!baru || baru.aktif === false){ keluar(); toast('Akaun anda tidak aktif'); } else { const moLama = !!saya.mo, kuasaLama = JSON.stringify(saya.kuasa||{}); saya = baru; if(moLama !== !!baru.mo) langganMO(); if(kuasaLama !== JSON.stringify(baru.kuasa||{})){ langganChat(); langganQ(); langganTutup(); } if(moLama !== !!baru.mo || kuasaLama !== JSON.stringify(baru.kuasa||{})){ if(!TABS().some(([t]) => t === tab)) tab = 'Kehadiran'; kepala(); renderNav(); render(); } } }
     else skrinLogin();
     if(saya && tab === 'Pekerja' && !$('#app').dataset.sibuk) render();
@@ -215,22 +221,23 @@ function skrinDaftarTelefon(ralat=''){
 // ---------------- Log masuk pekerja (ID + PIN) ----------------
 function skrinLogin(msg=''){
   saya = null; $('#nav').classList.add('hidden'); $('#hLogo').classList.add('hidden'); $('#hSub').textContent = 'Mama Lion & Lion King';
-  $('#hKanan').innerHTML = '';
-  $('#app').innerHTML = `<div class="card"><h3>🔑 Log masuk pekerja</h3>
+  $('#hKanan').innerHTML = btnKeAkaun(); if($('#btnKeAkaun')) $('#btnKeAkaun').onclick = keAkaun;
+  $('#app').innerHTML = `${modAdmin() ? `<div class="card" style="background:#fef3c7;border:2px solid #d7b25a"><b>🛡 Mod Admin</b><div class="muted">Dibuka dari Apps Akaun. Masuk dengan <b>ID & PIN Admin</b> (Dato' / Datin).</div></div>` : ''}<div class="card"><h3>🔑 Log masuk ${modAdmin() ? 'Admin' : 'pekerja'}</h3>
     <label>ID Staf</label><input id="lId" autocapitalize="characters" autocomplete="off" placeholder="cth ML001 / LK001" style="text-transform:uppercase;font-size:24px;font-weight:800;letter-spacing:1px">
     <div class="notice bad ${msg?'':'hidden'}">${esc(msg)}</div>
     <button class="btn pri big" id="btnId">SETERUSNYA → PIN</button>
     <p class="muted">ID & PIN diberi oleh pihak pengurusan. Lupa PIN? Hubungi pengurus.</p></div>
     ${kadPasang()}
-    <div class="center"><button class="btn" id="btnTelOut" style="font-size:12px;padding:8px 12px">Tetapan telefon: log keluar akaun Apps Pekerja</button></div>`;
+    ${modAdmin() ? '' : `<div class="center"><button class="btn" id="btnTelOut" style="font-size:12px;padding:8px 12px">Tetapan telefon: log keluar akaun Apps Pekerja</button></div>`}`;
   const cari = () => {
     const id = val('#lId').toUpperCase().replace(/\s+/g,''); if(!id) return toast('Sila masukkan ID');
     const st = Object.values(stafSemua).flat().find(x => String(x.idStaf||'').toUpperCase() === id && x.aktif !== false);
     if(!st) return skrinLogin(!stafSemua[PUSAT] ? 'Senarai staf belum dimuatkan, cuba lagi sebentar.' : `ID ${id} tidak dijumpai atau tidak aktif.`);
+    if(modAdmin() && st.peranan !== 'Admin') return skrinLogin(`Mod Admin: hanya ID Admin (Dato' / Datin) boleh masuk dari Apps Akaun.`);
     skrinPin(st);
   };
   $('#btnId').onclick = cari; $('#lId').onkeydown = e => { if(e.key === 'Enter') cari(); };
-  $('#btnTelOut').onclick = () => { if(confirm('Log keluar akaun Apps Pekerja dari telefon ini? Pengurus perlu sediakan semula.')){ simpanLS('pk_sesi', null); signOut(auth); } };
+  if($('#btnTelOut')) $('#btnTelOut').onclick = () => { if(confirm('Log keluar akaun Apps Pekerja dari telefon ini? Pengurus perlu sediakan semula.')){ simpanLS('pk_sesi', null); signOut(auth); } };
   pasangKadPasang();
 }
 function skrinPin(st){
@@ -284,8 +291,9 @@ function kepala(){
   const caw = infoCaw();
   $('#hLogo').src = caw.logo; $('#hLogo').classList.remove('hidden');
   $('#hSub').textContent = `${saya.idStaf} · ${saya.nama} · ${caw.nama}${ikonKuasa(saya) ? ' · ' + ikonKuasa(saya) : ''}`;
-  $('#hKanan').innerHTML = `<button id="btnAv" title="Kad ID saya" style="border:0;background:none;padding:0;cursor:pointer">${avatar(fotoSaya, saya.nama, 34)}</button><button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>`;
+  $('#hKanan').innerHTML = `<button id="btnAv" title="Kad ID saya" style="border:0;background:none;padding:0;cursor:pointer">${avatar(fotoSaya, saya.nama, 34)}</button><button class="btn" id="btnKeluar" style="padding:8px 10px;font-size:12px">Log keluar</button>${btnKeAkaun()}`;
   $('#btnKeluar').onclick = () => { if(confirm('Log keluar?')) keluar(); };
+  if($('#btnKeAkaun')) $('#btnKeAkaun').onclick = keAkaun;
   $('#btnAv').onclick = () => { $('#app').dataset.sibuk = ''; tab = 'ID'; renderNav(); render(); window.scrollTo(0,0); };
 }
 function langganBulan(){

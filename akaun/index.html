@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-02">
+<meta name="app-versi" content="2026.11.17-03">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -78,12 +78,37 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 header{padding-top:max(14px,env(safe-area-inset-top))}
 @media(max-width:600px){.two{grid-template-columns:1fr}.metric{font-size:19px}}
 @media print{header,nav,footer,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
+/* Kategori warna dashboard */
+.kat-biru{--k:#1d4ed8;--kl:#dbeafe}.kat-jingga{--k:#c2410c;--kl:#ffedd5}.kat-hijau{--k:#14532d;--kl:#dcfce7}.kat-emas{--k:#92400e;--kl:#fef3c7}.kat-kelabu{--k:#374151;--kl:#e5e7eb}
+nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
+.navkat,.navsub{display:flex;gap:6px;overflow:auto;padding-bottom:1px}
+.navkat button{background:var(--kl);color:var(--k);font-weight:700;border:2px solid transparent}
+.navkat button.active{background:var(--k);color:#fff}
+.navsub button{background:#fff;border:1.5px solid var(--kl);color:var(--k);font-weight:600}
+.navsub button.active{background:var(--kl);border-color:var(--k);font-weight:800}
+.menukat{border-radius:14px;padding:12px;background:#fff;border-top:6px solid var(--k);box-shadow:0 1px 4px #0001}
+.menukat h3{margin:0 0 8px;color:var(--k);font-size:16px}
+.menutiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.menutiles button{background:var(--kl);color:#111827;text-align:left;padding:12px;border-radius:12px;min-height:58px;font-weight:700;display:flex;gap:8px;align-items:center}
+.menutiles button i{font-style:normal;font-size:20px}
+.menutiles button:hover,.navsub button:hover{outline:2px solid var(--k)}
+.appkad{border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.appkad:hover{border-color:#14532d}
+.appkad .row button{flex:1}
+#liveAk{position:fixed;inset:0;z-index:9000;background:#0f172a;display:flex;flex-direction:column}
+#liveAk .bar{display:flex;gap:6px;align-items:center;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top));background:#14532d;border-bottom:3px solid #d7b25a;flex-wrap:wrap}
+#liveAk .bar b{color:#fff;flex:1;min-width:120px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#liveAk .bar button{min-height:42px;font-weight:800}
+#liveAk .bar .on{background:#d7b25a;color:#14532d}
+#liveAk .bingkai{flex:1;display:flex;justify-content:center;align-items:stretch;overflow:auto;padding:8px}
+@media(max-width:600px){#liveAk [data-lvsaiz]{display:none}#liveAk .bar b{font-size:14px}}
+#liveAk iframe{border:0;background:#fff;border-radius:10px;width:100%;height:100%;transition:width .2s}
 </style>
 </head>
 <body>
 <header>
   <div><b>🦁 Akaun Mama Lion</b><small>Jualan • Pembelian • Belanja • Petty Cash • Laporan</small></div>
-  <div class="row" id="hKananAk"><a href="../lionsafari/" style="color:#fff">Kembali ke Lion Safari V2</a><span id="userBox"></span></div>
+  <div class="row" id="hKananAk"><a href="../lionsafari/" id="keKaunterAk" style="color:#fff">Kembali ke Lion Safari V2</a><span id="userBox"></span></div>
 </header>
 <nav id="nav"></nav>
 <div id="pasangBox" class="noprint"></div>
@@ -108,12 +133,12 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-02';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-02';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-02';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-02';
-import { bukaPaparan, kemasModal, lepasModal, BAR_KEMBALI_CETAK } from '../paparan-lib.js?v=2026.11.17-02';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-02';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-03';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-03';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-03';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-03';
+import { bukaPaparan, kemasModal, lepasModal, BAR_KEMBALI_CETAK } from '../paparan-lib.js?v=2026.11.17-03';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-03';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -330,10 +355,11 @@ function renderShell(){
   renderCawangan();
   $('#userBox').innerHTML = `<span class="synctag">👤 ${esc(nama)}</span> <button class="small" id="btnOut">Log Keluar</button>`;
   $('#btnOut').onclick = () => { if(confirm('Log keluar?')) signOut(auth); };
-  $('#nav').innerHTML = (isOwner ? OWNER_TABS : TABS).map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t === 'Arahan' ? '💬 Arahan<span id="badgeArahan"></span>' : t === 'Queue Kaunter' ? '🚗 Queue kaunter<span id="badgeQueue"></span>' : t}</button>`).join('')
+  $('#nav').classList.toggle('kat', isOwner);
+  if(isOwner) $('#nav').innerHTML = navKategori(); else $('#nav').innerHTML = (isOwner ? OWNER_TABS : TABS).map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t === 'Arahan' ? '💬 Arahan<span id="badgeArahan"></span>' : t === 'Queue Kaunter' ? '🚗 Queue kaunter<span id="badgeQueue"></span>' : t}</button>`).join('')
 ;
   $('#bulanBar').innerHTML = `<label for="pilihBulan" style="margin:0">📅 Bulan:</label><input type="month" id="pilihBulan" value="${bulan}" style="width:auto;flex:1;max-width:220px;margin:0;padding:8px">`;
-  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; editing = null; renderShell(); });
+  if(isOwner) pasangNavKategori(); else $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; editing = null; renderShell(); });
   $('#pilihBulan').onchange = e => { if(e.target.value){ bulan = e.target.value; subscribeBulan(); refresh(); } };
   renderTab();
 }
@@ -538,7 +564,7 @@ function viewRingkasan(){
   const hariAda = harian.filter(x=>x>0).length;
   const terkini = entri.slice(0,6);
   const label = {jualan:'Jualan', pembelian:'Pembelian', belanja:'Belanja', petty:'Petty'};
-  return kadPelancar() + `<div class="grid">
+  return menuUtama() + kadPelancar() + `<div class="grid">
     ${bulanIni?`<div class="card"><div class="muted">Jualan hari ini</div><div class="metric">${RM(jualanHariIni)}</div></div>`:''}
     <div class="card"><div class="muted">Jualan ${fmtBulan(bulan)}</div><div class="metric pos">${RM(k.jumJualan)}</div><div class="muted">${k.kereta} kenderaan</div></div>
     <div class="card"><div class="muted">Pembelian + Belanja</div><div class="metric neg">${RM(k.jumBeli + k.jumBelanja)}</div></div>
@@ -1185,7 +1211,7 @@ function pasangPekerja(){
   if(pkMod === 'Laporan Duty' && MDA) MDA.pasang();
   $$('[data-pkpt]').forEach(b => b.onclick = () => { const p = senaraiPekerja().find(x => x.id === b.dataset.pkpt); if(!p) return; const h = hariPT(modulPK.st.hadirBulan.filter(x => x.stafId === p.id)); if(b.dataset.wa) kongsiWhatsApp(teksPT(p, h, bulan)); else cetak(htmlPT(p, h, bulan)); });
   if(MOD_KM.includes(pkMod)) modulPK.pasang(m => { pkMod = m; refresh(); });
-  $$('[data-pkmod]').forEach(b => b.onclick = () => { pkMod = b.dataset.pkmod; refresh(); });
+  $$('[data-pkmod]').forEach(b => b.onclick = () => { pkMod = b.dataset.pkmod; renderShell(); });
   $$('[data-pkbaru]').forEach(b => b.onclick = () => borangPekerja(null));
   $$('[data-pkurus]').forEach(b => b.onclick = () => borangPekerja(b.dataset.pkurus));
   if(pkMod === 'Senarai'){ if(lkBelumGabung === null && stafKaunter.length){ lkBelumGabung = []; semakGabung(); } else lukisGabung(); }
@@ -1346,14 +1372,89 @@ function csvGaji(){
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+
+// ================================================================
+// DASHBOARD BERKATEGORI WARNA (pemilik)
+// ================================================================
+const KATEGORI = [
+  {id:'kew', nama:'💰 Kewangan & Akaun', pendek:'💰 Kewangan', w:'biru', item:[
+    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Import', i:'⬆️'}]},
+  {id:'pek', nama:'👷 Pekerja', pendek:'👷 Pekerja', w:'jingga', item:[
+    {t:'Pekerja', pk:'Senarai', i:'👥', l:'Senarai & urus'}, {t:'Arahan', i:'💬', l:'Arahan & tugasan', b:'badgeArahan'}, {t:'Pekerja', pk:'Gaji Bulanan', i:'💰', l:'Gaji'},
+    {t:'Pekerja', pk:'Kehadiran', i:'🕘', l:'Kehadiran'}, {t:'Pekerja', pk:'Roster', i:'📅', l:'Roster'}, {t:'Pekerja', pk:'Permohonan', i:'📝', l:'Permohonan'},
+    {t:'Pekerja', pk:'Laporan Duty', i:'🗒', l:'Laporan Duty'}, {t:'Pekerja', pk:'Info Pekerja', i:'📢', l:'Info & SOP'}, {t:'Pekerja', pk:'Kadar Komisen', i:'🏷', l:'Komisen'},
+    {t:'Pekerja', pk:'Log Pengelola', i:'📜', l:'Log pengelola'}, {live:'pekerja', i:'📲', l:'Masuk Apps Pekerja'}]},
+  {id:'ops', nama:'🦁 Operasi Kaunter', pendek:'🦁 Operasi', w:'hijau', item:[
+    {t:'Queue Kaunter', i:'🚗', l:'Queue kaunter', b:'badgeQueue'}, {live:'kaunter', i:'🦁', l:'Buka apps kaunter'}, {t:'Tetapan Apps', tk:'Kaunter', i:'⚙️', l:'Tetapan kaunter'}]},
+  {id:'pel', nama:'⭐ Pelanggan & Pemasaran', pendek:'⭐ Pelanggan', w:'emas', item:[
+    {t:'Pelanggan', i:'⭐', l:'Safari Members (ahli)'}, {t:'Promosi', i:'📣'}, {live:'pelanggan', i:'👁', l:'Buka Apps Pelanggan'}, {t:'Tetapan Apps', tk:'Pelanggan', i:'⚙️', l:'Tetapan pelanggan'}]},
+  {id:'tet', nama:'⚙️ Tetapan Apps', pendek:'⚙️ Tetapan', w:'kelabu', item:[
+    {t:'Tetapan Apps', tk:'Kaunter', i:'🦁', l:'Kaunter'}, {t:'Tetapan Apps', tk:'Pekerja', i:'👷', l:'Apps Pekerja'}, {t:'Tetapan Apps', tk:'Pelanggan', i:'⭐', l:'Apps Pelanggan'}]}];
+const itemAktif = x => x.t === tab && (!x.pk || x.pk === pkMod || (x.pk === 'Senarai' && ![...MOD_KM, ...MOD_EXTRA, 'Gaji Bulanan', 'Rekod Bulan Ini'].includes(pkMod))) && (!x.tk || x.tk === tkSeg);
+const katSemasa = () => tab === 'Ringkasan' ? null : (KATEGORI.find(k => k.item.some(itemAktif)) || KATEGORI.find(k => k.item.some(x => x.t === tab)));
+const labelItem = x => `${x.i} ${esc(x.l || x.t)}${x.b ? `<span id="${x.b}"></span>` : ''}`;
+function navKategori(){
+  const k = katSemasa();
+  return `<div class="navkat"><button class="kat-hijau ${tab === 'Ringkasan' ? 'active' : ''}" data-kat="__utama">🏠 Ringkasan</button>${KATEGORI.map(c => `<button class="kat-${c.w} ${k?.id === c.id ? 'active' : ''}" data-kat="${c.id}">${c.pendek}</button>`).join('')}</div>
+    ${k ? `<div class="navsub kat-${k.w}">${k.item.map((x, j) => `<button class="${itemAktif(x) ? 'active' : ''}" data-katitem="${k.id}|${j}">${labelItem(x)}</button>`).join('')}</div>` : ''}`;
+}
+function pergiItem(x){
+  if(x.live) return bukaLive(x.live);
+  tab = x.t; if(x.pk) pkMod = x.pk; if(x.tk) tkSeg = x.tk; editing = null; renderShell(); window.scrollTo(0,0);
+}
+function pasangNavKategori(){
+  $$('[data-kat]').forEach(b => b.onclick = () => { if(b.dataset.kat === '__utama'){ tab = 'Ringkasan'; editing = null; renderShell(); return; }
+    const k = KATEGORI.find(c => c.id === b.dataset.kat); pergiItem(k.item.find(x => !x.live)); });
+  $$('[data-katitem]').forEach(b => b.onclick = () => { const [kid, j] = b.dataset.katitem.split('|'); pergiItem(KATEGORI.find(c => c.id === kid).item[+j]); });
+}
+function menuUtama(){
+  return `<div class="noprint" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:12px">${KATEGORI.filter(k => k.id !== 'tet').map(k => `<div class="menukat kat-${k.w}"><h3>${k.nama}</h3>
+    <div class="menutiles">${k.item.map((x, j) => `<button data-katitem="${k.id}|${j}"><i>${x.i}</i><span>${esc(x.l || x.t)}${x.b === 'badgeQueue' ? `<span class="badgeQ2"></span>` : ''}</span></button>`).join('')}</div></div>`).join('')}</div>`;
+}
+
+// ================================================================
+// APPS LIVE dalam Akaun (← Kembali ke Akaun) — pemilik guna akaun & PIN sendiri
+// ================================================================
+const APPS_LIVE = {kaunter: {url: '../lionsafari/', nama: '🦁 Lion Safari V2 — Kaunter'}, pekerja: {url: '../pekerja/?admin=1', nama: '👷 Apps Pekerja (Admin)'}, pelanggan: {url: '../pelanggan/?pelawat=1', nama: '⭐ Apps Pelanggan'}};
+let liveSaiz = (() => { try{ return localStorage.getItem('ak_liveSaiz') || 'telefon'; }catch(_){ return 'telefon'; } })();
+function bukaLive(app, {lihat = '', tajuk = ''} = {}){
+  const A = APPS_LIVE[app]; if(!A) return;
+  const url = app === 'pelanggan' && lihat ? `../pelanggan/?lihat=${encodeURIComponent(lihat)}` : A.url;
+  $('#liveAk')?.remove();
+  const w = document.createElement('div'); w.id = 'liveAk';
+  const lebar = {telefon: '400px', tablet: '820px', penuh: '100%'};
+  w.innerHTML = `<div class="bar"><button id="lvTutup" style="background:#fff;color:#14532d">← Kembali ke Akaun</button><b>${esc(tajuk || A.nama)}</b>
+    ${Object.entries({telefon: '📱', tablet: '📲', penuh: '🖥'}).map(([k, ik]) => `<button data-lvsaiz="${k}" class="${k === liveSaiz ? 'on' : ''}" title="${k}">${ik}</button>`).join('')}
+    <button id="lvMuat" title="Muat semula">🔄</button><a id="lvTab" href="${url}" target="_blank" rel="noopener" style="color:#fff;padding:0 8px;font-weight:800;text-decoration:none" title="Buka dalam tab baru">↗</a></div>
+    <div class="bingkai"><iframe id="lvFrame" src="${url}" title="${esc(A.nama)}" allow="camera; geolocation; clipboard-read; clipboard-write; fullscreen"></iframe></div>`;
+  document.body.appendChild(w); document.body.style.overflow = 'hidden';
+  const saiz = () => { $('#lvFrame').style.width = lebar[liveSaiz]; $('#lvFrame').style.maxWidth = '100%'; $$('[data-lvsaiz]').forEach(b => b.classList.toggle('on', b.dataset.lvsaiz === liveSaiz)); };
+  saiz();
+  $$('[data-lvsaiz]').forEach(b => b.onclick = () => { liveSaiz = b.dataset.lvsaiz; try{ localStorage.setItem('ak_liveSaiz', liveSaiz); }catch(_){} saiz(); });
+  $('#lvMuat').onclick = () => { $('#lvFrame').src = $('#lvFrame').src; };
+  let ditutup = false;
+  const tutup = (dariBack = false) => { if(ditutup) return; ditutup = true; window.removeEventListener('popstate', onPop); window.removeEventListener('message', onMsg); w.remove(); document.body.style.overflow = ''; if(!dariBack && history.state?.liveAk) history.back(); refresh(); };
+  const onPop = () => { if(!history.state?.liveAk) tutup(true); };
+  const onMsg = e => { if(e.origin === location.origin && e.data === 'tutupLiveAk') tutup(); };
+  try{ history.pushState({liveAk: 1}, ''); }catch(_){}
+  window.addEventListener('popstate', onPop); window.addEventListener('message', onMsg);
+  $('#lvTutup').onclick = () => tutup();
+}
+
 // ================================================================
 // PELANCAR APPS (Ringkasan)
 // ================================================================
 function kadPelancar(){
-  const L = [['../lionsafari/','🦁','Lion Safari V2','Kaunter: order, queue, bayaran'],['../pekerja/','👷','Apps Pekerja','Kehadiran, order MO, pengelola'],['../pelanggan/','⭐','Safari Members','Apps pelanggan: kad & promosi']];
-  return `<div class="card noprint"><div class="section-title"><h3>🚀 Semua apps Mama Lion & Lion King</h3><button class="small" data-ketab="Tetapan Apps">⚙️ Tetapan Apps</button></div>
-    <div class="grid">${L.map(([u,i,n,k]) => `<a href="${u}" target="_blank" rel="noopener" class="card" style="text-decoration:none;color:inherit;box-shadow:none;border:1px solid #e5e7eb;margin:0"><div style="font-size:26px">${i}</div><b>${n}</b><div class="muted">${k}</div></a>`).join('')}</div></div>`;
+  const L = [['kaunter','🦁','Lion Safari V2','Kaunter: order, queue, bayaran','Kaunter'],['pekerja','👷','Apps Pekerja','Kehadiran, order MO, pengelola','Pekerja'],['pelanggan','⭐','Safari Members','Apps pelanggan: kad & promosi','Pelanggan']];
+  return `<div class="card noprint"><div class="section-title"><h3>🚀 Semua apps Mama Lion & Lion King</h3><span class="muted" style="font-size:12px">Tekan kad untuk tetapan · 👁 untuk lihat live</span></div>
+    <div class="grid">${L.map(([a,i,n,k,seg]) => `<div class="appkad" data-appkad="${seg}" role="button" tabindex="0"><div style="font-size:26px">${i}</div><b>${n}</b><div class="muted">${k}</div>
+      <div class="row" style="margin-top:4px"><button class="primary small" data-live="${a}">👁 ${a === 'pekerja' ? 'Masuk (ID & PIN)' : 'Lihat live'}</button><button class="small" data-appkad="${seg}">⚙️ Tetapan</button></div></div>`).join('')}</div></div>`;
 }
+document.addEventListener('click', e => {
+  const lv = e.target.closest?.('[data-live]'); if(lv){ e.stopPropagation(); bukaLive(lv.dataset.live); return; }
+  const ak = e.target.closest?.('[data-appkad]'); if(ak){ tab = 'Tetapan Apps'; tkSeg = ak.dataset.appkad; editing = null; renderShell(); window.scrollTo(0,0); return; }
+  const ki = e.target.closest?.('main [data-katitem]'); if(ki){ const [kid, j] = ki.dataset.katitem.split('|'); pergiItem(KATEGORI.find(c => c.id === kid).item[+j]); return; }
+});
 document.addEventListener('click', e => { const b = e.target.closest?.('[data-ketab]'); if(b){ tab = b.dataset.ketab; if(b.dataset.tkseg) tkSeg = b.dataset.tkseg; editing = null; renderShell(); window.scrollTo(0,0); } });
 
 // ================================================================
@@ -1361,9 +1462,9 @@ document.addEventListener('click', e => { const b = e.target.closest?.('[data-ke
 // order.diskaunBeri = {amaun, sebab, oleh, olehId, sumber:'akaun', masa} → terus aktif di skrin bayaran kaunter
 // ================================================================
 const RMk = n => 'RM' + (+n || 0).toFixed((+n || 0) % 1 ? 2 : 0);
-function badgeQueue(){ const b = document.getElementById('badgeQueue'); if(!b) return;
+function badgeQueue(){ const b = document.getElementById('badgeQueue') || {};
   const n = CAW.reduce((t, c) => t + (bayarPelAk[c.id] || []).length + (queueAk[c.id] || []).filter(o => o.diskaunMinta && !o.diskaunBeri).length, 0);
-  b.textContent = n ? ` (${n})` : ''; }
+  b.textContent = n ? ` (${n})` : ''; document.querySelectorAll('.badgeQ2').forEach(x => x.textContent = n ? ` 🔴${n}` : ''); }
 function viewQueueAk(){
   const q = queueAk[cawangan] || [], bp = bayarPelAk[cawangan] || [];
   const lain = CAW.filter(c => c.id !== cawangan).map(c => { const n = (bayarPelAk[c.id] || []).length + (queueAk[c.id] || []).filter(o => o.diskaunMinta && !o.diskaunBeri).length; return n ? `<button class="small" data-qcaw="${c.id}">⚠ ${esc(c.nama)}: ${n} perlu perhatian</button>` : ''; }).join('');
@@ -1613,7 +1714,7 @@ function viewTetapanApps(){
       <div class="card"><p class="muted" style="margin:0">Pekerja dengan kuasa 🏷 juga boleh ubah harga di kaunter (Lion Safari V2 → Tetapan). Petty cash, float tunai & had diskaun kekal di kaunter V2 (Admin).</p></div>`;
 }
 function pasangTetapanApps(){
-  $$('[data-tkseg]').forEach(b => b.onclick = () => { tkSeg = b.dataset.tkseg; refresh(); });
+  $$('[data-tkseg]').forEach(b => b.onclick = () => { tkSeg = b.dataset.tkseg; renderShell(); });
   if(tkSeg === 'Pekerja'){ modulPK.pasang(() => {}); pasangStesen(); }
   $$('[data-tkubah]').forEach(b => b.onclick = () => borangSenaraiKaunter(b.dataset.tkubah));
   if($('#tkKedai')) $('#tkKedai').onclick = borangKedai;
@@ -2086,7 +2187,7 @@ function urusAhli(id){
     <label>Catatan pemilik</label><input id="aCat" value="${esc(a.catatanPemilik||'')}">
     <button class="primary" style="width:100%;padding:12px" id="aSimpan">SIMPAN</button>
     <div class="row" style="margin-top:10px"><button class="small" id="aTambahCop">+1 cop manual</button><button class="small" id="aTambahFW">+1 Free Wash manual</button>
-      <button class="small" id="aSalin">📋 Salin pautan kad</button></div>`);
+      <button class="small" id="aSalin">📋 Salin pautan kad</button><button class="small" id="aLihat">👁 Lihat kad dalam Apps Pelanggan</button></div>`);
   $('#mTutup').onclick = tutupModal;
   const simpan = async (d, msg) => { try{ await updateDoc(doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); Object.assign(a, d); toast(msg); tutupModal(); refresh(); }catch(e){ toast('⚠ ' + (e.code || e.message)); } };
   $('#aSimpan').onclick = () => simpan({nama: val('#aNama') || a.nama, plat: val('#aPlat').split(',').map(normPlat).filter(Boolean), catatanPemilik: val('#aCat')}, '✅ Disimpan');
@@ -2097,6 +2198,7 @@ function urusAhli(id){
     const t = Date.now();
     simpan({freeWash: [...(a.freeWash||[]), {id: 'fwm' + t.toString(36), t, tamat: t + KAD.tempohFreeWashHari*864e5, sebab: 'Manual: ' + sebab, cawangan, guna: null}],
       logManual: [...(a.logManual||[]), {t, oleh: nama, apa: '+1 Free Wash', sebab}]}, '✅ Free Wash ditambah'); };
+  $('#aLihat').onclick = () => { tutupModal(); bukaLive('pelanggan', {lihat: a.id, tajuk: `⭐ Kad ${a.kod} — ${a.nama || ''} (lihat sahaja)`}); };
   $('#aSalin').onclick = async () => { try{ await navigator.clipboard.writeText(pautanKad(a.id)); toast('📋 Pautan kad disalin'); }catch(_){ prompt('Salin pautan ini:', pautanKad(a.id)); } };
 }
 function csvAhli(){

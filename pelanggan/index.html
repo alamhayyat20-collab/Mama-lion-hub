@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-02">
+<meta name="app-versi" content="2026.11.17-03">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-02';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-03';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-02';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-02';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-03';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-03';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -263,6 +263,13 @@ const tetapan = {}, gambarPakej = {};
 const m = location.hash.match(/k=([A-Za-z0-9]{20,40})/);
 if(m){ LS.set('sm_token', m[1]); history.replaceState(null, '', location.pathname); }
 token = LS.get('sm_token');
+// Dibuka dari Apps Akaun: ?pelawat=1 (lihat sebagai orang ramai) atau ?lihat=TOKEN (lihat kad ahli, tidak disimpan, tiada perubahan)
+const QS0 = new URLSearchParams(location.search);
+const LIHAT = /^[A-Za-z0-9]{10,40}$/.test(QS0.get('lihat') || '') ? QS0.get('lihat') : '';
+if(LIHAT) token = LIHAT; else if(QS0.get('pelawat')) token = null;
+const MOD_ADMIN = !!(LIHAT || QS0.get('pelawat'));
+const lihatSahaja = () => { if(!LIHAT) return false; toast('👁 Mod lihat (Admin) — tiada perubahan disimpan'); return true; };
+const _LSset = LS.set; LS.set = (k, v) => { if(MOD_ADMIN && (k === 'sm_token' || k === 'sm_bayar')) return; _LSset(k, v); };
 // Pautan / QR umum: ?c=mama-lion|lion-king  &buka=bayar|daftar|masuk
 const QS = new URLSearchParams(location.search), bukaQS = QS.get('buka');
 if(['mama-lion', 'lion-king'].includes(QS.get('c'))){ cawPakej = QS.get('c'); }
@@ -287,6 +294,7 @@ function renderNav(){
 
 function render(){
   renderNav();
+  if(MOD_ADMIN) requestAnimationFrame(() => { if(!$('#bannerAdmin')) $('#app').insertAdjacentHTML('afterbegin', `<div id="bannerAdmin" style="background:#fef3c7;border:2px solid #d7b25a;border-radius:12px;padding:8px 12px;margin-top:10px;font-size:13px"><b>🛡 Mod Admin</b> — ${LIHAT ? `lihat kad ahli${ahli ? ' ' + esc(ahli.kod) : ''} (tiada perubahan disimpan)` : 'paparan seperti orang ramai'}</div>`); });
   if(!ahli && (tab === 'Kad' || tab === 'Profil' || tab === 'Utama' || tab === 'Tempah')) return viewAluan();
   ({Bayar: viewBayar, Tempah: viewTempah, Utama: viewUtama, Kad: viewKad, Promosi: viewPromosi, Pakej: viewPakej, Profil: viewProfil, Daftar: viewDaftar})[tab]?.();
 }
@@ -614,7 +622,7 @@ function viewBayar(){
   $$('[data-byplat]').forEach(b => b.onclick = () => { $('#byPlatIn').value = b.dataset.byplat; cari(); });
   $$('[data-bykaedah]').forEach(b => b.onclick = () => { byKaedah = b.dataset.bykaedah; render(); });
   if($('#byFail')) $('#byFail').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ byBukti = await gambarBukti(f); $('#byPrev').src = byBukti; $('#byPrev').style.display = 'block'; }catch(_){ toast('Gagal baca gambar'); } };
-  if($('#byHantarBtn')) $('#byHantarBtn').onclick = async () => {
+  if($('#byHantarBtn')) $('#byHantarBtn').onclick = async () => { if(lihatSahaja()) return;
     if(!byBukti) return toast('Sila muat naik gambar resit bayaran');
     const d = byData; $('#byHantarBtn').disabled = true; $('#byHantarBtn').textContent = 'Menghantar…';
     try{
@@ -743,7 +751,7 @@ function viewTempah(){
   $$('[data-tpp]').forEach(b => b.onclick = () => { tpDraf.pakej = b.dataset.tpp; render(); });
   $$('[data-tpa]').forEach(b => b.onclick = () => { const id = b.dataset.tpa; tpDraf.addon.has(id) ? tpDraf.addon.delete(id) : tpDraf.addon.add(id); render(); });
   if($('#tpPlat')) $('#tpPlat').onchange = e => { tpDraf.plat = e.target.value; };
-  if($('#tpHantar')) $('#tpHantar').onclick = async () => {
+  if($('#tpHantar')) $('#tpHantar').onclick = async () => { if(lihatSahaja()) return;
     if(!tpDraf.plat) return toast('Sila tambah kenderaan di Profil dahulu.');
     if(Object.values(tempahanSaya).some(t => t && t.status === 'baru' && normPlat(t.plat) === normPlat(tpDraf.plat))) return toast('Tempahan untuk kenderaan ini masih menunggu kaunter.');
     $('#tpHantar').disabled = true; $('#tpHantar').textContent = 'Menghantar…';
@@ -781,13 +789,13 @@ function viewProfil(){
     <div class="panel"><h3>Tukar telefon?</h3><div class="muted">Simpan pautan kad ini dan bukanya di telefon baru. Jangan kongsi dengan orang lain.</div>
       <button class="btn btn-zamrud" style="margin-top:12px;padding:12px" id="pSalin">Salin pautan kad saya</button></div>
     <button class="btn btn-garis" style="margin-top:14px" id="pKeluar">Keluar dari kad di telefon ini</button>`;
-  $('#pFoto').onchange = async e => { const f = e.target.files[0]; if(!f) return;
+  $('#pFoto').onchange = async e => { const f = e.target.files[0]; if(!f || lihatSahaja()) return;
     try{ const foto = await gambarProfil(f); await updateDoc(doc(db, 'ahli', token), {foto, dikemaskini: Date.now()}); toast('Gambar profil disimpan.'); }
     catch(err){ console.error(err); toast('Gambar tidak dapat disimpan.'); } };
   const lukis = () => $$('[data-buang]').forEach(b => b.onclick = () => { b.closest('.kenderaan-baris').remove(); });
   lukis();
   $('#pTambahKend').onclick = () => { $('#pKend').insertAdjacentHTML('beforeend', barisKenderaan({plat:'', model:''}, Date.now())); lukis(); };
-  $('#fProfil').onsubmit = async e => {
+  $('#fProfil').onsubmit = async e => { if(lihatSahaja()){ e.preventDefault(); return; }
     e.preventDefault();
     const kenderaan = $$('#pKend .kenderaan-baris').map(r => ({plat: paparPlat(r.querySelector('[data-p]').value), model: r.querySelector('[data-m]').value.trim()})).filter(k => normPlat(k.plat));
     if(!val('#pNama')) return toast('Sila isi nama.');
@@ -800,7 +808,7 @@ function viewProfil(){
     }catch(err){ console.error(err); toast('Profil tidak dapat disimpan. Semak sambungan internet.'); }
   };
   $('#pSalin').onclick = async () => { const u = new URL('#k=' + token, location.href.split('#')[0]).href; try{ await navigator.clipboard.writeText(u); toast('Pautan kad disalin.'); }catch(_){ prompt('Salin pautan kad anda:', u); } };
-  $('#pKeluar').onclick = () => { if(!confirm('Keluar dari kad di telefon ini? Anda boleh log masuk semula dengan no. telefon & no. kenderaan.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
+  $('#pKeluar').onclick = () => { if(lihatSahaja()) return; if(!confirm('Keluar dari kad di telefon ini? Anda boleh log masuk semula dengan no. telefon & no. kenderaan.')) return; LS.set('sm_token', null); token = null; ahli = null; if(unsubAhli) unsubAhli(); tab = 'Utama'; render(); };
 }
 async function gambarProfil(fail){
   const img = await new Promise((ok, gagal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = gagal; i.src = URL.createObjectURL(fail); });
