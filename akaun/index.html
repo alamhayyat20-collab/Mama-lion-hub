@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-12">
+<meta name="app-versi" content="2026.11.16-13">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -108,11 +108,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-12';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-12';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-12';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-12';
-import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK } from '../safari-lib.js?v=2026.11.16-12';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-13';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.16-13';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-13';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.16-13';
+import { keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-13';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1537,6 +1537,7 @@ function viewTetapanApps(){
   const fw = (T.pakej || []).find(p => p.id === T.pakejFreeWash);
   return head + `<div class="card" style="background:#fffbeb;box-shadow:none"><div class="section-title"><h3>📋 Senarai harga rasmi (Price List)</h3><button class="primary" id="tkRasmi">Muat ke ${esc(namaCawangan())}</button></div>
       <p class="muted" style="margin:0">${HARGA_RASMI.pakej.length} pakej & ${HARGA_RASMI.addon.length} add-on dengan harga ikut kenderaan (Sedan, SUV, MPV, 4x4, DXL) — Promo A/B, Premium Wash, Water Coating, Polish, Seat / Deep Cleaning, Enjin, Watermark Glass, Polish Lampu. Pakej & add-on sedia ada cawangan ini akan diganti. Kadar komisen perlu ditetapkan semula.</p></div>` + Object.entries(JENIS_TK).map(([j, J]) => `<div class="card"><div class="section-title"><h3>${J.ikon} ${J.label}</h3><button class="primary" data-tkubah="${j}">Ubah</button></div><div>${ringkas(j)}</div></div>`).join('')
+    + kadTerimaBayar(T)
     + `<div class="card"><div class="section-title"><h3>🏪 Maklumat kedai & Safari Members</h3><button class="primary" id="tkKedai">Ubah</button></div>
       <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
       <div class="card"><p class="muted" style="margin:0">Pekerja dengan kuasa 🏷 juga boleh ubah harga di kaunter (Lion Safari V2 → Tetapan). Petty cash, float tunai & had diskaun kekal di kaunter V2 (Admin).</p></div>`;
@@ -1546,6 +1547,14 @@ function pasangTetapanApps(){
   if(tkSeg === 'Pekerja'){ modulPK.pasang(() => {}); pasangStesen(); }
   $$('[data-tkubah]').forEach(b => b.onclick = () => borangSenaraiKaunter(b.dataset.tkubah));
   if($('#tkKedai')) $('#tkKedai').onclick = borangKedai;
+  if($('#tbUbah')) $('#tbUbah').onclick = borangTerimaBayar;
+  if($('#tbCetak')) $('#tbCetak').onclick = cetakPosterBayar;
+  if($('#tbSalinCaw')) $('#tbSalinCaw').onclick = async () => {
+    const lain = CAW.find(x => x.id !== cawangan); if(!lain) return;
+    if(!confirm(`Guna akaun penerima & QR yang sama untuk ${lain.nama}? (Tetapan ${lain.nama} sedia ada akan diganti)`)) return;
+    try{ await setDoc(doc(store, 'lionsafari', lain.id, 'tetapan', 'umum'), {terimaBayaran: tetapanKaunter.terimaBayaran, dikemaskiniOleh: nama}, {merge: true}); toast(`✅ Disalin ke ${lain.nama}`); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  pasangTerimaBayar(document, toast);
   if($('#tkRasmi')) $('#tkRasmi').onclick = async () => {
     const dua = confirm(`Muat senarai harga rasmi ke KEDUA-DUA cawangan (Mama Lion & Lion King)?\n\nOK = kedua-dua cawangan · Cancel = ${namaCawangan()} sahaja`);
     if(!confirm(`Pakej, add-on & jenis kenderaan sedia ada di ${dua ? 'kedua-dua cawangan' : namaCawangan()} akan DIGANTI dengan senarai harga rasmi. Teruskan?`)) return;
@@ -1554,6 +1563,60 @@ function pasangTetapanApps(){
     try{ for(const c of (dua ? CAW.map(x => x.id) : [cawangan])) await setDoc(doc(store, 'lionsafari', c, 'tetapan', 'umum'), d, {merge: true}); toast('✅ Senarai harga rasmi dimuat — terus digunakan di kaunter, Apps Pekerja & Apps Pelanggan'); }
     catch(e){ toast('⚠ ' + (e.code || e.message)); }
   };
+}
+
+// ---------- 💳 Akaun penerima bayaran (no. akaun & QR) — dipapar di kaunter & Apps Pelanggan ----------
+function kadTerimaBayar(T){
+  const B = T.terimaBayaran || {};
+  return `<div class="card"><div class="section-title"><h3>💳 Akaun penerima bayaran — ${esc(namaCawangan())}</h3><div class="row"><button class="primary" id="tbUbah">${adaTerimaBayar(B) ? 'Ubah' : '+ Tetapkan'}</button>
+      ${adaTerimaBayar(B) ? `<button class="small" id="tbCetak">🖨 Cetak poster kaunter</button><button class="small" id="tbSalinCaw">↔ Guna juga di ${esc(CAW.find(x => x.id !== cawangan)?.nama || 'cawangan lain')}</button>` : ''}</div></div>
+    <p class="muted" style="margin-top:0">No. akaun bank & QR DuitNow ini dipapar kepada pelanggan di kaunter (pilih <b>QR / eWallet</b> atau <b>Transfer</b> semasa bayaran)${B.tunjukPelanggan !== false ? ' dan dalam <b>Apps Pelanggan</b>' : ''}.</p>
+    ${adaTerimaBayar(B) ? `<div style="max-width:340px">${htmlTerimaBayar(B, {namaKedai: T.namaKedai || namaCawangan(), fail: 'QR-' + cawangan})}</div>` : '<div class="notice">Belum ditetapkan. Tekan <b>+ Tetapkan</b> dan muat naik gambar QR DuitNow cawangan ini.</div>'}</div>`;
+}
+async function gambarQR(fail){
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(fail); });
+  const s = Math.min(1, 900 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.9);
+}
+function borangTerimaBayar(){
+  const B = tetapanKaunter.terimaBayaran || {}; let qr = B.qr || '';
+  bukaModal(`<div class="section-title"><h3>💳 Akaun penerima — ${esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
+    <label>Bank</label><input id="tbBank" list="tbBankL" value="${esc(B.bank || '')}" placeholder="cth: Maybank"><datalist id="tbBankL">${BANK_MY.map(b => `<option value="${esc(b)}">`).join('')}</datalist>
+    <label>No. akaun</label><input id="tbNo" inputmode="numeric" value="${esc(B.noAkaun || '')}" placeholder="cth: 5621 2345 6789">
+    <label>Nama pemegang akaun</label><input id="tbNama" value="${esc(B.namaAkaun || '')}" placeholder="cth: MAMA LION ENTERPRISE">
+    <label>Gambar QR DuitNow / eWallet</label><input id="tbQr" type="file" accept="image/*">
+    <div class="muted" style="font-size:12px">Muat naik gambar QR asal dari bank (screenshot atau gambar standee). Pastikan QR jelas & tidak terpotong.</div>
+    <div class="row" style="align-items:center;gap:8px"><img id="tbPrev" src="${qr}" style="max-width:180px;border-radius:10px;border:1px solid #e2e8f0;display:${qr ? 'block' : 'none'}">${qr ? '<button class="small danger" id="tbBuangQr">Buang QR</button>' : ''}</div>
+    <label>Label QR</label><input id="tbLabel" value="${esc(B.labelQr || 'Imbas DuitNow QR')}">
+    <label>Nota kepada pelanggan (pilihan)</label><input id="tbNota" value="${esc(B.nota || '')}" placeholder="cth: Tunjukkan resit transfer kepada cashier">
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="tbPelanggan" ${B.tunjukPelanggan !== false ? 'checked' : ''} style="width:20px;height:20px;margin:0"> Paparkan dalam Apps Pelanggan</label>
+    <button class="primary" style="width:100%;padding:14px;margin-top:10px" id="tbSimpan">SIMPAN</button>`);
+  $('#mTutup').onclick = tutupModal;
+  $('#tbQr').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ qr = await gambarQR(f); $('#tbPrev').src = qr; $('#tbPrev').style.display = 'block'; }catch(_){ toast('Gagal baca gambar'); } };
+  if($('#tbBuangQr')) $('#tbBuangQr').onclick = () => { qr = ''; $('#tbPrev').style.display = 'none'; $('#tbBuangQr').remove(); };
+  $('#tbSimpan').onclick = async () => {
+    const d = {bank: val('#tbBank'), noAkaun: val('#tbNo'), namaAkaun: val('#tbNama'), qr, labelQr: val('#tbLabel'), nota: val('#tbNota'), tunjukPelanggan: $('#tbPelanggan').checked, dikemaskini: Date.now(), oleh: nama};
+    if(!d.qr && !d.noAkaun) return toast('Isi no. akaun atau muat naik QR');
+    if(d.noAkaun && (!d.bank || !d.namaAkaun)) return toast('Isi nama bank & nama pemegang akaun');
+    $('#tbSimpan').disabled = true;
+    try{ await setDoc(doc(store, 'lionsafari', cawangan, 'tetapan', 'umum'), {terimaBayaran: d, dikemaskiniOleh: nama}, {merge: true}); tutupModal(); toast(`✅ Akaun penerima ${namaCawangan()} disimpan — terus dipapar di kaunter & Apps Pelanggan`); }
+    catch(e){ $('#tbSimpan').disabled = false; toast('⚠ ' + (e.code || e.message)); }
+  };
+}
+function cetakPosterBayar(){
+  const T = tetapanKaunter, B = T.terimaBayaran || {}, logo = new URL(cawangan === 'lion-king' ? 'logo-lionking.jpg' : 'logo-mamalion.jpg', location.href).href;
+  const w = window.open('', '_blank'); if(!w) return toast('Benarkan pop-up untuk cetak');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bayaran ${esc(namaCawangan())}</title><style>@page{size:A5;margin:10mm}body{font-family:system-ui,sans-serif;text-align:center;color:#0f172a;margin:0}
+    h1{color:#14532d;margin:6px 0 2px;font-size:26px}.qr{width:78%;max-width:340px;border:3px solid #14532d;border-radius:14px;padding:6px;margin:10px auto;display:block}
+    .no{font-size:28px;font-weight:800;letter-spacing:2px;margin:4px 0}.k{color:#475569}.box{border-top:2px dashed #94a3b8;margin-top:12px;padding-top:10px}</style></head><body>
+    <img src="${logo}" style="height:70px" onerror="this.remove()"><h1>${esc(T.namaKedai || namaCawangan())}</h1><div class="k">Bayaran tanpa tunai</div>
+    ${B.qr ? `<div style="font-weight:700;margin-top:10px">${esc(B.labelQr || 'Imbas DuitNow QR')}</div><img class="qr" src="${B.qr}">` : ''}
+    ${B.noAkaun ? `<div class="box"><div class="k">🏦 ${esc(B.bank || '')}</div><div class="no">${esc(B.noAkaun)}</div><div>${esc(B.namaAkaun || '')}</div></div>` : ''}
+    ${B.nota ? `<p class="k">${esc(B.nota)}</p>` : '<p class="k">Sila tunjukkan resit bayaran kepada cashier. Terima kasih!</p>'}
+    <script>window.onload=()=>setTimeout(()=>print(),400)<\/script></body></html>`);
+  w.document.close();
 }
 // ---------- Stesen punch card (Dry Bay, Washing Bay, Office, Kaunter…) ----------
 // kakitangan/PUSAT/tetapan/umum.stesen = [{id, nama, c, kunci}] — QR dicetak & ditampal di setiap stesen

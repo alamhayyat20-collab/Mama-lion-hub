@@ -183,3 +183,35 @@ export function dataStatus(o, c, tambah = {}){
 // Gambar asal servis (ilustrasi Mama Lion) — digunakan jika kaunter belum muat naik gambar sendiri
 const GAMBAR_ADA = new Set(['a-enjin', 'a-enjin-detail', 'a-fogging-promo', 'a-glass-depan', 'a-glass-full', 'a-glass-sisi', 'a-interior-wax', 'a-lampu-1b', 'a-lampu-1d', 'a-lampu-2b', 'a-lampu-2d', 'a-silicone', 'a-vacuum', 'a-water-coating', 'a-waterwax', 'a-wax-tyre', 'p-cuci-luar', 'p-enjin', 'p-enjin-detail', 'p-fogging', 'p-interior-wax', 'p-ld-fogging', 'p-ld-silicone', 'p-ld-vacuum', 'p-ld-waterwax', 'p-ld-ww-fog', 'p-polish', 'p-premium', 'p-promo-a', 'p-promo-b', 'p-seat-1', 'p-seat-2', 'p-vacuum', 'p-water-coating']);
 export const gambarAsal = id => GAMBAR_ADA.has(id) ? new URL(`./gambar-servis/${id}.jpg?f=3`, import.meta.url).href : '';
+
+// ---------- Akaun penerima bayaran (QR DuitNow & bank) ----------
+// lionsafari/{cawangan}/tetapan/umum.terimaBayaran = {bank, noAkaun, namaAkaun, qr (dataURL), labelQr, nota, tunjukPelanggan}
+// Ditetapkan di Apps Akaun → Tetapan Apps → Kaunter. Dipapar di kaunter (QR / Transfer) & Apps Pelanggan.
+export const BANK_MY = ['Maybank', 'CIMB Bank', 'Public Bank', 'RHB Bank', 'Hong Leong Bank', 'AmBank', 'Bank Islam', 'Bank Rakyat', 'BSN', 'Affin Bank', 'Alliance Bank', 'Bank Muamalat', 'OCBC Bank', 'UOB', 'HSBC', 'Standard Chartered', 'Agrobank', 'MBSB Bank'];
+const esc_ = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const adaTerimaBayar = B => !!(B && (B.qr || B.noAkaun));
+// mod: 'qr' | 'transfer' | 'semua'; jumlah: papar amaun perlu dibayar (pilihan)
+export function htmlTerimaBayar(B, {mod = 'semua', jumlah = null, namaKedai = '', fail = 'QR-bayaran'} = {}){
+  if(!adaTerimaBayar(B)) return mod === 'semua' ? '' : `<div style="padding:10px;border-radius:12px;background:#fef3c7;color:#92400e;font-size:13px;margin-top:8px">Akaun penerima belum ditetapkan — Admin: Apps Akaun → Tetapan Apps → Kaunter → 💳 Akaun penerima bayaran.</div>`;
+  const qr = (mod !== 'transfer') && B.qr, bank = (mod !== 'qr' || !B.qr) && B.noAkaun;
+  const noBersih = String(B.noAkaun || '').replace(/\D/g, '');
+  return `<div class="terimabayar" style="border:2px solid #14532d;border-radius:16px;padding:12px;margin-top:10px;background:#fff;text-align:center;color:#0f172a">
+    ${namaKedai ? `<div style="font-weight:800;color:#14532d">${esc_(namaKedai)}</div>` : ''}
+    ${jumlah != null ? `<div style="font-size:13px;color:#64748b">Jumlah perlu dibayar</div><div style="font-size:26px;font-weight:800;color:#14532d">RM ${(+jumlah).toFixed(2)}</div>` : ''}
+    ${qr ? `<div style="font-size:13px;font-weight:700;margin-top:4px">${esc_(B.labelQr || 'Imbas DuitNow QR')}</div>
+      <img src="${B.qr}" alt="QR bayaran" style="width:100%;max-width:280px;border-radius:10px;margin:6px auto;display:block;background:#fff">
+      <a href="${B.qr}" download="${esc_(fail)}.jpg" style="display:inline-block;font-size:13px;padding:6px 12px;border-radius:999px;background:#e2e8f0;color:#0f172a;text-decoration:none">⬇ Simpan QR</a>` : ''}
+    ${bank ? `<div style="margin-top:${qr ? 10 : 2}px;padding-top:${qr ? 10 : 0}px;${qr ? 'border-top:1px dashed #cbd5e1' : ''}">
+      <div style="font-size:13px;color:#64748b">🏦 ${esc_(B.bank || 'Bank')}</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:1px">${esc_(B.noAkaun)}</div>
+      <div style="font-size:13px">${esc_(B.namaAkaun || '')}</div>
+      <button type="button" data-salinakaun="${esc_(noBersih)}" style="margin-top:6px;font-size:13px;padding:6px 12px;border-radius:999px;border:0;background:#14532d;color:#fff;cursor:pointer">📋 Salin no. akaun</button></div>` : ''}
+    ${B.nota ? `<div style="font-size:12px;color:#64748b;margin-top:8px">${esc_(B.nota)}</div>` : ''}</div>`;
+}
+export function pasangTerimaBayar(root = document, toast = null){
+  root.querySelectorAll('[data-salinakaun]').forEach(b => b.onclick = async () => {
+    try{ await navigator.clipboard.writeText(b.dataset.salinakaun); b.textContent = '✅ Disalin'; }
+    catch(_){ prompt('Salin no. akaun:', b.dataset.salinakaun); }
+    if(toast) toast('No. akaun disalin');
+  });
+}

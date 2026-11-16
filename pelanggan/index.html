@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-12">
+<meta name="app-versi" content="2026.11.16-13">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-12';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-13';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-12';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal } from '../safari-lib.js?v=2026.11.16-12';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-13';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-13';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -322,7 +322,7 @@ async function muatTetapan(c){
     const s = await getDoc(doc(db, 'lionsafari', c, 'tetapan', 'umum')); tetapan[c] = s.exists() ? s.data() : {};
     const g = await getDocs(collection(db, 'lionsafari', c, 'gambar')); gambarPakej[c] = Object.fromEntries(g.docs.map(d => [d.id, d.data().data]));
   }catch(e){ console.error(e); tetapan[c] = {}; gambarPakej[c] = {}; }
-  if(tab === 'Pakej') render();
+  if(tab === 'Pakej' || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
 }
 
 // ---------- Notifikasi pelanggan (semasa apps dibuka / di latar) ----------
@@ -499,6 +499,23 @@ function viewDaftar(){
 }
 
 // ---------- Utama ----------
+// ---------- 💳 Bayar tanpa tunai (QR DuitNow / transfer) — ditetapkan di Apps Akaun ----------
+let bayarCaw = null;
+function bayarHtml(){
+  CAWANGAN.forEach(c => { if(!tetapan[c.id]) muatTetapan(c.id); });
+  const ada = CAWANGAN.filter(c => tetapan[c.id]?.terimaBayaran?.tunjukPelanggan !== false && adaTerimaBayar(tetapan[c.id]?.terimaBayaran));
+  if(!ada.length) return '';
+  if(!ada.some(c => c.id === bayarCaw)) bayarCaw = (ada.find(c => c.id === ahli?.cawanganUtama) || ada[0]).id;
+  const T = tetapan[bayarCaw] || {}, c = ada.find(x => x.id === bayarCaw);
+  return `<h2>💳 Bayar tanpa tunai</h2><div class="panel">
+    ${ada.length > 1 ? `<div style="display:flex;gap:6px;margin-bottom:4px">${ada.map(x => `<button data-bayarcaw="${x.id}" style="flex:1;padding:9px;border-radius:999px;border:2px solid ${x.id === bayarCaw ? 'var(--emas)' : '#e2e8f0'};background:${x.id === bayarCaw ? '#fffbeb' : '#fff'};font-weight:700">${esc(x.nama)}</button>`).join('')}</div>` : ''}
+    ${htmlTerimaBayar(T.terimaBayaran, {namaKedai: T.namaKedai || c.nama, fail: 'QR-' + bayarCaw})}
+    <p class="muted" style="font-size:12px;text-align:center;margin:8px 0 0">Bayar selepas kereta siap & tunjukkan resit kepada cashier.</p></div>`;
+}
+function pasangBayar(){
+  $$('[data-bayarcaw]').forEach(b => b.onclick = () => { bayarCaw = b.dataset.bayarcaw; render(); });
+  pasangTerimaBayar(document, typeof toast === 'function' ? toast : null);
+}
 function viewUtama(){
   const k = keadaanKad(ahli), nama = esc(ahli.nama.split(' ')[0]);
   $('#app').innerHTML = `<div style="display:flex;gap:12px;align-items:center;margin-top:12px">${ahli.foto ? `<img src="${ahli.foto}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--emas)">` : ''}<div><h1 style="text-align:left">Hai, ${nama}</h1>
@@ -507,10 +524,11 @@ function viewUtama(){
     <button class="btn btn-emas" style="margin-top:14px" id="keTempah">📲 Tempah servis sekarang</button>
     ${kadHtml()}
     ${promosi.length ? `<h2>Promosi terkini</h2><div class="karusel">${promosi.map(promoHtml).join('')}</div>` : ''}
+    ${bayarHtml()}
     <h2>Cawangan kami</h2>
     <div class="cawangan">${CAWANGAN.map(c => `<button data-caw="${c.id}"><img src="${c.logo}" alt=""><div><b>${c.nama}</b><div class="muted" style="font-size:12px">Pakej & lokasi</div></div></button>`).join('')}</div>
     ${pasangHtml()}`;
-  pasangKad(); pasangStatus();
+  pasangKad(); pasangStatus(); pasangBayar();
   $('#keTempah').onclick = () => { tab = 'Tempah'; render(); window.scrollTo({top:0}); };
   $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; tab = 'Pakej'; render(); window.scrollTo({top:0}); });
   pasangPasang();

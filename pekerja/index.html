@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-12">
+<meta name="app-versi" content="2026.11.16-13">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,15 +115,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-12';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-13';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-12';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal } from '../safari-lib.js?v=2026.11.16-12';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-12';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-12';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-12';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-13';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar } from '../safari-lib.js?v=2026.11.16-13';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-13';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-13';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-13';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -641,12 +641,12 @@ function bayarQ(o){
     <div class="totalbar"><span>Perlu dibayar</span><b>${RM(o.jumlahKasar)}</b></div>
     <label>Cara bayar</label><div class="choices">${KAEDAH_BAYAR.map(k => `<button class="choice ${k === 'Tunai' ? 'sel' : ''}" data-kb="${k}"><b>${k}</b></button>`).join('')}</div>
     <div id="byTunai"><label>Wang diterima (RM)</label><input id="byTerima" type="number" inputmode="decimal" step="0.01" placeholder="${o.jumlahKasar}"><div class="muted" id="byBaki"></div></div>
-    <div id="byBukan" class="hidden"><label>No. rujukan</label><input id="byRuj" placeholder="cth ID transaksi"><label>Bukti bayaran (gambar)</label><input id="byBukti" type="file" accept="image/*" capture="environment"><img id="byPrev" class="prev hidden"></div>
+    <div id="byBukan" class="hidden"><div id="byInfoBayar"></div><label>No. rujukan</label><input id="byRuj" placeholder="cth ID transaksi"><label>Bukti bayaran (gambar)</label><input id="byBukti" type="file" accept="image/*" capture="environment"><img id="byPrev" class="prev hidden"></div>
     <p class="muted">Diskaun & Free Wash: buat di kaunter (perlu PIN Supervisor).</p>
     <button class="btn pri big" id="bySimpan">✅ TERIMA BAYARAN</button></div>`;
   const baki = () => { const t = num('#byTerima'); $('#byBaki').textContent = t ? `Baki dipulangkan: ${RM(Math.max(0, t - o.jumlahKasar))}` : ''; };
   $('#byTerima').oninput = baki;
-  $$('[data-kb]').forEach(b => b.onclick = () => { kaedah = b.dataset.kb; $$('[data-kb]').forEach(x => x.classList.toggle('sel', x === b)); $('#byTunai').classList.toggle('hidden', kaedah !== 'Tunai'); $('#byBukan').classList.toggle('hidden', kaedah === 'Tunai'); });
+  $$('[data-kb]').forEach(b => b.onclick = () => { kaedah = b.dataset.kb; $$('[data-kb]').forEach(x => x.classList.toggle('sel', x === b)); $('#byTunai').classList.toggle('hidden', kaedah !== 'Tunai'); $('#byBukan').classList.toggle('hidden', kaedah === 'Tunai'); const mod = kaedah === 'QR / eWallet' ? 'qr' : kaedah === 'Transfer' ? 'transfer' : ''; $('#byInfoBayar').innerHTML = mod ? htmlTerimaBayar(TK.terimaBayaran, {mod, jumlah: o.jumlahKasar, fail: 'QR-' + cawO}) : ''; pasangTerimaBayar($('#byInfoBayar'), toast); });
   $('#byBukti').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ bukti = await capGambar(f, null, 900, 0.6); $('#byPrev').src = bukti; $('#byPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
   $('#byBatal').onclick = () => { $('#app').dataset.sibuk = ''; render(); };
   $('#bySimpan').onclick = async () => {
