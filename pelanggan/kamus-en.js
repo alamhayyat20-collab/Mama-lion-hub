@@ -3,7 +3,7 @@ export const KAMUS = {
   // Navigasi & umum
   'Utama': 'Home', 'Kad': 'Card', 'Tempah': 'Book', 'Promosi': 'Promos', 'Pakej': 'Packages', 'Profil': 'Profile',
   'Menu utama': 'Main menu', 'Kembali': 'Back', 'Cari': 'Search', 'Memuatkan…': 'Loading…', 'Pasang': 'Install',
-  'Pasang Safari Members': 'Install Safari Members', 'Buka kad anda terus dari skrin utama.': 'Open your card straight from your home screen.',
+  '❓ Tidak boleh pasang?': "❓ Can't install?", 'Pasang Safari Members': 'Install Safari Members', 'Buka kad anda terus dari skrin utama.': 'Open your card straight from your home screen.',
   'Lencana Safari Members': 'Safari Members badge', 'Sync': 'Sync', 'Selesai': 'Done', 'Cawangan': 'Branch',
   // Skrin aluan
   'Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.': 'The digital membership card for Mama Lion & Lion King. Collect a stamp every wash and earn Free Washes.',

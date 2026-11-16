@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-11">
+<meta name="app-versi" content="2026.11.17-12">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,18 +115,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-11';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-12';
+bannerPelayarDalaman({nama: 'Apps Pekerja'});
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-12';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-11';
-import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.17-11';
-import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-11';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-11';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-11';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-11';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-11';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-11';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.17-12';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.17-12';
+import { hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.17-12';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.17-12';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.17-12';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-12';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-12';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.17-12';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -1318,13 +1320,14 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasang
 function kadPasang(){
   if(standalone()) return '';
   return `<div class="card"><div class="between"><b>📲 Pasang Apps Pekerja</b><button class="btn emas" id="btnPasang" style="padding:9px 12px;font-size:13px">PASANG</button></div>
-    <div class="muted" id="pasangInfo" style="margin-top:6px">${iOS ? 'iPhone: buka dalam Safari → Kongsi ⬆ → "Add to Home Screen".' : 'Android: tekan PASANG, atau menu ⋮ → "Install app".'}</div></div>`;
+    <div class="muted" id="pasangInfo" style="margin-top:6px">${iOS ? 'iPhone: buka dalam Safari → Kongsi ⬆ → "Add to Home Screen".' : 'Android: tekan PASANG, atau menu ⋮ → "Install app".'} <a href="#" id="btnCaraPasang" onclick="return false">❓ Tidak boleh pasang?</a></div></div>`;
 }
 function pasangKadPasang(){
   if($('#btnPasang')) $('#btnPasang').onclick = async () => {
     if(pasangPrompt){ pasangPrompt.prompt(); await pasangPrompt.userChoice; pasangPrompt = null; }
-    else $('#pasangInfo').innerHTML = iOS ? '<b>iPhone:</b> Safari → butang Kongsi ⬆ → <b>Add to Home Screen</b>.' : '<b>Android (Chrome):</b> menu ⋮ → <b>Install app</b>.';
+    else panduanPasang({nama: 'Apps Pekerja'});
   };
+  if($('#btnCaraPasang')) $('#btnCaraPasang').onclick = () => panduanPasang({nama: 'Apps Pekerja'});
 }
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 // Butang 🔄 Sync: hantar data tertunggak, tarik data terkini & pastikan versi apps sama di semua telefon

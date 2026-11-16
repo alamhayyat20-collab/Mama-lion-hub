@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-11">
+<meta name="app-versi" content="2026.11.17-12">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -232,13 +232,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-11';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-12';
+bannerPelayarDalaman({nama: 'Safari Members'});
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-12';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-11';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-11';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-11';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-11';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-12';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-12';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-12';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-12';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -830,15 +832,16 @@ const standalone = () => matchMedia('(display-mode: standalone)').matches || nav
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; if(['Utama'].includes(tab)) render(); });
 function pasangHtml(){
   if(standalone()) return '';
-  return `<div class="panel pasang"><img src="icon-192.png" alt=""><div style="flex:1"><b>Pasang Safari Members</b><div class="muted" id="pasangInfo">${iOS ? 'Safari → butang Kongsi → Add to Home Screen.' : 'Buka kad anda terus dari skrin utama.'}</div></div>
+  return `<div class="panel pasang"><img src="icon-192.png" alt=""><div style="flex:1"><b>Pasang Safari Members</b><div class="muted" id="pasangInfo">${iOS ? 'Safari → butang Kongsi → Add to Home Screen.' : 'Buka kad anda terus dari skrin utama.'}</div><a href="#" id="btnCaraPasang" style="font-size:12px">❓ Tidak boleh pasang?</a></div>
     <button class="btn btn-emas" id="btnPasang" style="width:auto;padding:10px 16px">Pasang</button></div>`;
 }
 function pasangPasang(){
   const b = $('#btnPasang'); if(!b) return;
   b.onclick = async () => {
     if(pasangPrompt){ pasangPrompt.prompt(); await pasangPrompt.userChoice; pasangPrompt = null; }
-    else $('#pasangInfo').textContent = iOS ? 'Dalam Safari: tekan butang Kongsi, kemudian "Add to Home Screen".' : 'Dalam Chrome: tekan menu ⋮, kemudian "Install app".';
+    else panduanPasang({nama: 'Safari Members'});
   };
+  const cp = $('#btnCaraPasang'); if(cp) cp.onclick = e => { e.preventDefault(); panduanPasang({nama: 'Safari Members'}); };
 }
 
 // ---------- Mula ----------
