@@ -17,12 +17,15 @@ pre{white-space:pre-wrap;text-align:left;font-family:ui-monospace,Menlo,Consolas
 </style>
 </head>
 <body>
-<div class="wrap"><div class="kad" id="isi"><p class="muted">Memuatkan resit…</p></div>
+<div class="wrap"><div id="bahasaBox" style="text-align:right;margin-bottom:8px;color:#0d2a20"></div><div class="kad" id="isi"><p class="muted">Memuatkan resit…</p></div>
 <p class="muted" style="text-align:center">Mama Lion & Lion King Premium Car Wash · Kuantan</p></div>
 <script type="module">
 import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-04';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-04';
+pasangBahasa({kamus: KAMUS, pola: POLA, kunci: 'sm_bahasa', tempat: '#bahasaBox'});
 const db = getFirestore(initializeApp(firebaseConfig));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isi = document.getElementById('isi'), id = new URLSearchParams(location.search).get('id') || '';
@@ -34,7 +37,7 @@ try{
   const blob = await (await fetch(r.pdf)).blob(), url = URL.createObjectURL(new File([blob], r.namaFail || 'Resit.pdf', {type: 'application/pdf'}));
   isi.innerHTML = `<img class="logo" src="${logo}" alt=""><h2 style="margin:4px 0">${esc(r.kedai)}</h2>
     <div class="muted">Resit ${esc(r.no)} · ${esc(r.plat)}</div><div style="font-size:28px;font-weight:800;margin-top:6px">RM ${(+r.jumlah).toFixed(2)}</div>
-    <pre>${esc(r.teks || '')}</pre>
+    <pre data-tiada-terjemah>${esc(r.teks || '')}</pre>
     <a class="btn emas" href="${url}" target="_blank" rel="noopener">📄 Buka resit PDF</a>
     <a class="btn hijau" href="${url}" download="${esc(r.namaFail || 'Resit.pdf')}">⬇ Simpan PDF</a>
     <a class="btn" style="background:#e2e8f0;color:#0d2a20" href="./">⭐ Safari Members — kumpul cop Free Wash</a>`;

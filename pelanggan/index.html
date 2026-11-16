@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-03">
+<meta name="app-versi" content="2026.11.17-04">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -209,7 +209,8 @@ nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
 <header class="atas" id="atas">
   <div class="jenama"><img src="icon-192.png" alt="">
     <div>Safari Members<small>Mama Lion & Lion King Premium Car Wash</small></div></div>
-  <span id="syncBox" style="margin-left:auto"></span>
+  <span id="bahasaBox" style="margin-left:auto;margin-right:8px;color:var(--zamrud)"></span>
+  <span id="syncBox"></span>
 </header>
 <main id="app"><p class="kosong">Memuatkan…</p></main>
 <nav id="nav" class="hidden" aria-label="Menu utama"></nav>
@@ -231,11 +232,13 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-03';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-04';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-03';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-03';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-04';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-04';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-04';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-04';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -245,7 +248,9 @@ const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAl
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const RM = n => 'RM' + (Number(n)||0).toLocaleString('en-MY', {minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2});
 const val = id => String($(id)?.value || '').trim();
-const tarikhBM = ms => new Date(ms).toLocaleDateString('ms-MY', {day:'numeric', month:'short', year:'numeric'});
+const BHS = pasangBahasa({kamus: KAMUS, pola: POLA, kunci: 'sm_bahasa', tempat: '#bahasaBox'});
+const LOKAL = BHS.bahasa() === 'en' ? 'en-MY' : 'ms-MY';
+const tarikhBM = ms => new Date(ms).toLocaleDateString(LOKAL, {day:'numeric', month:'short', year:'numeric'});
 const hariIni = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 const urlSelamat = u => /^https:\/\//.test(u || '') ? u : '';
 function toast(m){ const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3400); }
@@ -421,7 +426,7 @@ function kadHtml(){
       <div class="medan"><span>Name</span><b>${esc(ahli.nama)}</b><span>Phone No.</span><b>${esc(paparTelefon(ahli.telefon))}</b><span>Vehicle No.</span><b>${esc(paparPlat(plat))}</b></div>
       <div class="kakikad"><span class="kod">${esc(ahli.kod)}</span><span><b>${k.bil}/${KAD.saiz}</b> stamps${k.freeWash.length ? ` · <b style="color:#8f6a1e">${k.freeWash.length} FREE WASH</b>` : ''}</span></div></div>
     <div class="muka belakang"><div class="qr" id="qr"></div><div class="tc"><span class="kod">${esc(ahli.kod)}</span><b>Terms &amp; Conditions</b>
-      <ol><li>One stamp per paid wash.</li><li>8 stamps per card.</li><li>FREE wash at stamp 4 &amp; 8.</li><li>Show this card during redemption.</li><li>Non-transferable. Valid 12 months.</li></ol></div></div>
+      <ol><li>One stamp per paid wash.</li><li>${KAD.saiz} stamps per card.</li><li>FREE wash at stamp ${KAD.ganjaranPada.join(" &amp; ")}.</li><li>Show this card during redemption.</li><li>Non-transferable. Valid 12 months.</li></ol></div></div>
   </div></div><p class="petunjuk">Tekan kad untuk paparkan kod QR</p>`;
 }
 function pasangKad(){
@@ -774,7 +779,7 @@ function viewProfil(){
   $('#app').innerHTML = `<h1 style="margin-top:12px">Profil saya</h1>
     <div class="panel" style="text-align:center">${ahli.foto ? `<img class="avatar" src="${ahli.foto}" alt="Gambar profil">` : '<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:34px">🙂</div>'}
       <label class="btn btn-garis" style="padding:10px;margin-top:10px;display:inline-block;width:auto">📷 ${ahli.foto ? 'Tukar' : 'Tambah'} gambar profil<input id="pFoto" type="file" accept="image/*" class="hidden"></label>
-      <div class="muted" style="margin-top:6px">${esc(ahli.kod)} · Ahli sejak ${new Date(ahli.daftarMasa || Date.now()).toLocaleDateString('ms-MY', {month:'short', year:'numeric'})}</div></div>
+      <div class="muted" style="margin-top:6px">${esc(ahli.kod)} · Ahli sejak ${new Date(ahli.daftarMasa || Date.now()).toLocaleDateString(LOKAL, {month:'short', year:'numeric'})}</div></div>
     <form class="panel" id="fProfil" novalidate>
       <label for="pNama">Nama penuh</label><input id="pNama" data-tetap="1" value="${esc(ahli.nama)}">
       <label>No. telefon</label><input value="${esc(paparTelefon(ahli.telefon))}" disabled>
