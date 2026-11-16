@@ -1,4 +1,4 @@
-import { bukaPaparan, BAR_KEMBALI_CETAK } from './paparan-lib.js?v=2026.11.17-05';
+import { bukaPaparan, BAR_KEMBALI_CETAK } from './paparan-lib.js?v=2026.11.17-06';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
