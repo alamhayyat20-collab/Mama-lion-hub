@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-19">
+<meta name="app-versi" content="2026.11.17-02">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -164,17 +164,17 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.16-19';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-02';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.16-19';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.16-19';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.16-19';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.16-19';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.16-19';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-19';
+import { bukaPaparan, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-02';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-02';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-02';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-02';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-02';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-02';
 
 // =====================================================================
 // TETAPAN ASAS (Admin sahaja boleh ubah dalam tab Tetapan)
@@ -565,6 +565,21 @@ function mintaLulus(sebab){
   });
 }
 const perluLulus = async sebab => PELULUS.includes(staf.peranan) ? staf.nama : await mintaLulus(sebab);
+// PIN pekerja berkuasa (Supervisor / Manager / Admin atau kuasa 🏷 Harga) — sentiasa diminta
+function mintaPinHarga(sebab){
+  return new Promise(resolve => {
+    const ov = $('#lulus'); ov.classList.remove('hidden');
+    $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>🔐 PIN PEMBETULAN HARGA</h3><div class="notice">${esc(sebab)}</div>
+      <div class="muted">PIN Supervisor / Manager / Admin atau pekerja berkuasa 🏷 Harga</div><div id="kpH"></div><button class="small" id="btnTolakH">Batal</button></div>`;
+    const tutup = v => { ov.classList.add('hidden'); resolve(v); };
+    $('#btnTolakH').onclick = () => tutup(null);
+    keypad('#kpH', async pin => {
+      for(const x of stafList.filter(x => x.aktif !== false && (PELULUS.includes(x.peranan) || adaKuasa(x, 'harga'))))
+        if(await hashPin(x.id, pin) === x.pinHash){ tutup(x); return; }
+      return 'PIN tidak sah / tiada kuasa pembetulan harga';
+    });
+  });
+}
 
 // =====================================================================
 // MODAL
@@ -1052,6 +1067,7 @@ VIEWS['Queue'] = {
           ${bolehBayar ? `<button class="small btn-bad" data-batal="${o.id}">Batal</button>` : ''}
           ${PELULUS.includes(staf.peranan) ? `<button class="small" data-tukarmo="${o.id}">🧾 ${o.mo ? 'Tukar MO' : 'Set MO'}</button>` : ''}
           ${bolehBayar ? `<button class="small" data-edit="${o.id}">✏️ Edit</button>` : ''}
+          ${bolehBayar ? `<button class="small" data-harga="${o.id}">💲 Betulkan harga</button>` : ''}
           <button class="small" data-fotok="${o.id}">📷 Gambar</button>
         </div></div>`;
     }).join('');
@@ -1066,6 +1082,7 @@ VIEWS['Queue'] = {
     $$('[data-batal]').forEach(b => b.onclick = () => batalOrder(aktif.find(o => o.id === b.dataset.batal)));
     $$('[data-tukarmo]').forEach(b => b.onclick = () => tukarMO(aktif.find(o => o.id === b.dataset.tukarmo)));
     $$('[data-edit]').forEach(b => b.onclick = () => editOrder(aktif.find(o => o.id === b.dataset.edit)));
+    $$('[data-harga]').forEach(b => b.onclick = () => betulHarga(aktif.find(o => o.id === b.dataset.harga)));
     $$('[data-fotok]').forEach(b => b.onclick = () => gambarKeadaan(aktif.find(o => o.id === b.dataset.fotok)));
     $$('[data-tpterima]').forEach(b => b.onclick = async () => { const t = tempahan.find(x => x.id === b.dataset.tpterima); if(!t) return; b.disabled = true;
       const h = today(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad(dibuatHari.length + 1, 3)}`;
@@ -1076,6 +1093,47 @@ VIEWS['Queue'] = {
   }
 };
 
+
+
+// 💲 Pembetulan harga setiap item dalam order (sebelum bayaran) — disahkan dengan PIN pekerja berkuasa
+function betulHarga(o){
+  if(!o) return;
+  const baris = [
+    {k:'pakej', nama: `${o.pakej}${o.freeWash ? ' (🎁 Free Wash)' : ''}`, h: +o.hargaPakej || 0, kunci: !!o.freeWash},
+    ...(o.tambahanKenderaan ? [{k:'kend', nama: `Kenderaan: ${o.kenderaan}`, h: +o.tambahanKenderaan || 0}] : []),
+    ...(o.addon || []).map((a, i) => ({k:'addon', i, nama: a.nama, h: +a.harga || 0})),
+    ...(o.itemManual || []).map((a, i) => ({k:'manual', i, nama: a.nama, h: +a.harga || 0}))];
+  openModal(`<div class="between"><h3 style="margin:0">💲 Betulkan harga — ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
+    <div class="muted" style="margin:4px 0 8px">${esc(o.no || '')} · ${esc(o.kenderaan || '')}. Ubah harga item yang salah, isi sebab, kemudian sahkan dengan PIN.</div>
+    ${baris.map((b, j) => `<div class="mrow"><span style="flex:1">${esc(b.nama)}<br><small class="muted">asal ${RM(b.h)}</small></span>
+      <input type="number" inputmode="decimal" step="0.01" min="0" data-hb="${j}" value="${b.h}" ${b.kunci ? 'disabled title="Free Wash: harga pakej 0"' : ''} style="width:110px;margin:0;font-weight:800;text-align:right"></div>`).join('')}
+    <div class="totalbar"><span>Jumlah baru</span><b id="hbJum"></b></div>
+    ${o.diskaunBeri ? `<div class="muted">🎟 Diskaun ${esc(labelDiskaun(o.diskaunBeri))} kekal & ditolak semasa bayaran.</div>` : ''}
+    <label>Sebab pembetulan *</label><input id="hbSebab" placeholder="cth: harga SUV tersilap pilih Sedan / harga promo kedai">
+    <button class="btn-gold big" id="hbSimpan">🔐 SAHKAN DENGAN PIN & SIMPAN</button>`);
+  $('#mTutup').onclick = closeModal;
+  const nilai = () => baris.map((b, j) => b.kunci ? b.h : Math.max(0, r2(numVal(`[data-hb="${j}"]`))));
+  const kira = () => { const v = nilai(), j = r2(v.reduce((t, x) => t + x, 0)); $('#hbJum').textContent = RM(j) + (j !== r2(o.jumlahKasar) ? ` (asal ${RM(o.jumlahKasar)})` : ''); return {v, j}; };
+  $$('[data-hb]').forEach(i => i.oninput = kira); kira();
+  $('#hbSimpan').onclick = async () => {
+    const {v, j} = kira(), sebab = val('#hbSebab');
+    const ubah = baris.map((b, k) => v[k] !== b.h ? `${b.nama} ${RM(b.h)}→${RM(v[k])}` : '').filter(Boolean);
+    if(!ubah.length) return toast('Tiada harga diubah');
+    if(!sebab) return toast('Sila isi sebab pembetulan');
+    const pelulus = await mintaPinHarga(`${o.plat}: ${ubah.join(', ')} · Jumlah ${RM(o.jumlahKasar)} → ${RM(j)}`); if(!pelulus) return;
+    const data = {addon: (o.addon || []).map(a => ({...a})), itemManual: (o.itemManual || []).map(a => ({...a}))};
+    baris.forEach((b, k) => { const h = v[k];
+      if(b.k === 'pakej') data.hargaPakej = h; else if(b.k === 'kend') data.tambahanKenderaan = h;
+      else if(b.k === 'addon') data.addon[b.i].harga = h; else if(b.k === 'manual') data.itemManual[b.i].harga = h; });
+    Object.assign(data, {jumlahKasar: j, jumlah: j, dikemaskiniOleh: staf.nama,
+      sejarahHarga: arrayUnion({asal: r2(o.jumlahKasar), baru: j, ubah: ubah.join(', '), sebab, oleh: staf.nama, lulusOleh: pelulus.nama, masa: Date.now()}),
+      sejarahEdit: arrayUnion({oleh: staf.nama, masa: Date.now(), ubah: `harga: ${ubah.join(', ')} (PIN ${pelulus.nama}) — ${sebab}`})});
+    $('#hbSimpan').disabled = true;
+    try{ await updateDoc(doc(col('order'), o.id), data); KT.cermin({...o, ...data, sejarahHarga: undefined, sejarahEdit: undefined}, cawangan);
+      closeModal(); toast(`✅ Harga ${o.plat} dibetulkan: ${RM(j)} (disahkan ${pelulus.nama})`); }
+    catch(e){ $('#hbSimpan').disabled = false; onErr(e); }
+  };
+}
 
 // ✏️ Edit order dalam queue: betulkan plat, jenis kenderaan, pakej, add-on & catatan (harga dikira semula)
 function editOrder(o){

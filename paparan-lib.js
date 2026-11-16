@@ -70,9 +70,11 @@ export function kemasModal(box, tutupFn){
   pasangGaya();
   const t = box.querySelector('#mTutup');
   if(t){ t.textContent = '← Kembali'; t.setAttribute('aria-label', 'Kembali'); const atas = t.parentElement; if(atas && atas !== box) atas.classList.add('pp-sticky-atas'); }
-  const akhir = box.lastElementChild;
-  if(akhir && akhir !== t?.parentElement && (akhir.tagName === 'BUTTON' || (akhir.querySelector?.('button') && akhir.children.length <= 3 && !akhir.querySelector('input,select,textarea'))))
+  let akhir = box.lastElementChild;
+  if(akhir && akhir !== t?.parentElement && (akhir.tagName === 'BUTTON' || (akhir.querySelector?.('button') && akhir.children.length <= 3 && !akhir.querySelector('input,select,textarea')))){
+    if(akhir.tagName === 'BUTTON'){ const w = document.createElement('div'); akhir.replaceWith(w); w.appendChild(akhir); akhir = w; }   // jangan ubah gaya butang
     akhir.classList.add('pp-sticky-bawah');
+  }
   const tutup = () => tutupFn();   // tutupFn (closeModal) memanggil lepasModal
   if(box._ppTutup) tarikSejarah(box._ppTutup);
   box._ppTutup = tutup;
