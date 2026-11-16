@@ -5,7 +5,7 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, dataStatus, KAD, dataAwam, normPlat } from './safari-lib.js?v=2026.11.16-18';
+import { tambahCop, dataStatus, KAD, dataAwam, normPlat } from './safari-lib.js?v=2026.11.16-19';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
@@ -57,12 +57,12 @@ export function kaunter(ctx){
     try{
       const h = await fs.runTransaction(store, async tx => {
         const s = await tx.get(ref); if(!s.exists()) throw new Error('Ahli tidak dijumpai');
-        const r = tambahCop(s.data(), {orderId: o.id, plat: o.plat, cawangan: c, tarikh: o.tarikhBayar || hariIni()});
+        const r = tambahCop(s.data(), {orderId: o.id, plat: o.plat, cawangan: c, tarikh: o.tarikhBayar || hariIni(), pakejId: o.pakejId || ''});
         if(!r.ok) return {ok: false, sebab: r.sebab};
         tx.update(ref, {...r.data, ...T()});
-        return {ok: true, bil: r.data.cop.length, dapat: r.dapatFreeWash, selesai: r.data.cop.length === 0};
+        return {ok: true, bil: r.data.cop.length, dapat: r.dapatFreeWash, selesai: r.data.cop.length === 0, aktif: r.diaktifkan};
       });
-      const info = !h.ok ? `Tiada cop: ${h.sebab}` : h.dapat ? `⭐ Cop diberi — 🎁 DAPAT 1 FREE WASH!${h.selesai ? ' (kad penuh, bermula semula)' : ''}` : `⭐ Cop ${h.bil}/${KAD.saiz} diberi`;
+      const info = !h.ok ? `Tiada cop: ${h.sebab}` : h.dapat ? `⭐ Cop diberi — 🎁 DAPAT 1 FREE WASH!${h.selesai ? ' (kad penuh, bermula semula)' : ''}` : `⭐ Cop ${h.bil}/${KAD.saiz} diberi${h.aktif ? ' — kad loyalti kini AKTIF' : ''}`;
       await fs.updateDoc(fs.doc(col(c, 'order'), o.id), {copInfo: info, copGagal: false, cop: !!h.ok, ...T()});
       if(h.ok) fs.setDoc(fs.doc(store, 'ahli', o.ahli.id, 'sejarah', o.id), {tarikh: o.tarikhBayar || hariIni(), cawangan: c, plat: o.plat, pakej: o.pakej, jumlah: o.jumlah, cop: true, masa: Date.now(), ...T()}).catch(console.error);
       return info;

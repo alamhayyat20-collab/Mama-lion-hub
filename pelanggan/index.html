@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-18">
+<meta name="app-versi" content="2026.11.16-19">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -113,7 +113,7 @@ h2{font-size:19px;margin:28px 0 12px}
 .pilih button:disabled{opacity:.45}
 
 /* ---------- Dulang cop (syiling emas) ---------- */
-.dulang{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;padding:18px 14px;border-radius:var(--r-besar);
+.dulang{display:grid;grid-template-columns:repeat(var(--lajur,4),1fr);gap:14px 10px;padding:18px 14px;border-radius:var(--r-besar);
   background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(236,238,240,.9));box-shadow:inset 0 2px 6px rgba(0,0,0,.08);border:1px solid rgba(195,200,207,.7)}
 .slot{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:var(--kelabu)}
 .lubang{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#dfe2e5,#c9cdd2);box-shadow:inset 0 3px 7px rgba(0,0,0,.22),0 1px 0 #fff;perspective:400px;position:relative;display:flex;align-items:center;justify-content:center}
@@ -231,11 +231,11 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-18';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-19';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-18';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli } from '../safari-lib.js?v=2026.11.16-18';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-19';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.16-19';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -351,11 +351,34 @@ const ikonServis = `<div class="ikonservis">
   <div><svg viewBox="0 0 32 32"><path d="M16 4l10 4v7c0 6.5-4.4 11.5-10 13-5.6-1.5-10-6.5-10-13V8z"/><path d="M11.5 16l3.2 3.2 6-6.4"/></svg>DETAILING</div>
   <div><svg viewBox="0 0 32 32"><path d="M7 14h15v6a6 6 0 0 1-6 6h-3a6 6 0 0 1-6-6z"/><path d="M22 16h2.5a3 3 0 0 1 0 6H21"/><path d="M12 5c-1 2 1 3 0 5M17 5c-1 2 1 3 0 5"/></svg>CAFÉ</div>
   <div><svg viewBox="0 0 32 32"><circle cx="11" cy="10" r="3.5"/><circle cx="22" cy="10" r="3.5"/><path d="M4 26c0-4.5 3.2-7.5 7-7.5s7 3 7 7.5"/><path d="M15 26c0-4.5 3.2-7.5 7-7.5s6 3 6 7.5"/></svg>FAMILY FRIENDLY</div></div>`;
+// ---------- Nama pakej dari tetapan kad (Apps Akaun) ----------
+const pakejSemua = () => { const m = new Map(); [...CAWANGAN.flatMap(c => tetapan[c.id]?.pakej || []), ...HARGA_RASMI.pakej].forEach(p => { if(p?.id && !m.has(p.id)) m.set(p.id, p); }); return m; };
+function namaPakejFW(){ return pakejSemua().get(KAD.pakejFreeWash)?.nama || 'Luar & Dalam'; }
+function namaPakejAktif(){ const m = pakejSemua(); return KAD.pakejAktif.length ? KAD.pakejAktif.map(id => { const p = m.get(id); if(!p) return id; const h = p.hargaIkut ? [...new Set(Object.values(p.hargaIkut).filter(v => v != null))].slice(0, 3) : [p.harga]; return `${p.nama} (RM${h.join(' / ')})`; }).join(' atau ') : 'berbayar'; }
+// ---------- Peta lokasi & navigasi (lokasi ditetapkan di Apps Akaun → Maklumat kedai) ----------
+function petaHtml(T, nama){
+  const ll = /^-?\d+\.\d+,-?\d+\.\d+$/.test(T?.lokasi || '') ? T.lokasi : '', alamat = T?.alamat || HARGA_RASMI.alamat || '';
+  const q = encodeURIComponent(ll || alamat); if(!q) return '';
+  const gmaps = ll ? `https://www.google.com/maps/dir/?api=1&destination=${ll}` : (urlSelamat(T?.mapsUrl) || `https://www.google.com/maps/search/?api=1&query=${q}`);
+  const waze = ll ? `https://waze.com/ul?ll=${ll}&navigate=yes` : `https://waze.com/ul?q=${q}&navigate=yes`;
+  return `<div style="margin-top:12px"><iframe title="Peta ${esc(nama)}" src="https://maps.google.com/maps?q=${q}&z=16&output=embed" loading="lazy" style="width:100%;height:220px;border:0;border-radius:14px" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="dua" style="margin-top:8px"><a class="btn btn-zamrud" style="padding:12px" href="${esc(gmaps)}" target="_blank" rel="noopener">🧭 Google Maps</a><a class="btn btn-emas" style="padding:12px" href="${esc(waze)}" target="_blank" rel="noopener">🚗 Waze</a></div></div>`;
+}
+// ---------- Status kad loyalti (perlu diaktifkan) ----------
+function aktifKadHtml(){
+  const k = keadaanKad(ahli); if(k.aktif) return '';
+  const profilOk = !k.profilKurang.length;
+  return `<div class="panel" style="border:2px solid var(--emas);background:#fffbeb"><h3 style="margin-top:0">🔓 Aktifkan kad loyalti anda</h3>
+    <div style="display:grid;gap:8px">
+      <div>✅ <b>Berdaftar</b> — no. telefon & kenderaan</div>
+      <div>${profilOk ? '✅' : '⬜'} <b>Lengkapkan profil</b>${profilOk ? '' : `: ${k.profilKurang.map(m => esc(MEDAN_PROFIL[m])).join(', ')} <button class="btn btn-garis" data-keprofil="1" style="width:auto;padding:6px 12px;margin-left:6px;display:inline-block">Isi sekarang</button>`}</div>
+      <div>⬜ <b>Cucian pertama</b> dengan pakej ${esc(namaPakejAktif())} — anda terus dapat cop pertama</div></div></div>`;
+}
 function infoKadHtml(){
   const T = tetapan[ahli?.cawanganUtama || 'mama-lion'] || {};
   return `<div class="panel"><div class="infokad"><i>📞</i><div><b>${esc(T.telefon || HARGA_RASMI.telefon)}</b></div>
     <i>📍</i><div>${esc(T.alamat || HARGA_RASMI.alamat)}</div>
-    <i>🕘</i><div>${esc(T.waktuOperasi || HARGA_RASMI.waktuOperasi)}</div></div>${ikonServis}
+    <i>🕘</i><div>${esc(T.waktuOperasi || HARGA_RASMI.waktuOperasi)}</div></div>${petaHtml(T, T.namaKedai || 'kedai')}${ikonServis}
     <p class="muted" style="text-align:center;margin:12px 0 0;font-style:italic">Thank you for your support — Same Car, Brighter Days</p></div>`;
 }
 const STATUS_LABEL = {Menunggu:'Dalam giliran', Cuci:'Sedang dicuci', Kering:'Sedang dikeringkan', QC:'Pemeriksaan akhir', Siap:'SIAP — sila ambil', Selesai:'Selesai & dibayar', Batal:'Dibatalkan'};
@@ -414,7 +437,7 @@ function lukisQR(){
 }
 function dulangHtml(){
   const k = keadaanKad(ahli), lama = Number(LS.get('sm_cop_' + ahli.kod) || 0);
-  const html = `<div class="dulang" aria-label="${k.bil} daripada ${KAD.saiz} cop">${Array.from({length: KAD.saiz}, (_, i) => {
+  const html = `<div class="dulang" style="--lajur:${KAD.saiz % 5 === 0 ? 5 : 4}" aria-label="${k.bil} daripada ${KAD.saiz} cop">${Array.from({length: KAD.saiz}, (_, i) => {
     const ada = i < k.bil, ganj = KAD.ganjaranPada.includes(i + 1);
     return `<div class="slot ${ganj ? 'ganjaran' : ''}"><div class="lubang">${ganj && !ada ? '<span class="mahkota">👑</span>' : ''}${ada ? `<div class="cop ${i >= lama ? 'baru' : ''}" style="animation-delay:${(i - lama) * 120}ms">${PAW}</div>` : ''}</div>
       <span>${ganj ? 'Free Wash' : `Cop ${i + 1}`}</span></div>`; }).join('')}</div>
@@ -458,7 +481,7 @@ function viewAluan(){
     <p class="lead">Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.</p>
     <div class="panel"><ul class="kelebihan">
       <li><i>🐾</i><div><b>1 cop setiap cucian berbayar</b><div class="muted">Di Mama Lion atau Lion King.</div></div></li>
-      <li><i>👑</i><div><b>Cop ke-4 dan ke-8 = Free Wash</b><div class="muted">Dua cucian pakej Basic percuma bagi setiap kad 8 cop.</div></div></li>
+      <li><i>👑</i><div><b>Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} = Free Wash</b><div class="muted">Dua cucian ${esc(namaPakejFW())} percuma bagi setiap kad ${KAD.saiz} cop.</div></div></li>
       <li><i>📣</i><div><b>Promosi khas ahli</b><div class="muted">Tawaran terkini terus dalam apps.</div></div></li>
     </ul></div>
     <div style="margin-top:20px"><button class="btn btn-emas" id="keDaftar">Daftar ahli percuma</button>
@@ -481,9 +504,9 @@ function viewAluan(){
 // ---------- Daftar ----------
 function viewDaftar(){
   $('#app').innerHTML = `<h1 style="margin-top:14px">Daftar Safari Members</h1>
-    <p class="lead">Isi maklumat anda. Nombor telefon digunakan untuk mengenal pasti kad anda di kaunter.</p>
+    <p class="lead">Hanya no. telefon & no. kenderaan diperlukan untuk mendaftar. Untuk <b>mengaktifkan kad loyalti</b>: lengkapkan profil & cucian pertama dengan pakej ${esc(namaPakejAktif())}.</p>
     <form class="panel" id="fDaftar" novalidate>
-      <label for="dNama">Nama penuh</label><input id="dNama" autocomplete="name" required>
+      <label for="dNama">Nama penuh (boleh diisi kemudian di Profil)</label><input id="dNama" autocomplete="name">
       <label for="dTel">No. telefon bimbit</label><input id="dTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="012-345 6789" required>
       <div class="dua"><div><label for="dEmel">Emel (pilihan)</label><input id="dEmel" type="email" autocomplete="email"></div>
         <div><label for="dLahir">Tarikh lahir (pilihan)</label><input id="dLahir" type="date"></div></div>
@@ -501,7 +524,6 @@ function viewDaftar(){
     e.preventDefault();
     const ralat = m => { $('#dRalat').textContent = m; $('#dRalat').classList.remove('hidden'); };
     const nama = val('#dNama'), tel = normTelefon(val('#dTel')), plat = paparPlat(val('#dPlat'));
-    if(nama.length < 2) return ralat('Sila isi nama penuh anda.');
     if(!telefonSah(tel)) return ralat('Nombor telefon tidak sah. Contoh: 012-345 6789.');
     if(normPlat(plat).length < 2) return ralat('Sila isi nombor plat kenderaan.');
     if(!$('#dPdpa').checked) return ralat('Sila tandakan persetujuan penyimpanan maklumat untuk mendaftar.');
@@ -516,7 +538,7 @@ function viewDaftar(){
       await b.commit();
       simpanMasuk({id: t, ...data});
       token = t; LS.set('sm_token', t); tab = 'Kad';
-      toast(`Selamat datang ke Safari Members, ${nama.split(' ')[0]}!`);
+      toast(nama ? `Selamat datang ke Safari Members, ${nama.split(' ')[0]}!` : 'Selamat datang ke Safari Members!');
       mulaAhli();
     }catch(e){
       console.error(e);
@@ -631,10 +653,10 @@ function pasangBayar(){
   pasangTerimaBayar(document, typeof toast === 'function' ? toast : null);
 }
 function viewUtama(){
-  const k = keadaanKad(ahli), nama = esc(ahli.nama.split(' ')[0]);
+  const k = keadaanKad(ahli), nama = esc((ahli.nama || '').split(' ')[0] || 'ahli Safari');
   $('#app').innerHTML = `<div style="display:flex;gap:12px;align-items:center;margin-top:12px">${ahli.foto ? `<img src="${ahli.foto}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--emas)">` : ''}<div><h1 style="text-align:left">Hai, ${nama}</h1>
     <p class="muted" style="margin:2px 0 0">${k.freeWash.length ? `Anda ada ${k.freeWash.length} Free Wash untuk ditebus.` : `Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash.`}</p></div></div>
-    ${statusHtml()}
+    ${statusHtml()}${aktifKadHtml()}
     <button class="btn btn-emas" style="margin-top:14px" id="keTempah">📲 Tempah servis sekarang</button>
     ${kadHtml()}
     ${promosi.length ? `<h2>Promosi terkini</h2><div class="karusel">${promosi.map(promoHtml).join('')}</div>` : ''}
@@ -643,6 +665,7 @@ function viewUtama(){
     <div class="cawangan">${CAWANGAN.map(c => `<button data-caw="${c.id}"><img src="${c.logo}" alt=""><div><b>${c.nama}</b><div class="muted" style="font-size:12px">Pakej & lokasi</div></div></button>`).join('')}</div>
     ${pasangHtml()}`;
   pasangKad(); pasangStatus(); pasangBayar();
+  $$('[data-keprofil]').forEach(b => b.onclick = () => { tab = 'Profil'; render(); window.scrollTo({top:0}); });
   $('#keTempah').onclick = () => { tab = 'Tempah'; render(); window.scrollTo({top:0}); };
   $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; tab = 'Pakej'; render(); window.scrollTo({top:0}); });
   pasangPasang();
@@ -651,12 +674,13 @@ function viewUtama(){
 // ---------- Kad ----------
 function viewKad(){
   muatTetapan(ahli.cawanganUtama || 'mama-lion');
-  $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}
+  $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}${aktifKadHtml()}
     <h2>Cop anda</h2>${dulangHtml()}${infoKadHtml()}
     ${baucarHtml()}
-    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-4 dan ke-8 memberi 1 Free Wash (2 Free Wash bagi setiap kad 8 cop). Selepas cop ke-8, kad bermula semula. Cop dan Free Wash sah selama 12 bulan.</div></div>
+    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} memberi 1 Free Wash — pakej ${esc(namaPakejFW())} untuk semua jenis kenderaan (2 Free Wash bagi setiap kad ${KAD.saiz} cop). Selepas cop ke-${KAD.saiz}, kad bermula semula. Cop pertama perlu pakej ${esc(namaPakejAktif())} untuk mengaktifkan kad. Cop dan Free Wash sah selama 12 bulan.</div></div>
     <h2>Sejarah cucian</h2><div class="panel sejarah">${sejarah.length ? sejarah.map(h => `<div><span>${tarikhBM(h.tarikh + 'T12:00:00')}<br><span class="muted">${esc(CAWANGAN.find(c => c.id === h.cawangan)?.nama || '')} · ${esc(h.plat)}</span></span><span style="text-align:right">${esc(h.pakej)}<br><span class="muted">${h.freeWash ? 'Free Wash' : '+1 cop'}</span></span></div>`).join('') : '<p class="muted" style="margin:0">Belum ada rekod cucian.</p>'}</div>`;
   pasangKad();
+  $$('[data-keprofil]').forEach(b => b.onclick = () => { tab = 'Profil'; render(); window.scrollTo({top:0}); });
 }
 
 // ---------- Promosi ----------
@@ -682,8 +706,8 @@ function viewPakej(){
       ${senarai('kenderaan').some(k => k.harga) ? `<p class="muted" style="margin-top:12px">Caj ikut kenderaan: ${senarai('kenderaan').filter(k => k.harga).map(k => `${esc(k.nama)} ${k.harga > 0 ? '+' : ''}${RM(k.harga)}`).join(', ')}.</p>` : ''}
       <div class="panel maklumat"><h3>${esc(T.namaKedai || CAWANGAN.find(c => c.id === cawPakej).nama)}</h3>
         ${T.alamat ? `<div>${esc(T.alamat)}</div>` : ''}${T.waktuOperasi ? `<div class="muted">${esc(T.waktuOperasi)}</div>` : ''}
-        <div class="dua" style="margin-top:12px">${urlSelamat(T.mapsUrl) ? `<a class="btn btn-zamrud" style="padding:12px" href="${esc(T.mapsUrl)}" target="_blank" rel="noopener">Arah ke kedai</a>` : ''}
-        ${T.whatsapp ? `<a class="btn btn-emas" style="padding:12px" href="https://wa.me/${normTelefon(T.whatsapp)}" target="_blank" rel="noopener">WhatsApp kedai</a>` : ''}</div></div>`}`;
+        ${petaHtml(T, T.namaKedai || CAWANGAN.find(c => c.id === cawPakej).nama)}
+        ${T.whatsapp ? `<a class="btn btn-garis" style="padding:12px;margin-top:8px" href="https://wa.me/${normTelefon(T.whatsapp)}" target="_blank" rel="noopener">💬 WhatsApp kedai</a>` : ''}</div>`}`;
   $$('[data-caw]').forEach(b => b.onclick = () => { cawPakej = b.dataset.caw; render(); });
   if($('#pkTempah')) $('#pkTempah').onclick = () => { tab = 'Tempah'; render(); window.scrollTo({top:0}); };
 }
@@ -810,6 +834,7 @@ if(bukaQS === 'bayar' && ['mama-lion', 'lion-king'].includes(QS.get('c'))) byC =
 if(bukaQS) history.replaceState(null, '', location.pathname + location.hash);
 mulaAhli();
 muatPromosi();
+onSnapshot(doc(db, 'tetapan_ahli', 'kad'), s => { terapTetapanKad(s.data()); render(); }, () => {});
 render();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 // Butang 🔄 Sync: tarik data kad terkini & pastikan apps pelanggan versi terbaru

@@ -1,3 +1,4 @@
+import { bukaPaparan, BAR_KEMBALI_CETAK } from './paparan-lib.js?v=2026.11.16-19';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -179,7 +180,7 @@ export function htmlCetak(L, rekod = {}, foto = ''){
 export function cetak(html){
   const w = window.open('', '_blank');
   if(!w) return alert('Benarkan pop-up untuk mencetak.');
-  w.document.open(); w.document.write(html); w.document.close();
+  w.document.open(); w.document.write(html.replace(/<body([^>]*)>/i, m => m + BAR_KEMBALI_CETAK)); w.document.close();
 }
 export async function kongsiWhatsApp(teks){
   try{ if(navigator.share){ await navigator.share({text: teks}); return; } }catch(e){ if(e.name === 'AbortError') return; }
@@ -303,7 +304,7 @@ export function modulTutup(ctx){
     const pl = q('[data-lt-pulang]'); if(pl) pl.onclick = () => semak(false);
     const ct = q('[data-lt-cetak]'); if(ct) ct.onclick = () => { const L = laporan(); if(L) cetak(htmlCetak(L, st.rekod || {}, st.foto)); };
     const wa = q('[data-lt-wa]'); if(wa) wa.onclick = () => { const L = laporan(); if(L) kongsiWhatsApp(teksWhatsApp(L, st.rekod || {})); };
-    const bs = q('[data-lt-besar]'); if(bs) bs.onclick = () => { const w = window.open(); if(w) w.document.write(`<img src="${st.foto}" style="max-width:100%">`); };
+    const bs = q('[data-lt-besar]'); if(bs) bs.onclick = () => bukaPaparan(st.foto, {tajuk: `Wang tunai ${st.tarikh || ''}`, nama: `Tunai-${st.tarikh || ''}`});
   }
   async function hantar(){
     const L = laporan(); if(!L) return;

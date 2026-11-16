@@ -1,3 +1,4 @@
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.16-19';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -87,6 +88,7 @@ export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
 export const KUASA = [
   {k:'kaunter', ikon:'💳', label:'Kaunter: queue & bayaran', ket:'Terima tempahan, kemas kini progress servis & terima bayaran dalam Apps Pekerja'},
   {k:'progress', ikon:'🔧', label:'Kemas kini progress servis & gambar kenderaan', ket:'Tukar status (Cuci → Kering → QC → Siap), bay, dan ambil gambar keadaan asal kenderaan dalam Queue'},
+  {k:'edit', ikon:'✏️', label:'Edit kenderaan dalam Queue', ket:'Betulkan no. plat, jenis kenderaan, pakej, add-on, item & harga tambahan manual dan catatan sebelum bayaran'},
   {k:'diskaun', ikon:'🎟', label:'Lulus diskaun RM5 / RM10 / RM20', ket:'Beri diskaun terus kepada kenderaan dalam queue (sahkan dengan PIN). Jumlah lain: Dato\' / Datin di Apps Akaun'},
   {k:'tutup',   ikon:'🔐', label:'Tutup kaunter (gambar tunai)', ket:'Ambil gambar wang tunai & kira tunai dalam laci semasa tutup kaunter'},
   {k:'semak',   ikon:'🧮', label:'Semak laporan kewangan', ket:'Semak & sahkan laporan tutup kaunter harian (Daily Sales Report)'},
@@ -373,7 +375,7 @@ export function modulPengurusan(ctx){
       const id = im.dataset.kmImg;
       if(gambar[id] === undefined){ gambar[id] = null; fs.getDoc(fs.doc(C('kehadiran_gambar'), id)).then(s => { gambar[id] = s.exists() ? s.data().data : ''; document.querySelectorAll(`[data-km-img="${id}"]`).forEach(x => { if(gambar[id]) x.src = gambar[id]; }); }).catch(() => {}); }
       else if(gambar[id]) im.src = gambar[id];
-      im.onclick = () => { if(gambar[id]) { const w = window.open(); if(w) w.document.write(`<img src="${gambar[id]}" style="max-width:100%">`); } };
+      im.onclick = () => { if(gambar[id]) bukaPaparan(gambar[id], {tajuk: 'Gambar kehadiran', nama: 'Kehadiran-' + id}); };
     }
   }
   function pasang(onMod){

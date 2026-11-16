@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.16-18">
+<meta name="app-versi" content="2026.11.16-19">
 <meta name="theme-color" content="#14532d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -115,15 +115,16 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-18';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.16-19';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-18';
-import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk } from '../safari-lib.js?v=2026.11.16-18';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-18';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-18';
-import { pasangSync } from '../sync-lib.js?v=2026.11.16-18';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen } from '../pekerja-lib.js?v=2026.11.16-19';
+import { bukaPaparan } from '../paparan-lib.js?v=2026.11.16-19';
+import { normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad } from '../safari-lib.js?v=2026.11.16-19';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.16-19';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.16-19';
+import { pasangSync } from '../sync-lib.js?v=2026.11.16-19';
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
 const EMAIL_PEKERJA = 'alamhayyat20+pekerja@gmail.com';
@@ -265,6 +266,7 @@ function masuk(st){
   unsubSaya.push(onSnapshot(query(K(c,'kehadiran'), where('stafId','==',st.id), where('tarikh','==',t)), s => { hadirHariIni = s.docs.map(d => ({id:d.id, ...d.data()})); if(!cawODipilih && cawKini() !== cawO) setCawO(cawKini()); kepala(); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'roster'), where('tarikh','>=',t), where('tarikh','<=',tambahHari(t,13))), s => { roster = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr));
   unsubSaya.push(onSnapshot(query(K(c,'permohonan'), where('stafId','==',st.id)), s => { mohonSaya = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); render(); }, onErr));
+  unsubSaya.push(onSnapshot(doc(store, 'tetapan_ahli', 'kad'), s => terapTetapanKad(s.data()), () => {}));
   for(const cw of CAW) unsubSaya.push(onSnapshot(doc(store, 'lionsafari', cw.id, 'tetapan', 'umum'), s => { TKall[cw.id] = s.exists() ? s.data() : {}; if(cw.id === cawO){ TK = TKall[cw.id]; if(tab === 'Harga') render(); } }, () => {}));
   setCawO(cawKini());
   unsubSaya.push(onSnapshot(K(c,'info'), s => { infoList = s.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.aktif !== false); renderNav(); if(tab === 'Info') render(); }, () => {}));
@@ -295,7 +297,7 @@ function langganBulan(){
 }
 function langganQ(){
   stopAll(unsubQ); aktifQ = []; tempahanQ = []; fotoKQ = [];
-  if(!saya || !(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'diskaun') || adaKuasa(saya, 'progress')) || !cawO) return;
+  if(!saya || !(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'diskaun') || adaKuasa(saya, 'progress') || adaKuasa(saya, 'edit')) || !cawO) return;
   if(adaKuasa(saya, 'kaunter') || adaKuasa(saya, 'progress')) unsubQ.push(onSnapshot(query(LS(cawO,'foto_keadaan'), where('tarikh','==',hariIni())), s => { fotoKQ = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.masa||0)-(b.masa||0)); if(tab === 'Queue' && !$('#app').dataset.sibuk) render(); }, () => {}));
   const c = cawO; let awal = true, awalO = true;
   unsubQ.push(onSnapshot(query(LS(c,'order'), where('aktif','==',true)), s => {
@@ -321,7 +323,7 @@ function langganMO(){
 }
 function onErr(e){ console.error(e); toast(e.code === 'permission-denied' ? '⚠ Akses ditolak — Firestore Rules belum dikemas kini' : '⚠ ' + e.message); }
 
-const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...((adaKuasa(saya,'kaunter') || adaKuasa(saya,'diskaun') || adaKuasa(saya,'progress')) ? [['Queue', adaKuasa(saya,'kaunter') ? '💳' : adaKuasa(saya,'progress') ? '🔧' : '🎟']] : []), ...(adaKuasa(saya,'urus') ? [['Pekerja','👥']] : []), ...((adaKuasa(saya,'tutup') || adaKuasa(saya,'semak')) ? [['Tutup','🔐']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
+const TABS = () => [['Kehadiran','🕘'], ...(adaKuasa(saya,'chat') ? [['Arahan','💬']] : []), ...(saya?.mo ? [['Order','🧾']] : []), ...((adaKuasa(saya,'kaunter') || adaKuasa(saya,'diskaun') || adaKuasa(saya,'progress') || adaKuasa(saya,'edit')) ? [['Queue', adaKuasa(saya,'kaunter') ? '💳' : adaKuasa(saya,'progress') ? '🔧' : adaKuasa(saya,'edit') ? '✏️' : '🎟']] : []), ...(adaKuasa(saya,'urus') ? [['Pekerja','👥']] : []), ...((adaKuasa(saya,'tutup') || adaKuasa(saya,'semak')) ? [['Tutup','🔐']] : []), ...(pengelola(saya) ? [['Pengelola','🛠']] : []), ['Harga','🏷'], ['Info','📢'], ['Mohon','📝'], ['Roster','📅'], ['Rekod','📊'], ['ID','🪪']];
 const arahanBaru = () => tugasSaya.filter(t => t.status === 'baru').length + mesejSaya.filter(m => m.dari === 'pemilik' && !m.dibaca).length;
 const memoBaru = () => infoList.filter(x => x.jenis === 'memo' && !bacaSaya.has(x.id)).length;
 function renderNav(){
@@ -400,7 +402,7 @@ function viewArahan(){
       <div class="between"><b style="font-size:16px">${t.keutamaan === 'segera' ? '🔴 ' : ''}${esc(t.tajuk)}</b><span class="tag ${kl}">${lbl}</span></div>
       <div class="muted">Daripada ${esc(t.oleh || 'Pemilik')}${t.kumpulanId ? ` · 👥 tugasan berkumpulan (${t.bilPenerima || ''} pekerja)` : ''} · ${fMasaPenuh(t.masaCipta)}${t.tarikhAkhir ? ` · <b style="color:var(--merah)">Sebelum ${fTarikhPendek(t.tarikhAkhir)}</b>` : ''}</div>
       ${t.isi ? `<div class="dok" style="margin-top:6px">${teksKeHtml(t.isi)}</div>` : ''}${t.gambar ? `<img class="prev" src="${t.gambar}" alt="">` : ''}
-      ${t.nota ? `<div class="notice" style="background:var(--hijau2);margin-top:8px">Nota anda: ${esc(t.nota)}</div>` : ''}${t.bukti ? `<img class="prev" src="${t.bukti}" alt="bukti">` : ''}
+      ${t.nota ? `<div class="notice" style="background:var(--hijau2);margin-top:8px">Nota anda: ${esc(t.nota)}</div>` : ''}${t.bukti ? `<img class="prev" data-zoom="Bukti tugasan" src="${t.bukti}" alt="bukti">` : ''}
       ${t.status === 'baru' ? `<button class="btn pri big" data-tg="${t.id}|diterima">👍 TERIMA ARAHAN</button>` : t.status === 'diterima' ? `<button class="btn emas big" data-tg="${t.id}|sedang">🔧 MULA BUAT</button>` : t.status === 'sedang' ? `<button class="btn pri big" data-tgsiap="${t.id}">✅ TANDA SELESAI</button>` : ''}</div>`; }).join('') || '<div class="card muted center">Tiada tugasan. 🎉</div>'}`;
     $$('[data-tg]').forEach(b => b.onclick = async () => { const [id, st] = b.dataset.tg.split('|'); b.disabled = true;
       try{ await updateDoc(doc(K(saya.c,'tugas'), id), {status: st, masaStatus: Date.now()}); }catch(e){ b.disabled = false; onErr(e); } });
@@ -413,7 +415,7 @@ function lukisChat(){
   const box = $('#chatBox'); if(!box) return;
   box.innerHTML = mesejSaya.map(m => { const saya_ = m.dari === 'staf';
     return `<div style="align-self:${saya_ ? 'flex-end' : 'flex-start'};max-width:82%;background:${saya_ ? 'var(--hijau)' : '#f1f5f9'};color:${saya_ ? '#fff' : '#0f172a'};border-radius:14px;padding:8px 11px">
-      ${saya_ ? '' : `<b style="font-size:12px;color:var(--hijau)">${esc(m.nama || 'Pemilik')}${m.kumpulanId ? ` · 👥 kepada ${m.bilPenerima || ''} pekerja` : ''}</b><br>`}${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" style="width:100%;border-radius:10px;margin-top:4px">` : ''}
+      ${saya_ ? '' : `<b style="font-size:12px;color:var(--hijau)">${esc(m.nama || 'Pemilik')}${m.kumpulanId ? ` · 👥 kepada ${m.bilPenerima || ''} pekerja` : ''}</b><br>`}${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" data-zoom="Gambar chat" style="width:100%;border-radius:10px;margin-top:4px;cursor:zoom-in">` : ''}
       <div style="font-size:10px;opacity:.7;text-align:right;margin-top:2px">${fMasaPenuh(m.masaPeranti)}${saya_ && m.dibaca ? ' · ✓✓' : ''}</div></div>`; }).join('') || '<p class="muted center">Mulakan perbualan dengan Dato\' / Datin.</p>';
   box.scrollTop = box.scrollHeight;
 }
@@ -606,7 +608,7 @@ function muatOG(){
     const pasang = () => { const g = OGq[id]?.[j]; if(g) im.src = g; };
     if(OGq[id] === undefined){ OGq[id] = null; getDoc(doc(LS(cawO,'order_gambar'), id)).then(x => { OGq[id] = x.exists() ? x.data() : {}; $$(`[data-ogq^="${id}|"]`).forEach(e => { const g = OGq[id][e.dataset.ogq.split('|')[1]]; if(g) e.src = g; }); }).catch(() => { OGq[id] = {}; }); }
     else pasang();
-    im.onclick = () => { const g = OGq[id] || {}; const w = window.open(); if(w) w.document.write([g.plat, g.emblem, ...(g.calar||[])].filter(Boolean).map(x => `<img src="${x}" style="max-width:100%;display:block;margin:6px 0">`).join('') || 'Tiada gambar'); };
+    im.onclick = () => { const g = OGq[id] || {}, l = [g.plat, g.emblem, ...(g.calar||[])].filter(Boolean); if(!l.length) return toast('Tiada gambar'); const o = aktifQ.find(x => x.id === id); bukaPaparan(l, {tajuk: `📸 ${o?.plat || 'Kenderaan'}`, nama: `Kenderaan-${(o?.plat || id).replace(/\s/g,'')}`, mula: j === 'emblem' ? 1 : 0}); };
   });
 }
 // 🎟 Diskaun oleh pekerja berkuasa: RM5 / RM10 / RM20, disahkan dengan PIN sendiri
@@ -639,7 +641,7 @@ const htmlDiskaunQ = o => { const d = o.diskaunBeri, m = o.diskaunMinta;
     ${m && !d && !DISKAUN_KUASA.includes(+m.amaun) ? '<div class="muted" style="font-size:12px">Jumlah ini perlu kelulusan Dato\' / Datin (Apps Akaun).</div>' : ''}
     ${d && d.sumber === 'akaun' ? '<div class="muted" style="font-size:12px">Diberi oleh pemilik — hanya boleh diubah di Apps Akaun.</div>' : ''}</div>`; };
 function viewQueue(){
-  const kk = adaKuasa(saya, 'kaunter'), kd = adaKuasa(saya, 'diskaun'), kp = kk || adaKuasa(saya, 'progress');
+  const kk = adaKuasa(saya, 'kaunter'), kd = adaKuasa(saya, 'diskaun'), kp = kk || adaKuasa(saya, 'progress'), ke = adaKuasa(saya, 'edit');
   const tp = !kk ? '' : tempahanQ.map(t => `<div class="card" style="border:2px solid var(--emas)"><div class="between"><b style="font-size:18px">📲 ${esc(t.plat)}</b><span class="tag warn">Tempahan</span></div>
     <div class="muted">${esc(t.nama)} · ${esc(t.kenderaan || '')} · ⭐ ${esc(t.ahliKod || '')}</div>
     <div>${esc(t.pakej)}${(t.addon||[]).length ? ' + ' + t.addon.map(a => esc(a.nama)).join(', ') : ''} · <b>${RM(t.jumlah)}</b></div>
@@ -652,8 +654,10 @@ function viewQueue(){
       <div class="muted" style="margin-top:4px">${esc(o.pakej)}${(o.addon||[]).length ? ' + ' + o.addon.map(a => esc(a.nama)).join(', ') : ''} · ${esc(o.kenderaan || '')} · <b>${RM(o.jumlah)}</b>${o.catatan ? '<br>📝 ' + esc(o.catatan) : ''}</div>
       <div style="display:flex;gap:4px;margin:8px 0">${STATUS_Q.map((x,j) => `<span style="flex:1;height:6px;border-radius:3px;background:${j <= i ? 'var(--emas)' : 'var(--line)'}"></span>`).join('')}</div>
       ${kd && !o.freeWash ? htmlDiskaunQ(o) : !kd && o.diskaunBeri ? `<div><span class="tag ok">🎟 Diskaun RM${esc(o.diskaunBeri.amaun)}</span></div>` : ''}
+      ${!kp && ke ? `<div class="row"><button class="btn" data-qedit="${o.id}">✏️ Edit</button></div>` : ''}
       ${!kp ? '' : `<div class="row">${seterus ? `<button class="btn pri" data-qst="${o.id}|${seterus}">→ ${seterus}</button>` : ''}${i > 0 ? `<button class="btn" data-qst="${o.id}|${STATUS_Q[i-1]}" style="font-size:13px">↩ ${STATUS_Q[i-1]}</button>` : ''}
         ${(TK.bay || []).length ? `<select data-qbay="${o.id}" style="width:auto;margin:0;padding:9px">${TK.bay.map(b => `<option ${b === o.bay ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>` : ''}
+        ${ke ? `<button class="btn" data-qedit="${o.id}">✏️ Edit</button>` : ''}
         <button class="btn" data-qfoto="${o.id}">📷 Gambar${fotoKQ.some(f => f.orderId === o.id) ? ` (${fotoKQ.filter(f => f.orderId === o.id).length})` : ''}</button>
         ${!kk ? '' : o.freeWash ? '<span class="tag">Free Wash: bayar di kaunter (PIN)</span>' : `<button class="btn emas" data-qbayar="${o.id}">💳 Bayar</button>`}</div>`}</div>`; }).join('');
   $('#app').innerHTML = pilihCawHtml() + `<div class="muted center" style="margin:-4px 0 8px">Queue kaunter <b>${esc(namaCaw(cawO))}</b> — dikemas kini serentak dengan kaunter</div>` + tp + (q || (tp ? '' : '<div class="card muted center" style="padding:30px">Tiada kenderaan dalam queue.</div>'));
@@ -664,6 +668,7 @@ function viewQueue(){
   $$('[data-qbay]').forEach(x => x.onchange = () => KT.tukarBay(aktifQ.find(o => o.id === x.dataset.qbay), cawO, x.value).catch(onErr));
   $$('[data-qbayar]').forEach(b => b.onclick = () => bayarQ(aktifQ.find(o => o.id === b.dataset.qbayar)));
   $$('[data-qfoto]').forEach(b => b.onclick = () => fotoKeadaanQ(aktifQ.find(o => o.id === b.dataset.qfoto)));
+  $$('[data-qedit]').forEach(b => b.onclick = () => editQ(aktifQ.find(o => o.id === b.dataset.qedit)));
   $$('[data-tpok]').forEach(b => b.onclick = async () => { const t = tempahanQ.find(x => x.id === b.dataset.tpok); b.disabled = true;
     const h = hariIni(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad((OHall[cawO] || []).length + 1, 3)}`;
     try{ await KT.terimaTempahan(t, cawO, {no, bay: TK.bay?.[0] || ''}); toast(`✅ Tempahan ${t.plat} diterima — masuk Queue`); }catch(e){ b.disabled = false; onErr(e); } });
@@ -676,7 +681,8 @@ function fotoKeadaanQ(o){
   if(!o) return;
   $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
   const lukis = () => { const l = fotoKQ.filter(f => f.orderId === o.id);
-    $('#fkSenarai').innerHTML = l.length ? l.map(f => `<div style="text-align:center"><img src="${f.gambar}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px"><div class="muted" style="font-size:12px">${esc(f.nota || '')}${f.nota ? ' · ' : ''}${esc(f.oleh || '')}</div></div>`).join('') : '<p class="muted">Belum ada gambar keadaan untuk kenderaan ini.</p>'; };
+    $('#fkSenarai').innerHTML = l.length ? l.map(f => `<div style="text-align:center"><img src="${f.gambar}" data-fkbesar="${f.id}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:zoom-in"><div class="muted" style="font-size:12px">${esc(f.nota || '')}${f.nota ? ' · ' : ''}${esc(f.oleh || '')}</div></div>`).join('') : '<p class="muted">Belum ada gambar keadaan untuk kenderaan ini.</p>';
+    $$('[data-fkbesar]').forEach((im, j) => im.onclick = () => bukaPaparan(l.map(f => ({src: f.gambar, nota: f.nota})), {tajuk: `Keadaan ${o.plat}`, nama: `Keadaan-${o.plat.replace(/\s/g,'')}`, mula: j})); };
   $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">📷 Keadaan asal — ${esc(o.plat)}</h3><button class="btn" id="fkTutup" style="padding:8px 12px">✕</button></div>
     <p class="muted">Ambil gambar bahagian dalam, calar, kemik, barang berharga atau apa-apa kondisi sebagai bukti keadaan asal sebelum servis. Gambar dicop tarikh, masa & nama anda.</p>
     <div id="fkSenarai" class="grid2" style="grid-template-columns:repeat(3,1fr);gap:8px"></div>
@@ -693,6 +699,73 @@ function fotoKeadaanQ(o){
     }catch(err){ onErr(err); } }
     $('#fkNota').value = ''; lukis(); toast('📷 Gambar keadaan disimpan'); };
   $('#fkFail').onchange = simpan; $('#fkGaleri').onchange = simpan;
+}
+
+// ✏️ Edit kenderaan dalam Queue (kuasa ✏️ Edit): plat, kenderaan, pakej, add-on, item manual & catatan
+function editQ(o){
+  if(!o) return;
+  if(!navigator.onLine) return toast('⚠ Tiada internet');
+  const L = {pakej: itemTK('pakej'), kenderaan: itemTK('kenderaan'), addon: itemTK('addon')};
+  if(!L.kenderaan.length) L.kenderaan = [{id:'k0', nama:'Kereta', harga:0}];
+  let ki = Math.max(0, L.kenderaan.findIndex(k => k.nama === o.kenderaan)), pi = L.pakej.findIndex(p => p.id === o.pakejId);
+  const pilihA = new Set((o.addon || []).map(a => L.addon.findIndex(x => x.id === a.id)).filter(i => i >= 0));
+  const addonLama = (o.addon || []).filter(a => !L.addon.some(x => x.id === a.id)), manual = (o.itemManual || []).map(a => ({...a})), fw = !!o.freeWash;
+  $('#app').dataset.sibuk = '1'; window.scrollTo(0,0);
+  $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">✏️ Edit ${esc(o.no || '')}</h3><button class="btn" id="eqBatal" style="padding:8px 12px">← Kembali</button></div>
+    <label>No. plat</label><input id="eqP" value="${esc(o.plat)}" autocapitalize="characters" style="text-transform:uppercase;font-size:20px;font-weight:800">
+    <label>Jenis kenderaan</label><div class="choices" id="eqK">${L.kenderaan.map((k,i) => `<button class="choice ${i===ki?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b></button>`).join('')}</div>
+    <label>Pakej${fw ? ' (🎁 Free Wash — dikunci)' : ''}</label><div class="choices" id="eqJ">${L.pakej.map((p,i) => `<button class="choice ${i===pi?'sel':''}" data-i="${i}" ${fw && i !== pi ? 'disabled style="opacity:.4"' : ''}><b>${esc(p.nama)}</b><span data-eqhp="${i}"></span></button>`).join('')}</div>
+    <label>Add-on</label><div class="choices" id="eqA">${L.addon.map((a,i) => `<button class="choice ${pilihA.has(i)?'sel':''}" data-i="${i}"><b>${esc(a.nama)}</b><span data-eqha="${i}"></span></button>`).join('')}</div>
+    <label>➕ Item / harga tambahan manual</label><div id="eqM"></div>
+    <div class="row" style="flex-wrap:nowrap;gap:6px"><input id="eqMN" placeholder="cth: Buang tar pintu kiri" style="margin:0;flex:1"><input id="eqMH" type="number" inputmode="decimal" step="0.01" placeholder="RM" style="margin:0;width:90px"><button class="btn" id="eqMT" style="padding:9px 12px">+ Tambah</button></div>
+    <label>Catatan / remarks</label><textarea id="eqC" rows="2">${esc(o.catatan || '')}</textarea>
+    <div class="totalbar"><span>Jumlah baru</span><b id="eqJum"></b></div>
+    <div style="position:sticky;bottom:0;background:#fff;padding:10px 0 4px"><button class="btn pri big" id="eqSimpan">✅ SIMPAN PERUBAHAN</button></div></div>`;
+  const kira = () => {
+    const k = L.kenderaan[ki];
+    L.pakej.forEach((x,i) => { const h = hargaPakejK(x, k), e = $(`[data-eqhp="${i}"]`); if(e) e.textContent = h == null ? 'ikut permintaan' : RM(h); });
+    L.addon.forEach((x,i) => { const h = hargaAddonK(x, k), e = $(`[data-eqha="${i}"]`); if(e) e.textContent = h == null ? 'tiada' : '+' + RM(h); });
+    const p = L.pakej[pi], hp = p ? hargaPakejK(p, k) : null;
+    const addon = [...[...pilihA].map(i => ({id: L.addon[i].id, nama: L.addon[i].nama, harga: hargaAddonK(L.addon[i], k) ?? 0})), ...addonLama];
+    const kasar = r2((fw ? 0 : (hp ?? 0)) + addon.reduce((t,a) => t + (+a.harga || 0), 0) + manual.reduce((t,a) => t + (+a.harga || 0), 0));
+    $('#eqJum').textContent = RM(kasar) + (kasar !== o.jumlahKasar ? ` (asal ${RM(o.jumlahKasar)})` : '');
+    return {k, p, hp, addon, kasar};
+  };
+  const pilih = (box, fn) => $$(`${box} .choice`).forEach(b => b.onclick = () => { if(b.disabled) return; fn(+b.dataset.i, b); kira(); });
+  pilih('#eqK', i => { ki = i; $$('#eqK .choice').forEach((x,j) => x.classList.toggle('sel', j === i)); });
+  pilih('#eqJ', i => { pi = i; $$('#eqJ .choice').forEach((x,j) => x.classList.toggle('sel', j === i)); });
+  pilih('#eqA', (i, b) => { pilihA.has(i) ? pilihA.delete(i) : pilihA.add(i); b.classList.toggle('sel'); });
+  const lukisM = () => { $('#eqM').innerHTML = manual.map((a, i) => `<div class="item"><span>${esc(a.nama)}</span><span><b>${RM(a.harga)}</b> <button class="btn bad" data-eqmb="${i}" style="padding:4px 10px">✕</button></span></div>`).join('');
+    $$('[data-eqmb]').forEach(b => b.onclick = () => { manual.splice(+b.dataset.eqmb, 1); lukisM(); kira(); }); };
+  $('#eqMT').onclick = () => { const n = val('#eqMN'), h = num('#eqMH'); if(!n) return toast('Isi nama item'); if(!(h > 0)) return toast('Isi harga'); manual.push({nama: n, harga: h}); $('#eqMN').value = ''; $('#eqMH').value = ''; lukisM(); kira(); };
+  lukisM(); kira();
+  $('#eqBatal').onclick = () => { delete $('#app').dataset.sibuk; render(); };
+  $('#eqSimpan').onclick = async () => {
+    const plat = paparPlat(val('#eqP')), {k, p, hp, addon, kasar} = kira();
+    if(!normPlat(plat)) return toast('No. plat kosong'); if(!p) return toast('Pilih pakej');
+    if(hp == null) return toast(`${p.nama}: harga ikut permintaan bagi ${k.nama} — guna item manual`);
+    if(val('#eqMN') && !confirm('Item manual belum ditambah. Teruskan tanpa item itu?')) return;
+    const ubah = [];
+    if(normPlat(plat) !== normPlat(o.plat)) ubah.push(`plat ${o.plat}→${plat}`);
+    if(k.nama !== o.kenderaan) ubah.push(`kenderaan ${o.kenderaan}→${k.nama}`);
+    if(p.id !== o.pakejId) ubah.push(`pakej ${o.pakej}→${p.nama}`);
+    if((o.addon || []).map(a => a.id).sort().join() !== addon.map(a => a.id).sort().join()) ubah.push('add-on');
+    if(JSON.stringify(manual) !== JSON.stringify(o.itemManual || [])) ubah.push('item manual');
+    if(val('#eqC') !== (o.catatan || '')) ubah.push('catatan');
+    if(!ubah.length){ delete $('#app').dataset.sibuk; return render(); }
+    const komisen = o.mo ? r2((fw ? 0 : Number(KOM[p.id]) || 0) + addon.reduce((t,a) => t + (Number(KOM[a.id]) || 0), 0)) : (o.komisen || 0);
+    const data = {plat, kenderaan: k.nama, pakejId: p.id, pakej: p.nama, hargaPakej: fw ? 0 : p.harga, tambahanKenderaan: fw ? 0 : r2(hp - p.harga), addon, itemManual: manual,
+      jumlahKasar: kasar, jumlah: kasar, catatan: val('#eqC'), komisen, sejarahEdit: arrayUnion({oleh: saya.nama, masa: Date.now(), ubah: ubah.join(', '), sumber: 'apps-pekerja'}), dikemaskiniOleh: saya.nama, ...tanda()};
+    $('#eqSimpan').disabled = true;
+    try{
+      await updateDoc(doc(LS(cawO, 'order'), o.id), data);
+      if(o.ahli?.id && normPlat(plat) !== normPlat(o.plat)){
+        updateDoc(doc(store, 'ahli', o.ahli.id), {plat: arrayUnion(normPlat(plat)), kenderaan: arrayUnion({plat, jenis: k.nama}), dikemaskini: Date.now()}).catch(console.error);
+        if(o.telefon) setDoc(doc(store, 'ahli_masuk', kunciMasuk(o.telefon, plat)), {token: o.ahli.id}).catch(console.error); }
+      KT.cermin({...o, ...data, sejarahEdit: undefined}, cawO); logTindakan('Edit queue', `${plat}: ${ubah.join(', ')}`);
+      toast(`✅ ${plat} dikemas kini`); delete $('#app').dataset.sibuk; render();
+    }catch(e){ $('#eqSimpan').disabled = false; onErr(e); }
+  };
 }
 function bayarQ(o){
   if(!o) return;

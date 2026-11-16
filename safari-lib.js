@@ -3,7 +3,7 @@
 // Lion Safari V2 (kaunter), Akaun dan Apps Pelanggan.
 //
 // Peraturan kad (ditetapkan pemilik):
-//   • Kad 8 cop. Cop ke-4 → 1 Free Wash, cop ke-8 → 1 Free Wash, kad bermula semula.
+//   • Kad 10 cop (lalai; tetapan_ahli/kad). Cop ke-5 → 1 Free Wash, cop ke-10 → 1 Free Wash, kad bermula semula.
 //   • 1 cop bagi setiap servis pakej BERBAYAR (bukan Free Wash), maksimum 1 cop / plat / hari.
 //   • Cop luput 12 bulan selepas diberi. Free Wash luput 12 bulan selepas diperoleh.
 //   • Free Wash hanya untuk pakej Basic (pakej yang dipilih Admin dalam Tetapan).
@@ -13,7 +13,23 @@
 //       ahli/{token}/sejarah/{orderId}
 // =====================================================================
 
-export const KAD = {saiz: 8, ganjaranPada: [4, 8], tempohCopHari: 365, tempohFreeWashHari: 365};
+// Tetapan kad loyalti (lalai). Nilai sebenar dari tetapan_ahli/kad (diedit di Apps Akaun → Tetapan Apps → Safari Members).
+export const KAD = {saiz: 10, ganjaranPada: [5, 10], tempohCopHari: 365, tempohFreeWashHari: 365,
+  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone'};
+export const MEDAN_PROFIL = {nama: 'Nama penuh', emel: 'E-mel', tarikhLahir: 'Tarikh lahir', cawanganUtama: 'Cawangan utama'};
+export function terapTetapanKad(d){
+  if(!d) return KAD;
+  const saiz = Math.max(2, Math.min(20, parseInt(d.saiz) || KAD.saiz));
+  const g = (Array.isArray(d.ganjaranPada) ? d.ganjaranPada : []).map(n => parseInt(n)).filter(n => n > 0 && n <= saiz).sort((a,b) => a - b);
+  Object.assign(KAD, {saiz, ganjaranPada: g.length ? [...new Set([...g.slice(0, 2), saiz])].slice(-2) : KAD.ganjaranPada,
+    pakejAktif: Array.isArray(d.pakejAktif) ? d.pakejAktif : KAD.pakejAktif, wajibProfil: d.wajibProfil !== false,
+    medanProfil: Array.isArray(d.medanProfil) ? d.medanProfil.filter(m => MEDAN_PROFIL[m]) : KAD.medanProfil,
+    pakejFreeWash: d.pakejFreeWash || KAD.pakejFreeWash});
+  return KAD;
+}
+// Kad aktif: ahli lama yang sudah ada servis/cop dianggap aktif; ahli baru perlu profil lengkap + cucian pertama pakej Promo
+export const profilKurang = a => KAD.wajibProfil ? KAD.medanProfil.filter(m => !String(a?.[m] ?? '').trim()) : [];
+export const kadAktif = a => a?.kadAktif === true || (a?.kadAktif === undefined && ((a?.jumlahServis || 0) > 0 || (a?.cop || []).length > 0 || (a?.freeWash || []).length > 0));
 const HARI_MS = 864e5;
 
 export const normPlat = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -50,22 +66,31 @@ export function keadaanKad(a, kini = Date.now()){
   const luput = fw.filter(f => !f.guna && f.tamat <= kini);
   const seterusnya = KAD.ganjaranPada.find(n => n > cop.length) || KAD.saiz;
   return {cop, bil: cop.length, ganjaran: a?.ganjaran || 0, freeWash: sedia, freeWashLuput: luput, digunakan: fw.filter(f => f.guna),
+    aktif: kadAktif(a), profilKurang: profilKurang(a),
     lagiUntukGanjaran: Math.max(0, seterusnya - cop.length), copLuputSeterusnya: cop.length ? Math.min(...cop.map(c => c.t)) + KAD.tempohCopHari * HARI_MS : null};
 }
 
 // Tambah 1 cop. Pulangkan {ok, sebab?, data (medan untuk dikemas kini), dapatFreeWash}
-export function tambahCop(a, {orderId, plat, cawangan, tarikh, kini = Date.now()}){
+export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', paksa = false, kini = Date.now()}){
   const p = normPlat(plat);
   if((a.copTerakhir || {})[p] === tarikh) return {ok:false, sebab:`Plat ${plat} sudah dapat cop hari ini`};
+  const aktifkan = !kadAktif(a);
+  if(aktifkan && !paksa){
+    const kurang = profilKurang(a);
+    if(kurang.length) return {ok:false, sebab:`Kad belum aktif — pelanggan perlu lengkapkan profil (${kurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan`};
+    if(KAD.pakejAktif.length && !KAD.pakejAktif.includes(pakejId)) return {ok:false, sebab:'Kad belum aktif — cop pertama mesti pakej Promo'};
+  }
   const k = keadaanKad(a, kini);
   let cop = [...k.cop, {t: kini, o: orderId, p, c: cawangan}];
   let ganjaran = k.bil === 0 ? 0 : (a.ganjaran || 0);   // semua cop luput = kad bermula semula
   const freeWash = [...(a.freeWash || [])];
   let dapat = 0, kadSelesai = a.kadSelesai || 0;
   const beri = sebab => { freeWash.push({id: 'fw' + kini.toString(36) + rawak(3), t: kini, tamat: kini + KAD.tempohFreeWashHari * HARI_MS, sebab, dariOrder: orderId, cawangan, guna: null}); dapat++; };
-  if(cop.length >= KAD.ganjaranPada[0] && ganjaran < 1){ beri('Cop ke-4'); ganjaran = 1; }
-  if(cop.length >= KAD.ganjaranPada[1]){ beri('Cop ke-8'); cop = []; ganjaran = 0; kadSelesai++; }
-  return {ok:true, dapatFreeWash: dapat, data: {cop, ganjaran, freeWash, kadSelesai, copTerakhir: {...(a.copTerakhir || {}), [p]: tarikh},
+  const [g1, g2] = KAD.ganjaranPada.length > 1 ? KAD.ganjaranPada : [KAD.ganjaranPada[0], KAD.ganjaranPada[0]];
+  if(g1 !== g2 && cop.length >= g1 && ganjaran < 1){ beri(`Cop ke-${g1}`); ganjaran = 1; }
+  if(cop.length >= g2){ beri(`Cop ke-${g2}`); cop = []; ganjaran = 0; kadSelesai++; }
+  return {ok:true, dapatFreeWash: dapat, diaktifkan: aktifkan, data: {cop, ganjaran, freeWash, kadSelesai, copTerakhir: {...(a.copTerakhir || {}), [p]: tarikh},
+    ...(aktifkan ? {kadAktif: true, kadAktifMasa: kini} : {}),
     jumlahServis: (a.jumlahServis || 0) + 1, dikemaskini: kini}};
 }
 
@@ -76,7 +101,7 @@ export function batalCop(a, orderId){
   const cop = a.cop.filter(c => c.o !== orderId);
   let ganjaran = a.ganjaran || 0, freeWash = [...(a.freeWash || [])];
   if(cop.length < KAD.ganjaranPada[0] && ganjaran >= 1){
-    const i = freeWash.findIndex(f => f.dariOrder && f.sebab === 'Cop ke-4' && !f.guna && (a.cop || []).some(c => c.o === f.dariOrder));
+    const i = freeWash.findIndex(f => f.dariOrder && /^Cop ke-\d+$/.test(f.sebab || '') && f.sebab !== `Cop ke-${KAD.saiz}` && !f.guna && (a.cop || []).some(c => c.o === f.dariOrder));
     if(i >= 0){ freeWash.splice(i, 1); ganjaran = 0; }
   }
   return {cop, ganjaran, freeWash, jumlahServis: Math.max(0, (a.jumlahServis || 1) - 1), dikemaskini: Date.now()};
@@ -163,7 +188,7 @@ export const HARGA_RASMI = {
     it('a-lampu-1b', 'Polish Lampu — 1 biji belakang', 'Polish Lampu', H(80, 80, 80, 80, 80)),
     it('a-lampu-2b', 'Polish Lampu — sepasang belakang', 'Polish Lampu', H(150, 150, 150, 150, 150))
   ],
-  pakejFreeWash: 'p-cuci-luar',
+  pakejFreeWash: 'p-ld-silicone',
   waktuOperasi: 'Setiap hari 9.00 pagi – 12.00 malam',
   telefon: '011-2141 9604',
   alamat: 'Lot 3 Seksyen 20 (GRN 8392), Jalan Gambut / Tun Ismail 8 / Tun Ismail 10, 25000 Kuantan, Pahang'
