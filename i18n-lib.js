@@ -21,10 +21,12 @@ export function pasangBahasa({kamus = {}, pola = [], kunci = 'bahasa', tempat = 
     const kp = kunciN(k.replace(/^\{\}\s*|\s*\{\}$/g, '')), vp = v.replace(/^\{1?\}\s*|\s*\{\d*\}$/g, '').trim();
     if(kp && !kp.includes('{}') && !K.has(kp) && /\p{L}{2}/u.test(kp)) K.set(kp, vp);
   }));
+  pola.forEach((p, i) => { p.n = String(p[0].source).replace(/\(\[\\s\\S\]\+\?\)/g, '').length; p.i = i; });
+  pola.sort((a, b) => (b.n - a.n) || (a.i - b.i));   // pola lebih khusus dahulu
   const asal = new WeakMap();
   const HARI_EN = {Ahd:'Sun', Isn:'Mon', Sel:'Tue', Rab:'Wed', Kha:'Thu', Jum:'Fri', Sab:'Sat'}, BLN_EN = {Mac:'Mar', Mei:'May', Ogo:'Aug', Ogos:'Aug', Okt:'Oct', Dis:'Dec'};
   const INLINE = [[/\b(Ahd|Isn|Sel|Rab|Kha|Jum|Sab)(?= \d{1,2}\b)/g, m => HARI_EN[m]], [/(\b\d{1,2} |^)(Mac|Mei|Ogos?|Okt|Dis)(?=\b)/g, (m, a, b) => a + BLN_EN[b]],
-    [/\b(\d+) minit\b/g, '$1 min'], [/\b(\d+)j (\d+)m\b/g, '$1h $2m']];
+    [/\b(Mac|Mei|Ogos?|Okt|Dis)(?= \d{4}\b)/g, m => BLN_EN[m]], [/\b(\d+) minit\b/g, '$1 min'], [/\b(\d+)j (\d+)m\b/g, '$1h $2m']];
   const inline = t => INLINE.reduce((r, [re, g]) => r.replace(re, g), t);
   function tr(s){
     if(bahasa !== 'en' || s == null) return s;
