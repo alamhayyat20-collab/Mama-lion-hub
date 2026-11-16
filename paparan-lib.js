@@ -190,27 +190,41 @@ export { simpanFail };
 // =====================================================================
 const VENDOR = new URL('./vendor/', import.meta.url).href;
 const muatSkrip = (() => { const c = {}; return src => c[src] ||= new Promise((ok, x) => { const s = document.createElement('script'); s.src = VENDOR + src; s.onload = ok; s.onerror = () => { delete c[src]; x(new Error('Gagal memuat ' + src + ' (semak internet)')); }; document.head.appendChild(s); }); })();
-const bersihHtml = html => String(html).replace(/<script[\s\S]*?<\/script>/gi, '');
+const CSS_CETAK_UMUM = '<style>thead{display:table-header-group}tfoot{display:table-footer-group}tr,img,.box,.grid,.sig,.foto,.card,.k,.s,details{page-break-inside:avoid;break-inside:avoid}h1,h2,h3,h4{page-break-after:avoid;break-after:avoid}@media print{html,body{background:#fff!important}.tiada-cetak,.noprint{display:none!important}}</style>';
+const bersihHtml = html => String(html).replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<\/head>/i, CSS_CETAK_UMUM + '</head>');
 const landskap = html => /size:\s*A4\s+landscape/i.test(html);
 async function janaPdf(html){
   await Promise.all([muatSkrip('html2canvas.min.js'), muatSkrip('jspdf.umd.min.js')]);
   const lanskap = landskap(html), lebar = lanskap ? 1123 : 794;
   const f = document.createElement('iframe');
-  f.style.cssText = `position:fixed;left:-20000px;top:0;width:${lebar}px;height:1200px;border:0;background:#fff`;
-  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>body{max-width:none!important;padding:16px!important;margin:0!important;background:#fff}.tiada-cetak{display:none!important}</style></head>');
+  f.style.cssText = `position:fixed;left:-20000px;top:0;width:${lebar}px;height:60px;border:0;background:#fff`;
+  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>html,body{width:auto!important;max-width:none!important;margin:0!important;background:#fff}body{padding:12px!important}.tiada-cetak{display:none!important}</style></head>');
   document.body.appendChild(f);
   try{
     await new Promise(ok => { f.onload = ok; setTimeout(ok, 4000); });
     const d = f.contentDocument; await Promise.all([...d.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; setTimeout(ok, 3000); })));
     await new Promise(ok => setTimeout(ok, 150));
-    const kanvas = await window.html2canvas(d.body, {scale: 2, backgroundColor: '#fff', useCORS: true, windowWidth: lebar, width: lebar, height: d.body.scrollHeight});
+    const SK = 2, atas = d.body.getBoundingClientRect().top;
+    // titik potong selamat (hujung baris jadual / kotak) supaya baris tidak terputus antara halaman
+    const BLOK = '.grid,.sig,.foto,.box,.k,.s,.card,tr';
+    const potong = [...new Set([...d.querySelectorAll('tr, .grid, .sig, .foto, .box, .card, .k, .s, h1, h2, h3, p, .ln, li')].filter(e => !e.parentElement?.closest(BLOK)).map(e => Math.round((e.getBoundingClientRect().bottom - atas) * SK)))].sort((a, b) => a - b);
+    const kanvas = await window.html2canvas(d.body, {scale: SK, backgroundColor: '#fff', useCORS: true, windowWidth: lebar, width: lebar, height: d.body.scrollHeight});
     const {jsPDF} = window.jspdf, pdf = new jsPDF({unit: 'mm', format: 'a4', orientation: lanskap ? 'landscape' : 'portrait'});
     const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight(), M = 6, lw = W - 2 * M, lh = H - 2 * M;
-    const pxSeHalaman = Math.floor(kanvas.width * lh / lw);
-    for(let y = 0, n = 0; y < kanvas.height; y += pxSeHalaman, n++){
-      const h = Math.min(pxSeHalaman, kanvas.height - y), c = document.createElement('canvas'); c.width = kanvas.width; c.height = h;
+    let pxSeHalaman = Math.floor(kanvas.width * lh / lw);
+    // jimat kertas: jika lebih sedikit daripada 1 halaman, kecilkan supaya muat satu halaman
+    if(kanvas.height > pxSeHalaman && kanvas.height <= pxSeHalaman * 1.3){
+      const k = pxSeHalaman / kanvas.height; pdf.addImage(kanvas.toDataURL('image/jpeg', 0.9), 'JPEG', M + lw * (1 - k) / 2, M, lw * k, lh);
+      return pdf.output('blob');
+    }
+    for(let y = 0, n = 0; y < kanvas.height - 4; n++){
+      let h = Math.min(pxSeHalaman, kanvas.height - y);
+      if(y + pxSeHalaman < kanvas.height){ const ok = potong.filter(b => b > y + pxSeHalaman * 0.45 && b <= y + pxSeHalaman); if(ok.length) h = ok[ok.length - 1] - y + 2; }
+      const c = document.createElement('canvas'); c.width = kanvas.width; c.height = h;
       const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, h); g.drawImage(kanvas, 0, y, kanvas.width, h, 0, 0, kanvas.width, h);
       if(n) pdf.addPage(); pdf.addImage(c.toDataURL('image/jpeg', 0.9), 'JPEG', M, M, lw, h * lw / kanvas.width);
+      pdf.setFontSize(7); pdf.setTextColor(120); pdf.text(`${n + 1}`, W - M, H - 2.5, {align: 'right'});
+      y += h;
     }
     return pdf.output('blob');
   } finally { f.remove(); }
@@ -221,11 +235,16 @@ export function bukaCetak(html, {tajuk = 'Laporan', nama = 'Laporan', auto = fal
   const w = document.createElement('div'); w.className = 'pp-latar'; w.setAttribute('role', 'dialog'); w.style.background = '#334155';
   w.innerHTML = `<div class="pp-bar"><button class="pp-btn pp-kembali" data-pc="tutup">← Kembali</button><b>${esc(tajuk)}</b>
     <button class="pp-btn pp-simpan" data-pc="cetak">🖨 Cetak</button><button class="pp-btn pp-simpan" data-pc="pdf">⬇ PDF</button>${navigator.canShare ? '<button class="pp-btn pp-kembali" data-pc="kongsi" title="Kongsi PDF">📤</button>' : ''}</div>
-    <div class="pp-isi" style="padding:0;display:block;background:#64748b"><iframe title="${esc(tajuk)}" style="width:100%;height:100%;border:0;background:#fff;border-radius:0"></iframe></div>`;
-  const f = w.querySelector('iframe');
-  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>@media screen{body{overflow-x:auto}}.tiada-cetak{display:none!important}</style></head>');
+    <div class="pp-isi" style="padding:8px;display:block;background:#64748b;overflow:auto"><div class="pc-bingkai" style="margin:0 auto;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.35)"><iframe title="${esc(tajuk)}" style="border:0;background:#fff;border-radius:0;transform-origin:0 0;display:block"></iframe></div></div>`;
+  const f = w.querySelector('iframe'), bingkai = w.querySelector('.pc-bingkai'), LEBAR = landskap(html) ? 1123 : 794;
+  f.style.width = LEBAR + 'px'; f.style.height = '60px';
+  f.srcdoc = bersihHtml(html).replace(/<\/head>/i, '<style>@media screen{html,body{width:auto!important;max-width:none!important;margin:0!important}body{padding:12px!important}}.tiada-cetak{display:none!important}</style></head>');
+  const muatSkala = () => { try{ const d = f.contentDocument, h = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight) + 8; f.style.height = h + 'px';
+      const k = Math.min(1, (w.querySelector('.pp-isi').clientWidth - 16) / LEBAR); f.style.transform = `scale(${k})`; bingkai.style.width = (LEBAR * k) + 'px'; bingkai.style.height = (h * k) + 'px'; }catch(_){} };
+  f.addEventListener('load', () => { muatSkala(); setTimeout(muatSkala, 400); });
+  const onRs = () => muatSkala(); window.addEventListener('resize', onRs);
   const kunci = e => { if(e.key === 'Escape') tutup(); };
-  const tutup = (dariBack = false) => { w.remove(); document.removeEventListener('keydown', kunci); if(!dariBack) tarikSejarah(tutup); };
+  const tutup = (dariBack = false) => { w.remove(); window.removeEventListener('resize', onRs); document.removeEventListener('keydown', kunci); if(!dariBack) tarikSejarah(tutup); };
   w.querySelector('[data-pc="tutup"]').onclick = () => tutup();
   const cetakNow = () => { try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){ alert('Cetakan tidak dapat dibuka di sini. Guna ⬇ PDF, kemudian cetak dari fail PDF.'); } };
   w.querySelector('[data-pc="cetak"]').onclick = cetakNow;
@@ -241,7 +260,7 @@ export function bukaCetak(html, {tajuk = 'Laporan', nama = 'Laporan', auto = fal
       if(navigator.canShare?.({files: [fail]})) await navigator.share({files: [fail], title: tajuk}); else { const u = URL.createObjectURL(b); simpanFail(u, fail.name); } }
     catch(e){ if(e.name !== 'AbortError') alert('⚠ ' + e.message); } finally { bk.disabled = false; } };
   document.body.appendChild(w); document.addEventListener('keydown', kunci); tolakSejarah(tutup);
-  if(auto) f.onload = () => setTimeout(cetakNow, 300);
+  if(auto) f.addEventListener('load', () => setTimeout(cetakNow, 300));
   return {tutup, pdf: () => janaPdf(html)};
 }
 export { janaPdf };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-10">
+<meta name="app-versi" content="2026.11.17-11">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -133,15 +133,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-10';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-10';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-10';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-10';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-10';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-10';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-11';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-11';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-11';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-11';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-11';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-11';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-10';
-import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-10';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-11';
+import { hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-11';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1273,7 +1273,7 @@ const tetingkapCetak = () => { let h = ''; return {document: {write: x => { h +=
 function cetakHalaman(tajuk){
   const gaya = [...document.querySelectorAll('style')].map(x => x.outerHTML).join('');
   const isi = $('#app').cloneNode(true); isi.querySelectorAll('.noprint, button, .navkat, .navsub, input[type=file], select').forEach(e => e.remove());
-  bukaCetak(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(tajuk)}</title>${gaya}<style>body{background:#fff;padding:12px}.card{box-shadow:none;border:1px solid #e2e8f0}</style></head><body><h2 style="margin:0 0 8px">🦁 ${esc(tajuk)}</h2>${isi.innerHTML}</body></html>`, {tajuk, nama: tajuk.replace(/\s+/g, '-')});
+  bukaCetak(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(tajuk)}</title>${gaya}<style>body{background:#fff;padding:12px;font-size:10pt}.card{box-shadow:none;border:1px solid #e2e8f0;padding:8px 10px;margin:6px 0}table{width:100%;border-collapse:collapse}td,th{padding:3px 6px;font-size:9.5pt}h3{margin:4px 0}.metric{font-size:15pt}@page{size:A4;margin:10mm}</style></head><body><h2 style="margin:0 0 8px">🦁 ${esc(tajuk)}</h2>${isi.innerHTML}</body></html>`, {tajuk, nama: tajuk.replace(/\s+/g, '-')});
 }
 function bukaModal(html){ $('#modalBox').innerHTML = html; $('#modal').classList.remove('hidden'); $('#modalBox').scrollTop = 0; kemasModal($('#modalBox'), tutupModal); }
 function tutupModal(){ lepasModal($('#modalBox')); $('#modal').classList.add('hidden'); $('#modalBox').innerHTML = ''; }

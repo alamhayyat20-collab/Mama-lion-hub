@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-10';
-import { hariOperasi } from './safari-lib.js?v=2026.11.17-10';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.17-11';
+import { hariOperasi } from './safari-lib.js?v=2026.11.17-11';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -135,26 +135,32 @@ export function teksWhatsApp(L, rekod = {}){
 // ---------------------------------------------------------------------
 export function htmlCetak(L, rekod = {}, foto = '', pra = null){
   const sel = (v, kosong = '') => v ? RMx(v) : kosong;
-  const senarai = (l, f, min = 3) => { const a = l.map(f); while(a.length < min) a.push('_____________________________'); return a.map((x,i) => `<div>${i+1}) ${x}</div>`).join(''); };
+  const senarai = (l, f, min = 2) => { const a = l.map(f); while(a.length < min) a.push('______________________'); return `<div class="senarai">${a.map((x,i) => `<div>${i+1}) ${x}</div>`).join('')}</div>`; };
   const kom = L.bayaran.filter(x => x.dibayar && x.jenis === 'Komisen'), pt = L.bayaran.filter(x => x.dibayar && x.jenis !== 'Komisen');
-  const baris = [...L.baris]; while(baris.length < 12) baris.push(null);
+  const baris = [...L.baris]; while(baris.length < 8) baris.push(null);
+  const pendek = n => String(n || '').trim().split(/\s+/).filter(w => !/^(bin|binti|bt|b\.?|a\/l|a\/p)$/i.test(w)).slice(0, 2).join(' ');
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Daily Sales ${L.tarikh} ${esc(L.namaKedai)}</title><style>
-  @page{size:A4 landscape;margin:9mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#111;margin:0}
-  h1{font-size:17px;text-align:center;margin:0 0 4px;letter-spacing:.04em}.top{display:flex;justify-content:center;gap:40px;font-weight:700;font-size:12px;margin-bottom:6px}
-  table{border-collapse:collapse;width:100%}th,td{border:1px solid #222;padding:3px 4px;vertical-align:middle}th{background:#f4dc8c;font-size:9.5px}td.r{text-align:right}td.c{text-align:center}
-  .tot td{font-weight:700;background:#fff7d6}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;page-break-inside:avoid}
-  .box{border:1px solid #222;padding:6px 8px}.box b{display:inline-block;min-width:170px}.ln{display:flex;justify-content:space-between;border-bottom:1px dotted #999;padding:2px 0}
-  .big{font-size:12.5px;font-weight:700}.sig{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px;text-align:center;font-size:9.5px;page-break-inside:avoid}
-  .sig div{margin-top:38px;padding-top:4px;border-top:1px solid #222}.foto img{max-width:100%;max-height:200px;display:block;margin:4px auto 0;border:1px solid #999}
-  .pos{color:#166534}.neg{color:#b91c1c}.small{font-size:9px;color:#444}@media screen{body{padding:14px;max-width:1150px;margin:auto}}
+  @page{size:A4 landscape;margin:7mm 8mm}*{box-sizing:border-box}html,body{background:#fff}body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#111;margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1{font-size:12.5pt;text-align:center;margin:0 0 2px;letter-spacing:.04em}.top{display:flex;justify-content:center;gap:28px;font-weight:700;font-size:9pt;margin-bottom:4px}
+  table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{border:.6pt solid #222;padding:1.5pt 3pt;vertical-align:middle;line-height:1.15;overflow:hidden}
+  th{background:#f4dc8c;font-size:6.8pt;line-height:1.1}td{font-size:7.6pt}td.r{text-align:right;white-space:nowrap}td.c{text-align:center;white-space:nowrap}
+  td.sat{white-space:nowrap;text-overflow:ellipsis}td.sat span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  thead{display:table-header-group}tr{page-break-inside:avoid;break-inside:avoid}
+  .tot td{font-weight:700;background:#fff7d6}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:5px;page-break-inside:avoid;break-inside:avoid}
+  .box{border:.6pt solid #222;padding:4px 6px;font-size:7.6pt}.box p{margin:4px 0 1px!important}.box b{display:inline}.ln{display:flex;justify-content:space-between;gap:6px;border-bottom:.5pt dotted #999;padding:1px 0}
+  .big{font-size:8.6pt;font-weight:700}.sig{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;text-align:center;font-size:7pt;page-break-inside:avoid;break-inside:avoid}
+  .sig div{margin-top:24px;padding-top:2px;border-top:.6pt solid #222}.foto{page-break-inside:avoid;break-inside:avoid}.foto img{max-width:100%;max-height:150px;display:block;margin:3px auto 0;border:.5pt solid #999}
+  .pos{color:#166534}.neg{color:#b91c1c}.small{font-size:6.6pt;color:#444}.senarai div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media screen{body{padding:10px;width:1080px;margin:auto}}
   </style></head><body>
   ${rekod.percubaan ? `<div style="border:2px dashed #b91c1c;color:#b91c1c;text-align:center;font-weight:800;padding:4px;margin-bottom:6px">REKOD PERCUBAAN — BUKAN JUALAN SEBENAR${rekod.catatanPemilik ? ' · ' + esc(rekod.catatanPemilik) : ''}</div>` : ''}
   ${pra ? `<div style="border:2px solid #92400e;background:#fffbeb;color:#92400e;text-align:center;font-weight:800;padding:5px;margin-bottom:6px;letter-spacing:.03em">LAPORAN PRA-TUTUP — DRAF, BELUM DITUTUP · Cetakan No. ${pra.no} · ${new Date(pra.masa).toLocaleString('en-GB')} · Oleh: ${esc(pra.oleh || '')}</div>` : ''}
   <h1>${esc(L.namaKedai)}</h1><div class="top"><span>TARIKH : ${fT(L.tarikh)}</span><span>HARI : ${L.hari}</span><span>DAILY SALES REPORT</span></div>
-  <table><tr><th style="width:30px">BIL.</th><th style="width:44px">MASA</th><th>JENIS KENDERAAN &amp; NO. PLAT</th><th style="width:60px">RM</th>${LAJUR.map(([,n]) => `<th style="width:62px">${n}</th>`).join('')}<th style="width:70px">CASH/QR/<br>TRANSFER</th><th style="width:80px">TF. NO</th><th style="width:90px">NAME SERVE</th></tr>
-  ${baris.map((b, i) => b ? `<tr><td class="c">${b.bil}</td><td class="c">${b.masa}</td><td>${esc(b.kend)}<br><span class="small">${esc(b.pakej)}</span></td><td class="r">${RMx(b.rm)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(b.nilai[k])}</td>`).join('')}<td class="c">${esc(b.kaedah)}</td><td>${esc(b.tf)}</td><td>${esc(b.serve)}</td></tr>`
+  <table><colgroup><col style="width:3.2%"><col style="width:4.6%"><col style="width:22%"><col style="width:6.2%">${LAJUR.map(() => '<col style="width:6.2%">').join('')}<col style="width:7.4%"><col style="width:7.4%"><col style="width:18.2%"></colgroup>
+  <thead><tr><th>BIL.</th><th>MASA</th><th>JENIS KENDERAAN &amp; NO. PLAT</th><th>RM</th>${LAJUR.map(([,n]) => `<th>${n}</th>`).join('')}<th>CASH/QR/<br>TRANSFER</th><th>TF. NO</th><th>NAME SERVE</th></tr></thead><tbody>
+  ${baris.map((b, i) => b ? `<tr><td class="c">${b.bil}</td><td class="c">${b.masa}</td><td class="sat"><span><b>${esc(b.kend)}</b> <span class="small" style="display:inline">· ${esc(b.pakej)}</span></span></td><td class="r">${RMx(b.rm)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(b.nilai[k])}</td>`).join('')}<td class="c">${esc(b.kaedah)}</td><td class="sat"><span>${esc(b.tf)}</span></td><td class="sat"><span title="${esc(b.serve)}">${esc(pendek(b.serve))}</span></td></tr>`
     : `<tr><td class="c">${i+1}</td><td></td><td>&nbsp;</td><td></td>${LAJUR.map(() => '<td></td>').join('')}<td></td><td></td><td></td></tr>`).join('')}
-  <tr class="tot"><td colspan="3" class="r">JUMLAH :</td><td class="r">${RMx(L.jumlah + L.jumFoc * 0)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(L.jumLajur[k], '-')}</td>`).join('')}<td colspan="3">${L.kereta} kenderaan</td></tr></table>
+  <tr class="tot"><td colspan="3" class="r">JUMLAH :</td><td class="r">${RMx(L.jumlah + L.jumFoc * 0)}</td>${LAJUR.map(([k]) => `<td class="r">${sel(L.jumLajur[k], '-')}</td>`).join('')}<td colspan="3">${L.kereta} kenderaan</td></tr></tbody></table>
   <div class="grid">
     <div class="box"><div class="ln big"><span>TOTAL SALES (RM)</span><span>${RMx(L.jumlah)}</span></div>
       <div class="ln"><span>QR / E-WALLET (RM)</span><span>${RMx(L.qr)}</span></div><div class="ln"><span>TRANSFER (RM)</span><span>${RMx(L.tf)}</span></div>
@@ -176,8 +182,7 @@ export function htmlCetak(L, rekod = {}, foto = '', pra = null){
   ${foto ? `<div class="box foto" style="margin-top:8px;page-break-inside:avoid"><b>GAMBAR WANG TUNAI SEMASA TUTUP KAUNTER</b> <span class="small">— diambil oleh ${esc(rekod.fotoOleh || '')} ${rekod.fotoMasa ? new Date(rekod.fotoMasa).toLocaleString('en-GB') : ''}</span><img src="${foto}"></div>` : ''}
   ${rekod.catatan ? `<div class="box" style="margin-top:8px"><b>NOTE / REMARKS:</b> ${esc(rekod.catatan)}</div>` : ''}
   ${rekod.catatanSemak ? `<div class="box" style="margin-top:8px"><b>CATATAN SEMAKAN:</b> ${esc(rekod.catatanSemak)}</div>` : ''}
-  ${pra ? `<div class="sig" style="grid-template-columns:1fr 1fr"><div>DIKIRA OLEH JURUWANG (KIRAAN 1)<br><b>${esc(rekod.kiraan1?.oleh || '')}</b></div><div>DIKIRA & DISAHKAN OLEH PENYELIA (KIRAAN 2)<br><b>${esc(rekod.kiraan2?.oleh || '')}</b></div></div>` : ''}
-  <div class="sig"><div>CLOSED BY / CASHIER STAFF<br><b>${esc(rekod.ditutupOleh || '')}</b><br>${rekod.masaTutup ? new Date(rekod.masaTutup).toLocaleString('en-GB') : ''}</div>
+  <div class="sig" ${pra ? 'style="grid-template-columns:repeat(6,1fr)"' : ''}>${pra ? `<div>KIRAAN 1 — JURUWANG<br><b>${esc(rekod.kiraan1?.oleh || '')}</b></div><div>KIRAAN 2 — PENYELIA<br><b>${esc(rekod.kiraan2?.oleh || '')}</b></div>` : ''}<div>CLOSED BY / CASHIER STAFF<br><b>${esc(rekod.ditutupOleh || '')}</b><br>${rekod.masaTutup ? new Date(rekod.masaTutup).toLocaleString('en-GB') : ''}</div>
     <div>CHECKED BY / ADMIN FINANCIAL<br><b>${esc(rekod.disemakOleh || '')}</b><br>${rekod.masaSemak ? new Date(rekod.masaSemak).toLocaleString('en-GB') : ''}</div>
     <div>APPROVED BY<br><b>DATIN NUR SAFARINI</b><br>DIRECTOR</div><div>APPROVED BY<br><b>DATO' MUHAMMAD ARIS</b><br>CHAIRMAN</div></div>
   <div class="small" style="margin-top:6px;text-align:right">Dijana oleh apps Mama Lion · Status: ${STATUS_TUTUP[rekod.status || 'draf']}</div>
