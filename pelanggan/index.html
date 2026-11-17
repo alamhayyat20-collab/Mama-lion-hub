@@ -262,15 +262,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-3';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-2';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-2';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT } from '../safari-lib.js?v=2026.11.18-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-3';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-3';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT } from '../safari-lib.js?v=2026.11.18-3';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -398,7 +398,7 @@ const ikonServis = `<div class="ikonservis">
   <div><svg viewBox="0 0 32 32"><circle cx="11" cy="10" r="3.5"/><circle cx="22" cy="10" r="3.5"/><path d="M4 26c0-4.5 3.2-7.5 7-7.5s7 3 7 7.5"/><path d="M15 26c0-4.5 3.2-7.5 7-7.5s6 3 6 7.5"/></svg>FAMILY FRIENDLY</div></div>`;
 // ---------- Nama pakej dari tetapan kad (Apps Akaun) ----------
 const pakejSemua = () => { const m = new Map(); [...CAWANGAN.flatMap(c => tetapan[c.id]?.pakej || []), ...HARGA_RASMI.pakej].forEach(p => { if(p?.id && !m.has(p.id)) m.set(p.id, p); }); return m; };
-function namaPakejFW(){ return pakejSemua().get(KAD.pakejFreeWash)?.nama || 'Luar & Dalam'; }
+function namaPakejFW(){ return KAD.teksFreeWash || pakejSemua().get(KAD.pakejFreeWash)?.nama || 'Luar & Dalam'; }
 function namaPakejAktif(){ const m = pakejSemua(); return KAD.pakejAktif.length ? KAD.pakejAktif.map(id => { const p = m.get(id); if(!p) return id; const h = p.hargaIkut ? [...new Set(Object.values(p.hargaIkut).filter(v => v != null))].slice(0, 3) : [p.harga]; return `${p.nama} (RM${h.join(' / ')})`; }).join(' atau ') : 'berbayar'; }
 // ---------- Peta lokasi & navigasi (lokasi ditetapkan di Apps Akaun → Maklumat kedai) ----------
 function petaHtml(T, nama){

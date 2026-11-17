@@ -138,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-3';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-2';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-2';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-3';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-3';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-2';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-3';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1803,7 +1803,7 @@ function viewTetapanApps(){
   return head + akhir + kadSenarai
     + kadLatihan(T) + kadTetapanAhli() + kadTerimaBayar(T) + kadQrMembers()
     + `<div class="card"><div class="section-title"><h3>🏪 Maklumat kedai & Safari Members</h3><button class="primary" id="tkKedai">Ubah</button></div>
-      <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
+      <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(KAD.teksFreeWash || fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
       <details class="card" style="background:#fff7ed"><summary style="cursor:pointer;font-weight:700">♻️ Pulihkan senarai harga rasmi (asal)</summary>
         <p class="muted">Gunakan <b>hanya</b> jika mahu membuang semua perubahan harga & kembali kepada senarai harga rasmi asal (${HARGA_RASMI.pakej.length} pakej & ${HARGA_RASMI.addon.length} add-on). <b>Semua pakej, add-on & jenis kenderaan yang telah diubah akan DIGANTI.</b> Untuk simpan perubahan harga, guna butang <b>Ubah → SIMPAN</b> pada kad di atas.</p>
         <button class="small danger" id="tkRasmi">♻️ Pulihkan harga rasmi…</button></details>
@@ -1858,7 +1858,7 @@ function kadTetapanAhli(){
     <p class="muted" style="margin-top:0">Digunakan di semua apps & kedua-dua cawangan.</p>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
       <div class="notice" style="margin:0"><b>${KAD.saiz} cop</b> sekad · Free Wash pada cop ke-<b>${KAD.ganjaranPada.join(' & ke-')}</b></div>
-      <div class="notice" style="margin:0">🎁 Pakej Free Wash: <b>${esc(nm(KAD.pakejFreeWash))}</b> (harga ikut jenis kenderaan)</div>
+      <div class="notice" style="margin:0">🎁 Free Wash: <b>${esc(KAD.teksFreeWash || nm(KAD.pakejFreeWash))}</b> (harga ikut jenis kenderaan)</div>
       <div class="notice" style="margin:0">🔓 Aktifkan kad: ${KAD.wajibProfil ? `profil lengkap (${KAD.medanProfil.map(m => MEDAN_PROFIL[m]).join(', ')}) + ` : ''}cop pertama pakej <b>${KAD.pakejAktif.length ? KAD.pakejAktif.map(nm).map(esc).join(' / ') : 'apa-apa'}</b></div></div></div>`;
 }
 function borangTetapanAhli(){
@@ -1867,6 +1867,8 @@ function borangTetapanAhli(){
     <div class="two"><div><label>Bilangan cop sekad</label><input id="taSaiz" type="number" min="2" max="20" value="${KAD.saiz}"></div>
       <div><label>Free Wash pertama pada cop ke-</label><input id="taG1" type="number" min="1" max="20" value="${KAD.ganjaranPada[0]}"></div></div>
     <p class="muted" style="margin:2px 0 0">Free Wash kedua diberi pada cop terakhir (cop ke-<span id="taAkhir">${KAD.saiz}</span>), kemudian kad bermula semula.</p>
+    <label>✍️ Teks Free Wash (dipaparkan kepada pelanggan & kaunter)</label><input id="taTeksFW" value="${esc(KAD.teksFreeWash || '')}" placeholder="cth: Cuci Luar & Dalam + Silicone Tyre (semua jenis kenderaan)" maxlength="120">
+    <div class="muted" style="font-size:12px">Kosongkan untuk guna nama pakej di bawah.</div>
     <label>🎁 Pakej Free Wash (semua jenis kenderaan)</label><select id="taFW">${pk.map(p => `<option value="${esc(p.id)}" ${p.id === KAD.pakejFreeWash ? 'selected' : ''}>${esc(p.nama)}</option>`).join('')}</select>
     <label>🔓 Pakej untuk cop pertama (mengaktifkan kad)</label>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px">${pk.map(p => `<label style="display:flex;gap:8px;align-items:center;margin:0;font-weight:400"><input type="checkbox" data-taaktif="${esc(p.id)}" ${KAD.pakejAktif.includes(p.id) ? 'checked' : ''} style="width:20px;height:20px;margin:0">${esc(p.nama)}${p.hargaIkut ? ` <span class="muted">(RM${[...new Set(Object.values(p.hargaIkut))].join('/')})</span>` : ''}</label>`).join('')}</div>
@@ -1881,7 +1883,7 @@ function borangTetapanAhli(){
     const saiz = parseInt($('#taSaiz').value), g1 = parseInt($('#taG1').value);
     if(!(saiz >= 2 && saiz <= 20)) return toast('Bilangan cop 2 – 20');
     if(!(g1 >= 1 && g1 < saiz)) return toast('Free Wash pertama mesti sebelum cop terakhir');
-    const d = {saiz, ganjaranPada: [g1, saiz], pakejFreeWash: val('#taFW'), pakejAktif: $$('[data-taaktif]').filter(c => c.checked).map(c => c.dataset.taaktif),
+    const d = {saiz, ganjaranPada: [g1, saiz], pakejFreeWash: val('#taFW'), teksFreeWash: val('#taTeksFW'), pakejAktif: $$('[data-taaktif]').filter(c => c.checked).map(c => c.dataset.taaktif),
       wajibProfil: $('#taWajib').checked, medanProfil: $$('[data-tamedan]').filter(c => c.checked).map(c => c.dataset.tamedan), dikemaskini: Date.now(), oleh: nama};
     $('#taSimpan').disabled = true;
     try{
@@ -2119,6 +2121,8 @@ function borangKedai(){
     <div class="two"><div><label>Telefon</label><input id="kdTel" value="${esc(T.telefon||'')}"></div><div><label>No. WhatsApp (untuk pelanggan)</label><input id="kdWa" value="${esc(T.whatsapp||'')}" placeholder="0123456789"></div></div>
     <label>Nota bawah resit</label><input id="kdNota" value="${esc(T.notaResit||'')}">
     <label>Pakej Free Wash (Safari Members)</label><select id="kdFW">${pk.map(p => `<option value="${esc(p.id)}" ${p.id===T.pakejFreeWash?'selected':''}>${esc(p.nama)} — ${RM(p.harga)}</option>`).join('')}</select>
+    <label>✍️ Teks Free Wash (dipaparkan kepada pelanggan & kaunter — semua cawangan)</label><input id="kdTeksFW" value="${esc(KAD.teksFreeWash || '')}" placeholder="cth: Cuci Luar & Dalam + Silicone Tyre (semua jenis kenderaan)" maxlength="120">
+    <div class="muted" style="font-size:12px">Kosongkan untuk guna nama pakej di atas.</div>
     <label>Waktu operasi</label><input id="kdWaktu" value="${esc(T.waktuOperasi||'')}" placeholder="cth Setiap hari 9 pagi – 12 malam">
     <label>Pautan Google Maps</label><input id="kdMaps" value="${esc(T.mapsUrl||'')}" placeholder="https://maps.app.goo.gl/...">
     <label>📍 Koordinat lokasi (untuk peta & Waze dalam Apps Pelanggan)</label><input id="kdLokasi" value="${esc(T.lokasi||'')}" placeholder="cth: 3.8168, 103.3317">
@@ -2132,7 +2136,9 @@ function borangKedai(){
     const d = {namaKedai: val('#kdNama'), alamat: val('#kdAlamat'), telefon: val('#kdTel'), whatsapp: val('#kdWa'), notaResit: val('#kdNota'), pakejFreeWash: val('#kdFW'), waktuOperasi: val('#kdWaktu'), mapsUrl: mp, lokasi: lk,
       bay: $('#kdBay').value.split('\n').map(x => x.trim()).filter(Boolean), dikemaskiniOleh: nama};
     if(!d.bay.length) d.bay = ['Bay 1'];
-    try{ await setDoc(refTK(), d, {merge: true}); tutupModal(); toast('✅ Maklumat kedai disimpan'); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+    try{ await setDoc(refTK(), d, {merge: true});
+      const tk = val('#kdTeksFW'); if(tk !== (KAD.teksFreeWash || '')) await setDoc(doc(store, 'tetapan_ahli', 'kad'), {teksFreeWash: tk, dikemaskini: Date.now(), oleh: nama}, {merge: true});
+      tutupModal(); toast('✅ Maklumat kedai disimpan'); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
   };
 }
 

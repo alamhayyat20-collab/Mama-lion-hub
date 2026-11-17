@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-3';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-2';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.18-2';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-2';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-2';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-3';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.18-3';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-3';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-3';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1157,7 +1157,7 @@ VIEWS['Order Baru'] = {
           <button class="small" id="oLepas">✕</button></div>
           <div class="copbar">${Array.from({length:KAD.saiz}, (_,i) => `<i class="${i < k.bil ? 'on' : ''} ${KAD.ganjaranPada.includes(i+1) ? 'g' : ''}"></i>`).join('')}<span>${k.bil}/${KAD.saiz}</span></div>
           ${!k.aktif ? `<div style="color:#fbbf24;margin:4px 0">🔓 Kad belum aktif — cop pertama perlu pakej ${esc(KAD.pakejAktif.map(id => aktifSahaja('pakej').find(p => p.id === id)?.nama || id).join(' / ') || 'berbayar')}${k.profilKurang.length ? ` & pelanggan lengkapkan profil (${k.profilKurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan` : ''}.</div>` : ''}
-          ${k.freeWash.length ? `<label class="fwtoggle"><input type="checkbox" id="oFW" ${draf.fw ? 'checked' : ''}> 🎁 Guna Free Wash (${k.freeWash.length} ada) — pakej ${esc(fwp?.nama || '')}</label>` : `<div class="muted" style="color:#cbd5e1">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
+          ${k.freeWash.length ? `<label class="fwtoggle"><input type="checkbox" id="oFW" ${draf.fw ? 'checked' : ''}> 🎁 Guna Free Wash (${k.freeWash.length} ada) — ${esc(KAD.teksFreeWash || 'pakej ' + (fwp?.nama || ''))}</label>` : `<div class="muted" style="color:#cbd5e1">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
         $('#oLepas').onclick = () => { draf.ahli = null; draf.fw = null; lukisAhli(); lukisDaftar(); kira(); };
         if($('#oFW')) $('#oFW').onchange = e => {
           if(e.target.checked){

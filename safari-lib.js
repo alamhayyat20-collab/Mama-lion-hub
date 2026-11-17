@@ -21,7 +21,7 @@ export const hariOperasi = (ms = Date.now()) => isoT(new Date(ms - POTONG_JAM * 
 export const tarikhKalendar = (ms = Date.now()) => isoT(new Date(ms));
 export const lepasTengahMalam = (ms = Date.now()) => hariOperasi(ms) !== tarikhKalendar(ms);
 export const KAD = {saiz: 10, ganjaranPada: [5, 10], tempohCopHari: 365, tempohFreeWashHari: 365,
-  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone'};
+  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone', teksFreeWash: ''};
 export const MEDAN_PROFIL = {nama: 'Nama penuh', emel: 'E-mel', tarikhLahir: 'Tarikh lahir', cawanganUtama: 'Cawangan utama'};
 export function terapTetapanKad(d){
   if(!d) return KAD;
@@ -30,7 +30,7 @@ export function terapTetapanKad(d){
   Object.assign(KAD, {saiz, ganjaranPada: g.length ? [...new Set([...g.slice(0, 2), saiz])].slice(-2) : KAD.ganjaranPada,
     pakejAktif: Array.isArray(d.pakejAktif) ? d.pakejAktif : KAD.pakejAktif, wajibProfil: d.wajibProfil !== false,
     medanProfil: Array.isArray(d.medanProfil) ? d.medanProfil.filter(m => MEDAN_PROFIL[m]) : KAD.medanProfil,
-    pakejFreeWash: d.pakejFreeWash || KAD.pakejFreeWash});
+    pakejFreeWash: d.pakejFreeWash || KAD.pakejFreeWash, teksFreeWash: String(d.teksFreeWash || '').trim()});
   return KAD;
 }
 // Kad aktif: ahli lama yang sudah ada servis/cop dianggap aktif; ahli baru perlu profil lengkap + cucian pertama pakej Promo
