@@ -5,7 +5,7 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.17-16';
+import { tambahCop, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.17-17';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
@@ -57,7 +57,7 @@ export function kaunter(ctx){
     try{
       const h = await fs.runTransaction(store, async tx => {
         const s = await tx.get(ref); if(!s.exists()) throw new Error('Ahli tidak dijumpai');
-        const r = tambahCop(s.data(), {orderId: o.id, plat: o.plat, cawangan: c, tarikh: o.tarikhBayar || hariIni(), pakejId: o.pakejId || ''});
+        const r = tambahCop(s.data(), {orderId: o.id, plat: o.plat, cawangan: c, tarikh: o.tarikhBayar || hariIni(), pakejId: o.pakejId || '', jumlah: o.jumlah || 0});
         if(!r.ok) return {ok: false, sebab: r.sebab};
         tx.update(ref, {...r.data, ...T()});
         return {ok: true, bil: r.data.cop.length, dapat: r.dapatFreeWash, selesai: r.data.cop.length === 0, aktif: r.diaktifkan};

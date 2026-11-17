@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-16">
+<meta name="app-versi" content="2026.11.17-17">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -65,35 +65,63 @@ h2{font-size:19px;margin:28px 0 12px}
 .panel{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:var(--r-besar);padding:18px;border:1px solid rgba(195,200,207,.6);margin-top:14px}
 .panel h3{margin:0 0 8px;font-size:16px}
 
-/* ---------- Kad ahli digital (ikut kad fizikal Mama Lion & Lion King) ---------- */
-.kad-pentas{perspective:1200px;margin:16px 0 4px}
-.kad{position:relative;width:100%;aspect-ratio:1.586;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+/* ---------- Kad ahli digital: Lion Bronze / Silver / Gold / Pride (hitam mewah, bingkai logam, timbul 3D) ---------- */
+.kad-pentas{perspective:1200px;margin:16px auto 4px;max-width:520px;container-type:inline-size}
+.kad{--u:calc(100cqw / 460);position:relative;width:100%;aspect-ratio:460/290;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.7,.2,1);cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .kad.balik{transform:rotateY(180deg)}
-.muka{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;color:#1b1b1b;
-  background:linear-gradient(135deg,#ffffff 0%,#f3f3f1 55%,#e9e8e4 100%);box-shadow:0 22px 40px rgba(20,20,20,.28),inset 0 0 0 1px rgba(184,138,46,.55)}
-.muka::before,.muka::after{content:"";position:absolute;width:46%;height:22px;background:linear-gradient(90deg,#1a1a1a 0 55%,#b8862c 55% 62%,#f4dc8c 62% 78%,#b8862c 78% 100%);transform:rotate(-38deg);pointer-events:none}
-.muka::before{left:-18%;top:6%}
-.muka::after{right:-18%;bottom:6%;transform:rotate(-38deg) scaleX(-1)}
-.kilat{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.55),transparent 45%);mix-blend-mode:soft-light;pointer-events:none;z-index:3}
-.depan{padding:14px 16px 12px;display:flex;flex-direction:column;gap:6px}
-.plak{align-self:center;text-align:center;border-radius:10px;padding:4px;background:linear-gradient(180deg,#fff2bf,#c9a144 45%,#8f6a1e);box-shadow:0 4px 10px rgba(110,80,20,.35);position:relative;z-index:2}
-.plak .a{background:linear-gradient(180deg,#fffaf0,#efe6cf);border-radius:7px;padding:3px 12px;font-family:var(--serif);font-weight:700;font-size:clamp(12px,4vw,16px);color:#151515;letter-spacing:.02em;white-space:nowrap}
-.plak .a i{font-style:normal;color:#a87b22}
-.plak .b{background:#111;color:#f1d27e;font-weight:800;letter-spacing:.18em;font-size:clamp(8px,2.6vw,10.5px);padding:3px 10px;margin-top:3px;border-radius:5px}
-.tagline{text-align:center;font-size:clamp(7px,2.2vw,9px);letter-spacing:.32em;color:#444;font-weight:700;margin-top:-1px;position:relative;z-index:2}
-.medan{display:grid;grid-template-columns:auto 1fr;gap:4px 6px;align-items:center;position:relative;z-index:2;margin-top:2px}
-.medan span{background:linear-gradient(180deg,#f6dc8f,#c99a3a);color:#1b1b1b;font-weight:800;font-size:clamp(9px,2.8vw,11.5px);border-radius:999px 6px 6px 999px;padding:3px 10px;white-space:nowrap}
-.medan b{background:#fff;border:1.5px solid #c99a3a;border-radius:7px;padding:2px 9px;font-size:clamp(10px,3.2vw,13px);color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:800;letter-spacing:.02em}
-.kakikad{display:flex;justify-content:space-between;align-items:flex-end;padding-right:12%;font-size:clamp(9px,2.6vw,11px);color:#444;position:relative;z-index:2;margin-top:auto}
-.kakikad .kod{font-family:var(--serif);font-weight:700;letter-spacing:.16em;color:#8f6a1e;font-size:clamp(11px,3.4vw,14px)}
-.kad .foto{position:absolute;right:14px;top:12px;width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #c99a3a;z-index:2;background:#fff}
-.belakang{transform:rotateY(180deg);display:flex;align-items:center;gap:12px;padding:14px 16px}
-.belakang .qr{background:#fff;border-radius:12px;padding:8px;width:40%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:2px solid #c99a3a;flex:none;position:relative;z-index:2}
+.t-bronze{--bingkai:linear-gradient(135deg,#5e3214 0%,#e3ab78 28%,#8a4f22 50%,#f3c494 72%,#5e3214 100%);--t:#e9b27f;--t2:#c99266;--k:244,170,104;--bar:linear-gradient(180deg,#f3c494,#b8743f 55%,#e3ab78);--g1:#0d0a08;--g2:#1c1510}
+.t-silver{--bingkai:linear-gradient(135deg,#6a727a 0%,#f6f8fa 28%,#8c949c 50%,#fff 72%,#6a727a 100%);--t:#e3e7eb;--t2:#aab3bb;--k:150,235,255;--bar:linear-gradient(180deg,#fff,#a9b1b9 55%,#e9edf0);--g1:#09090b;--g2:#18191c}
+.t-gold{--bingkai:linear-gradient(135deg,#7f5c0e 0%,#f7df8f 28%,#a77a16 50%,#fff1b8 72%,#7f5c0e 100%);--t:#ecca6a;--t2:#c5a24c;--k:255,196,70;--bar:linear-gradient(180deg,#fff1b8,#c99a2e 55%,#f2d77c);--g1:#0a0806;--g2:#1b160c}
+.t-pride{--bingkai:linear-gradient(135deg,#7f5c0e 0%,#ffe27a 25%,#a77a16 45%,#d9dee3 62%,#fff 72%,#7f5c0e 100%);--t:#f6c623;--t2:#c9cfd5;--k:255,210,40;--bar:linear-gradient(180deg,#ffe27a,#d9a800 55%,#f6c623);--g1:#050505;--g2:#141414}
+.muka{position:absolute;inset:0;border-radius:calc(var(--u)*18);padding:calc(var(--u)*5);background:var(--bingkai);backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 3px rgba(0,0,0,.45),0 2px 0 #3a3a3a,0 4px 0 #262626,0 6px 0 #161616,0 18px 30px rgba(0,0,0,.45)}
+.dalam{position:relative;width:100%;height:100%;border-radius:calc(var(--u)*13);overflow:hidden;color:var(--t);box-shadow:inset 0 3px 8px rgba(0,0,0,.85),inset 0 -1px 0 rgba(255,255,255,.12);
+  background:linear-gradient(135deg,transparent 49.7%,rgba(255,255,255,.07) 50%,transparent 50.3%),linear-gradient(45deg,transparent 49.7%,rgba(255,255,255,.07) 50%,transparent 50.3%),conic-gradient(from 45deg at 50% 50%,var(--g2),var(--g1) 90deg,var(--g2) 180deg,var(--g1) 270deg,var(--g2))}
+.dalam::before{content:"";position:absolute;inset:0;background:linear-gradient(118deg,rgba(255,255,255,.10),rgba(255,255,255,0) 35%);pointer-events:none}
+.t-pride .dalam::after{content:"";position:absolute;inset:calc(var(--u)*7);border:1px solid var(--t2);border-radius:calc(var(--u)*11);opacity:.55;pointer-events:none}
+.ombak{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flare{position:absolute;width:calc(var(--u)*70);height:calc(var(--u)*70);margin:calc(var(--u)*-35) 0 0 calc(var(--u)*-35);pointer-events:none;
+  background:radial-gradient(circle,rgba(var(--k),1) 0,rgba(var(--k),.55) 6%,rgba(var(--k),.15) 22%,rgba(var(--k),0) 60%),linear-gradient(90deg,rgba(var(--k),0),rgba(var(--k),.9),rgba(var(--k),0)) center/100% 1px no-repeat,linear-gradient(180deg,rgba(var(--k),0),rgba(var(--k),.9),rgba(var(--k),0)) center/1px 80% no-repeat}
+.kilat{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.35),transparent 45%);mix-blend-mode:soft-light;pointer-events:none;z-index:3}
+.isi{position:relative;height:100%;box-sizing:border-box;padding:calc(var(--u)*17) calc(var(--u)*22);display:flex;flex-direction:column;justify-content:space-between}
+.emb{text-shadow:0 -1px 0 rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.28),0 3px 6px rgba(0,0,0,.6)}
+.kepala{display:flex;justify-content:space-between;align-items:flex-start}
+.logo2{display:flex;gap:calc(var(--u)*8);align-items:center}
+.logo2 img{width:calc(var(--u)*40);height:calc(var(--u)*40);border-radius:50%;object-fit:cover;background:#fff;border:calc(var(--u)*2) solid var(--t);box-shadow:0 3px 6px rgba(0,0,0,.7)}
+.logo2 span{font-size:calc(var(--u)*11);font-weight:700;color:var(--t2);line-height:1.25}
+.lambang{border:1.5px solid var(--t);border-radius:calc(var(--u)*6);padding:calc(var(--u)*7) calc(var(--u)*13) calc(var(--u)*8);text-align:center;background:rgba(0,0,0,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -2px 4px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.6)}
+.lambang .bt{display:flex;gap:calc(var(--u)*3);justify-content:center}.lambang .bt svg{width:calc(var(--u)*14);height:calc(var(--u)*14);fill:var(--t)}
+.lambang b{display:block;font-family:Cinzel,var(--serif),serif;font-weight:800;font-size:calc(var(--u)*25);line-height:1;margin-top:calc(var(--u)*4);letter-spacing:.04em}
+.lambang small{display:block;font-size:calc(var(--u)*9);font-weight:700;letter-spacing:.15em;margin-top:calc(var(--u)*3);color:var(--t2)}
+.penghargaan{display:flex;justify-content:space-between;align-items:flex-end;gap:calc(var(--u)*12)}
+.slogan{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:600;font-size:calc(var(--u)*16.5);line-height:1.22;max-width:calc(var(--u)*205);text-shadow:0 -1px 0 rgba(0,0,0,.9),0 2px 4px rgba(0,0,0,.7)}
+.ttd{flex:none;width:calc(var(--u)*150);text-align:center}
+.ttd img{height:calc(var(--u)*44);display:block;margin:0 auto calc(var(--u)*-2);filter:drop-shadow(0 1px 0 rgba(0,0,0,.9)) drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.ttd i{display:block;height:1px;background:linear-gradient(90deg,transparent,var(--t2),transparent)}
+.ttd b{display:block;font-size:calc(var(--u)*9.5);margin-top:calc(var(--u)*3)}.ttd span{display:block;font-size:calc(var(--u)*8.5);color:var(--t2)}
+.namabar{align-self:flex-start;max-width:85%;background:var(--bar);color:#1a1408;font-weight:800;font-size:calc(var(--u)*16);letter-spacing:.03em;padding:calc(var(--u)*5) calc(var(--u)*28) calc(var(--u)*5) calc(var(--u)*13);clip-path:polygon(0 0,100% 0,calc(100% - calc(var(--u)*14)) 100%,0 100%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(255,255,255,.6);filter:drop-shadow(0 3px 3px rgba(0,0,0,.7))}
+.kodbar{display:flex;gap:calc(var(--u)*18);align-items:baseline;margin-top:calc(var(--u)*6)}
+.kodbar .kod{font-family:Cinzel,var(--serif),serif;font-size:calc(var(--u)*16);font-weight:600;letter-spacing:.12em}
+.kodbar span{font-size:calc(var(--u)*12);font-weight:600;color:var(--t2)}
+.belakang{transform:rotateY(180deg)}
+.belakang .jalur{height:calc(var(--u)*30);background:var(--bar);margin-top:calc(var(--u)*18);box-shadow:0 2px 4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.5)}
+.belakang .badan{display:flex;gap:calc(var(--u)*16);align-items:center;padding:calc(var(--u)*14) calc(var(--u)*20)}
+.belakang .qr{background:#fff;border-radius:calc(var(--u)*10);padding:calc(var(--u)*7);width:calc(var(--u)*150);aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:calc(var(--u)*2) solid var(--t);flex:none;box-shadow:0 4px 10px rgba(0,0,0,.7)}
 .belakang .qr img,.belakang .qr canvas{width:100%;height:auto;image-rendering:pixelated}
-.belakang .tc{position:relative;z-index:2;font-size:clamp(8px,2.5vw,10.5px);line-height:1.45;color:#222}
-.belakang .tc b{display:inline-block;background:linear-gradient(180deg,#f6dc8f,#c99a3a);border-radius:999px;padding:2px 9px;font-size:clamp(9px,2.7vw,11px);margin-bottom:3px}
-.belakang .tc ol{margin:0;padding-left:15px}
-.belakang .tc .kod{font-family:var(--serif);font-weight:700;letter-spacing:.14em;color:#8f6a1e;font-size:clamp(11px,3.3vw,14px);display:block;margin-bottom:4px}
+.belakang .tc{font-size:calc(var(--u)*10.5);line-height:1.45;color:var(--t2)}
+.belakang .tc .kod{font-family:Cinzel,var(--serif),serif;font-weight:700;letter-spacing:.12em;color:var(--t);font-size:calc(var(--u)*16);display:block}
+.belakang .tc b{color:var(--t);display:block;font-family:Cinzel,var(--serif),serif;font-size:calc(var(--u)*13);margin:calc(var(--u)*2) 0 calc(var(--u)*4)}
+.belakang .tc ol{margin:0;padding-left:calc(var(--u)*15)}
+/* Peringkat */
+.prk{border-radius:16px;padding:14px;margin-top:12px;color:#f3efe4;background:#111}
+.prk .atas{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.prk h3{margin:0;font-family:Cinzel,var(--serif),serif;font-size:20px;color:var(--t)}
+.prk .bar{height:10px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin:10px 0 6px}.prk .bar i{display:block;height:100%;background:var(--bar)}
+.prk ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.55}
+.prk-semua{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+.prk-semua div{border-radius:12px;padding:10px;background:#141414;color:var(--t);border:1.5px solid var(--t);font-size:12px;line-height:1.4}
+.prk-semua div b{display:block;font-family:Cinzel,var(--serif),serif;font-size:15px}
+.prk-semua div.ini{box-shadow:0 0 0 3px rgba(var(--k),.45)}
 .petunjuk{text-align:center;font-size:13px;color:var(--kelabu);margin-top:8px}
 .infokad{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;font-size:13.5px;align-items:start}
 .infokad i{font-style:normal;width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#f6dc8f,#c99a3a);display:flex;align-items:center;justify-content:center}
@@ -205,6 +233,7 @@ nav button.on{color:#2a1d02;background:linear-gradient(180deg,#f8e7a8,#d7b25a)}
   .cop.baru{animation:none}
 }
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@1,600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
 </head>
 <body>
 <header class="atas" id="atas">
@@ -233,15 +262,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-16';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-17';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-16';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.17-17';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-16';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-16';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-16';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-16';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-17';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-17';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.17-17';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT } from '../safari-lib.js?v=2026.11.17-17';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -420,17 +449,40 @@ function pasangStatus(){
 }
 
 // ---------- Komponen ----------
+const BINTANG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L2 9.5l7.1-.6z"/></svg>';
+function ombakSvg(id, n, belakang){
+  let p = '';
+  for(let i = 0; i < n; i++){ const y0 = belakang ? 60 + i * 2 : 230 + i * 2.2;
+    p += `<path d="M -20 ${y0} C 110 ${150 + i * 5}, 250 ${300 - i * 3.5}, 480 ${120 + i * 4.5}" fill="none" stroke="url(#${id})" stroke-width="0.8" opacity="${(.35 + .04 * (i % 5)).toFixed(2)}"/>`; }
+  return `<svg class="ombak" viewBox="0 0 460 290" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="var(--t)" stop-opacity="0"/><stop offset=".45" stop-color="var(--t)"/><stop offset=".7" stop-color="#fff"/><stop offset="1" stop-color="var(--t)" stop-opacity=".2"/></linearGradient></defs>${p}</svg>`;
+}
 function kadHtml(){
-  const k = keadaanKad(ahli), plat = (ahli.kenderaan?.[0]?.plat) || (ahli.plat || [])[0] || '';
-  return `<div class="kad-pentas"><div class="kad" id="kad" role="button" tabindex="0" aria-label="Kad ahli. Tekan untuk paparkan kod QR.">
-    <div class="muka depan"><div class="kilat"></div>${ahli.foto ? `<img class="foto" src="${ahli.foto}" alt="">` : ''}
-      <div class="plak"><div class="a">MAMA LION <i>&amp;</i> LION KING</div><div class="b">PREMIUM CAR WASH</div></div>
-      <div class="tagline">CLEANER CAR · HAPPIER JOURNEY</div>
-      <div class="medan"><span>Name</span><b>${esc(ahli.nama)}</b><span>Phone No.</span><b>${esc(paparTelefon(ahli.telefon))}</b><span>Vehicle No.</span><b>${esc(paparPlat(plat))}</b></div>
-      <div class="kakikad"><span class="kod">${esc(ahli.kod)}</span><span><b>${k.bil}/${KAD.saiz}</b> stamps${k.freeWash.length ? ` · <b style="color:#8f6a1e">${k.freeWash.length} FREE WASH</b>` : ''}</span></div></div>
-    <div class="muka belakang"><div class="qr" id="qr"></div><div class="tc"><span class="kod">${esc(ahli.kod)}</span><b>Terms &amp; Conditions</b>
-      <ol><li>One stamp per paid wash.</li><li>${KAD.saiz} stamps per card.</li><li>FREE wash at stamp ${KAD.ganjaranPada.join(" &amp; ")}.</li><li>Show this card during redemption.</li><li>Non-transferable. Valid 12 months.</li></ol></div></div>
+  const P = peringkatAhli(ahli), plat = (ahli.kenderaan?.[0]?.plat) || (ahli.plat || [])[0] || '';
+  const sejak = (ahli.pelangganSejak || '').slice(0, 4) || (ahli.daftarMasa ? new Date(ahli.daftarMasa).getFullYear() : '');
+  return `<div class="kad-pentas"><div class="kad t-${P.id}" id="kad" role="button" tabindex="0" aria-label="Kad ${esc(P.nama)}. Tekan untuk paparkan kod QR.">
+    <div class="muka depan"><div class="dalam">${ombakSvg('omb-d', 16)}<span class="flare" style="left:54%;top:39%"></span><span class="flare" style="left:89%;top:85%"></span><div class="kilat"></div>
+      <div class="isi">
+        <div class="kepala"><div class="logo2"><img src="logo-mamalion.jpg" alt=""><img src="logo-lionking.jpg" alt=""><span>Mama Lion<br>&amp; Lion King</span></div>
+          <div class="lambang"><div class="bt">${BINTANG.repeat(P.bintang)}</div><b class="emb">${P.pendek}</b><small>SAFARI MEMBERS</small></div></div>
+        <div class="penghargaan"><div class="slogan">“${esc(P.slogan)}”</div>
+          <div class="ttd"><img src="sign-${P.sign}.png" alt="Tandatangan Datin Nursafarini Jaafar"><i></i><b>Datin Nursafarini Jaafar</b><span>Pengarah &amp; Pemilik Perniagaan</span></div></div>
+        <div><div class="namabar">${esc((ahli.nama || '').toUpperCase())}</div>
+          <div class="kodbar emb"><span class="kod" style="color:var(--t);font-size:calc(var(--u)*16)">${esc(ahli.kod)}</span><span>${esc(paparPlat(plat))}${sejak ? ' · ahli sejak ' + sejak : ''}</span></div></div>
+      </div></div></div>
+    <div class="muka belakang"><div class="dalam">${ombakSvg('omb-b', 10, true)}<div class="jalur"></div>
+      <div class="badan"><div class="qr" id="qr"></div><div class="tc"><span class="kod">${esc(ahli.kod)}</span><b>${esc(P.nama)}</b>
+        <ol><li>1 cop setiap cucian berbayar.</li><li>${KAD.saiz} cop satu kad · Free Wash cop ke-${KAD.ganjaranPada.join(" &amp; ")}.</li><li>Tunjuk kod QR ini di kaunter.</li><li>Tidak boleh dipindah milik.</li></ol></div></div></div></div>
   </div></div><p class="petunjuk">Tekan kad untuk paparkan kod QR</p>`;
+}
+function peringkatHtml(){
+  const k = kemajuanPeringkat(ahli), P = k.p, RM = n => 'RM' + Number(n || 0).toLocaleString('en-MY');
+  return `<div class="prk t-${P.id}"><div class="atas"><div><div style="font-size:12px;opacity:.75">Peringkat kad anda</div><h3>${esc(P.nama)}</h3></div>
+      <div style="text-align:right;font-size:12.5px;opacity:.85">12 bulan terakhir<br><b>${k.st.cucian} cucian · ${RM(k.st.rm)}</b></div></div>
+    ${k.seterusnya ? `<div class="bar" aria-hidden="true"><i style="width:${k.peratus}%"></i></div><div style="font-size:13px">Lagi <b>${k.lagiCucian} cucian</b> atau belanja <b>${RM(k.lagiRM)}</b> untuk naik ke <b>${esc(k.seterusnya.nama)}</b>.</div>`
+      : P.id === 'pride' ? '<div style="font-size:13px;margin-top:8px">Anda pelanggan jemputan istimewa kami. Terima kasih atas kesetiaan anda.</div>' : P.id === 'gold' ? '<div style="font-size:13px;margin-top:8px">Anda di peringkat tertinggi automatik. Kekalkan syarat Gold setiap 12 bulan.</div>' : ''}
+    <ul>${P.faedah.map(f => `<li>${esc(f)}</li>`).join('')}</ul></div>
+    <div class="prk-semua">${SUSUNAN_PERINGKAT.map(id => { const x = PERINGKAT[id]; return `<div class="t-${id} ${id === P.id ? 'ini' : ''}"><b>${esc(x.nama)}</b>${esc(x.syarat)}${x.diskaun ? `<br>Diskaun add-on ${x.diskaun}%` : ''}</div>`; }).join('')}</div>
+    <p class="muted" style="font-size:12px;margin-top:6px">Peringkat dinilai semula setiap 12 bulan. Diskaun tidak boleh digabung dengan promosi lain.</p>`;
 }
 function pasangKad(){
   const kad = $('#kad'); if(!kad) return;
@@ -691,6 +743,7 @@ function viewUtama(){
 function viewKad(){
   muatTetapan(ahli.cawanganUtama || 'mama-lion');
   $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}${aktifKadHtml()}
+    <h2>Peringkat kad</h2>${peringkatHtml()}
     <h2>Cop anda</h2>${dulangHtml()}${infoKadHtml()}
     ${baucarHtml()}
     <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} memberi 1 Free Wash — pakej ${esc(namaPakejFW())} untuk semua jenis kenderaan (2 Free Wash bagi setiap kad ${KAD.saiz} cop). Selepas cop ke-${KAD.saiz}, kad bermula semula. Cop pertama perlu pakej ${esc(namaPakejAktif())} untuk mengaktifkan kad. Cop dan Free Wash sah selama 12 bulan.</div></div>

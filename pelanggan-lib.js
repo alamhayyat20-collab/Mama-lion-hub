@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama } from './safari-lib.js?v=2026.11.17-16';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.17-17';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -17,7 +17,7 @@ const CSS = `.cp-hasil{display:flex;flex-direction:column;gap:6px;margin-top:8px
 .cp-kad{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
 .cp-kad:hover{border-color:#14532d;background:#f0fdf4}.cp-kad .cp-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:none}
 .cp-kad b{display:block}.cp-kad small{display:block;color:#64748b;font-size:12.5px;line-height:1.35}.cp-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin:2px 4px 0 0}
-.cp-ahli{background:#fef3c7;color:#92400e}.cp-lama{background:#e0f2fe;color:#075985}.cp-belum{background:#fee2e2;color:#991b1b}.cp-aktif{background:#dcfce7;color:#166534}
+.cp-ahli{background:#fef3c7;color:#92400e}.pk-bronze{background:#3b2414;color:#f3c494}.pk-silver{background:#1f2328;color:#e3e7eb}.pk-gold{background:#2a2108;color:#f2d77c}.pk-pride{background:#000;color:#f6c623;border:1px solid #f6c623}.cp-lama{background:#e0f2fe;color:#075985}.cp-belum{background:#fee2e2;color:#991b1b}.cp-aktif{background:#dcfce7;color:#166534}
 .cp-p h3{margin:0}.cp-sek{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}.cp-sek h4{margin:0 0 6px;font-size:14px}
 .cp-ln{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted #e2e8f0;font-size:13.5px}.cp-ln span{color:#64748b}
 .cp-aksi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:8px 0}.cp-aksi button,.cp-aksi a{display:flex;align-items:center;justify-content:center;gap:4px;border:0;border-radius:10px;padding:10px;font-weight:700;font-size:13px;background:#e2e8f0;color:#0f172a;cursor:pointer;text-decoration:none;min-height:42px}
@@ -64,7 +64,7 @@ export function modulPelanggan(ctx){
     const k = keadaanKad(a), aktif = kadAktif(a), akhir = a.copTerakhir ? Math.max(0, ...Object.values(a.copTerakhir).map(v => typeof v === 'number' ? v : 0)) : 0;
     return `<button class="cp-kad" data-cp-ahli="${esc(a.id)}"><span class="cp-av" style="background:${warna(a.id)}">${esc(inisial(a.nama))}</span><span style="flex:1;min-width:0">
       <b>${esc(a.nama || '—')} · ${esc(telP(a.telefon))}</b><small>🚗 ${(a.plat || []).map(esc).join(', ') || '—'}</small>
-      <span class="cp-tag cp-ahli">⭐ Ahli ${esc(a.kod || '')}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? `${k.bil}/${KAD.saiz} cop` : '🔓 Kad belum aktif'}</span>${k.freeWash.length ? `<span class="cp-tag cp-aktif">🎁 ${k.freeWash.length} Free Wash</span>` : ''}${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">MONZ</span>' : ''}</span>›</button>`;
+      <span class="cp-tag cp-ahli">⭐ Ahli ${esc(a.kod || '')}</span><span class="cp-tag pk-${peringkatAhli(a).id}">${esc(peringkatAhli(a).nama)}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? `${k.bil}/${KAD.saiz} cop` : '🔓 Kad belum aktif'}</span>${k.freeWash.length ? `<span class="cp-tag cp-aktif">🎁 ${k.freeWash.length} Free Wash</span>` : ''}${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">MONZ</span>' : ''}</span>›</button>`;
   }
   const kadLamaHtml = x => `<button class="cp-kad" data-cp-lama="${esc(x.plat)}"><span class="cp-av" style="background:#64748b">🕘</span><span style="flex:1;min-width:0">
     <b>${esc(x.n || 'Tiada nama')} · ${esc(x.p || x.plat)}</b><small>${x.m ? '🚗 ' + esc(x.m) + ' · ' : ''}sejak ${esc(fT(x.d1))} · belanja ${RM(x.inv)}</small>
@@ -101,9 +101,9 @@ export function modulPelanggan(ctx){
     try{ const s = await fs.getDoc(fs.doc(store, 'ahli', id)); if(s.exists()){ a = {id, ...s.data()}; const i = list.findIndex(x => x.id === id); if(i >= 0) list[i] = a; } }catch(_){}
     if(!a) return ctx.toast('Ahli tidak dijumpai');
     const k = keadaanKad(a), aktif = kadAktif(a), kurang = profilKurang(a).map(m => MEDAN_PROFIL[m] || m);
-    const wa = `https://wa.me/${a.telefon}`;
+    const wa = `https://wa.me/${a.telefon}`, P = peringkatAhli(a), ST = statLawatan(a);
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>⭐ ${esc(a.nama || '—')}</h3><button class="small" data-cp-tutup>✕</button></div>
-      <div><span class="cp-tag cp-ahli">${esc(a.kod || '')}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? '✅ Kad aktif' : '🔓 Kad belum aktif'}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Import MONZ</span>' : ''}</div>
+      <div><span class="cp-tag cp-ahli">${esc(a.kod || '')}</span><span class="cp-tag pk-${P.id}">${P.id === 'pride' ? '👑 ' : ''}${esc(P.nama)}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? '✅ Kad aktif' : '🔓 Kad belum aktif'}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Import MONZ</span>' : ''}</div>
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
         ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
@@ -118,6 +118,11 @@ export function modulPelanggan(ctx){
         ${AKAUN ? `<div class="cp-ln"><span>Promosi WhatsApp</span><b>${a.setujuPromosi ? '✅ Setuju' : '— Tidak'}</b></div>` : ''}
         ${kurang.length ? `<div class="muted" style="font-size:12.5px;margin-top:4px">Profil belum lengkap: ${kurang.map(esc).join(', ')}</div>` : ''}</div>
       <div class="cp-sek"><h4>🚗 Kenderaan (${(a.plat || []).length})</h4>${(a.kenderaan || []).length ? a.kenderaan.map(v => `<div class="cp-ln"><b>${esc(v.plat)}</b><span>${esc([v.model, v.jenis].filter(Boolean).join(' · ') || '—')}</span></div>`).join('') : (a.plat || []).map(p => `<div class="cp-ln"><b>${esc(p)}</b><span>—</span></div>`).join('')}</div>
+      <div class="cp-sek"><h4>🏅 Peringkat kad</h4>
+        <div class="cp-ln"><span>Peringkat semasa</span><b>${esc(P.nama)}${a.pride ? ' (jemputan)' : a.peringkatManual ? ' (ditetapkan manual)' : ''}</b></div>
+        <div class="cp-ln"><span>12 bulan terakhir</span><b>${ST.cucian} cucian · ${RM(ST.rm)}</b></div>
+        ${P.diskaun ? `<div class="cp-ln"><span>Diskaun ahli</span><b>${P.diskaun}% servis tambahan${P.id === 'pride' ? ' & detailing' : ''}</b></div>` : ''}
+        ${AKAUN ? `<div class="cp-aksi" style="margin-bottom:0"><button data-cp-x="pride">${a.pride ? '↩ Tarik Lion Pride' : '👑 Jemput Lion Pride'}</button><button data-cp-x="peringkat">🎚 Tetapkan peringkat</button></div>` : ''}</div>
       <div class="cp-sek"><h4>⭐ Kad loyalti</h4>
         <div class="cp-ln"><span>Cop semasa</span><b>${k.bil}/${KAD.saiz}</b></div><div class="cp-ln"><span>Free Wash tersedia</span><b>${k.freeWash.length}</b></div>
         ${k.freeWash.map(f => `<div class="muted" style="font-size:12.5px">🎁 ${esc(f.sebab || '')} · luput ${esc(fT(f.tamat))}</div>`).join('')}
@@ -161,6 +166,11 @@ export function modulPelanggan(ctx){
         logManual: [...(a.logManual || []), {t, oleh: ctx.pengguna(), apa: '+1 Free Wash', sebab}]}, '+1 Free Wash manual', sebab, '✅ Free Wash ditambah'); };
     if(x('aktif')) x('aktif').onclick = () => { if(!confirm(`Aktifkan kad ${a.nama} sekarang tanpa syarat cucian pertama / profil?`)) return; kemas({kadAktif: true, kadAktifMasa: Date.now()}, 'Aktifkan kad', 'Manual oleh pemilik', '✅ Kad diaktifkan'); };
     x('ubah').onclick = () => borangUbah(a);
+    x('pride').onclick = () => { if(a.pride){ if(confirm(`Tarik kad Lion Pride daripada ${a.nama}?`)) kemas({pride: false, prideMasa: null}, 'Tarik Lion Pride', '', '✅ Lion Pride ditarik'); }
+      else if(confirm(`Jemput ${a.nama} sebagai Lion Pride?\nKad hitam-emas & semua faedah Lion Pride akan aktif serta-merta.`)) kemas({pride: true, prideMasa: Date.now(), prideOleh: ctx.pengguna()}, 'Jemput Lion Pride', '', '👑 Dijemput sebagai Lion Pride'); };
+    x('peringkat').onclick = () => { const v = (prompt('Tetapkan peringkat (taip satu):\nauto = ikut cucian/belanja 12 bulan\nbronze / silver / gold', a.peringkatManual || 'auto') || '').trim().toLowerCase();
+      if(!v) return; if(!['auto', 'bronze', 'silver', 'gold'].includes(v)) return ctx.toast('Pilihan tidak sah');
+      kemas({peringkatManual: v === 'auto' ? null : v}, 'Tetapkan peringkat', v === 'auto' ? 'Automatik' : PERINGKAT[v].nama, '✅ Peringkat dikemas kini'); };
     x('gabung').onclick = () => gabung(a);
     x('padam').onclick = () => padam(a);
   }

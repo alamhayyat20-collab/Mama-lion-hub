@@ -77,7 +77,7 @@ export function keadaanKad(a, kini = Date.now()){
 }
 
 // Tambah 1 cop. Pulangkan {ok, sebab?, data (medan untuk dikemas kini), dapatFreeWash}
-export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', paksa = false, kini = Date.now()}){
+export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', paksa = false, jumlah = 0, kini = Date.now()}){
   const p = normPlat(plat);
   if((a.copTerakhir || {})[p] === tarikh) return {ok:false, sebab:`Plat ${plat} sudah dapat cop hari ini`};
   const aktifkan = !kadAktif(a);
@@ -97,7 +97,49 @@ export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', pak
   if(cop.length >= g2){ beri(`Cop ke-${g2}`); cop = []; ganjaran = 0; kadSelesai++; }
   return {ok:true, dapatFreeWash: dapat, diaktifkan: aktifkan, data: {cop, ganjaran, freeWash, kadSelesai, copTerakhir: {...(a.copTerakhir || {}), [p]: tarikh},
     ...(aktifkan ? {kadAktif: true, kadAktifMasa: kini} : {}),
+    lawatan: [...(a.lawatan || []).filter(l => l.t > kini - 365 * HARI_MS), {t: kini, o: orderId, rm: Number(jumlah) || 0}],
     jumlahServis: (a.jumlahServis || 0) + 1, dikemaskini: kini}};
+}
+
+// ---------------- Peringkat kad: Bronze · Silver · Gold · Lion Pride ----------------
+export const PERINGKAT = {
+  bronze: {id: 'bronze', nama: 'Lion Bronze', pendek: 'BRONZE', bintang: 1, diskaun: 0, syarat: 'Automatik bila daftar Safari Members',
+    faedah: ['Kad cop digital: setiap cucian berbayar = 1 cop', 'Cop ke-5 & ke-10 = FREE WASH', 'Sejarah cucian & resit digital', 'Promosi & tawaran ahli melalui WhatsApp', 'Sah di Mama Lion & Lion King'],
+    slogan: 'Terima kasih kerana memilih kami.', sign: 'emas'},
+  silver: {id: 'silver', nama: 'Lion Silver', pendek: 'SILVER', bintang: 2, diskaun: 10, min: {cucian: 12, rm: 600}, syarat: '≥ 12 cucian ATAU belanja ≥ RM600 dalam 12 bulan',
+    faedah: ['Semua faedah Lion Bronze', 'Diskaun 10% servis tambahan (add-on)', 'Hadiah bulan hari jadi: Silicone Tyre percuma', 'Cop berganda (2 cop) pada hari Isnin', 'Free Wash sah 12 bulan'],
+    slogan: 'Terima kasih atas kesetiaan anda bersama kami.', sign: 'perak'},
+  gold: {id: 'gold', nama: 'Lion Gold', pendek: 'GOLD', bintang: 3, diskaun: 15, min: {cucian: 24, rm: 1500}, syarat: '≥ 24 cucian ATAU belanja ≥ RM1,500 dalam 12 bulan',
+    faedah: ['Semua faedah Lion Silver', 'Diskaun 15% servis tambahan (add-on)', 'Hadiah bulan hari jadi: Free Wash + Water Wax', 'Keutamaan barisan (priority queue) waktu sibuk', '1× Fogging percuma setahun'],
+    slogan: 'Setinggi penghargaan atas kesetiaan anda.', sign: 'emas'},
+  pride: {id: 'pride', nama: 'Lion Pride', pendek: 'PRIDE', bintang: 3, diskaun: 20, jemputan: true, syarat: 'Jemputan pemilik sahaja',
+    faedah: ['Semua faedah Lion Gold', 'Diskaun 20% servis tambahan & detailing', 'Hadiah bulan hari jadi: Premium Wash percuma', 'Laluan VIP: terus ke hadapan barisan', 'Talian WhatsApp terus kepada pengurus', 'Jemputan awal promosi & acara pelanggan', 'Kad fizikal hitam-emas bernombor siri'],
+    slogan: 'Penghargaan istimewa untuk pelanggan teristimewa kami.', sign: 'emas'}
+};
+export const SUSUNAN_PERINGKAT = ['bronze', 'silver', 'gold', 'pride'];
+// Cucian berbayar & belanja dalam 12 bulan (dari rekod lawatan; cop lama sebagai sandaran)
+export function statLawatan(a, kini = Date.now()){
+  const had = kini - 365 * HARI_MS, m = new Map();
+  (a.lawatan || []).forEach(l => { if(l.t > had) m.set(l.o || l.t, l.rm || 0); });
+  (a.cop || []).forEach(c => { if(c.t > had && !m.has(c.o || c.t) && !String(c.o || '').startsWith('manual')) m.set(c.o || c.t, 0); });
+  let rm = 0; m.forEach(v => rm += v);
+  return {cucian: m.size, rm: Math.round(rm)};
+}
+// Peringkat semasa: Pride (jemputan) > tetapan manual pemilik > automatik ikut 12 bulan
+export function peringkatAhli(a, kini = Date.now()){
+  if(!a) return PERINGKAT.bronze;
+  if(a.pride) return PERINGKAT.pride;
+  if(a.peringkatManual && PERINGKAT[a.peringkatManual] && a.peringkatManual !== 'pride') return PERINGKAT[a.peringkatManual];
+  const st = statLawatan(a, kini), lepas = p => st.cucian >= p.min.cucian || st.rm >= p.min.rm;
+  return lepas(PERINGKAT.gold) ? PERINGKAT.gold : lepas(PERINGKAT.silver) ? PERINGKAT.silver : PERINGKAT.bronze;
+}
+// Kemajuan ke peringkat seterusnya (null jika Gold / Pride)
+export function kemajuanPeringkat(a, kini = Date.now()){
+  const p = peringkatAhli(a, kini), st = statLawatan(a, kini);
+  const seterusnya = p.id === 'bronze' ? PERINGKAT.silver : p.id === 'silver' ? PERINGKAT.gold : null;
+  if(!seterusnya || a.peringkatManual) return {p, st, seterusnya: null};
+  return {p, st, seterusnya, lagiCucian: Math.max(0, seterusnya.min.cucian - st.cucian), lagiRM: Math.max(0, seterusnya.min.rm - st.rm),
+    peratus: Math.min(100, Math.round(Math.max(st.cucian / seterusnya.min.cucian, st.rm / seterusnya.min.rm) * 100))};
 }
 
 // Batalkan cop dari order (jika masih dalam kad semasa)
@@ -110,7 +152,7 @@ export function batalCop(a, orderId){
     const i = freeWash.findIndex(f => f.dariOrder && /^Cop ke-\d+$/.test(f.sebab || '') && f.sebab !== `Cop ke-${KAD.saiz}` && !f.guna && (a.cop || []).some(c => c.o === f.dariOrder));
     if(i >= 0){ freeWash.splice(i, 1); ganjaran = 0; }
   }
-  return {cop, ganjaran, freeWash, jumlahServis: Math.max(0, (a.jumlahServis || 1) - 1), dikemaskini: Date.now()};
+  return {cop, ganjaran, freeWash, lawatan: (a.lawatan || []).filter(l => l.o !== orderId), jumlahServis: Math.max(0, (a.jumlahServis || 1) - 1), dikemaskini: Date.now()};
 }
 
 // Guna / pulangkan Free Wash
