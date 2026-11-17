@@ -67,6 +67,9 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 .subnav button.on{background:#14532d;color:#fff}
 #cawBar{max-width:1000px;margin:10px auto 0;padding:0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #cawBar:empty{display:none}
+#cawBar.tiga{grid-template-columns:1fr 1fr 1fr}
+.caw.dua .logo2{display:flex;flex:none}.caw.dua .logo2 img{width:34px;height:34px}.caw.dua .logo2 img+img{margin-left:-10px}
+@media (max-width:640px){#cawBar.tiga{grid-template-columns:1fr 1fr}#cawBar.tiga .caw.dua{grid-column:1/-1}}
 .caw{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid #e5e7eb;border-radius:14px;padding:8px 10px;text-align:left;box-shadow:0 2px 10px #0001}
 .caw img{width:46px;height:46px;object-fit:contain;border-radius:8px;background:#fff;flex:none}
 .caw b{display:block;font-size:15px}.caw span{font-size:12px;color:#6b7280}
@@ -135,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-2';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-1';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-1';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-2';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-2';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-1';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-2';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -340,11 +343,22 @@ const bakiPetty = () => sum(pettyAll, e => e.petty_arah==='masuk' ? e.amaun : -e
 const groupBy = (list, key) => list.reduce((m,e) => (m[e[key]||'Lain-lain'] = (m[e[key]||'Lain-lain']||0) + (Number(e.amaun)||0), m), {});
 
 // ---------- Paparan utama ----------
+// ---- Tetapan kaunter serentak Mama Lion + Lion King ----
+let tkDua = false, tetapanSemua = {};
+async function muatTetapanSemua(){
+  try{ const r = await Promise.all(CAW.map(c => getDoc(doc(store, 'lionsafari', c.id, 'tetapan', 'umum'))));
+    tetapanSemua = Object.fromEntries(CAW.map((c, i) => [c.id, r[i].exists() ? r[i].data() : {}])); if(tkDua) renderShell(); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+}
+const samaSenarai = j => { const l = CAW.map(c => JSON.stringify((tetapanSemua[c.id]?.[j] || []).map(x => ({id: x.id, nama: x.nama, harga: x.harga, hargaIkut: x.hargaIkut || null, aktif: x.aktif !== false})))); return l.every(x => x === l[0]); };
 function renderCawangan(){
   const bar = $('#cawBar');
   bar.className = 'noprint' + (tab === 'Ringkasan' ? ' besar' : '');
-  bar.innerHTML = CAWANGAN.map(c => `<button class="caw ${c.id===cawangan?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${c.id===cawangan?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`).join('');
-  bar.querySelectorAll('[data-caw]').forEach(b => b.onclick = () => tukarCawangan(b.dataset.caw));
+  const bolehDua = tab === 'Tetapan Apps' && tkSeg === 'Kaunter'; if(!bolehDua) tkDua = false;
+  if(bolehDua) bar.className += ' tiga';
+  bar.innerHTML = CAWANGAN.map(c => { const sel = c.id === cawangan && !tkDua; return `<button class="caw ${sel?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${sel?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`; }).join('')
+    + (bolehDua ? `<button class="caw dua ${tkDua?'sel':''}" data-cawdua><span class="logo2">${CAWANGAN.map(c => `<img src="${c.logo}" alt="">`).join('')}</span><div><b>${CAWANGAN.map(c => esc(c.nama)).join(' + ')}</b><span>${tkDua ? '✓ Ubah serentak' : 'Ubah harga serentak'}</span></div></button>` : '');
+  bar.querySelectorAll('[data-caw]').forEach(b => b.onclick = () => { if(tkDua && b.dataset.caw === cawangan){ tkDua = false; renderShell(); return; } tkDua = false; tukarCawangan(b.dataset.caw); });
+  const d = bar.querySelector('[data-cawdua]'); if(d) d.onclick = () => { tkDua = true; muatTetapanSemua(); renderShell(); };
 }
 function tukarCawangan(id){
   if(id === cawangan) return;
@@ -1769,7 +1783,9 @@ const JENIS_TK = {pakej:{label:'Pakej cucian', ikon:'🚿', minit:true}, addon:{
 function viewTetapanApps(){
   const T = tetapanKaunter;
   const seg = `<div class="subnav">${['Kaunter','Pekerja','Pelanggan'].map(x => `<button class="${x===tkSeg?'on':''}" data-tkseg="${x}">${({Kaunter:'🦁 Kaunter (Lion Safari V2)',Pekerja:'👷 Apps Pekerja',Pelanggan:'⭐ Apps Pelanggan'})[x]}</button>`).join('')}</div>`;
-  const head = `<div class="card"><h3 style="margin:0">⚙️ Tetapan Apps — ${esc(namaCawangan())}</h3><p class="muted" style="margin:4px 0 8px">Perubahan di sini terus digunakan oleh semua apps cawangan ${esc(namaCawangan())}. Tukar logo cawangan di atas untuk cawangan lain.</p>${seg}</div>`;
+  const head = (tkDua && tkSeg === 'Kaunter') ? `<div class="card" style="border:2px solid #14532d"><h3 style="margin:0">⚙️ Tetapan Kaunter — ${CAW.map(c => esc(c.nama)).join(' + ')} (serentak)</h3>
+      <p class="muted" style="margin:4px 0 8px">Pakej cucian, servis tambahan & jenis kenderaan yang disimpan di sini <b>terus digunakan oleh kaunter kedua-dua cawangan pada masa yang sama</b>. Senarai dipaparkan dari ${esc(CAW.find(c => c.id === cawangan)?.nama || '')}.</p>${seg}</div>`
+    : `<div class="card"><h3 style="margin:0">⚙️ Tetapan Apps — ${esc(namaCawangan())}</h3><p class="muted" style="margin:4px 0 8px">Perubahan di sini terus digunakan oleh semua apps cawangan ${esc(namaCawangan())}. Tukar logo cawangan di atas untuk cawangan lain.</p>${seg}</div>`;
   if(tkSeg === 'Pekerja') return head + viewStesen() + modulPK.html('Tetapan Pekerja', []) + `<div class="card"><p class="muted" style="margin:0">Kuasa pengelola, MO, ID & PIN: <button class="small" data-ketab="Pekerja">Pekerja → Urus</button> · Roster, memo & peraturan: <button class="small" data-ketab="Pekerja">Pekerja</button></p></div>`;
   if(tkSeg === 'Pelanggan') return head + `<div class="card"><h3>⭐ Safari Members</h3><p class="muted">Kad ${KAD.saiz} cop · cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = Free Wash · cop & Free Wash luput 12 bulan. Pakej Free Wash, WhatsApp, waktu operasi & Google Maps ditetapkan di <b>Kaunter → Maklumat kedai</b>.</p>
       <div class="row"><button class="primary" data-ketab="Promosi">📣 Urus promosi & iklan</button><button data-ketab="Pelanggan">👥 Senarai ahli</button><a class="small" href="../pelanggan/" target="_blank" rel="noopener" style="padding:10px">Buka Apps Pelanggan ↗</a></div></div>`;
@@ -1781,7 +1797,10 @@ function viewTetapanApps(){
     return `<div style="overflow-x:auto"><table class="tbl-harga"><thead><tr><th>${esc(JENIS_TK[j].label)}</th>${KDv.map(k => `<th>${esc(k.nama)}</th>`).join('')}</tr></thead><tbody>${l.map(x => `<tr><td>${esc(x.nama)}</td>${KDv.map(k => { const v = x.hargaIkut ? x.hargaIkut[k.id] : x.harga + (Number(k.harga) || 0); return `<td>${v == null ? '—' : Number(v).toFixed(2)}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`; };
   const fw = (T.pakej || []).find(p => p.id === T.pakejFreeWash);
   const akhir = T.dikemaskiniMasa ? `<div class="notice" style="margin:0 0 10px">💾 Terakhir disimpan: <b>${esc(T.dikemaskiniApa || 'tetapan')}</b> oleh ${esc(T.dikemaskiniOleh || '')} · ${new Date(T.dikemaskiniMasa).toLocaleString('en-GB', {day:'numeric', month:'short', hour:'numeric', minute:'2-digit', hour12:true})}</div>` : '';
-  return head + akhir + Object.entries(JENIS_TK).map(([j, J]) => `<div class="card"><div class="section-title"><h3>${J.ikon} ${J.label}</h3><button class="primary" data-tkubah="${j}">Ubah</button></div><div>${ringkas(j)}</div></div>`).join('')
+  const kadSenarai = Object.entries(JENIS_TK).map(([j, J]) => `<div class="card"><div class="section-title"><h3>${J.ikon} ${J.label}${tkDua ? ' — serentak' : ''}</h3><button class="primary" data-tkubah="${j}">Ubah</button></div>
+    ${tkDua && Object.keys(tetapanSemua).length && !samaSenarai(j) ? `<div class="notice" style="margin:0 0 8px">⚠ Senarai ini <b>berbeza</b> antara ${CAW.map(c => esc(c.nama)).join(' & ')}. Bila disimpan di sini, kedua-dua cawangan akan guna senarai yang sama seperti di bawah.</div>` : tkDua ? '<div class="notice" style="margin:0 0 8px;background:#dcfce7">✅ Sama di kedua-dua cawangan</div>' : ''}<div>${ringkas(j)}</div></div>`).join('');
+  if(tkDua) return head + akhir + kadSenarai;
+  return head + akhir + kadSenarai
     + kadLatihan(T) + kadTetapanAhli() + kadTerimaBayar(T) + kadQrMembers()
     + `<div class="card"><div class="section-title"><h3>🏪 Maklumat kedai & Safari Members</h3><button class="primary" id="tkKedai">Ubah</button></div>
       <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
@@ -2038,7 +2057,7 @@ async function gabungLK(){
 
 const refTK = () => doc(store, 'lionsafari', cawangan, 'tetapan', 'umum');
 function borangSenaraiKaunter(j){
-  const J = JENIS_TK[j];
+  const J = JENIS_TK[j], dua = tkDua;
   let l = (tetapanKaunter[j] || []).map((x,i) => ({...x, id: x.id || `${j}-${i}`, aktif: x.aktif !== false, harga: Number(x.harga)||0}));
   const gb = {}, gbBaru = {};
   let gbSedia = false;
@@ -2054,7 +2073,7 @@ function borangSenaraiKaunter(j){
     return o; }); };
   const img = x => { const g = gbBaru[x.id] !== undefined ? gbBaru[x.id] : gb[x.id]; return g ? `<img src="${g}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;display:block">` : '<div style="width:56px;height:56px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center">📷</div>'; };
   const lukis = () => {
-    bukaModal(`<div class="section-title"><h3>${J.ikon} ${J.label} — ${esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
+    bukaModal(`<div class="section-title"><h3>${J.ikon} ${J.label} — ${dua ? CAW.map(c => esc(c.nama)).join(' + ') : esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
       ${j === 'kenderaan' ? '<p class="muted">Harga ialah <b>tambahan</b> kepada harga pakej (boleh negatif, cth motosikal −5).</p>' : ''}
       <div id="skBox">${l.map((x,i) => `<div style="border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:8px;${x.aktif?'':'opacity:.6'}">
         <div class="row" style="flex-wrap:nowrap;align-items:flex-start">${j !== 'kenderaan' ? `<label style="cursor:pointer;margin:0;position:relative;text-align:center;font-size:11px;font-weight:600;color:#475569"><span data-skimg="${esc(x.id)}">${img(x)}</span>📷 Tukar<input type="file" accept="image/*" data-skg="${i}" data-pf-abai style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:0;top:0"></label>` : ''}
@@ -2064,7 +2083,7 @@ function borangSenaraiKaunter(j){
           <div class="row"><label class="row" style="font-weight:400;margin:0"><input type="checkbox" id="skA${i}" ${x.aktif?'checked':''} style="width:20px;height:20px;margin:0"> Aktif</label>
             <button class="small" data-skup="${i}">▲</button><button class="small" data-skdown="${i}">▼</button><button class="small danger" data-skbuang="${i}">Buang</button></div></div></div></div>`).join('')}</div>
       <button class="small" id="skTambah" style="margin-bottom:10px">+ Tambah ${j === 'kenderaan' ? 'jenis kenderaan' : 'item'}</button>
-      <button class="primary" style="width:100%;padding:14px" id="skSimpan">SIMPAN — TERUS DIGUNAKAN DI KAUNTER</button>`);
+      <button class="primary" style="width:100%;padding:14px" id="skSimpan">${dua ? 'SIMPAN — TERUS DIGUNAKAN DI KAUNTER ML &amp; LK' : 'SIMPAN — TERUS DIGUNAKAN DI KAUNTER'}</button>`);
     $('#mTutup').onclick = tutupModal;
     $('#skTambah').onclick = () => { baca(); const b = {id: `${j}-${Date.now().toString(36)}`, nama: '', harga: 0, aktif: true}; if(matriks) b.hargaIkut = Object.fromEntries(KD.map(k => [k.id, 0])); l.push(b); lukis(); };
     $$('[data-skup]').forEach(b => b.onclick = () => { baca(); const i = +b.dataset.skup; if(i > 0){ [l[i-1], l[i]] = [l[i], l[i-1]]; lukis(); } });
@@ -2077,12 +2096,16 @@ function borangSenaraiKaunter(j){
       if(j === 'pakej' && !bersih.some(x => x.aktif)) return toast('Mesti ada sekurang-kurangnya satu pakej aktif');
       $('#skSimpan').disabled = true;
       try{
-        await setDoc(refTK(), {[j]: bersih, dikemaskiniOleh: nama, dikemaskiniMasa: Date.now(), dikemaskiniApa: J.label}, {merge: true});
-        for(const [id, g] of Object.entries(gbBaru)){
-          if(g) await setDoc(doc(store, 'lionsafari', cawangan, 'gambar', id), {data: g, nama, dikemaskini: serverTimestamp()});
-          else await deleteDoc(doc(store, 'lionsafari', cawangan, 'gambar', id)).catch(() => {});
+        const sasaran = dua ? CAW.map(c => c.id) : [cawangan];
+        for(const c of sasaran){
+          await setDoc(doc(store, 'lionsafari', c, 'tetapan', 'umum'), {[j]: bersih, dikemaskiniOleh: nama, dikemaskiniMasa: Date.now(), dikemaskiniApa: J.label + (dua ? ' (serentak ML + LK)' : '')}, {merge: true});
+          for(const [id, g] of Object.entries(gbBaru)){
+            if(g) await setDoc(doc(store, 'lionsafari', c, 'gambar', id), {data: g, nama, dikemaskini: serverTimestamp()});
+            else await deleteDoc(doc(store, 'lionsafari', c, 'gambar', id)).catch(() => {});
+          }
         }
-        tutupModal(); toast(`✅ ${J.label} disimpan — terus digunakan di kaunter & apps`);
+        tutupModal(); toast(dua ? `✅ ${J.label} disimpan di ${CAW.map(c => c.nama).join(' & ')} — terus digunakan di kedua-dua kaunter` : `✅ ${J.label} disimpan — terus digunakan di kaunter & apps`);
+        if(dua) muatTetapanSemua();
       }catch(e){ toast('⚠ Gagal: ' + (e.code || e.message)); $('#skSimpan').disabled = false; }
     };
   };
