@@ -269,6 +269,9 @@ service cloud.firestore {
     match /kakitangan/{cawangan}/log/{id} {
       allow create: if staffApp() && request.resource.data.masa == request.time
         && request.resource.data.stafId == request.resource.data.olehId && olehKuasaMana(cawangan);
+      // Masuk kaunter dengan ID Akaun (pengurusan): direkod automatik
+      allow create: if dalaman() && request.resource.data.masa == request.time && request.resource.data.idStaf == 'AKAUN'
+        && request.resource.data.stafId == 'akaun-' + request.auth.uid;
     }
     function olehKuasaMana(c) {
       return request.resource.data.olehId is string

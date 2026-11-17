@@ -294,6 +294,7 @@ export const KAMUS_PEKERJA = {
 };
 
 export const KAMUS_KAUNTER = {
+  "ID Akaun ini tiada akses pengurusan — sila masuk dengan PIN": "This Akaun ID has no management access — please sign in with PIN",
   "🕒 Masuk": "🕒 In",
   "harga manual": "manual price",
   "Harga Bike Wash (RM) *": "Bike Wash price (RM) *",
@@ -392,6 +393,7 @@ export const KAMUS_KAUNTER = {
 };
 
 export const KAMUS_AKAUN = {
+  "Ke Kaunter Mama Lion": "Go to Mama Lion Counter",
   "Ke Kaunter Lion King": "Go to Lion King Counter",
   // Login & shell
   '🦁 Akaun Mama Lion': '🦁 Mama Lion Accounts', 'Akaun Mama Lion': 'Mama Lion Accounts', 'Akaun ML': 'ML Accounts', 'Log Masuk Management': 'Management Login', 'Log Masuk': 'Log In', 'Log Keluar': 'Log Out', 'Guna email & kata laluan yang sama seperti LionSafari.': 'Use the same email & password as LionSafari.',

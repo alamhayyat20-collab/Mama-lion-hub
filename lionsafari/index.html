@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-21">
+<meta name="app-versi" content="2026.11.17-22">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -167,22 +167,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-21';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-22';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-21';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-22';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-21';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-21';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-21';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-21';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-21';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-21';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-21';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-21';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-21';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-22';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-22';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-22';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-22';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-22';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-22';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-22';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-22';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-22';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -267,11 +267,13 @@ const auth = getAuth(fbApp);
 const store = initializeFirestore(fbApp, {localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})});
 // Cawangan peranti ini (dipilih sekali pada setiap telefon/tablet kaunter)
 let cawangan = (() => { try{ const c = localStorage.getItem('ls_cawangan'); return CAWANGAN.some(x => x.id === c) ? c : null; }catch(_){ return null; } })();
-// Pautan terus dari Akaun: ../lionsafari/?c=lion-king → buka kaunter cawangan itu
+// Pautan terus dari Akaun: ../lionsafari/?c=lion-king&dari=akaun → buka kaunter cawangan itu dengan ID Akaun
+let masukDariAkaun = false;
 (() => { try{ const u = new URL(location.href), c = u.searchParams.get('c');
   if(c && CAWANGAN.some(x => x.id === c)){
     if(c !== cawangan){ cawangan = c; localStorage.setItem('ls_cawangan', c); localStorage.removeItem('ls_staf'); }
-    u.searchParams.delete('c'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+    if(u.searchParams.get('dari') === 'akaun'){ masukDariAkaun = true; localStorage.removeItem('ls_staf'); }
+    u.searchParams.delete('c'); u.searchParams.delete('dari'); history.replaceState(null, '', u.pathname + u.search + u.hash);
   } }catch(_){} })();
 const infoCaw = () => CAWANGAN.find(x => x.id === cawangan) || {id:cawangan, nama:cawangan, kedai:'Premium Carwash', logo:''};
 const col = n => collection(store, 'lionsafari', cawangan, n);
@@ -400,9 +402,13 @@ function mulaCawangan(){
     stafLoaded = true;
     if(!staf){
       let simpan = null; try{ simpan = JSON.parse(localStorage.getItem('ls_staf') || 'null'); }catch(_){}
-      const st = simpan && simpan.c === cawangan && Date.now() - simpan.t < 12*3600e3 && stafList.find(x => x.id === simpan.id && x.aktif !== false);
-      if(st) masukStaf(st); else renderPinScreen();
+      const sah = simpan && simpan.c === cawangan && Date.now() - simpan.t < 12*3600e3;
+      const st = sah && !simpan.akaun && stafList.find(x => x.id === simpan.id && x.aktif !== false);
+      if(st) masukStaf(st);
+      else if(masukDariAkaun || (sah && simpan.akaun)){ const baru = masukDariAkaun; masukDariAkaun = false; masukIdAkaun(baru); }
+      else renderPinScreen();
     } else {
+      if(staf.akaun){ refreshLive(); return; }
       const baru = stafList.find(x => x.id === staf.id);
       if(!baru || baru.aktif === false){ kunci(); return; }
       staf = baru; refreshLive();
@@ -531,9 +537,26 @@ function renderSetupPertama(err){
     <div class="muted" style="margin-top:8px">Skrin ini akan bertukar sendiri sebaik sahaja staf didaftarkan.</div></div>`;
 }
 
+// Masuk kaunter dengan ID yang sama seperti Apps Akaun (pengurusan / pemilik) — tanpa PIN, direkod dalam log
+async function masukIdAkaun(baru){
+  try{
+    const em = (dev?.email || '').toLowerCase();
+    const q = await getDocs(query(collection(store, 'staff'), where('email', '==', em)));
+    const rek = q.empty ? null : q.docs[0].data();
+    if(!rek || rek.role !== 'Management'){ toast('ID Akaun ini tiada akses pengurusan — sila masuk dengan PIN'); return renderPinScreen(); }
+    const s = {id: 'akaun-' + dev.uid, idStaf: 'AKAUN', nama: rek.name || em, peranan: 'Admin', akaun: true, emel: em, aktif: true, kuasa: {}};
+    masukStaf(s);
+    if(baru){
+      const t = today();
+      setDoc(doc(collection(store, 'kakitangan', PUSAT, 'log')), {stafId: s.id, idStaf: 'AKAUN', nama: s.nama, tindakan: 'Masuk Apps Kaunter (ID Akaun)',
+        butiran: `${infoCaw().nama} · ${em}`, tarikh: t, bulan: t.slice(0,7), sumber: 'kaunter', masa: serverTimestamp()}).catch(e => console.warn('log masuk', e));
+      toast(`👤 Masuk sebagai ${s.nama} (ID Akaun)`);
+    }
+  }catch(e){ console.error(e); renderPinScreen(); }
+}
 function masukStaf(s){
   staf = s;
-  try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now()})); }catch(_){}
+  try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now(), ...(s.akaun ? {akaun: true} : {})})); }catch(_){}
   if(!tabsStaf(s).includes(tab)) tab = tabsStaf(s)[0] || 'Queue';
   langganHari();
   if(tabsStaf(s).includes('Pekerja')) modulPK.mula(); else modulPK.henti();
