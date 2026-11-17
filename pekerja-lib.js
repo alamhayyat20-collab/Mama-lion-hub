@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.17-22';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.17-23';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -99,7 +99,9 @@ export const KUASA = [
   {k:'hadir',   ikon:'👀', label:'Lihat kehadiran', ket:'Lihat punch in / out semua pekerja'},
   {k:'info',    ikon:'📢', label:'Memo, peraturan & SOP', ket:'Tulis memo, Buku Peraturan Kerja dan SOP'},
   {k:'promosi', ikon:'🎁', label:'Promosi Apps Pelanggan', ket:'Urus promosi & iklan dalam Apps Pelanggan'},
-  {k:'chat',    ikon:'💬', label:'Chat & arahan pemilik', ket:'Terima tugasan & chat terus dengan Dato\' / Datin'}
+  {k:'chat',    ikon:'💬', label:'Chat & arahan pemilik', ket:'Terima tugasan & chat terus dengan Dato\' / Datin'},
+  {k:'ahli',    ikon:'⭐', label:'Safari Members di kaunter', ket:'Buka tab Safari Members dengan PIN: lihat rekod pelanggan & hantar jemputan keahlian'},
+  {k:'buka',    ikon:'🔓', label:'Buka kunci kaunter', ket:'Buka skrin kaunter yang dikunci automatik (ID latihan cth OFFICE) dengan PIN sendiri'}
 ];
 export const adaKuasa = (st, k) => !!st?.kuasa?.[k];
 export const ikonKuasa = st => [st?.mo ? '🧾' : '', ...KUASA.filter(x => st?.kuasa?.[x.k]).map(x => x.ikon)].join('');

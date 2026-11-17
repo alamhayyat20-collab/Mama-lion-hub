@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-22">
+<meta name="app-versi" content="2026.11.17-23">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -71,6 +71,10 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 .plate{font-size:19px;font-weight:800;letter-spacing:1px}
 .hidden{display:none!important}
 .overlay{position:fixed;inset:0;background:#0f172acc;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.latihan-bar{background:repeating-linear-gradient(135deg,#f97316 0 14px,#fb923c 14px 28px);color:#fff;font-weight:700;padding:10px 12px;border-radius:12px;margin-bottom:10px;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.kunci-penuh{background:#0b1220!important;z-index:90!important;align-items:center!important}
+.idle-amaran{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:80;background:#b45309;color:#fff;font-weight:800;padding:12px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);text-align:center;max-width:92vw}
+.sm-kunci{text-align:center;padding:30px 16px}.sm-kunci .ik{font-size:54px}
 .overlay .box{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
 @media(min-width:700px){.overlay{align-items:center}.overlay .box{border-radius:18px}}
 #lulus{z-index:60}
@@ -167,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-22';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-23';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-22';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-23';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-22';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-22';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-22';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-22';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-22';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-22';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-22';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-22';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-22';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-23';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-23';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-23';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-23';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-23';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-23';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-23';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-23';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-23';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -276,10 +280,16 @@ let masukDariAkaun = false;
     u.searchParams.delete('c'); u.searchParams.delete('dari'); history.replaceState(null, '', u.pathname + u.search + u.hash);
   } }catch(_){} })();
 const infoCaw = () => CAWANGAN.find(x => x.id === cawangan) || {id:cawangan, nama:cawangan, kedai:'Premium Carwash', logo:''};
-const col = n => collection(store, 'lionsafari', cawangan, n);
+// 🎓 Mod latihan: ID latihan (cth OFFICE) guna ruang data berasingan lionsafari/{cawangan}-latihan — tidak masuk jualan, Akaun, laporan, cop atau komisen
+const KEKAL_DATA = new Set(['tetapan', 'gambar', 'staf', 'staf_foto']);
+let latihan = false;
+const cawD = () => latihan ? cawangan + '-latihan' : cawangan;
+const col = n => collection(store, 'lionsafari', KEKAL_DATA.has(n) ? cawangan : cawD(), n);
+const cfgLat = () => ({aktif: true, id: ['OFFICE'], kunciMinit: 3, ...((typeof T !== 'undefined' && T?.latihan) || {})});
+const idLatihan = s => !!s && !s.akaun && (cfgLat().id || []).map(x => String(x).toUpperCase().trim()).filter(Boolean).includes(String(s.idStaf || '').toUpperCase().trim());
 // Pekerja dikongsi kedua-dua cawangan: senarai staf & gambar profil di cawangan pusat
 const stafCol = n => collection(store, 'lionsafari', PUSAT, n);
-const akaunCol = () => collection(store, 'akaun', cawangan, 'entri');
+const akaunCol = () => latihan ? collection(store, 'lionsafari', cawD(), 'akaun_entri') : collection(store, 'akaun', cawangan, 'entri');
 const tetapanRef = () => doc(store, 'lionsafari', cawangan, 'tetapan', 'umum');
 const asalCaw = () => ({...TETAPAN_ASAL, namaKedai: infoCaw().kedai});
 // Modul pekerja (kehadiran, kelulusan, roster) — dikongsi dengan Apps Pekerja & Akaun
@@ -293,6 +303,7 @@ const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSna
 const bolehTetapan = s => s?.peranan === 'Admin' || adaKuasa(s, 'harga');
 const modPK = s => [adaKuasa(s,'hadir') && 'Kehadiran', (adaKuasa(s,'lulus') || adaKuasa(s,'roster')) && 'Permohonan', adaKuasa(s,'roster') && 'Roster'].filter(Boolean);
 const tabsStaf = s => { if(!s) return []; const l = (PERANAN[s.peranan] || []).filter(t => t !== 'Pekerja' && t !== 'Tetapan');
+  if(s.peranan !== 'Pekerja') l.push('Safari Members');
   if(modPK(s).length) l.push('Pekerja'); if(bolehTetapan(s)) l.push('Tetapan'); return l; };
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}${CSS_TUTUP}</style>`);
 let pkMod = 'Kehadiran';
@@ -301,6 +312,7 @@ let pkMod = 'Kehadiran';
 // KEADAAN
 // =====================================================================
 let dev = null, staf = null, stafList = [], stafLoaded = false, T = {...TETAPAN_ASAL};
+let ahliBuka = null, MPS = null, idleT = Date.now(), idleKunci = false;   // Safari Members berkunci & kunci automatik
 let tab = 'Ringkasan', hari = today();
 let aktif = [], dibuatHari = [], bayarHari = [], stok = [], petty = [];
 let unsubAsas = [], unsubHari = [], dataError = '';
@@ -419,6 +431,7 @@ function mulaCawangan(){
   unsubAsas.push(onSnapshot(stafCol('staf_foto'), s => { FOTO = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); segarAvatar(); }, () => {}));
   unsubAsas.push(onSnapshot(col('gambar'), s => { GAMBAR = Object.fromEntries(s.docs.map(d => [d.id, d.data().data])); if(staf) refreshLive(); }, onErr));
   unsubAsas.push(onSnapshot(tetapanRef(), s => { T = {...asalCaw(), ...(s.exists() ? s.data() : {})};
+    if(staf){ const lb = idLatihan(staf) && cfgLat().aktif !== false; if(lb !== latihan){ latihan = lb; langganHari(); renderShell(); return; } }
     if(staf){ if(tab === 'Order Baru' && $('#oPlat') && !val('#oPlat') && !$('#modal:not(.hidden)')) renderShell(); else refreshLive(); } }, onErr));
   renderPinScreen();
 }
@@ -555,7 +568,7 @@ async function masukIdAkaun(baru){
   }catch(e){ console.error(e); renderPinScreen(); }
 }
 function masukStaf(s){
-  staf = s;
+  staf = s; latihan = idLatihan(s) && cfgLat().aktif !== false; ahliBuka = null; idleT = Date.now();
   try{ localStorage.setItem('ls_staf', JSON.stringify({id:s.id, c:cawangan, t:Date.now(), ...(s.akaun ? {akaun: true} : {})})); }catch(_){}
   if(!tabsStaf(s).includes(tab)) tab = tabsStaf(s)[0] || 'Queue';
   langganHari();
@@ -575,6 +588,7 @@ function kunci(){ modulPK.henti(); staf = null; try{ localStorage.removeItem('ls
 const PANDUAN = {
   'Ringkasan': {ms: ['Paparan ringkas jualan, bilangan kenderaan dan bayaran hari operasi ini.', 'Hari operasi bermula 4:00 pagi hingga 3:59 pagi esok — bayaran selepas 12 malam masih dikira hari ini.', 'Tekan tab lain di atas untuk mula bekerja.'],
     en: ["A quick view of this operating day's sales, vehicles and payments.", "The operating day runs from 4:00 am to 3:59 am the next day — payments after midnight still count as today.", 'Tap another tab above to start working.']},
+  'Safari Members': {ms: ['Tab ini berkunci — tekan BUKA DENGAN PIN (pekerja berkuasa ⭐ Safari Members atau Admin).', 'Cari pelanggan: nama, telefon, plat atau kod ahli (termasuk rekod lama MONZ).', 'Tekan pelanggan untuk lihat rekod, peringkat kad & sejarah cucian.', 'Hantar jemputan keahlian / kad digital melalui WhatsApp — setiap jemputan direkod dalam log.', 'Tab dikunci semula bila keluar dari tab atau selepas 5 minit.'], en: ['This tab is locked — tap UNLOCK WITH PIN (staff with ⭐ Safari Members permission or Admin).', 'Search customers by name, phone, plate or member code (incl. old MONZ records).', 'Tap a customer to view records, card tier & wash history.', 'Send membership invites / digital cards via WhatsApp — every invite is logged.', 'The tab relocks when you leave it or after 5 minutes.']},
   'Order Baru': {ms: ['Masukkan no. plat kenderaan (atau imbas kad Safari Members).', 'Pilih jenis kenderaan, kemudian pakej. Tambah servis tambahan atau item manual jika perlu.', 'Ambil gambar plat & emblem (wajib) dan calar jika ada.', 'Pilih MO jika order dibawa oleh Marketing Officer.', 'Tekan Simpan — order masuk ke Queue.'],
     en: ['Enter the vehicle plate no. (or scan the Safari Members card).', 'Choose the vehicle type, then the package. Add add-ons or manual items if needed.', 'Take photos of the plate & emblem (required) and any scratches.', 'Choose the MO if the order was brought in by a Marketing Officer.', 'Tap Save — the order goes to the Queue.']},
   'Queue': {ms: ['Senarai kenderaan sedang diservis. Tekan status (Cuci → Kering → QC → Siap) untuk kemas kini — pelanggan nampak dalam Apps Pelanggan.', 'Pilih Bay untuk setiap kenderaan.', '✏️ Edit untuk betulkan plat, pakej, add-on, item manual atau catatan.', '💲 Betulkan harga perlu PIN Supervisor / pekerja kuasa 🏷 dan sebab.', '📷 Gambar untuk rekod keadaan asal kenderaan sebelum servis.', 'Tempahan dari Apps Pelanggan muncul di atas — tekan Terima atau Tolak.'],
@@ -616,7 +630,7 @@ function bannerTutup(){
     : `<div class="notice"><b>🕦 Kaunter akan ditutup.</b> Mula proses tutup kaunter: selesaikan Queue, kira tunai & hantar laporan.${btn(today())}</div>`;
   return h;
 }
-function kemasBanner(){ const e = $('#errBox'); if(!e) return; const h = (dataError ? `<div class="notice bad">⚠ ${esc(dataError)}</div>` : '') + bannerTutup(); if(e._h !== h){ e._h = h; e.innerHTML = h; pasangBannerTutup(); } }
+function kemasBanner(){ const e = $('#errBox'); if(!e) return; const h = (latihan ? `<div class="latihan-bar">🎓 MOD LATIHAN (ID ${esc(staf?.idStaf || '')}) — order, bayaran & petty cash di sini <b>tidak dikira</b> dalam jualan, Akaun, laporan, cop atau komisen</div>` : '') + (dataError ? `<div class="notice bad">⚠ ${esc(dataError)}</div>` : '') + bannerTutup(); if(e._h !== h){ e._h = h; e.innerHTML = h; pasangBannerTutup(); } }
 function pasangBannerTutup(){ $$('[data-ketutup]').forEach(b => b.onclick = () => { tab = 'Tutup Kaunter'; MT.mula(b.dataset.ketutup); renderShell(); window.scrollTo(0,0); }); }
 function semakSekatPagi(){
   if(!staf || $('#sekatTutup') || !semalamAdaJualan || sudahTutup(tutupSemalam) || lepasTengahMalam() || sudahTeruskan()) return;
@@ -731,6 +745,76 @@ function mintaPinTutup(sebab){
   });
 }
 
+
+// =====================================================================
+// LOG KAUNTER · KUNCI AUTOMATIK (ID latihan) · ⭐ SAFARI MEMBERS BERKUNCI
+// =====================================================================
+function logKaunter(tindakan, butiran = ''){
+  if(!staf) return; const t = today();
+  setDoc(doc(collection(store, 'kakitangan', PUSAT, 'log')), {stafId: staf.id, idStaf: staf.idStaf || '', nama: staf.nama, tindakan, butiran: `${infoCaw().nama}${latihan ? ' · latihan' : ''}${butiran ? ' · ' + butiran : ''}`,
+    tarikh: t, bulan: t.slice(0,7), sumber: 'kaunter', masa: serverTimestamp()}).catch(e => console.warn('log', e));
+}
+const namaPin = x => `${x.nama}${x.idStaf ? ' (' + x.idStaf + ')' : ''}`;
+// Semak PIN pekerja yang layak; pulangkan staf atau mesej ralat
+async function semakPinLayak(pin, layak){
+  for(const x of stafList.filter(x => x.aktif !== false && layak(x))) if(await hashPin(x.id, pin) === x.pinHash) return x;
+  return null;
+}
+
+// ---- Kunci automatik bila tiada pergerakan (ID latihan cth OFFICE). Admin dari Akaun tidak dikunci. ----
+['pointerdown', 'keydown', 'touchstart', 'wheel', 'input'].forEach(ev => addEventListener(ev, () => { if(idleKunci) return; idleT = Date.now(); document.getElementById('idleAmaran')?.remove(); }, {capture: true, passive: true}));
+setInterval(() => {
+  if(!staf) return;
+  if(ahliBuka && Date.now() > ahliBuka.sampai){ ahliBuka = null; if(tab === 'Safari Members'){ renderShell(); toast('🔒 Safari Members dikunci semula (5 minit)'); } }
+  if(idleKunci || !idLatihan(staf)) return;
+  const m = Number(cfgLat().kunciMinit) || 0; if(!m) return;
+  const baki = idleT + m * 60000 - Date.now();
+  if(baki <= 0) return kunciIdle(m);
+  let w = document.getElementById('idleAmaran');
+  if(baki <= 30000){ if(!w){ w = document.createElement('div'); w.id = 'idleAmaran'; w.className = 'idle-amaran'; document.body.appendChild(w); }
+    w.textContent = `🔒 Kaunter akan dikunci dalam ${Math.ceil(baki / 1000)} saat — sentuh skrin untuk teruskan`; }
+}, 1000);
+function kunciIdle(m){
+  idleKunci = true; document.getElementById('idleAmaran')?.remove(); closeModal();
+  const ov = document.createElement('div'); ov.id = 'kunciIdle'; ov.className = 'overlay kunci-penuh';
+  ov.innerHTML = `<div class="box" style="text-align:center;max-width:380px">${infoCaw().logo ? `<img src="${infoCaw().logo}" alt="" style="width:84px;height:84px;border-radius:50%;object-fit:cover">` : ''}
+    <h3 style="margin:8px 0 2px">🔒 Kaunter dikunci</h3><div class="muted">Tiada pergerakan ${m} minit · ID ${esc(staf.idStaf || '')}</div>
+    <div class="muted" style="margin-top:6px">Buka dengan PIN <b>Manager / Supervisor / Admin</b> atau pekerja berkuasa 🔓</div><div id="kpIdle"></div></div>`;
+  document.body.appendChild(ov);
+  logKaunter('Kaunter dikunci automatik', `tiada pergerakan ${m} minit`);
+  keypad('#kpIdle', async pin => {
+    const x = await semakPinLayak(pin, x => PELULUS.includes(x.peranan) || adaKuasa(x, 'buka'));
+    if(!x) return 'PIN tidak sah / tiada kuasa buka kunci';
+    ov.remove(); idleKunci = false; idleT = Date.now();
+    logKaunter('Buka kunci kaunter', `oleh ${namaPin(x)}`); toast(`🔓 Dibuka oleh ${x.nama}`);
+  });
+}
+
+// ---- ⭐ Safari Members: berkunci, buka dengan PIN pekerja berkuasa ⭐ (ID Akaun: terus, log sahaja) ----
+const ahliTerbuka = () => !!staf && (staf.akaun || (ahliBuka && ahliBuka.staf === staf.id && Date.now() < ahliBuka.sampai));
+const urlDaftarAhli = () => new URL('../pelanggan/?c=' + cawangan, location.href).href;
+function jemputWA(x){
+  const caw = infoCaw().nama;
+  const teks = x.jenis === 'kad'
+    ? `Salam ${x.nama || ''}, ini kad digital Safari Members anda (${x.kod || ''}) — ${caw} Premium Car Wash.\nBuka & pasang apps: ${x.pautan}\n\nSetiap cucian berbayar = 1 cop. Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH!`
+    : x.jenis === 'jemput'
+    ? `Salam ${x.nama || ''}, terima kasih kerana memilih ${caw} Premium Car Wash 🦁\n\nJom sertai *Safari Members* — kad cop digital PERCUMA:\n⭐ Setiap cucian berbayar = 1 cop\n🎁 Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH\n🏅 Naik taraf ke Lion Silver & Gold untuk diskaun ahli\n\nDaftar di sini: ${urlDaftarAhli()}`
+    : '';
+  window.open(`https://wa.me/${normTelefon(x.telefon)}${teks ? '?text=' + encodeURIComponent(teks) : ''}`, '_blank');
+  const lbl = {jemput: 'Hantar jemputan Safari Members', kad: 'Hantar kad Safari Members', wa: 'WhatsApp pelanggan'}[x.jenis] || 'WhatsApp';
+  logKaunter(lbl, `${x.nama || ''}${x.plat ? ' · ' + x.plat : ''}${x.kod ? ' · ' + x.kod : ''} · ${paparTelefon(x.telefon).replace(/\d(?=\d{2})/g, (d, i) => i > 3 ? 'x' : d)}${ahliBuka ? ' · dibuka ' + ahliBuka.oleh : ''}`);
+}
+function borangJemput(awal = {}){
+  openModal(`<div class="between"><h3 style="margin:0">💌 Jemput pelanggan ke Safari Members</h3><button class="small" id="jmTutup">✕</button></div>
+    <label>Nama pelanggan</label><input id="jmNama" value="${esc(awal.nama || '')}"><label>No. telefon *</label><input id="jmTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx">
+    <label>No. plat (pilihan)</label><input id="jmPlat" value="${esc(awal.plat || '')}" style="text-transform:uppercase">
+    <p class="muted" style="font-size:13px">WhatsApp akan dibuka dengan mesej jemputan & pautan daftar Safari Members ${esc(infoCaw().nama)}.</p>
+    <button class="btn-ok big" id="jmHantar">💬 HANTAR JEMPUTAN</button>`);
+  $('#jmTutup').onclick = closeModal;
+  $('#jmHantar').onclick = () => { const tel = normTelefon(val('#jmTel')); if(!telefonSah(tel)) return toast('No. telefon tidak sah');
+    jemputWA({jenis: 'jemput', nama: val('#jmNama'), telefon: tel, plat: paparPlat(val('#jmPlat'))}); closeModal(); };
+}
+
 // =====================================================================
 // MODAL
 // =====================================================================
@@ -750,10 +834,11 @@ function badge(t){
 }
 function renderNav(){
   if(!tabsStaf(staf).includes(tab)) tab = tabsStaf(staf)[0] || 'Queue';
-  $('#nav').innerHTML = tabsStaf(staf).map(t => { const b = badge(t); return `<button class="${t===tab?'active':''}" data-t="${t}">${t}${b?`<span class="badge">${b}</span>`:''}</button>`; }).join('');
+  $('#nav').innerHTML = tabsStaf(staf).map(t => { const b = badge(t); return `<button class="${t===tab?'active':''}" data-t="${t}">${t === 'Safari Members' ? (ahliTerbuka() ? '⭐ ' : '🔒 ') : ''}${t}${b?`<span class="badge">${b}</span>`:''}</button>`; }).join('');
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; renderShell(); window.scrollTo(0,0); });
 }
 function renderShell(){
+  if(tab !== 'Safari Members') ahliBuka = null;
   $('#who').innerHTML = `<button class="pill pill-id" id="btnKadId" title="Kad ID saya">${av(staf, 24)} ${esc(staf.nama)}${staf.idStaf?' ('+esc(staf.idStaf)+')':''} · ${esc(staf.peranan)}${ikonKuasa(staf) ? ' ' + ikonKuasa(staf) : ''}</button><button class="small" id="btnKunci">🔒 Kunci</button>`;
   $('#btnKunci').onclick = kunci;
   $('#btnKadId').onclick = bukaKadId;
@@ -971,6 +1056,35 @@ function kadMenu(){
 // ---------- ORDER BARU (MO / Cashier) ----------
 let draf = {};
 const pakejFW = () => { const l = aktifSahaja('pakej'); return l.find(p => p.id === T.pakejFreeWash) || l[0]; };
+VIEWS['Safari Members'] = {
+  statik(){
+    if(!ahliTerbuka()) return `<div class="card sm-kunci"><div class="ik">🔒</div><h3>Safari Members dikunci</h3>
+      <p class="muted">Untuk hantar jemputan keahlian & melihat rekod pelanggan. Buka dengan PIN pekerja berkuasa <b>⭐ Safari Members</b> atau Admin.</p>
+      <button class="btn-gold big" id="smBuka" style="max-width:320px">🔓 BUKA DENGAN PIN</button></div>`;
+    return `<div class="card"><div class="between" style="flex-wrap:wrap;gap:8px"><div><b>⭐ Safari Members ${esc(infoCaw().nama)}</b><br><span class="muted" style="font-size:13px">${staf.akaun ? `ID Akaun: ${esc(staf.nama)}` : `Dibuka oleh ${esc(ahliBuka.oleh)} · dikunci semula ${new Date(ahliBuka.sampai).toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}`}</span></div>
+      <div class="row"><button class="btn-ok" id="smJemput">💌 Jemput pelanggan baru</button>${staf.akaun ? '' : '<button class="small" id="smKunci">🔒 Kunci</button>'}</div></div></div><div id="smCari"></div>`;
+  },
+  pasang(){
+    if(!ahliTerbuka()){ $('#smBuka').onclick = () => {
+      openModal(`<div style="text-align:center"><h3>🔓 Buka Safari Members</h3><div class="muted">PIN pekerja berkuasa ⭐ Safari Members atau Admin</div><div id="kpSM"></div><button class="small" id="smBatal">Batal</button></div>`);
+      $('#smBatal').onclick = closeModal;
+      keypad('#kpSM', async pin => {
+        const x = await semakPinLayak(pin, x => x.peranan === 'Admin' || adaKuasa(x, 'ahli'));
+        if(!x) return 'PIN tidak sah / tiada kuasa Safari Members';
+        ahliBuka = {staf: staf.id, oleh: namaPin(x), sampai: Date.now() + 5 * 60000};
+        closeModal(); logKaunter('Buka Safari Members', `PIN ${namaPin(x)}`); renderShell();
+      });
+    }; return; }
+    if(staf.akaun && !staf._logAhli){ staf._logAhli = true; logKaunter('Buka Safari Members (ID Akaun)'); }
+    if($('#smKunci')) $('#smKunci').onclick = () => { ahliBuka = null; renderShell(); };
+    $('#smJemput').onclick = () => borangJemput();
+    MPS ||= modulPelanggan({store, fs: {collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion}, mod: 'kaunter', log: true,
+      buka: openModal, tutup: closeModal, toast, pengguna: () => ahliBuka?.oleh || (staf ? namaPin(staf) : 'Kaunter'), cawangan: () => cawangan,
+      pautanKad: id => new URL('../pelanggan/#k=' + id, location.href).href, jemput: jemputWA,
+      buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
+    $('#smCari').innerHTML = MPS.htmlKotak(); MPS.pasang($('#smCari'));
+  }
+};
 VIEWS['Order Baru'] = {
   statik(){
     const L = {pakej: aktifSahaja('pakej'), kenderaan: aktifSahaja('kenderaan'), addon: aktifSahaja('addon')};
@@ -1057,7 +1171,7 @@ VIEWS['Order Baru'] = {
       }
     };
     const lukisDaftar = () => {
-      $('#oDaftarBox').innerHTML = draf.ahli ? '' : `<label class="fwtoggle" style="background:#f8fafc;color:#0f172a"><input type="checkbox" id="oDaftar" checked> ⭐ Daftar sebagai Safari Members (kad cop digital)</label>
+      $('#oDaftarBox').innerHTML = latihan ? '<div class="notice">🎓 Mod latihan: order tidak dihubungkan dengan Safari Members.</div>' : draf.ahli ? '' : `<label class="fwtoggle" style="background:#f8fafc;color:#0f172a"><input type="checkbox" id="oDaftar" checked> ⭐ Daftar sebagai Safari Members (kad cop digital)</label>
         <label class="fwtoggle" style="background:#f8fafc;color:#0f172a;font-weight:400"><input type="checkbox" id="oPromo"> Pelanggan setuju terima promosi melalui WhatsApp</label>`;
     };
     const pilihAhli = a => {
@@ -1066,6 +1180,7 @@ VIEWS['Order Baru'] = {
       lukisAhli(); lukisDaftar(); kira();
     };
     const cariAhli = async (medan, nilai) => {
+      if(latihan) return [];
       try{ const s = await getDocs(query(ahliCol(), where(medan, medan === 'plat' ? 'array-contains' : '==', nilai))); return s.docs.map(d => ({id:d.id, ...d.data()})); }
       catch(e){ console.error(e); return []; }
     };
@@ -1144,9 +1259,9 @@ VIEWS['Order Baru'] = {
           ahli: ahli ? {id: ahli.id, kod: ahli.kod, nama: ahli.nama} : null, freeWash: fw,
           mo: sales ? {id: staf.id, nama: staf.nama, idStaf: staf.idStaf || ''} : null, komisen,
           gambar: {plat:true, emblem: !!draf.foto.emblem, calar: draf.foto.calar.length},
-          tarikh:t, bulan:t.slice(0,7), dibuatOleh: staf.nama, dibuat: serverTimestamp(), masaDibuat: Date.now()};
+          tarikh:t, bulan:t.slice(0,7), dibuatOleh: staf.nama, dibuat: serverTimestamp(), masaDibuat: Date.now(), ...(latihan ? {latihan: true} : {})};
         await setDoc(ref, data);
-        KT.cermin({...data, id: ref.id}, cawangan);
+        KT.cermin({...data, id: ref.id}, cawD());
         const foto = {plat: draf.foto.plat, emblem: draf.foto.emblem, calar: draf.foto.calar, tarikh: t};
         OG[ref.id] = foto;
         setDoc(doc(col('order_gambar'), ref.id), foto).catch(onErr);
@@ -1166,14 +1281,14 @@ VIEWS['Order Baru'] = {
 function selepasOrder(o, foto){
   const teks = `🦁 *${infoCaw().nama}* — Order ${o.no}\nPlat: *${o.plat}* (${o.kenderaan})\nPakej: ${o.pakej}${o.freeWash ? ' 🎁 FREE WASH' : ''}${(o.addon||[]).length ? '\nAdd-on: ' + o.addon.map(a => a.nama).join(', ') : ''}\nJumlah: ${RM(o.jumlah)}\nPelanggan: ${o.nama}${o.ahli ? ' ⭐ ' + o.ahli.kod : ''}\nBay: ${o.bay}\nOleh: ${staf.nama}${o.catatan ? '\nCatatan: ' + o.catatan : ''}`;
   openModal(`<div style="text-align:center"><h3>✅ Order ${esc(o.no)} disimpan</h3><div class="plate" style="font-size:22px">${esc(o.plat)}</div>
-    <div class="fotothumbs" style="justify-content:center;margin:10px 0"><img src="${foto.plat}"><img src="${foto.emblem}">${foto.calar.map(c => `<img src="${c}">`).join('')}</div>
+    <div class="fotothumbs" style="justify-content:center;margin:10px 0"><img src="${foto.plat}">${foto.emblem ? `<img src="${foto.emblem}">` : ''}${foto.calar.map(c => `<img src="${c}">`).join('')}</div>
     <div class="muted">Order sudah masuk ke Queue & Bayaran kaunter.</div>
     <button class="btn-ok big" id="mWa" style="margin-top:10px">📤 Kongsi ke WhatsApp group</button>
     <button class="big" id="mOk" style="margin-top:8px">Order seterusnya</button></div>`);
   $('#mOk').onclick = () => { closeModal(); renderShell(); };
   $('#mWa').onclick = async () => {
     try{
-      const fail = await Promise.all([foto.plat, foto.emblem, ...foto.calar].map(async (d,i) => new File([await (await fetch(d)).blob()], `${normPlat(o.plat)}-${i+1}.jpg`, {type:'image/jpeg'})));
+      const fail = await Promise.all([foto.plat, foto.emblem, ...foto.calar].filter(Boolean).map(async (d,i) => new File([await (await fetch(d)).blob()], `${normPlat(o.plat)}-${i+1}.jpg`, {type:'image/jpeg'})));
       if(navigator.canShare && navigator.canShare({files: fail})) await navigator.share({files: fail, text: teks});
       else window.open('https://wa.me/?text=' + encodeURIComponent(teks), '_blank');
     }catch(e){ if(e.name !== 'AbortError') window.open('https://wa.me/?text=' + encodeURIComponent(teks), '_blank'); }
@@ -1251,7 +1366,7 @@ VIEWS['Queue'] = {
   pasangLive(){
     $$('[data-st]').forEach(b => b.onclick = async () => {
       const [id, st] = b.dataset.st.split('|'); b.disabled = true;
-      try{ await KT.tukarStatus(aktif.find(o => o.id === id) || {id}, cawangan, st); if(st === 'Siap') toast('✅ Siap — pelanggan dimaklumkan dalam Apps Pelanggan'); }catch(e){ onErr(e); }
+      try{ await KT.tukarStatus(aktif.find(o => o.id === id) || {id}, cawD(), st); if(st === 'Siap') toast('✅ Siap — pelanggan dimaklumkan dalam Apps Pelanggan'); }catch(e){ onErr(e); }
     });
     $$('[data-bay]').forEach(s => s.onchange = () => updateDoc(doc(col('order'), s.dataset.bay), {bay:s.value}).catch(onErr));
     $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar))); pasangBayarPel();
@@ -1262,9 +1377,9 @@ VIEWS['Queue'] = {
     $$('[data-fotok]').forEach(b => b.onclick = () => gambarKeadaan(aktif.find(o => o.id === b.dataset.fotok)));
     $$('[data-tpterima]').forEach(b => b.onclick = async () => { const t = tempahan.find(x => x.id === b.dataset.tpterima); if(!t) return; b.disabled = true;
       const h = today(), no = `${h.slice(5,7)}${h.slice(8,10)}-${pad(dibuatHari.length + 1, 3)}`;
-      try{ await KT.terimaTempahan(t, cawangan, {no, bay: T.bay?.[0] || ''}); toast(`✅ Tempahan ${t.plat} diterima — masuk Queue`); }catch(e){ b.disabled = false; onErr(e); } });
+      try{ await KT.terimaTempahan(t, cawD(), {no, bay: T.bay?.[0] || ''}); toast(`✅ Tempahan ${t.plat} diterima — masuk Queue`); }catch(e){ b.disabled = false; onErr(e); } });
     $$('[data-tptolak]').forEach(b => b.onclick = async () => { const t = tempahan.find(x => x.id === b.dataset.tptolak); const sebab = prompt('Sebab tolak tempahan (dimaklumkan kepada pelanggan):'); if(sebab === null) return;
-      try{ await KT.tolakTempahan(t, cawangan, sebab); toast('Tempahan ditolak'); }catch(e){ onErr(e); } });
+      try{ await KT.tolakTempahan(t, cawD(), sebab); toast('Tempahan ditolak'); }catch(e){ onErr(e); } });
     muatGambarOrder();
   }
 };
@@ -1305,7 +1420,7 @@ function betulHarga(o){
       sejarahHarga: arrayUnion({asal: r2(o.jumlahKasar), baru: j, ubah: ubah.join(', '), sebab, oleh: staf.nama, lulusOleh: pelulus.nama, masa: Date.now()}),
       sejarahEdit: arrayUnion({oleh: staf.nama, masa: Date.now(), ubah: `harga: ${ubah.join(', ')} (PIN ${pelulus.nama}) — ${sebab}`})});
     $('#hbSimpan').disabled = true;
-    try{ await updateDoc(doc(col('order'), o.id), data); KT.cermin({...o, ...data, sejarahHarga: undefined, sejarahEdit: undefined}, cawangan);
+    try{ await updateDoc(doc(col('order'), o.id), data); KT.cermin({...o, ...data, sejarahHarga: undefined, sejarahEdit: undefined}, cawD());
       closeModal(); toast(`✅ Harga ${o.plat} dibetulkan: ${RM(j)} (disahkan ${pelulus.nama})`); }
     catch(e){ $('#hbSimpan').disabled = false; onErr(e); }
   };
@@ -1378,7 +1493,7 @@ function editOrder(o){
         if(o.ahli?.id){ updateDoc(doc(ahliCol(), o.ahli.id), {plat: arrayUnion(normPlat(plat)), kenderaan: arrayUnion({plat, jenis: k.nama})}).catch(console.error);
           if(o.telefon) setDoc(doc(store, 'ahli_masuk', kunciMasuk(o.telefon, plat)), {token: o.ahli.id}).catch(console.error); }
       }
-      KT.cermin({...o, ...data, sejarahEdit: undefined}, cawangan);
+      KT.cermin({...o, ...data, sejarahEdit: undefined}, cawD());
       closeModal(); toast(`✅ ${plat} dikemas kini: ${ubah.join(', ')}`);
     }catch(e){ $('#eSimpan').disabled = false; onErr(e); }
   };
@@ -1431,7 +1546,7 @@ async function batalOrder(o){
   if(!lulus) return;
   try{
     await updateDoc(doc(col('order'), o.id), {status:'Batal', aktif:false, batal:{sebab: sebab || '-', oleh: staf.nama, lulus, masa: Date.now()}});
-    KT.cermin({...o, status:'Batal', aktif:false}, cawangan);
+    KT.cermin({...o, status:'Batal', aktif:false}, cawD());
     if(o.tarikhBayar){ await kemaskiniAkaunHari(o.tarikhBayar); batalSafari(o); }
     toast(`Order ${o.plat} dibatalkan`);
   }catch(e){ onErr(e); }
@@ -1460,7 +1575,7 @@ VIEWS['Bayaran'] = {
 
 // ---------- SAFARI MEMBERS: cop & Free Wash ----------
 async function beriCop(o){
-  if(!o?.ahli || o.freeWash || o.pakejId === 'bike-wash') return '';
+  if(latihan || o?.latihan || !o?.ahli || o.freeWash || o.pakejId === 'bike-wash') return '';
   const ref = doc(ahliCol(), o.ahli.id);
   try{
     const hasil = await runTransaction(store, async tx => {
@@ -1599,7 +1714,7 @@ function bukaBayar(o, pra = null){
     if(o.freeWash) data.freeWash = {...o.freeWash, lulus: fwLulus};
     try{
       await updateDoc(doc(col('order'), o.id), data);
-      KT.cermin({...cur, ...data}, cawangan, {status:'Selesai', aktif:false});
+      KT.cermin({...cur, ...data}, cawD(), {status:'Selesai', aktif:false});
       if(pra?.id) updateDoc(doc(col('bayar_pelanggan'), pra.id), {status: 'disahkan', disahkanOleh: staf.nama, masaSah: Date.now(), jumlahSah: j, no: o.no || ''}).catch(console.error);
       kemasBayar = null; closeModal();
       toast(`✅ ${o.plat} dibayar ${RM(j)}${baki ? ' — baki ' + RM(baki) : ''}`);
@@ -1667,7 +1782,7 @@ VIEWS['Petty Cash'] = {
 // ---------- STOK ----------
 // Tutup kaunter harian (format Daily Sales Report). Gambar tunai diambil dalam Apps Pekerja (kuasa 🔐 Tutup).
 const MT = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp},
-  cawangan: () => cawangan, pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter', mintaPinTutup,
+  cawangan: () => cawD(), pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter', mintaPinTutup,
   refresh: () => { if(tab === 'Tutup Kaunter') refreshLive(); }});
 VIEWS['Tutup Kaunter'] = {
   statik(){ if(MT.st.c !== cawangan || !MT.st.data) MT.mula(); else MT.muatData(); return ''; },

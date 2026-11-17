@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.17-22';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.17-23';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -34,7 +34,7 @@ export function modulPelanggan(ctx){
     if(!muat || paksa) muat = fs.getDocs(fs.collection(store, 'ahli')).then(s => ahli = s.docs.map(d => ({id: d.id, ...d.data()})));
     return muat;
   }
-  const log = (a, tindakan, butiran = '') => AKAUN && fs.setDoc(fs.doc(fs.collection(store, 'ahli_log')), {ahliId: a.id, kod: a.kod || '', tindakan, butiran, oleh: ctx.pengguna(), masa: Date.now()}).catch(() => {});
+  const log = (a, tindakan, butiran = '') => (AKAUN || ctx.log) && fs.setDoc(fs.doc(fs.collection(store, 'ahli_log')), {ahliId: a.id, kod: a.kod || '', tindakan, butiran, oleh: ctx.pengguna(), masa: Date.now()}).catch(() => {});
 
   // ---------------- CARIAN ----------------
   async function cari(q){
@@ -106,6 +106,7 @@ export function modulPelanggan(ctx){
       <div><span class="cp-tag cp-ahli">${esc(a.kod || '')}</span><span class="cp-tag pk-${P.id}">${P.id === 'pride' ? '👑 ' : ''}${esc(P.nama)}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? '✅ Kad aktif' : '🔓 Kad belum aktif'}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Import MONZ</span>' : ''}</div>
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
         ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}
+        ${!AKAUN && ctx.jemput ? '<button class="wa" data-cp-x="wa">💬 WhatsApp</button><button class="pri" data-cp-x="hantar">📤 Hantar kad</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
         <button data-cp-x="cop">⭐ +1 cop manual</button><button data-cp-x="fw">🎁 +1 Free Wash</button>${aktif ? '' : '<button data-cp-x="aktif">🔓 Aktifkan kad</button>'}
         <button data-cp-x="gabung">🔗 Gabung rekod</button><button class="bahaya" data-cp-x="padam">🚫 Padam ahli</button>` : ''}</div>
@@ -153,7 +154,11 @@ export function modulPelanggan(ctx){
     const segar = async () => { await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
     const kemas = async (d, tindakan, butiran, msg) => { try{ await fs.updateDoc(fs.doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); log(a, tindakan, butiran); ctx.toast(msg || '✅ Disimpan'); segar(); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
-    if(!AKAUN) return;
+    if(!AKAUN){
+      if(ctx.jemput){ x('wa').onclick = () => ctx.jemput({jenis: 'wa', nama: a.nama, telefon: a.telefon, kod: a.kod});
+        x('hantar').onclick = () => ctx.jemput({jenis: 'kad', nama: a.nama, telefon: a.telefon, kod: a.kod, pautan: ctx.pautanKad(a.id)}); }
+      return;
+    }
     x('hantar').onclick = () => { const teks = `Salam ${a.nama}, ini kad digital Safari Members anda (${a.kod}) — Mama Lion & Lion King Premium Car Wash.\nBuka & pasang apps: ${ctx.pautanKad(a.id)}\n\nSetiap cucian berbayar = 1 cop. Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH!`;
       window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(teks)}`, '_blank'); log(a, 'Hantar kad', 'WhatsApp'); };
     x('lihat').onclick = () => { ctx.tutup(); ctx.lihatKad?.(a); };
@@ -260,7 +265,9 @@ export function modulPelanggan(ctx){
   function profilLama(x){
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>🕘 ${esc(x.n || 'Pelanggan lama')}</h3><button class="small" data-cp-tutup>✕</button></div>
       <div><span class="cp-tag cp-lama">🕘 Pelanggan lama — belum ahli</span>${x.co ? '<span class="cp-tag cp-lama">🏢 Syarikat</span>' : ''}</div>
-      <div class="cp-aksi">${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}<button class="pri" data-cp-x="daftar">⭐ Daftar sebagai ahli</button></div>
+      <div class="cp-aksi">${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}<button class="pri" data-cp-x="daftar">⭐ Daftar sebagai ahli</button>${ctx.jemput ? '<button class="wa" data-cp-x="jemput">💌 Hantar jemputan</button>' : ''}</div>
+      ${ctx.jemput ? `<div class="cp-sek" data-cp-jemput hidden><h4>💌 Jemputan Safari Members (WhatsApp)</h4><label>No. telefon pelanggan *</label><input data-jm="tel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx">
+        <button class="primary" data-jm="hantar" style="width:100%;padding:12px;margin-top:6px">💬 HANTAR JEMPUTAN</button></div>` : ''}
       <div class="cp-sek"><h4>Maklumat (rekod MONZ)</h4>
         <div class="cp-ln"><span>No. plat</span><b>${esc(x.p || x.plat)}</b></div><div class="cp-ln"><span>Nama</span><b>${esc(x.n || '—')}</b></div>
         <div class="cp-ln"><span>Kenderaan</span><b>${esc(x.m || '—')}</b></div><div class="cp-ln"><span>Pelanggan sejak</span><b>${esc(fT(x.d1))}</b></div>
@@ -275,6 +282,9 @@ export function modulPelanggan(ctx){
     q('[data-cp-tutup]').onclick = ctx.tutup;
     const o = q('[data-cp-x="order"]'); if(o) o.onclick = () => { ctx.tutup(); ctx.buatOrder(x.p || x.plat, null); };
     q('[data-cp-x="daftar"]').onclick = () => { q('[data-cp-daftar]').hidden = false; q('[data-dl="tel"]').focus(); };
+    if(ctx.jemput){ q('[data-cp-x="jemput"]').onclick = () => { q('[data-cp-jemput]').hidden = false; q('[data-jm="tel"]').focus(); };
+      q('[data-jm="hantar"]').onclick = () => { const tel = normTelefon(q('[data-jm="tel"]').value); if(!telefonSah(tel)) return ctx.toast('No. telefon tidak sah');
+        ctx.jemput({jenis: 'jemput', nama: x.n || '', telefon: tel, plat: x.p || x.plat}); }; }
     q('[data-dl="simpan"]').onclick = async () => {
       const tel = normTelefon(q('[data-dl="tel"]').value), nm = q('[data-dl="nama"]').value.trim();
       if(!telefonSah(tel)) return ctx.toast('No. telefon tidak sah');

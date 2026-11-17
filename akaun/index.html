@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-22">
+<meta name="app-versi" content="2026.11.17-23">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -134,18 +134,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-22';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-23';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-22';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-22';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-22';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-22';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-22';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-22';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-23';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.17-23';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-23';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.17-23';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-23';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.17-23';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-22';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-22';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-22';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.17-23';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-23';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.17-23';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1777,12 +1777,26 @@ function viewTetapanApps(){
   const fw = (T.pakej || []).find(p => p.id === T.pakejFreeWash);
   return head + `<div class="card" style="background:#fffbeb;box-shadow:none"><div class="section-title"><h3>📋 Senarai harga rasmi (Price List)</h3><button class="primary" id="tkRasmi">Muat ke ${esc(namaCawangan())}</button></div>
       <p class="muted" style="margin:0">${HARGA_RASMI.pakej.length} pakej & ${HARGA_RASMI.addon.length} add-on dengan harga ikut kenderaan (Sedan, SUV, MPV, 4x4, DXL) — Promo A/B, Premium Wash, Water Coating, Polish, Seat / Deep Cleaning, Enjin, Watermark Glass, Polish Lampu. Pakej & add-on sedia ada cawangan ini akan diganti. Kadar komisen perlu ditetapkan semula.</p></div>` + Object.entries(JENIS_TK).map(([j, J]) => `<div class="card"><div class="section-title"><h3>${J.ikon} ${J.label}</h3><button class="primary" data-tkubah="${j}">Ubah</button></div><div>${ringkas(j)}</div></div>`).join('')
-    + kadTetapanAhli() + kadTerimaBayar(T) + kadQrMembers()
+    + kadLatihan(T) + kadTetapanAhli() + kadTerimaBayar(T) + kadQrMembers()
     + `<div class="card"><div class="section-title"><h3>🏪 Maklumat kedai & Safari Members</h3><button class="primary" id="tkKedai">Ubah</button></div>
       <div class="muted">${esc(T.namaKedai || '')}${T.alamat ? ' · ' + esc(T.alamat) : ''}<br>Free Wash: <b>${esc(fw?.nama || 'belum dipilih')}</b> · WhatsApp: ${esc(T.whatsapp || '—')} · Waktu: ${esc(T.waktuOperasi || '—')}<br>Bay: ${esc((T.bay || []).join(', ') || '—')}</div></div>
       <div class="card"><p class="muted" style="margin:0">Pekerja dengan kuasa 🏷 juga boleh ubah harga di kaunter (Lion Safari V2 → Tetapan). Petty cash, float tunai & had diskaun kekal di kaunter V2 (Admin).</p></div>`;
 }
+// 🎓 Mod latihan & kunci automatik (ID latihan cth OFFICE) — lionsafari/{c}/tetapan/umum.latihan
+function kadLatihan(T){
+  const L = {aktif: true, id: ['OFFICE'], kunciMinit: 3, ...(T.latihan || {})};
+  return `<div class="card" style="border:2px solid #fb923c"><h3 style="margin-top:0">🎓 Mod latihan & kunci automatik — ${esc(namaCawangan())}</h3>
+    <p class="muted" style="margin-top:0">ID staf latihan (cth <b>OFFICE</b>) di kaunter: data order, bayaran, petty cash & tutup kaunter disimpan berasingan — <b>tidak masuk</b> jualan, Akaun, laporan, cop atau komisen. Skrin dikunci automatik bila tiada pergerakan; dibuka dengan PIN Manager / Supervisor / Admin atau pekerja berkuasa 🔓. Admin yang masuk dari Akaun tidak dikunci (direkod dalam log).</p>
+    <label>ID staf latihan (asingkan dengan koma)</label><input id="ltId" value="${esc((L.id || []).join(', '))}" placeholder="OFFICE" style="text-transform:uppercase">
+    <label class="row" style="font-weight:400;gap:8px;margin:10px 0"><input type="checkbox" id="ltAktif" ${L.aktif !== false ? 'checked' : ''} style="width:20px;height:20px;margin:0"> 🎓 Mod latihan aktif (data diasingkan)</label>
+    <label>🔒 Kunci automatik selepas tiada pergerakan</label><select id="ltMinit">${[[0,'Tidak dikunci'],[1,'1 minit'],[3,'3 minit'],[5,'5 minit'],[10,'10 minit']].map(([v,l]) => `<option value="${v}" ${Number(L.kunciMinit) === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+    <button class="primary" id="ltSimpan" style="margin-top:10px">💾 Simpan</button></div>`;
+}
 function pasangTetapanApps(){
+  if($('#ltSimpan')) $('#ltSimpan').onclick = async () => {
+    const latihan = {id: val('#ltId').toUpperCase().split(/[,\s]+/).map(x => x.trim()).filter(Boolean), aktif: $('#ltAktif').checked, kunciMinit: Number($('#ltMinit').value) || 0};
+    try{ await setDoc(doc(store, 'lionsafari', cawangan, 'tetapan', 'umum'), {latihan, dikemaskiniOleh: nama}, {merge: true}); toast('✅ Tetapan mod latihan disimpan'); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
   $$('[data-tkseg]').forEach(b => b.onclick = () => { tkSeg = b.dataset.tkseg; renderShell(); });
   if(tkSeg === 'Pekerja'){ modulPK.pasang(() => {}); pasangStesen(); }
   $$('[data-tkubah]').forEach(b => b.onclick = () => borangSenaraiKaunter(b.dataset.tkubah));
