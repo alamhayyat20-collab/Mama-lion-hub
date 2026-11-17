@@ -294,6 +294,7 @@ export const KAMUS_PEKERJA = {
 };
 
 export const KAMUS_KAUNTER = {
+  "🕒 Masuk": "🕒 In",
   "harga manual": "manual price",
   "Harga Bike Wash (RM) *": "Bike Wash price (RM) *",
   "Sila masukkan harga Bike Wash": "Please enter the Bike Wash price",

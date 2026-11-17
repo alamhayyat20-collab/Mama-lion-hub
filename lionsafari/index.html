@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.17-19">
+<meta name="app-versi" content="2026.11.17-20">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -137,6 +137,7 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 }
 #resit .c{text-align:center}#resit hr{border:0;border-top:1px dashed #000;margin:4px 0}
 #resit table td{border:0;padding:1px 0;font-size:11px}
+.masuk{font-size:13px;color:#475569;margin-top:4px;white-space:nowrap}.masuk b{color:#0f172a;font-size:15px}
 </style>
 </head>
 <body>
@@ -166,22 +167,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-19';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.17-20';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-19';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.17-20';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-19';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-19';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-19';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-19';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-19';
-import { pasangSync } from '../sync-lib.js?v=2026.11.17-19';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-19';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-19';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-19';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.17-20';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.17-20';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.17-20';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.17-20';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.17-20';
+import { pasangSync } from '../sync-lib.js?v=2026.11.17-20';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.17-20';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.17-20';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.17-20';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -244,6 +245,9 @@ const fTarikh = t => t ? `${+t.slice(8,10)} ${BLN[+t.slice(5,7)-1]} ${t.slice(0,
 const fBulan = b => `${BLN[+b.slice(5,7)-1]} ${b.slice(0,4)}`;
 const fMasa = ms => ms ? new Date(ms).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
 const minit = ms => ms ? Math.max(0, Math.round((Date.now()-ms)/60000)) : 0;
+// Jam masuk kenderaan (cth 8:05 PM); tambah tarikh jika bukan hari ini
+const jamMasuk = ms => { if(!ms) return '—'; const d = new Date(ms), j = d.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
+  return d.toDateString() === new Date().toDateString() ? j : `${j} · ${d.getDate()}/${d.getMonth()+1}`; };
 const numVal = id => { const v = parseFloat(String($(id)?.value||'').replace(',','.')); return isNaN(v) ? 0 : r2(v); };
 const val = id => String($(id)?.value || '').trim();
 const groupSum = (list, kf, vf) => list.reduce((m,x) => { const k = kf(x) || 'Lain-lain'; m[k] = m[k] || {n:0, rm:0}; m[k].n++; m[k].rm += Number(vf(x))||0; return m; }, {});
@@ -1195,7 +1199,7 @@ VIEWS['Queue'] = {
     return (bolehBayar ? htmlBayarPel() : '') + tp + l.map(o => {
       const i = STATUS.indexOf(o.status), seterus = STATUS[i+1];
       return `<div class="card qcard ${o.status==='Siap'?'siap':''}">
-        <div class="between"><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><span class="plate">${esc(o.plat)}</span> <span class="muted">${esc(o.no)}</span><br>${tagAhli(o)}</div></div><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)} · ${minit(o.masaDibuat)} min</span></div>
+        <div class="between"><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><span class="plate">${esc(o.plat)}</span> <span class="muted">${esc(o.no)}</span><br>${tagAhli(o)}</div></div><div style="text-align:right"><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)} · ${minit(o.masaDibuat)} min</span><div class="masuk">🕒 Masuk <b>${jamMasuk(o.masaDibuat)}</b></div></div></div>
         <div class="muted" style="margin-top:3px">${esc(o.pakej)}${(o.addon||[]).length?' + '+o.addon.map(a=>esc(a.nama)).join(', '):''} · ${esc(o.kenderaan)} · <b>${RM(o.jumlah)}</b></div>
         ${o.diskaunBeri ? `<div><span class="tag gold">🎟 Diskaun ${esc(labelDiskaun(o.diskaunBeri))}</span></div>` : o.diskaunMinta ? `<div><span class="tag">⏳ Minta diskaun RM${esc(o.diskaunMinta.amaun)}</span></div>` : ''}
         ${bayarPel.some(x => x.orderId === o.id) ? `<div><span class="tag ok">📲 Pelanggan dah bayar — semak di atas</span></div>` : ''}
