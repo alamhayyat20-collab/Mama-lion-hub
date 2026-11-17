@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-4';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-3';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-3';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL } from '../safari-lib.js?v=2026.11.18-3';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-3';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-3';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-3';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-4';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli } from '../safari-lib.js?v=2026.11.18-4';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-4';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-4';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-4';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-4';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-4';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-4';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1071,7 +1071,7 @@ VIEWS['Safari Members'] = {
       keypad('#kpSM', async pin => {
         const x = await semakPinLayak(pin, x => x.peranan === 'Admin' || adaKuasa(x, 'ahli'));
         if(!x) return 'PIN tidak sah / tiada kuasa Safari Members';
-        ahliBuka = {staf: staf.id, oleh: namaPin(x), sampai: Date.now() + 5 * 60000};
+        ahliBuka = {staf: staf.id, oleh: namaPin(x), peranan: x.peranan, sampai: Date.now() + 5 * 60000};
         closeModal(); logKaunter('Buka Safari Members', `PIN ${namaPin(x)}`); renderShell();
       });
     }; return; }
@@ -1081,6 +1081,7 @@ VIEWS['Safari Members'] = {
     MPS ||= modulPelanggan({store, fs: {collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion}, mod: 'kaunter', log: true,
       buka: openModal, tutup: closeModal, toast, pengguna: () => ahliBuka?.oleh || (staf ? namaPin(staf) : 'Kaunter'), cawangan: () => cawangan,
       pautanKad: id => new URL('../pelanggan/#k=' + id, location.href).href, jemput: jemputWA,
+      copManual: () => !!staf && (staf.akaun || ['Admin', 'Manager', 'Supervisor'].includes(ahliBuka?.peranan)),
       buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
     $('#smCari').innerHTML = MPS.htmlKotak(); MPS.pasang($('#smCari'));
   }
@@ -1126,6 +1127,8 @@ VIEWS['Order Baru'] = {
       L.pakej.forEach((x,i) => { const h = hargaPakejK(x, k), e = $(`[data-hp="${i}"]`); if(e) e.textContent = h == null ? 'harga ikut permintaan' : RM(h) + (x.minit ? ` · ~${x.minit} min` : ''); });
       L.addon.forEach((x,i) => { const h = hargaAddonK(x, k), e = $(`[data-ha="${i}"]`); if(e) e.textContent = h == null ? 'tiada' : '+' + RM(h); });
       const asas = bike ? Math.max(0, Number(val('#oBikeHarga')) || 0) : p ? (hargaPakejK(p, k) ?? 0) : 0;
+      if($('#oCopLayak')){ const pid = bike ? 'bike-wash' : p?.id;
+        $('#oCopLayak').innerHTML = fw ? '<span style="color:#fbbf24">🎁 Free Wash — tiada cop</span>' : !pid ? '' : layakCop(pid) ? '<span style="color:#4ade80">⭐ Layak cop</span>' : `<span style="color:#fca5a5">✖ Tiada cop — ${esc(bike ? 'Bike Wash' : p.nama)} tidak layak cop. Cadangkan pakej Luar & Dalam ke atas.</span>`; }
       const j = (fw ? 0 : asas) + sum([...draf.addon], i => hargaAddonK(L.addon[i], k) ?? 0);
       $('#oJum').innerHTML = fw ? `${RM(j)} <small style="font-size:12px;font-weight:600">· 🎁 Free Wash ${RM(asas)}</small>` : RM(j);
       if($('#oKom')){ const kom = (fw || !p ? 0 : (Number(KOMISEN[p.id])||0)) + sum([...draf.addon], i => Number(KOMISEN[L.addon[i].id])||0); $('#oKom').textContent = `Komisen anda: ${RM(kom)}`; }
@@ -1153,8 +1156,9 @@ VIEWS['Order Baru'] = {
         box.innerHTML = '';
       } else {
         const k = keadaanKad(a), fwp = pakejFW();
-        box.innerHTML = `<div class="ahlikad"><div class="between"><div><b>⭐ Safari Member · ${esc(a.kod)}</b><br><span>${esc(a.nama)} · ${esc(paparTelefon(a.telefon))}</span></div>
+        box.innerHTML = `<div class="ahlikad"><div class="between"><div><b>⭐ Safari Member · ${esc(a.kod)} · ${esc(peringkatAhli(a).nama)}</b><br><span>${esc(a.nama)} · ${esc(paparTelefon(a.telefon))}</span></div>
           <button class="small" id="oLepas">✕</button></div>
+          <div id="oCopLayak" style="margin:4px 0;font-weight:700"></div>
           <div class="copbar">${Array.from({length:KAD.saiz}, (_,i) => `<i class="${i < k.bil ? 'on' : ''} ${KAD.ganjaranPada.includes(i+1) ? 'g' : ''}"></i>`).join('')}<span>${k.bil}/${KAD.saiz}</span></div>
           ${!k.aktif ? `<div style="color:#fbbf24;margin:4px 0">🔓 Kad belum aktif — cop pertama perlu pakej ${esc(KAD.pakejAktif.map(id => aktifSahaja('pakej').find(p => p.id === id)?.nama || id).join(' / ') || 'berbayar')}${k.profilKurang.length ? ` & pelanggan lengkapkan profil (${k.profilKurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan` : ''}.</div>` : ''}
           ${k.freeWash.length ? `<label class="fwtoggle"><input type="checkbox" id="oFW" ${draf.fw ? 'checked' : ''}> 🎁 Guna Free Wash (${k.freeWash.length} ada) — ${esc(KAD.teksFreeWash || 'pakej ' + (fwp?.nama || ''))}</label>` : `<div class="muted" style="color:#cbd5e1">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
@@ -1581,7 +1585,7 @@ async function beriCop(o){
     const hasil = await runTransaction(store, async tx => {
       const s = await tx.get(ref); if(!s.exists()) throw new Error('Ahli tidak dijumpai');
       const r = tambahCop(s.data(), {orderId: o.id, plat: o.plat, cawangan, tarikh: o.tarikhBayar || today(), pakejId: o.pakejId || '', jumlah: o.jumlah || 0});
-      if(!r.ok) return {ok:false, sebab: r.sebab};
+      if(!r.ok){ if(r.data) tx.update(ref, r.data); return {ok:false, sebab: r.sebab}; }
       tx.update(ref, r.data);
       return {ok:true, bil: r.data.cop.length, dapat: r.dapatFreeWash, selesai: r.data.cop.length === 0, aktif: r.diaktifkan};
     });

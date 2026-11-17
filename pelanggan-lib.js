@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.18-3';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.18-4';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -101,12 +101,13 @@ export function modulPelanggan(ctx){
     try{ const s = await fs.getDoc(fs.doc(store, 'ahli', id)); if(s.exists()){ a = {id, ...s.data()}; const i = list.findIndex(x => x.id === id); if(i >= 0) list[i] = a; } }catch(_){}
     if(!a) return ctx.toast('Ahli tidak dijumpai');
     const k = keadaanKad(a), aktif = kadAktif(a), kurang = profilKurang(a).map(m => MEDAN_PROFIL[m] || m);
-    const wa = `https://wa.me/${a.telefon}`, P = peringkatAhli(a), ST = statLawatan(a);
+    const wa = `https://wa.me/${a.telefon}`, P = peringkatAhli(a), ST = statLawatan(a), CALON = perluSahPeringkat(a);
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>⭐ ${esc(a.nama || '—')}</h3><button class="small" data-cp-tutup>✕</button></div>
       <div><span class="cp-tag cp-ahli">${esc(a.kod || '')}</span><span class="cp-tag pk-${P.id}">${P.id === 'pride' ? '👑 ' : ''}${esc(P.nama)}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? '✅ Kad aktif' : '🔓 Kad belum aktif'}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Import MONZ</span>' : ''}</div>
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
         ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}
         ${!AKAUN && ctx.jemput ? '<button class="wa" data-cp-x="wa">💬 WhatsApp</button><button class="pri" data-cp-x="hantar">📤 Hantar kad</button>' : ''}
+        ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
         <button data-cp-x="cop">⭐ +1 cop manual</button><button data-cp-x="fw">🎁 +1 Free Wash</button>${aktif ? '' : '<button data-cp-x="aktif">🔓 Aktifkan kad</button>'}
         <button data-cp-x="gabung">🔗 Gabung rekod</button><button class="bahaya" data-cp-x="padam">🚫 Padam ahli</button>` : ''}</div>
@@ -120,7 +121,9 @@ export function modulPelanggan(ctx){
         ${kurang.length ? `<div class="muted" style="font-size:12.5px;margin-top:4px">Profil belum lengkap: ${kurang.map(esc).join(', ')}</div>` : ''}</div>
       <div class="cp-sek"><h4>🚗 Kenderaan (${(a.plat || []).length})</h4>${(a.kenderaan || []).length ? a.kenderaan.map(v => `<div class="cp-ln"><b>${esc(v.plat)}</b><span>${esc([v.model, v.jenis].filter(Boolean).join(' · ') || '—')}</span></div>`).join('') : (a.plat || []).map(p => `<div class="cp-ln"><b>${esc(p)}</b><span>—</span></div>`).join('')}</div>
       <div class="cp-sek"><h4>🏅 Peringkat kad</h4>
-        <div class="cp-ln"><span>Peringkat semasa</span><b>${esc(P.nama)}${a.pride ? ' (jemputan)' : a.peringkatManual ? ' (ditetapkan manual)' : ''}</b></div>
+        <div class="cp-ln"><span>Peringkat semasa</span><b>${esc(P.nama)}${a.pride ? ' (jemputan)' : a.peringkatSah ? ' (disahkan ' + esc(a.peringkatSah.oleh || '') + ')' : ''}</b></div>
+        ${CALON ? `<div class="notice" style="margin:6px 0;background:#fef3c7">⏳ Layak naik ke <b>${esc(CALON.nama)}</b> — menunggu pengesahan Dato' / Datin</div>
+          ${AKAUN && ctx.bolehSah?.() ? `<div class="cp-aksi" style="margin:0 0 6px"><button class="pri" data-cp-x="sah">✅ Sahkan naik ke ${esc(CALON.nama)}</button><button data-cp-x="tolak">✖ Tolak</button></div>` : ''}` : ''}
         <div class="cp-ln"><span>12 bulan terakhir</span><b>${ST.cucian} cucian · ${RM(ST.rm)}</b></div>
         ${P.diskaun ? `<div class="cp-ln"><span>Diskaun ahli</span><b>${P.diskaun}% servis tambahan${P.id === 'pride' ? ' & detailing' : ''}</b></div>` : ''}
         ${AKAUN ? `<div class="cp-aksi" style="margin-bottom:0"><button data-cp-x="pride">${a.pride ? '↩ Tarik Lion Pride' : '👑 Jemput Lion Pride'}</button><button data-cp-x="peringkat">🎚 Tetapkan peringkat</button></div>` : ''}</div>
@@ -154,6 +157,13 @@ export function modulPelanggan(ctx){
     const segar = async () => { await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
     const kemas = async (d, tindakan, butiran, msg) => { try{ await fs.updateDoc(fs.doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); log(a, tindakan, butiran); ctx.toast(msg || '✅ Disimpan'); segar(); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
+    if(x('cop')) x('cop').onclick = () => { const sebab = prompt('Sebab tambah cop manual:'); if(!sebab) return;
+      const r = tambahCop(a, {orderId: 'manual-' + Date.now(), plat: 'MANUAL' + Date.now(), cawangan: ctx.cawangan(), tarikh: 'manual-' + Date.now(), paksa: true});
+      kemas({...r.data, logManual: [...(a.logManual || []), {t: Date.now(), oleh: ctx.pengguna(), apa: '+1 cop', sebab}]}, '+1 cop manual', sebab, r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); };
+    if(x('sah')) x('sah').onclick = () => { if(!confirm(`Sahkan ${a.nama} naik ke ${CALON.nama}?\nPelanggan akan dimaklumkan dalam Apps Safari Members & kad dikemas kini di semua apps.`)) return;
+      kemas({peringkat: CALON.id, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, notisPeringkat: {id: CALON.id, masa: Date.now()}}, 'Sahkan naik taraf', CALON.nama, `✅ ${a.nama} kini ${CALON.nama}`);
+      if(confirm('Maklumkan pelanggan melalui WhatsApp sekarang?')) window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(`Tahniah ${a.nama}! 🎉 Kad Safari Members anda (${a.kod}) telah dinaik taraf ke *${CALON.nama}*.\nTerima kasih atas kesetiaan anda bersama Mama Lion & Lion King. Buka kad anda: ${ctx.pautanKad(a.id)}`)}`, '_blank'); };
+    if(x('tolak')) x('tolak').onclick = () => { const sebab = prompt(`Sebab tolak naik taraf ke ${CALON.nama}:`); if(sebab === null) return; kemas({peringkatTolak: CALON.id}, 'Tolak naik taraf', `${CALON.nama}${sebab ? ' · ' + sebab : ''}`, 'Naik taraf ditolak'); };
     if(!AKAUN){
       if(ctx.jemput){ x('wa').onclick = () => ctx.jemput({jenis: 'wa', nama: a.nama, telefon: a.telefon, kod: a.kod});
         x('hantar').onclick = () => ctx.jemput({jenis: 'kad', nama: a.nama, telefon: a.telefon, kod: a.kod, pautan: ctx.pautanKad(a.id)}); }
@@ -163,9 +173,6 @@ export function modulPelanggan(ctx){
       window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(teks)}`, '_blank'); log(a, 'Hantar kad', 'WhatsApp'); };
     x('lihat').onclick = () => { ctx.tutup(); ctx.lihatKad?.(a); };
     x('nota').onclick = async () => { const nota = q('[data-cp-nota]').value.trim(); try{ await fs.setDoc(fs.doc(store, 'ahli_nota', id), {nota, oleh: ctx.pengguna(), masa: Date.now()}); log(a, 'Catatan dalaman dikemas kini'); ctx.toast('✅ Catatan disimpan'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
-    x('cop').onclick = () => { const sebab = prompt('Sebab tambah cop manual:'); if(!sebab) return;
-      const r = tambahCop(a, {orderId: 'manual-' + Date.now(), plat: 'MANUAL' + Date.now(), cawangan: ctx.cawangan(), tarikh: 'manual-' + Date.now(), paksa: true});
-      kemas({...r.data, logManual: [...(a.logManual || []), {t: Date.now(), oleh: ctx.pengguna(), apa: '+1 cop', sebab}]}, '+1 cop manual', sebab, r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); };
     x('fw').onclick = () => { const sebab = prompt('Sebab beri Free Wash manual:'); if(!sebab) return; const t = Date.now();
       kemas({freeWash: [...(a.freeWash || []), {id: 'fwm' + t.toString(36), t, tamat: t + KAD.tempohFreeWashHari * 864e5, sebab: 'Manual: ' + sebab, cawangan: ctx.cawangan(), guna: null}],
         logManual: [...(a.logManual || []), {t, oleh: ctx.pengguna(), apa: '+1 Free Wash', sebab}]}, '+1 Free Wash manual', sebab, '✅ Free Wash ditambah'); };
@@ -173,9 +180,10 @@ export function modulPelanggan(ctx){
     x('ubah').onclick = () => borangUbah(a);
     x('pride').onclick = () => { if(a.pride){ if(confirm(`Tarik kad Lion Pride daripada ${a.nama}?`)) kemas({pride: false, prideMasa: null}, 'Tarik Lion Pride', '', '✅ Lion Pride ditarik'); }
       else if(confirm(`Jemput ${a.nama} sebagai Lion Pride?\nKad hitam-emas & semua faedah Lion Pride akan aktif serta-merta.`)) kemas({pride: true, prideMasa: Date.now(), prideOleh: ctx.pengguna()}, 'Jemput Lion Pride', '', '👑 Dijemput sebagai Lion Pride'); };
-    x('peringkat').onclick = () => { const v = (prompt('Tetapkan peringkat (taip satu):\nauto = ikut cucian/belanja 12 bulan\nbronze / silver / gold', a.peringkatManual || 'auto') || '').trim().toLowerCase();
-      if(!v) return; if(!['auto', 'bronze', 'silver', 'gold'].includes(v)) return ctx.toast('Pilihan tidak sah');
-      kemas({peringkatManual: v === 'auto' ? null : v}, 'Tetapkan peringkat', v === 'auto' ? 'Automatik' : PERINGKAT[v].nama, '✅ Peringkat dikemas kini'); };
+    x('peringkat').onclick = () => { if(!ctx.bolehSah?.()) return ctx.toast('Hanya Dato\' / Datin boleh tetapkan peringkat');
+      const v = (prompt('Tetapkan peringkat (taip satu): bronze / silver / gold', P.id === 'pride' ? 'gold' : P.id) || '').trim().toLowerCase();
+      if(!v) return; if(!['bronze', 'silver', 'gold'].includes(v)) return ctx.toast('Pilihan tidak sah');
+      kemas({peringkat: v, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, ...(v !== P.id ? {notisPeringkat: {id: v, masa: Date.now()}} : {})}, 'Tetapkan peringkat', PERINGKAT[v].nama, '✅ Peringkat dikemas kini'); };
     x('gabung').onclick = () => gabung(a);
     x('padam').onclick = () => padam(a);
   }

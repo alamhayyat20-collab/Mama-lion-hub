@@ -113,6 +113,10 @@ h2{font-size:19px;margin:28px 0 12px}
 .belakang .tc b{color:var(--t);display:block;font-family:Cinzel,var(--serif),serif;font-size:calc(var(--u)*13);margin:calc(var(--u)*2) 0 calc(var(--u)*4)}
 .belakang .tc ol{margin:0;padding-left:calc(var(--u)*15)}
 /* Peringkat */
+.tahniah-pk{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:18px}
+.tahniah-pk .kotak{background:#111;color:#f3efe4;border:2px solid var(--t);border-radius:20px;padding:20px;max-width:380px;width:100%;text-align:center}
+.tahniah-pk h3{margin:6px 0 2px}.tahniah-pk b{display:block;font-family:Cinzel,serif;font-size:28px;color:var(--t);margin:4px 0}
+.tahniah-pk ul{text-align:left;font-size:13.5px;line-height:1.55}.tahniah-pk .btn{width:100%;margin-top:6px}
 .prk{border-radius:16px;padding:14px;margin-top:12px;color:#f3efe4;background:#111}
 .prk .atas{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .prk h3{margin:0;font-family:Cinzel,var(--serif),serif;font-size:20px;color:var(--t)}
@@ -262,15 +266,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-4';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-3';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-3';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-3';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT } from '../safari-lib.js?v=2026.11.18-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-4';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-4';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-4';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop } from '../safari-lib.js?v=2026.11.18-4';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -346,6 +350,16 @@ function mulaAhli(){
     langganTempahan();
     if(tab === 'Alu-aluan' || tab === 'Daftar') tab = 'Utama';
     render();
+    // 🎉 Makluman naik taraf (selepas disahkan Dato' / Datin)
+    const np = ahli.notisPeringkat;
+    if(np && PERINGKAT[np.id] && String(LS.get('sm_notisP') || '') !== String(np.masa)){
+      LS.set('sm_notisP', String(np.masa)); const P = PERINGKAT[np.id];
+      Promise.resolve().then(() => maklumPelanggan(`🎉 Tahniah! Kad anda kini ${P.nama}`, 'Terima kasih atas kesetiaan anda bersama Mama Lion & Lion King.')).catch(() => {});
+      const ov = document.createElement('div'); ov.className = 'tahniah-pk';
+      ov.innerHTML = `<div class="kotak t-${P.id}"><div style="font-size:46px">🎉</div><h3>Tahniah, ${esc(ahli.nama || '')}!</h3><p>Kad Safari Members anda kini</p><b>${esc(P.nama)}</b>
+        <ul>${P.faedah.map(f => `<li>${esc(f)}</li>`).join('')}</ul><button class="btn">Lihat kad saya</button></div>`;
+      document.body.appendChild(ov); ov.querySelector('button').onclick = () => { ov.remove(); tab = 'Kad'; render(); };
+    }
   }, e => { console.error(e); toast('Tidak dapat memuatkan kad. Semak sambungan internet.'); });
   if(unsubStatus) unsubStatus();
   let awal = true;
@@ -398,6 +412,7 @@ const ikonServis = `<div class="ikonservis">
   <div><svg viewBox="0 0 32 32"><circle cx="11" cy="10" r="3.5"/><circle cx="22" cy="10" r="3.5"/><path d="M4 26c0-4.5 3.2-7.5 7-7.5s7 3 7 7.5"/><path d="M15 26c0-4.5 3.2-7.5 7-7.5s6 3 6 7.5"/></svg>FAMILY FRIENDLY</div></div>`;
 // ---------- Nama pakej dari tetapan kad (Apps Akaun) ----------
 const pakejSemua = () => { const m = new Map(); [...CAWANGAN.flatMap(c => tetapan[c.id]?.pakej || []), ...HARGA_RASMI.pakej].forEach(p => { if(p?.id && !m.has(p.id)) m.set(p.id, p); }); return m; };
+function namaPakejCop(){ const m = pakejSemua(); return [...new Set([...(KAD.pakejCop || []), ...(KAD.pakejAktif || [])])].map(id => m.get(id)?.nama).filter(Boolean).join(', ') || 'pakej Luar & Dalam ke atas'; }
 function namaPakejFW(){ return KAD.teksFreeWash || pakejSemua().get(KAD.pakejFreeWash)?.nama || 'Luar & Dalam'; }
 function namaPakejAktif(){ const m = pakejSemua(); return KAD.pakejAktif.length ? KAD.pakejAktif.map(id => { const p = m.get(id); if(!p) return id; const h = p.hargaIkut ? [...new Set(Object.values(p.hargaIkut).filter(v => v != null))].slice(0, 3) : [p.harga]; return `${p.nama} (RM${h.join(' / ')})`; }).join(' atau ') : 'berbayar'; }
 // ---------- Peta lokasi & navigasi (lokasi ditetapkan di Apps Akaun → Maklumat kedai) ----------
@@ -471,18 +486,19 @@ function kadHtml(){
       </div></div></div>
     <div class="muka belakang"><div class="dalam">${ombakSvg('omb-b', 10, true)}<div class="jalur"></div>
       <div class="badan"><div class="qr" id="qr"></div><div class="tc"><span class="kod">${esc(ahli.kod)}</span><b>${esc(P.nama)}</b>
-        <ol><li>1 cop setiap cucian berbayar.</li><li>${KAD.saiz} cop satu kad · Free Wash cop ke-${KAD.ganjaranPada.join(" &amp; ")}.</li><li>Tunjuk kod QR ini di kaunter.</li><li>Tidak boleh dipindah milik.</li></ol></div></div></div></div>
+        <ol><li>1 cop setiap cucian pakej layak.</li><li>${KAD.saiz} cop satu kad · Free Wash cop ke-${KAD.ganjaranPada.join(" &amp; ")}.</li><li>Tunjuk kod QR ini di kaunter.</li><li>Tidak boleh dipindah milik.</li></ol></div></div></div></div>
   </div></div><p class="petunjuk">Tekan kad untuk paparkan kod QR</p>`;
 }
 function peringkatHtml(){
   const k = kemajuanPeringkat(ahli), P = k.p, RM = n => 'RM' + Number(n || 0).toLocaleString('en-MY');
   return `<div class="prk t-${P.id}"><div class="atas"><div><div style="font-size:12px;opacity:.75">Peringkat kad anda</div><h3>${esc(P.nama)}</h3></div>
       <div style="text-align:right;font-size:12.5px;opacity:.85">12 bulan terakhir<br><b>${k.st.cucian} cucian · ${RM(k.st.rm)}</b></div></div>
-    ${k.seterusnya ? `<div class="bar" aria-hidden="true"><i style="width:${k.peratus}%"></i></div><div style="font-size:13px">Lagi <b>${k.lagiCucian} cucian</b> atau belanja <b>${RM(k.lagiRM)}</b> untuk naik ke <b>${esc(k.seterusnya.nama)}</b>.</div>`
+    ${k.seterusnya && k.capai ? `<div class="bar" aria-hidden="true"><i style="width:100%"></i></div><div style="font-size:13px">Terima kasih atas kesetiaan anda! Peringkat kad anda sedang dalam semakan pengurusan.</div>`
+      : k.seterusnya ? `<div class="bar" aria-hidden="true"><i style="width:${k.peratus}%"></i></div><div style="font-size:13px">Lagi <b>${k.lagiCucian} cucian</b> atau belanja <b>${RM(k.lagiRM)}</b> untuk naik ke <b>${esc(k.seterusnya.nama)}</b>.</div>`
       : P.id === 'pride' ? '<div style="font-size:13px;margin-top:8px">Anda pelanggan jemputan istimewa kami. Terima kasih atas kesetiaan anda.</div>' : P.id === 'gold' ? '<div style="font-size:13px;margin-top:8px">Anda di peringkat tertinggi automatik. Kekalkan syarat Gold setiap 12 bulan.</div>' : ''}
     <ul>${P.faedah.map(f => `<li>${esc(f)}</li>`).join('')}</ul></div>
     <div class="prk-semua">${SUSUNAN_PERINGKAT.map(id => { const x = PERINGKAT[id]; return `<div class="t-${id} ${id === P.id ? 'ini' : ''}"><b>${esc(x.nama)}</b>${esc(x.syarat)}${x.diskaun ? `<br>Diskaun add-on ${x.diskaun}%` : ''}</div>`; }).join('')}</div>
-    <p class="muted" style="font-size:12px;margin-top:6px">Peringkat dinilai semula setiap 12 bulan. Diskaun tidak boleh digabung dengan promosi lain.</p>`;
+    <p class="muted" style="font-size:12px;margin-top:6px">Cucian dikira untuk pakej layak cop; belanja dikira untuk semua cucian & servis. Naik taraf disahkan oleh pengurusan. Peringkat dinilai semula setiap 12 bulan. Diskaun tidak boleh digabung dengan promosi lain.</p>`;
 }
 function pasangKad(){
   const kad = $('#kad'); if(!kad) return;
@@ -548,7 +564,7 @@ function viewAluan(){
     <h1>Safari Members</h1>
     <p class="lead">Kad ahli digital Mama Lion & Lion King. Kumpul cop setiap kali mencuci, dapat Free Wash.</p>
     <div class="panel"><ul class="kelebihan">
-      <li><i>🐾</i><div><b>1 cop setiap cucian berbayar</b><div class="muted">Di Mama Lion atau Lion King.</div></div></li>
+      <li><i>🐾</i><div><b>1 cop setiap cucian pakej layak</b><div class="muted">Pakej: ${esc(namaPakejCop())}. Cuci Luar & servis tambahan (add-on) tidak dicop. Di Mama Lion atau Lion King.</div></div></li>
       <li><i>👑</i><div><b>Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} = Free Wash</b><div class="muted">Dua cucian ${esc(namaPakejFW())} percuma bagi setiap kad ${KAD.saiz} cop.</div></div></li>
       <li><i>📣</i><div><b>Promosi khas ahli</b><div class="muted">Tawaran terkini terus dalam apps.</div></div></li>
     </ul></div>
@@ -746,7 +762,7 @@ function viewKad(){
     <h2>Peringkat kad</h2>${peringkatHtml()}
     <h2>Cop anda</h2>${dulangHtml()}${infoKadHtml()}
     ${baucarHtml()}
-    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej berbayar memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} memberi 1 Free Wash — pakej ${esc(namaPakejFW())} untuk semua jenis kenderaan (2 Free Wash bagi setiap kad ${KAD.saiz} cop). Selepas cop ke-${KAD.saiz}, kad bermula semula. Cop pertama perlu pakej ${esc(namaPakejAktif())} untuk mengaktifkan kad. Cop dan Free Wash sah selama 12 bulan.</div></div>
+    <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej layak memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Pakej layak cop: <b>${esc(namaPakejCop())}</b>. Cuci Luar & servis tambahan (add-on) tidak dicop. Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} memberi 1 Free Wash — pakej ${esc(namaPakejFW())} untuk semua jenis kenderaan (2 Free Wash bagi setiap kad ${KAD.saiz} cop). Selepas cop ke-${KAD.saiz}, kad bermula semula. Cop pertama perlu pakej ${esc(namaPakejAktif())} untuk mengaktifkan kad. Cop dan Free Wash sah selama 12 bulan.</div></div>
     <h2>Sejarah cucian</h2><div class="panel sejarah">${sejarah.length ? sejarah.map(h => `<div><span>${tarikhBM(h.tarikh + 'T12:00:00')}<br><span class="muted">${esc(CAWANGAN.find(c => c.id === h.cawangan)?.nama || '')} · ${esc(h.plat)}</span></span><span style="text-align:right">${esc(h.pakej)}<br><span class="muted">${h.freeWash ? 'Free Wash' : '+1 cop'}</span></span></div>`).join('') : '<p class="muted" style="margin:0">Belum ada rekod cucian.</p>'}</div>`;
   pasangKad();
   $$('[data-keprofil]').forEach(b => b.onclick = () => { tab = 'Profil'; render(); window.scrollTo({top:0}); });
@@ -769,7 +785,7 @@ function viewPakej(){
     <div class="cawangan" style="margin-top:16px">${CAWANGAN.map(c => `<button class="${c.id===cawPakej?'on':''}" data-caw="${c.id}"><img src="${c.logo}" alt=""><b>${c.nama}</b></button>`).join('')}</div>
     ${!T ? '<p class="kosong">Memuatkan…</p>' : `
       ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${(G[p.id] || gambarAsal(p.id)) ? `background-image:url('${G[p.id] || gambarAsal(p.id)}')` : ''}">${(G[p.id] || gambarAsal(p.id)) ? '' : '🚿'}</div>
-        <div class="t"><b>${esc(p.nama)}</b><div class="h">${p.hargaIkut ? `${KD.map(k => { const h = hargaPakejK(p, k); return `<span style="font-size:12px;font-family:var(--sans);color:var(--kelabu);font-weight:700">${esc(k.nama)}</span> ${h == null ? '<small>ikut permintaan</small>' : RM(h)}`; }).join(' · ')}` : RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
+        <div class="t"><b>${esc(p.nama)}</b><div class="h">${p.hargaIkut ? `${KD.map(k => { const h = hargaPakejK(p, k); return `<span style="font-size:12px;font-family:var(--sans);color:var(--kelabu);font-weight:700">${esc(k.nama)}</span> ${h == null ? '<small>ikut permintaan</small>' : RM(h)}`; }).join(' · ')}` : RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${layakCop(p.id) ? '<span class="lencana-fw" style="background:#fef3c7;color:#92400e">⭐ Dapat cop</span>' : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
       ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>${a.hargaIkut ? 'dari ' + RM(Math.min(...Object.values(a.hargaIkut).filter(v => v != null))) : '+' + RM(a.harga)}</b></span>`).join('')}</div>` : ''}
       <button class="btn btn-emas" style="margin-top:16px" id="pkTempah">📲 Tempah servis</button>
       ${senarai('kenderaan').some(k => k.harga) ? `<p class="muted" style="margin-top:12px">Caj ikut kenderaan: ${senarai('kenderaan').filter(k => k.harga).map(k => `${esc(k.nama)} ${k.harga > 0 ? '+' : ''}${RM(k.harga)}`).join(', ')}.</p>` : ''}

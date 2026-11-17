@@ -21,7 +21,9 @@ export const hariOperasi = (ms = Date.now()) => isoT(new Date(ms - POTONG_JAM * 
 export const tarikhKalendar = (ms = Date.now()) => isoT(new Date(ms));
 export const lepasTengahMalam = (ms = Date.now()) => hariOperasi(ms) !== tarikhKalendar(ms);
 export const KAD = {saiz: 10, ganjaranPada: [5, 10], tempohCopHari: 365, tempohFreeWashHari: 365,
-  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone', teksFreeWash: ''};
+  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone', teksFreeWash: '',
+  // 🎟 Pakej layak cop (Cuci Luar, add-on & servis berasingan tidak dicop)
+  pakejCop: ['p-ld-silicone', 'p-ld-waterwax', 'p-ld-fogging', 'p-ld-ww-fog', 'p-ld-vacuum', 'p-promo-a', 'p-promo-b', 'p-premium', 'p-water-coating']};
 export const MEDAN_PROFIL = {nama: 'Nama penuh', emel: 'E-mel', tarikhLahir: 'Tarikh lahir', cawanganUtama: 'Cawangan utama'};
 export function terapTetapanKad(d){
   if(!d) return KAD;
@@ -30,7 +32,8 @@ export function terapTetapanKad(d){
   Object.assign(KAD, {saiz, ganjaranPada: g.length ? [...new Set([...g.slice(0, 2), saiz])].slice(-2) : KAD.ganjaranPada,
     pakejAktif: Array.isArray(d.pakejAktif) ? d.pakejAktif : KAD.pakejAktif, wajibProfil: d.wajibProfil !== false,
     medanProfil: Array.isArray(d.medanProfil) ? d.medanProfil.filter(m => MEDAN_PROFIL[m]) : KAD.medanProfil,
-    pakejFreeWash: d.pakejFreeWash || KAD.pakejFreeWash, teksFreeWash: String(d.teksFreeWash || '').trim()});
+    pakejFreeWash: d.pakejFreeWash || KAD.pakejFreeWash, teksFreeWash: String(d.teksFreeWash || '').trim(),
+    pakejCop: Array.isArray(d.pakejCop) ? d.pakejCop : KAD.pakejCop});
   return KAD;
 }
 // Kad aktif: ahli lama yang sudah ada servis/cop dianggap aktif; ahli baru perlu profil lengkap + cucian pertama pakej Promo
@@ -77,14 +80,20 @@ export function keadaanKad(a, kini = Date.now()){
 }
 
 // Tambah 1 cop. Pulangkan {ok, sebab?, data (medan untuk dikemas kini), dapatFreeWash}
+// Pakej layak cop: senarai 🎟 + pakej pengaktif kad
+export const layakCop = id => !!id && ((KAD.pakejCop || []).includes(id) || (KAD.pakejAktif || []).includes(id));
 export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', paksa = false, jumlah = 0, kini = Date.now()}){
   const p = normPlat(plat);
-  if((a.copTerakhir || {})[p] === tarikh) return {ok:false, sebab:`Plat ${plat} sudah dapat cop hari ini`};
+  // Rekod lawatan (belanja dikira untuk semua order berbayar; c:1 = cucian pakej layak cop)
+  const lw = c => ({lawatan: [...(a.lawatan || []).filter(l => l.t > kini - 365 * HARI_MS && l.o !== orderId), {t: kini, o: orderId, rm: Number(jumlah) || 0, c}], dikemaskini: kini});
+  const gagal = sebab => ({ok:false, sebab, data: lw(0)});
+  if(!paksa && !layakCop(pakejId)) return gagal('Pakej ini tidak layak cop');
+  if((a.copTerakhir || {})[p] === tarikh) return gagal(`Plat ${plat} sudah dapat cop hari ini`);
   const aktifkan = !kadAktif(a);
   if(aktifkan && !paksa){
     const kurang = profilKurang(a);
-    if(kurang.length) return {ok:false, sebab:`Kad belum aktif — pelanggan perlu lengkapkan profil (${kurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan`};
-    if(KAD.pakejAktif.length && !KAD.pakejAktif.includes(pakejId)) return {ok:false, sebab:'Kad belum aktif — cop pertama mesti pakej Promo'};
+    if(kurang.length) return gagal(`Kad belum aktif — pelanggan perlu lengkapkan profil (${kurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan`);
+    if(KAD.pakejAktif.length && !KAD.pakejAktif.includes(pakejId)) return gagal('Kad belum aktif — cop pertama mesti pakej Promo');
   }
   const k = keadaanKad(a, kini);
   let cop = [...k.cop, {t: kini, o: orderId, p, c: cawangan}];
@@ -97,14 +106,14 @@ export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', pak
   if(cop.length >= g2){ beri(`Cop ke-${g2}`); cop = []; ganjaran = 0; kadSelesai++; }
   return {ok:true, dapatFreeWash: dapat, diaktifkan: aktifkan, data: {cop, ganjaran, freeWash, kadSelesai, copTerakhir: {...(a.copTerakhir || {}), [p]: tarikh},
     ...(aktifkan ? {kadAktif: true, kadAktifMasa: kini} : {}),
-    lawatan: [...(a.lawatan || []).filter(l => l.t > kini - 365 * HARI_MS), {t: kini, o: orderId, rm: Number(jumlah) || 0}],
+    ...lw(1),
     jumlahServis: (a.jumlahServis || 0) + 1, dikemaskini: kini}};
 }
 
 // ---------------- Peringkat kad: Bronze · Silver · Gold · Lion Pride ----------------
 export const PERINGKAT = {
   bronze: {id: 'bronze', nama: 'Lion Bronze', pendek: 'BRONZE', bintang: 1, diskaun: 0, syarat: 'Automatik bila daftar Safari Members',
-    faedah: ['Kad cop digital: setiap cucian berbayar = 1 cop', 'Cop ke-5 & ke-10 = FREE WASH', 'Sejarah cucian & resit digital', 'Promosi & tawaran ahli melalui WhatsApp', 'Sah di Mama Lion & Lion King'],
+    faedah: ['Kad cop digital: 1 cop setiap cucian pakej layak', 'Cop ke-5 & ke-10 = FREE WASH', 'Sejarah cucian & resit digital', 'Promosi & tawaran ahli melalui WhatsApp', 'Sah di Mama Lion & Lion King'],
     slogan: 'Terima kasih kerana memilih kami.', sign: 'emas'},
   silver: {id: 'silver', nama: 'Lion Silver', pendek: 'SILVER', bintang: 2, diskaun: 10, min: {cucian: 12, rm: 600}, syarat: '≥ 12 cucian ATAU belanja ≥ RM600 dalam 12 bulan',
     faedah: ['Semua faedah Lion Bronze', 'Diskaun 10% servis tambahan (add-on)', 'Hadiah bulan hari jadi: Silicone Tyre percuma', 'Cop berganda (2 cop) pada hari Isnin', 'Free Wash sah 12 bulan'],
@@ -120,25 +129,37 @@ export const SUSUNAN_PERINGKAT = ['bronze', 'silver', 'gold', 'pride'];
 // Cucian berbayar & belanja dalam 12 bulan (dari rekod lawatan; cop lama sebagai sandaran)
 export function statLawatan(a, kini = Date.now()){
   const had = kini - 365 * HARI_MS, m = new Map();
-  (a.lawatan || []).forEach(l => { if(l.t > had) m.set(l.o || l.t, l.rm || 0); });
-  (a.cop || []).forEach(c => { if(c.t > had && !m.has(c.o || c.t) && !String(c.o || '').startsWith('manual')) m.set(c.o || c.t, 0); });
-  let rm = 0; m.forEach(v => rm += v);
-  return {cucian: m.size, rm: Math.round(rm)};
+  (a.lawatan || []).forEach(l => { if(l.t > had) m.set(l.o || l.t, {rm: l.rm || 0, c: l.c !== 0}); });
+  (a.cop || []).forEach(c => { if(c.t > had && !m.has(c.o || c.t) && !String(c.o || '').startsWith('manual')) m.set(c.o || c.t, {rm: 0, c: true}); });
+  let rm = 0, cucian = 0; m.forEach(v => { rm += v.rm; if(v.c) cucian++; });
+  return {cucian, rm: Math.round(rm)};   // cucian = pakej layak cop sahaja; belanja = semua order berbayar
 }
-// Peringkat semasa: Pride (jemputan) > tetapan manual pemilik > automatik ikut 12 bulan
-export function peringkatAhli(a, kini = Date.now()){
+// Peringkat SAH (dipaparkan di semua apps): Pride (jemputan) > peringkat yang disahkan pemilik > Bronze
+// Naik taraf tidak automatik — calon dikira dari 12 bulan & perlu pengesahan Dato' / Datin di Apps Akaun.
+export const TAHAP = {bronze: 0, silver: 1, gold: 2, pride: 3};
+export function peringkatAhli(a){
   if(!a) return PERINGKAT.bronze;
   if(a.pride) return PERINGKAT.pride;
-  if(a.peringkatManual && PERINGKAT[a.peringkatManual] && a.peringkatManual !== 'pride') return PERINGKAT[a.peringkatManual];
-  const st = statLawatan(a, kini), lepas = p => st.cucian >= p.min.cucian || st.rm >= p.min.rm;
+  const id = a.peringkat || a.peringkatManual;
+  return (id && PERINGKAT[id] && id !== 'pride') ? PERINGKAT[id] : PERINGKAT.bronze;
+}
+// Calon peringkat ikut syarat 12 bulan (belum disahkan)
+export function calonPeringkat(a, kini = Date.now()){
+  const st = statLawatan(a || {}, kini), lepas = p => st.cucian >= p.min.cucian || st.rm >= p.min.rm;
   return lepas(PERINGKAT.gold) ? PERINGKAT.gold : lepas(PERINGKAT.silver) ? PERINGKAT.silver : PERINGKAT.bronze;
+}
+// Ahli yang layak naik taraf & menunggu pengesahan
+export function perluSahPeringkat(a, kini = Date.now()){
+  if(!a || a.pride) return null;
+  const c = calonPeringkat(a, kini), sah = peringkatAhli(a);
+  return TAHAP[c.id] > TAHAP[sah.id] && a.peringkatTolak !== c.id ? c : null;
 }
 // Kemajuan ke peringkat seterusnya (null jika Gold / Pride)
 export function kemajuanPeringkat(a, kini = Date.now()){
   const p = peringkatAhli(a, kini), st = statLawatan(a, kini);
   const seterusnya = p.id === 'bronze' ? PERINGKAT.silver : p.id === 'silver' ? PERINGKAT.gold : null;
-  if(!seterusnya || a.peringkatManual) return {p, st, seterusnya: null};
-  return {p, st, seterusnya, lagiCucian: Math.max(0, seterusnya.min.cucian - st.cucian), lagiRM: Math.max(0, seterusnya.min.rm - st.rm),
+  if(!seterusnya) return {p, st, seterusnya: null};
+  return {p, st, seterusnya, capai: st.cucian >= seterusnya.min.cucian || st.rm >= seterusnya.min.rm, lagiCucian: Math.max(0, seterusnya.min.cucian - st.cucian), lagiRM: Math.max(0, seterusnya.min.rm - st.rm),
     peratus: Math.min(100, Math.round(Math.max(st.cucian / seterusnya.min.cucian, st.rm / seterusnya.min.rm) * 100))};
 }
 
