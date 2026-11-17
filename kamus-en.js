@@ -392,6 +392,7 @@ export const KAMUS_KAUNTER = {
 };
 
 export const KAMUS_AKAUN = {
+  "Ke Kaunter Lion King": "Go to Lion King Counter",
   // Login & shell
   '🦁 Akaun Mama Lion': '🦁 Mama Lion Accounts', 'Akaun Mama Lion': 'Mama Lion Accounts', 'Akaun ML': 'ML Accounts', 'Log Masuk Management': 'Management Login', 'Log Masuk': 'Log In', 'Log Keluar': 'Log Out', 'Guna email & kata laluan yang sama seperti LionSafari.': 'Use the same email & password as LionSafari.',
   'Akses ditolak. Apps Akaun hanya untuk peranan Management.': 'Access denied. The Account App is for the Management role only.', 'Akses Akaun belum ditetapkan untuk pengguna ini.': 'Account access has not been set for this user.', 'Ralat menyemak peranan:': 'Error checking role:', 'Ralat data:': 'Data error:',
