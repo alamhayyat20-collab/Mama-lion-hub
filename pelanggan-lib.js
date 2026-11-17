@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.17-17';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT } from './safari-lib.js?v=2026.11.17-18';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -18,7 +18,7 @@ const CSS = `.cp-hasil{display:flex;flex-direction:column;gap:6px;margin-top:8px
 .cp-kad:hover{border-color:#14532d;background:#f0fdf4}.cp-kad .cp-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:none}
 .cp-kad b{display:block}.cp-kad small{display:block;color:#64748b;font-size:12.5px;line-height:1.35}.cp-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin:2px 4px 0 0}
 .cp-ahli{background:#fef3c7;color:#92400e}.pk-bronze{background:#3b2414;color:#f3c494}.pk-silver{background:#1f2328;color:#e3e7eb}.pk-gold{background:#2a2108;color:#f2d77c}.pk-pride{background:#000;color:#f6c623;border:1px solid #f6c623}.cp-lama{background:#e0f2fe;color:#075985}.cp-belum{background:#fee2e2;color:#991b1b}.cp-aktif{background:#dcfce7;color:#166534}
-.cp-p h3{margin:0}.cp-sek{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}.cp-sek h4{margin:0 0 6px;font-size:14px}
+.cp-p{padding:4px 14px 14px}.cp-p h3{margin:0}.cp-sek{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}.cp-sek h4{margin:0 0 6px;font-size:14px}
 .cp-ln{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted #e2e8f0;font-size:13.5px}.cp-ln span{color:#64748b}
 .cp-aksi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:8px 0}.cp-aksi button,.cp-aksi a{display:flex;align-items:center;justify-content:center;gap:4px;border:0;border-radius:10px;padding:10px;font-weight:700;font-size:13px;background:#e2e8f0;color:#0f172a;cursor:pointer;text-decoration:none;min-height:42px}
 .cp-aksi .pri{background:#14532d;color:#fff}.cp-aksi .wa{background:#16a34a;color:#fff}.cp-aksi .bahaya{background:#fee2e2;color:#991b1b}
@@ -179,14 +179,14 @@ export function modulPelanggan(ctx){
   function borangUbah(a){
     let kend = (a.kenderaan?.length ? a.kenderaan : (a.plat || []).map(p => ({plat: p}))).map(v => ({...v}));
     const lukisK = () => document.querySelector('[data-ub-k]').innerHTML = kend.map((v, i) => `<div class="row" style="flex-wrap:nowrap;gap:6px;margin:4px 0"><input data-ub-plat="${i}" value="${esc(v.plat || '')}" placeholder="No. plat" style="flex:1;margin:0;text-transform:uppercase"><input data-ub-model="${i}" value="${esc(v.model || '')}" placeholder="Model" style="flex:1;margin:0"><button class="small" data-ub-buang="${i}">✕</button></div>`).join('');
-    ctx.buka(`<div class="section-title between"><h3>✏️ Ubah maklumat — ${esc(a.kod)}</h3><button class="small" data-ub-tutup>✕</button></div>
+    ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>✏️ Ubah maklumat — ${esc(a.kod)}</h3><button class="small" data-ub-tutup>✕</button></div>
       <label>Nama</label><input data-ub="nama" value="${esc(a.nama || '')}">
       <label>No. telefon</label><input data-ub="telefon" type="tel" inputmode="tel" value="${esc(paparTelefon(a.telefon))}">
       <label>E-mel</label><input data-ub="emel" type="email" value="${esc(a.emel || '')}">
       <label>Tarikh lahir</label><input data-ub="tarikhLahir" type="date" value="${esc(a.tarikhLahir || '')}">
       <label class="row" style="font-weight:400;gap:8px;margin:8px 0"><input type="checkbox" data-ub="setujuPromosi" ${a.setujuPromosi ? 'checked' : ''} style="width:20px;height:20px;margin:0"> Pelanggan setuju terima promosi WhatsApp</label>
       <label>🚗 Kenderaan</label><div data-ub-k></div><button class="small" data-ub-tambah>+ Tambah kenderaan</button>
-      <button class="primary" data-ub-simpan style="width:100%;padding:13px;margin-top:10px">💾 SIMPAN PERUBAHAN</button>`);
+      <button class="primary" data-ub-simpan style="width:100%;padding:13px;margin-top:10px">💾 SIMPAN PERUBAHAN</button></div>`);
     lukisK();
     const q = s => document.querySelector(s), v = n => (q(`[data-ub="${n}"]`).value || '').trim();
     const baca = () => { kend = kend.map((x, i) => ({...x, plat: (q(`[data-ub-plat="${i}"]`)?.value || '').trim().toUpperCase(), model: (q(`[data-ub-model="${i}"]`)?.value || '').trim()})); };
