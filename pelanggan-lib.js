@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.18-4';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.18-5';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -107,7 +107,7 @@ export function modulPelanggan(ctx){
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
         ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}
         ${!AKAUN && ctx.jemput ? '<button class="wa" data-cp-x="wa">💬 WhatsApp</button><button class="pri" data-cp-x="hantar">📤 Hantar kad</button>' : ''}
-        ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual</button>' : ''}
+        ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual 🔒</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
         <button data-cp-x="cop">⭐ +1 cop manual</button><button data-cp-x="fw">🎁 +1 Free Wash</button>${aktif ? '' : '<button data-cp-x="aktif">🔓 Aktifkan kad</button>'}
         <button data-cp-x="gabung">🔗 Gabung rekod</button><button class="bahaya" data-cp-x="padam">🚫 Padam ahli</button>` : ''}</div>
@@ -157,9 +157,7 @@ export function modulPelanggan(ctx){
     const segar = async () => { await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
     const kemas = async (d, tindakan, butiran, msg) => { try{ await fs.updateDoc(fs.doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); log(a, tindakan, butiran); ctx.toast(msg || '✅ Disimpan'); segar(); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
-    if(x('cop')) x('cop').onclick = () => { const sebab = prompt('Sebab tambah cop manual:'); if(!sebab) return;
-      const r = tambahCop(a, {orderId: 'manual-' + Date.now(), plat: 'MANUAL' + Date.now(), cawangan: ctx.cawangan(), tarikh: 'manual-' + Date.now(), paksa: true});
-      kemas({...r.data, logManual: [...(a.logManual || []), {t: Date.now(), oleh: ctx.pengguna(), apa: '+1 cop', sebab}]}, '+1 cop manual', sebab, r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); };
+    if(x('cop')) x('cop').onclick = () => borangCopManual(a);
     if(x('sah')) x('sah').onclick = () => { if(!confirm(`Sahkan ${a.nama} naik ke ${CALON.nama}?\nPelanggan akan dimaklumkan dalam Apps Safari Members & kad dikemas kini di semua apps.`)) return;
       kemas({peringkat: CALON.id, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, notisPeringkat: {id: CALON.id, masa: Date.now()}}, 'Sahkan naik taraf', CALON.nama, `✅ ${a.nama} kini ${CALON.nama}`);
       if(confirm('Maklumkan pelanggan melalui WhatsApp sekarang?')) window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(`Tahniah ${a.nama}! 🎉 Kad Safari Members anda (${a.kod}) telah dinaik taraf ke *${CALON.nama}*.\nTerima kasih atas kesetiaan anda bersama Mama Lion & Lion King. Buka kad anda: ${ctx.pautanKad(a.id)}`)}`, '_blank'); };
@@ -186,6 +184,32 @@ export function modulPelanggan(ctx){
       kemas({peringkat: v, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, ...(v !== P.id ? {notisPeringkat: {id: v, masa: Date.now()}} : {})}, 'Tetapkan peringkat', PERINGKAT[v].nama, '✅ Peringkat dikemas kini'); };
     x('gabung').onclick = () => gabung(a);
     x('padam').onclick = () => padam(a);
+  }
+
+  // ---------------- COP MANUAL: nota "sebab diberi" wajib + PIN (kaunter) ----------------
+  function borangCopManual(a){
+    const pl = (a.kenderaan?.length ? a.kenderaan.map(v => v.plat) : a.plat || []);
+    ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>⭐ Cop manual — ${esc(a.nama || '')}</h3><button class="small" data-cm-tutup>✕</button></div>
+      <div class="muted" style="font-size:13px">Cop automatik hanya untuk cucian Luar & Dalam (cop pertama: Promo A ke atas). Guna cop manual untuk pengecualian sahaja — direkod dalam log.</div>
+      <label>Kenderaan</label><select data-cm="plat">${pl.map(p => `<option>${esc(p)}</option>`).join('')}<option value="">— Tiada / lain-lain —</option></select>
+      <label>Sebab diberi *</label><textarea data-cm="sebab" rows="3" placeholder="cth: Cuci Luar & Dalam semalam, cop tertinggal kerana sistem offline"></textarea>
+      ${ctx.mintaPinCop ? '<div class="muted" style="font-size:12.5px;margin-top:4px">🔒 Perlu PIN Supervisor / Manager / Admin selepas tekan butang di bawah.</div>' : ''}
+      <button class="primary" data-cm="ok" style="width:100%;padding:13px;margin-top:10px">⭐ BERI 1 COP</button></div>`);
+    const q = s => document.querySelector(s);
+    q('[data-cm-tutup]').onclick = () => bukaProfil({ahli: a.id});
+    q('[data-cm="ok"]').onclick = async () => {
+      const sebab = q('[data-cm="sebab"]').value.trim(), plat = q('[data-cm="plat"]').value;
+      if(sebab.length < 5) return ctx.toast('Sila tulis sebab cop diberi (sekurang-kurangnya 5 huruf)');
+      let pelulus = ctx.pengguna();
+      if(ctx.mintaPinCop){ pelulus = await ctx.mintaPinCop(); if(!pelulus) return bukaProfil({ahli: a.id}); }
+      try{
+        const s0 = await fs.getDoc(fs.doc(store, 'ahli', a.id)); const b = s0.exists() ? {id: a.id, ...s0.data()} : a, t = Date.now();
+        const r = tambahCop(b, {orderId: 'manual-' + t, plat: plat || 'MANUAL' + t, cawangan: ctx.cawangan(), tarikh: 'manual-' + t, paksa: true});
+        await fs.updateDoc(fs.doc(store, 'ahli', a.id), {...r.data, logManual: [...(b.logManual || []), {t, oleh: pelulus, apa: '+1 cop', sebab, plat}], dikemaskini: t});
+        log(a, '+1 cop manual', `${sebab}${plat ? ' · ' + plat : ''} · diluluskan ${pelulus}`); ctx.logLuar?.('Cop manual Safari Members', `${a.nama} · ${a.kod} · ${sebab} · lulus ${pelulus}`);
+        ctx.toast(r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
+      }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+    };
   }
 
   // ---------------- UBAH MAKLUMAT ----------------

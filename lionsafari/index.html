@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-5';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-4';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-4';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli } from '../safari-lib.js?v=2026.11.18-4';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-4';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-4';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-4';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-4';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-4';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-5';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli } from '../safari-lib.js?v=2026.11.18-5';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-5';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-5';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-5';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-5';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1081,7 +1081,13 @@ VIEWS['Safari Members'] = {
     MPS ||= modulPelanggan({store, fs: {collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion}, mod: 'kaunter', log: true,
       buka: openModal, tutup: closeModal, toast, pengguna: () => ahliBuka?.oleh || (staf ? namaPin(staf) : 'Kaunter'), cawangan: () => cawangan,
       pautanKad: id => new URL('../pelanggan/#k=' + id, location.href).href, jemput: jemputWA,
-      copManual: () => !!staf && (staf.akaun || ['Admin', 'Manager', 'Supervisor'].includes(ahliBuka?.peranan)),
+      copManual: () => !!staf, logLuar: (t, b) => logKaunter(t, b),
+      // 🔒 Cop manual: PIN Supervisor / Manager / Admin setiap kali (Admin dari Akaun: terus, direkod)
+      mintaPinCop: () => staf?.akaun ? Promise.resolve(namaPin(staf) + ' (ID Akaun)') : new Promise(res => {
+        openModal(`<div style="text-align:center"><h3>🔒 PIN cop manual</h3><div class="muted">Supervisor / Manager / Admin</div><div id="kpCop"></div><button class="small" id="kpCopBatal">Batal</button></div>`);
+        $('#kpCopBatal').onclick = () => { closeModal(); res(null); };
+        keypad('#kpCop', async pin => { const x = await semakPinLayak(pin, x => PELULUS.includes(x.peranan)); if(!x) return 'PIN tidak sah / tiada kuasa'; res(namaPin(x)); });
+      }),
       buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
     $('#smCari').innerHTML = MPS.htmlKotak(); MPS.pasang($('#smCari'));
   }
@@ -1128,7 +1134,10 @@ VIEWS['Order Baru'] = {
       L.addon.forEach((x,i) => { const h = hargaAddonK(x, k), e = $(`[data-ha="${i}"]`); if(e) e.textContent = h == null ? 'tiada' : '+' + RM(h); });
       const asas = bike ? Math.max(0, Number(val('#oBikeHarga')) || 0) : p ? (hargaPakejK(p, k) ?? 0) : 0;
       if($('#oCopLayak')){ const pid = bike ? 'bike-wash' : p?.id;
-        $('#oCopLayak').innerHTML = fw ? '<span style="color:#fbbf24">🎁 Free Wash — tiada cop</span>' : !pid ? '' : layakCop(pid) ? '<span style="color:#4ade80">⭐ Layak cop</span>' : `<span style="color:#fca5a5">✖ Tiada cop — ${esc(bike ? 'Bike Wash' : p.nama)} tidak layak cop. Cadangkan pakej Luar & Dalam ke atas.</span>`; }
+        const belum = draf.ahli && !kadAktif(draf.ahli);
+        $('#oCopLayak').innerHTML = fw ? '<span style="color:#fbbf24">🎁 Free Wash — tiada cop</span>' : !pid ? '' : layakCop(pid, draf.ahli) ? `<span style="color:#4ade80">⭐ Layak cop${belum ? ' — cop pertama & kad diaktifkan' : ''}</span>`
+          : belum ? `<span style="color:#fca5a5">✖ Tiada cop — kad belum aktif. Cop pertama perlu sekurang-kurangnya pakej Promo A.</span>`
+          : `<span style="color:#fca5a5">✖ Tiada cop — ${esc(bike ? 'Bike Wash' : p.nama)} tidak layak. Cop hanya untuk cucian Luar & Dalam.</span>`; }
       const j = (fw ? 0 : asas) + sum([...draf.addon], i => hargaAddonK(L.addon[i], k) ?? 0);
       $('#oJum').innerHTML = fw ? `${RM(j)} <small style="font-size:12px;font-weight:600">· 🎁 Free Wash ${RM(asas)}</small>` : RM(j);
       if($('#oKom')){ const kom = (fw || !p ? 0 : (Number(KOMISEN[p.id])||0)) + sum([...draf.addon], i => Number(KOMISEN[L.addon[i].id])||0); $('#oKom').textContent = `Komisen anda: ${RM(kom)}`; }

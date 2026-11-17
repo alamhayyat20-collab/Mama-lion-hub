@@ -138,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-5';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-4';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-4';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-4';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-4';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-5';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-5';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-5';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-4';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-4';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-4';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-5';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-5';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1871,10 +1871,10 @@ function borangTetapanAhli(){
     <label>✍️ Teks Free Wash (dipaparkan kepada pelanggan & kaunter)</label><input id="taTeksFW" value="${esc(KAD.teksFreeWash || '')}" placeholder="cth: Cuci Luar & Dalam + Silicone Tyre (semua jenis kenderaan)" maxlength="120">
     <div class="muted" style="font-size:12px">Kosongkan untuk guna nama pakej di bawah.</div>
     <label>🎁 Pakej Free Wash (semua jenis kenderaan)</label><select id="taFW">${pk.map(p => `<option value="${esc(p.id)}" ${p.id === KAD.pakejFreeWash ? 'selected' : ''}>${esc(p.nama)}</option>`).join('')}</select>
-    <label>🎟 Pakej layak dapat cop (Cuci Luar, add-on & servis berasingan tidak dicop)</label>
+    <label>🎟 Pakej layak cop automatik SELEPAS kad aktif — wajib cucian Luar & Dalam (Cuci Luar, add-on & servis tunggal tidak dicop)</label>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px">${pk.map(p => `<label style="display:flex;gap:8px;align-items:center;margin:0;font-weight:400"><input type="checkbox" data-tacop="${esc(p.id)}" ${(KAD.pakejCop || []).includes(p.id) ? 'checked' : ''} style="width:18px;height:18px;margin:0">${esc(p.nama)}</label>`).join('')}</div>
     <p class="muted" style="margin:2px 0 0">Add-on tidak pernah memberi cop. Pakej pengaktif kad (di bawah) sentiasa layak. Cop & Free Wash sedia ada kekal sah.</p>
-    <label>🔓 Pakej untuk cop pertama (mengaktifkan kad)</label>
+    <label>🔓 Pakej untuk cop pertama — mengaktifkan kad (sekurang-kurangnya Promo A)</label>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px">${pk.map(p => `<label style="display:flex;gap:8px;align-items:center;margin:0;font-weight:400"><input type="checkbox" data-taaktif="${esc(p.id)}" ${KAD.pakejAktif.includes(p.id) ? 'checked' : ''} style="width:20px;height:20px;margin:0">${esc(p.nama)}${p.hargaIkut ? ` <span class="muted">(RM${[...new Set(Object.values(p.hargaIkut))].join('/')})</span>` : ''}</label>`).join('')}</div>
     <p class="muted" style="margin:2px 0 0">Tiada yang ditanda = mana-mana pakej berbayar boleh mengaktifkan kad.</p>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="taWajib" ${KAD.wajibProfil ? 'checked' : ''} style="width:20px;height:20px;margin:0"> Wajib lengkapkan profil sebelum kad aktif</label>

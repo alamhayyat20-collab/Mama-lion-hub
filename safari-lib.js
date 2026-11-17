@@ -21,9 +21,9 @@ export const hariOperasi = (ms = Date.now()) => isoT(new Date(ms - POTONG_JAM * 
 export const tarikhKalendar = (ms = Date.now()) => isoT(new Date(ms));
 export const lepasTengahMalam = (ms = Date.now()) => hariOperasi(ms) !== tarikhKalendar(ms);
 export const KAD = {saiz: 10, ganjaranPada: [5, 10], tempohCopHari: 365, tempohFreeWashHari: 365,
-  pakejAktif: ['p-promo-a'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone', teksFreeWash: '',
-  // 🎟 Pakej layak cop (Cuci Luar, add-on & servis berasingan tidak dicop)
-  pakejCop: ['p-ld-silicone', 'p-ld-waterwax', 'p-ld-fogging', 'p-ld-ww-fog', 'p-ld-vacuum', 'p-promo-a', 'p-promo-b', 'p-premium', 'p-water-coating']};
+  pakejAktif: ['p-promo-a', 'p-promo-b', 'p-premium'], wajibProfil: true, medanProfil: ['nama', 'emel', 'tarikhLahir'], pakejFreeWash: 'p-ld-silicone', teksFreeWash: '',
+  // 🎟 Pakej layak cop selepas kad aktif: wajib cucian Luar & Dalam (Cuci Luar, add-on & servis tunggal tidak dicop)
+  pakejCop: ['p-ld-silicone', 'p-ld-waterwax', 'p-ld-fogging', 'p-ld-ww-fog', 'p-ld-vacuum', 'p-promo-a', 'p-promo-b', 'p-premium']};
 export const MEDAN_PROFIL = {nama: 'Nama penuh', emel: 'E-mel', tarikhLahir: 'Tarikh lahir', cawanganUtama: 'Cawangan utama'};
 export function terapTetapanKad(d){
   if(!d) return KAD;
@@ -80,20 +80,22 @@ export function keadaanKad(a, kini = Date.now()){
 }
 
 // Tambah 1 cop. Pulangkan {ok, sebab?, data (medan untuk dikemas kini), dapatFreeWash}
-// Pakej layak cop: senarai 🎟 + pakej pengaktif kad
-export const layakCop = id => !!id && ((KAD.pakejCop || []).includes(id) || (KAD.pakejAktif || []).includes(id));
+// Peraturan cop automatik:
+//  1) Kad belum aktif → cop pertama hanya untuk pakej pengaktif (sekurang-kurangnya Promo A)
+//  2) Selepas aktif → hanya pakej cucian Luar & Dalam dalam senarai 🎟 (Cuci Luar & add-on/servis tunggal tidak dicop)
+export const layakCop = (id, a = null) => !!id && (a && !kadAktif(a) ? (KAD.pakejAktif || []).includes(id) : ((KAD.pakejCop || []).includes(id) || (KAD.pakejAktif || []).includes(id)));
 export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', paksa = false, jumlah = 0, kini = Date.now()}){
   const p = normPlat(plat);
   // Rekod lawatan (belanja dikira untuk semua order berbayar; c:1 = cucian pakej layak cop)
   const lw = c => ({lawatan: [...(a.lawatan || []).filter(l => l.t > kini - 365 * HARI_MS && l.o !== orderId), {t: kini, o: orderId, rm: Number(jumlah) || 0, c}], dikemaskini: kini});
   const gagal = sebab => ({ok:false, sebab, data: lw(0)});
-  if(!paksa && !layakCop(pakejId)) return gagal('Pakej ini tidak layak cop');
+  if(!paksa && kadAktif(a) && !layakCop(pakejId)) return gagal('Pakej ini tidak layak cop — cop hanya untuk cucian Luar & Dalam');
   if((a.copTerakhir || {})[p] === tarikh) return gagal(`Plat ${plat} sudah dapat cop hari ini`);
   const aktifkan = !kadAktif(a);
   if(aktifkan && !paksa){
     const kurang = profilKurang(a);
     if(kurang.length) return gagal(`Kad belum aktif — pelanggan perlu lengkapkan profil (${kurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan`);
-    if(KAD.pakejAktif.length && !KAD.pakejAktif.includes(pakejId)) return gagal('Kad belum aktif — cop pertama mesti pakej Promo');
+    if(KAD.pakejAktif.length && !KAD.pakejAktif.includes(pakejId)) return gagal('Kad belum aktif — cop pertama perlu sekurang-kurangnya pakej Promo A');
   }
   const k = keadaanKad(a, kini);
   let cop = [...k.cop, {t: kini, o: orderId, p, c: cawangan}];
