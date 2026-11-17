@@ -294,6 +294,10 @@ export const KAMUS_PEKERJA = {
 };
 
 export const KAMUS_KAUNTER = {
+  "harga manual": "manual price",
+  "Harga Bike Wash (RM) *": "Bike Wash price (RM) *",
+  "Sila masukkan harga Bike Wash": "Please enter the Bike Wash price",
+  "Sila ambil gambar plat motosikal": "Please take a photo of the motorcycle plate",
   // Header, tab & umum
   '🦁 Lion Safari V2': '🦁 Lion Safari V2', 'Kaunter carwash': 'Car wash counter', 'Lion Safari V2 — Kaunter Mama Lion & Lion King': 'Lion Safari V2 — Mama Lion & Lion King Counter', 'Apps kaunter Mama Lion & Lion King Premium Carwash': 'Mama Lion & Lion King Premium Carwash counter app',
   '💳 Kaunter': '💳 Counter', '🚿 Queue & Bay': '🚿 Queue & Bay', 'Order Baru': 'New Order', '➕ Order Baru': '➕ New Order', '➕ Order baru': '➕ New order', 'Bayaran': 'Payments', 'Petty Cash': 'Petty Cash', '💵 Petty Cash': '💵 Petty Cash', 'Stok': 'Stock', '📦 Kawalan Stok': '📦 Stock Control',
