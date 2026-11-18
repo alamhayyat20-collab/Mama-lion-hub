@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-1">
+<meta name="app-versi" content="2026.11.19-2">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -138,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-2';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-1';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-1';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-2';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-2';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-1';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-2';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1062,7 +1062,9 @@ async function bacaFailImport(fail){
     for(const b of bulanSet) (await getDocs(entryQuery(where('bulan','==',b)))).docs.forEach(x => sedia.push(x.data()));
     const kunci = e => `${e.tarikh}|${e.jenis}|${Number(e.amaun).toFixed(2)}|${(e.perkara||'').toLowerCase()}`;
     const ada = new Set(sedia.map(kunci));
-    ok.forEach(h => h.pendua = ada.has(kunci(h.d)));
+    // Tarikh yang sudah ada jualan direkod oleh apps kaunter → langkau semua baris tarikh itu (elak rekod berganda)
+    const hariApps = new Set(sedia.filter(e => e.jenis === 'jualan' && e.sumber !== 'excel').map(e => e.tarikh));
+    ok.forEach(h => { h.pendua = ada.has(kunci(h.d)); if(!h.pendua && hariApps.has(h.d.tarikh)){ h.pendua = true; h.hariApps = true; } });
     const kiraanFail = {}; ok.forEach(h => kiraanFail[kunci(h.d)] = (kiraanFail[kunci(h.d)]||0) + 1);
     const samaDalamFail = ok.filter(h => !h.pendua && kiraanFail[kunci(h.d)] > 1).map(h => h.baris);
     importRows = ok;
@@ -1071,7 +1073,8 @@ async function bacaFailImport(fail){
     box.innerHTML = `<hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0">
       <p><b>${esc(fail.name)}</b> — ${rows.length} baris dibaca</p>
       <table>${jenisList.map(j => { const l = baru.filter(h => h.d.jenis === j); return l.length ? `<tr><td>${j[0].toUpperCase()+j.slice(1)}</td><td class="r">${l.length} rekod</td><td class="r">${RM(sum(l,h=>h.d.amaun))}</td></tr>` : ''; }).join('')}</table>
-      ${ok.length - baru.length ? `<p class="muted">${ok.length - baru.length} rekod sudah wujud dalam Akaun (sama tarikh, jenis, amaun & perkara) — akan dilangkau.</p>` : ''}
+      ${ok.filter(h => h.pendua && !h.hariApps).length ? `<p class="muted">${ok.filter(h => h.pendua && !h.hariApps).length} rekod sudah wujud dalam Akaun (sama tarikh, jenis, amaun & perkara) — akan dilangkau.</p>` : ''}
+      ${ok.filter(h => h.hariApps).length ? `<div class="notice">🛡 ${ok.filter(h => h.hariApps).length} baris dilangkau kerana tarikhnya (${[...new Set(ok.filter(h => h.hariApps).map(h => fmtTarikh(h.d.tarikh)))].slice(0,8).join(', ')}${new Set(ok.filter(h => h.hariApps).map(h => h.d.tarikh)).size > 8 ? '…' : ''}) sudah ada jualan dalam Akaun (dari apps kaunter atau rekod manual).</div>` : ''}
       ${samaDalamFail.length ? `<div class="notice">Baris ${samaDalamFail.join(', ')} adalah sama (tarikh, jenis, amaun & perkara). Semua akan diimport — padam dari fail jika ia berulang secara tidak sengaja.</div>` : ''}
       ${salah.length ? `<div class="notice"><b>${salah.length} baris ada masalah & tidak akan diimport:</b><br>${salah.slice(0,10).map(h => `Baris ${h.baris}: ${esc(h.ralat)}`).join('<br>')}${salah.length > 10 ? `<br>…dan ${salah.length-10} lagi` : ''}</div>` : ''}
       ${baru.length ? `<details style="margin:8px 0"><summary class="muted">Lihat ${Math.min(baru.length,30)} rekod pertama</summary><div class="scroll"><table>
