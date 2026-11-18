@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-2">
+<meta name="app-versi" content="2026.11.19-3">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Mama Lion</title>
 <link rel="manifest" href="manifest.json">
@@ -138,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-3';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-2';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-2';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-3';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-3';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-2';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-3';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1017,7 +1017,8 @@ function tukarBaris(r){
   if(!t) return {ralat:'tarikh tidak sah ("' + (r.tarikh ?? '') + '")'};
   let jenis = String(r.jenis||'').trim().toLowerCase();
   if(jenis.startsWith('petty')) jenis = 'petty';
-  if(!['jualan','pembelian','belanja','petty'].includes(jenis)) return {ralat:'jenis tidak dikenali ("' + (r.jenis ?? '') + '")'};
+  if(/^(pendahuluan|advance)/.test(jenis)) jenis = 'pendahuluan';
+  if(!['jualan','pembelian','belanja','petty','pendahuluan'].includes(jenis)) return {ralat:'jenis tidak dikenali ("' + (r.jenis ?? '') + '")'};
   const asas = {jenis, tarikh:t, bulan:t.slice(0,7), cawangan, perkara:String(r.perkara||'').trim(), catatan:String(r.catatan||'').trim(), sumber:'excel', hutang:false, guna_petty:false};
   if(jenis === 'jualan'){
     const d = {...asas}; KAEDAH_JUALAN.forEach(([k]) => d[k] = nombor(r[k]));
@@ -1028,6 +1029,8 @@ function tukarBaris(r){
   }
   const amaun = nombor(r.amaun);
   if(!(amaun > 0)) return {ralat:'amaun kosong / tidak sah'};
+  // Pendahuluan gaji (advance) → rekod HR pekerja, BUKAN belanja (ditolak dari gaji)
+  if(jenis === 'pendahuluan') return {d:{...asas, amaun, hr:true, perkara: asas.perkara || 'Pendahuluan gaji'}};
   if(jenis === 'petty'){
     const masuk = /^(masuk|top|tambah|in)/i.test(String(r.petty_arah||'').trim());
     return {d:{...asas, amaun, petty_arah: masuk ? 'masuk' : 'keluar', kategori: masuk ? 'Top-up' : cariSenarai(KAT_PETTY, r.kategori, 'Lain-lain'),
@@ -1062,6 +1065,8 @@ async function bacaFailImport(fail){
     for(const b of bulanSet) (await getDocs(entryQuery(where('bulan','==',b)))).docs.forEach(x => sedia.push(x.data()));
     const kunci = e => `${e.tarikh}|${e.jenis}|${Number(e.amaun).toFixed(2)}|${(e.perkara||'').toLowerCase()}`;
     const ada = new Set(sedia.map(kunci));
+    if(ok.some(h => h.d.hr)) for(const b of bulanSet) (await getDocs(query(hrCol(), where('bulan','==',b)))).docs.forEach(x => { const h = x.data();
+      if(h.jenis === 'advance' && h.cawangan === cawangan) ada.add(`${h.tarikh}|pendahuluan|${Number(h.amaun).toFixed(2)}|${String(h.namaAsal||h.nama||'').toLowerCase()}`); });
     // Tarikh yang sudah ada jualan direkod oleh apps kaunter → langkau semua baris tarikh itu (elak rekod berganda)
     const hariApps = new Set(sedia.filter(e => e.jenis === 'jualan' && e.sumber !== 'excel').map(e => e.tarikh));
     ok.forEach(h => { h.pendua = ada.has(kunci(h.d)); if(!h.pendua && hariApps.has(h.d.tarikh)){ h.pendua = true; h.hariApps = true; } });
@@ -1069,7 +1074,7 @@ async function bacaFailImport(fail){
     const samaDalamFail = ok.filter(h => !h.pendua && kiraanFail[kunci(h.d)] > 1).map(h => h.baris);
     importRows = ok;
     const baru = ok.filter(h => !h.pendua);
-    const jenisList = ['jualan','pembelian','belanja','petty'];
+    const jenisList = ['jualan','pembelian','belanja','petty','pendahuluan'];
     box.innerHTML = `<hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0">
       <p><b>${esc(fail.name)}</b> — ${rows.length} baris dibaca</p>
       <table>${jenisList.map(j => { const l = baru.filter(h => h.d.jenis === j); return l.length ? `<tr><td>${j[0].toUpperCase()+j.slice(1)}</td><td class="r">${l.length} rekod</td><td class="r">${RM(sum(l,h=>h.d.amaun))}</td></tr>` : ''; }).join('')}</table>
@@ -1086,8 +1091,8 @@ async function bacaFailImport(fail){
 }
 
 async function simpanImport(){
-  const baru = importRows.filter(h => !h.pendua).map(h => h.d);
-  if(!confirm(`Import ${baru.length} rekod ke dalam Akaun Mama Lion?`)) return;
+  const semua = importRows.filter(h => !h.pendua).map(h => h.d), baru = semua.filter(d => !d.hr), adv = semua.filter(d => d.hr);
+  if(!confirm(`Import ${baru.length + adv.length} rekod ke dalam Akaun ${namaCawangan()}?`)) return;
   const btn = $('#btnImport'); btn.disabled = true;
   try{
     for(let i = 0; i < baru.length; i += 400){
@@ -1096,9 +1101,17 @@ async function simpanImport(){
       baru.slice(i, i+400).forEach(d => batch.set(doc(COL), {...d, assignedUid:user.uid, oleh:nama, dicipta:serverTimestamp()}));
       await batch.commit();
     }
-    toast(`✅ ${baru.length} rekod diimport`);
+    // Pendahuluan gaji → akaun/{cawangan}/hr (padan nama pekerja jika jelas)
+    const padan = n => { const k = String(n||'').trim().toLowerCase(); if(!k) return null; const c = stafKaunter.filter(x => (x.nama||'').toLowerCase().split(/\s+/)[0] === k.split(/\s+/)[0]); return c.length === 1 ? c[0] : null; };
+    for(let i = 0; i < adv.length; i += 400){
+      const batch = writeBatch(store);
+      adv.slice(i, i+400).forEach(d => { const p = padan(d.perkara); batch.set(doc(hrCol()), {stafId: p?.id || '', idStaf: p?.idStaf || '', nama: p?.nama || d.perkara, namaAsal: d.perkara, jenis:'advance', tarikh:d.tarikh, bulan:d.bulan, cawangan,
+        amaun:d.amaun, catatan: d.catatan || 'Rekod lama (import)', sumber:'excel', oleh:nama, dicipta:serverTimestamp()}); });
+      await batch.commit();
+    }
+    toast(`✅ ${baru.length + adv.length} rekod diimport`);
     importRows = [];
-    $('#importBox').innerHTML = `<p class="pos"><b>✅ ${baru.length} rekod berjaya diimport.</b> Tukar bulan di atas untuk melihat rekod bulan lain.</p>`;
+    $('#importBox').innerHTML = `<p class="pos"><b>✅ ${baru.length} rekod berjaya diimport${adv.length ? ` + ${adv.length} pendahuluan gaji (Pekerja → Rekod HR)` : ''}.</b> Tukar bulan di atas untuk melihat rekod bulan lain.</p>`;
   }catch(e){ onErr(e); btn.disabled = false; btn.textContent = 'Cuba lagi'; }
 }
 
@@ -1268,7 +1281,7 @@ function viewPekerja(){
   const nm = id => { const p = stafKaunter.find(x => x.id === id); return p ? `${p.idStaf||''} ${p.nama}` : '(pekerja dipadam)'; };
   return sub + err + `<div class="card"><h3 style="margin-top:0">Rekod pekerja — ${fmtBulan(bulan)}</h3>
     ${hrBulan.length ? `<div class="scroll"><table>${hrBulan.map(h => `<tr><td><b>${fmtTarikh(h.tarikh)}</b><br><span class="tag ${JENIS_HR[h.jenis]?.tolak?'warn':''}">${JENIS_HR[h.jenis]?.ikon||''} ${esc((JENIS_HR[h.jenis]?.label||h.jenis).split(' (')[0])}</span></td>
-      <td>${esc(nm(h.stafId))}<br><span class="muted">${h.jenis==='ot'?`${h.jam} jam × ${RM(h.kadar)}`:h.jenis==='hari'?`${h.hari} hari`:''}${h.catatan?' '+esc(h.catatan):''}</span></td>
+      <td>${esc(h.stafId ? nm(h.stafId) : (h.nama || '—') + ' (rekod lama)')}<br><span class="muted">${h.jenis==='ot'?`${h.jam} jam × ${RM(h.kadar)}`:h.jenis==='hari'?`${h.hari} hari`:''}${h.catatan?' '+esc(h.catatan):''}</span></td>
       <td class="r">${h.jenis==='hari'?'':`<b class="${JENIS_HR[h.jenis]?.tolak?'neg':''}">${RM(h.amaun)}</b>`}<br><button class="small danger" data-hrpadam="${h.id}">Padam</button></td></tr>`).join('')}</table></div>` : '<p class="muted">Tiada rekod bulan ini.</p>'}</div>`;
 }
 
