@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-5';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-6';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-5';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-6';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-5';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli } from '../safari-lib.js?v=2026.11.18-5';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-5';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-5';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-5';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-5';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-5';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-5';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-5';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.18-6';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli } from '../safari-lib.js?v=2026.11.18-6';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.18-6';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.18-6';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.18-6';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-6';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-6';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-6';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.18-6';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1108,8 +1108,8 @@ VIEWS['Order Baru'] = {
         <div><label>No. telefon *</label><input id="oTel" type="tel" inputmode="tel" placeholder="01x-xxxxxxx"></div></div>
       <div id="oDaftarBox"></div>
       <label>Jenis kenderaan</label><div class="choices" id="cKend">${L.kenderaan.map((k,i) => `<button class="choice ${i===0?'sel':''}" data-i="${i}"><b>${esc(k.nama)}</b><span>${k.harga>0?'+':''}${k.harga?RM(k.harga):'harga asas'}</span></button>`).join('')}</div>
-      <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice ${i===draf.pakej?'sel':''}" data-i="${i}">${(GAMBAR[p.id]||gambarAsal(p.id))?imgItem(p,'img'):''}<b>${esc(p.nama)}</b><span data-hp="${i}">${RM(hargaPakejK(p, L.kenderaan[0]))}${p.minit?` · ~${p.minit} min`:''}</span></button>`).join('')}<button class="choice ${draf.pakej==='bike'?'sel':''}" data-i="bike"><span class="img" style="font-size:56px;background:linear-gradient(135deg,#0f172a,#334155)" aria-hidden="true">🏍️</span><b>Bike Wash</b><span>harga manual</span></button></div>
-      <div id="oBikeBox" hidden><label>Harga Bike Wash (RM) *</label><input id="oBikeHarga" type="number" inputmode="decimal" min="0" step="0.5" placeholder="cth: 15" style="font-size:22px;font-weight:800"></div>
+      <label>Pakej *</label><div class="choices" id="cPakej">${L.pakej.map((p,i) => `<button class="choice ${i===draf.pakej?'sel':''}" data-i="${i}">${(GAMBAR[p.id]||gambarAsal(p.id))?imgItem(p,'img'):''}<b>${esc(p.nama)}</b><span data-hp="${i}">${RM(hargaPakejK(p, L.kenderaan[0]))}${p.minit?` · ~${p.minit} min`:''}</span></button>`).join('')}<button class="choice ${draf.pakej==='bike'?'sel':''}" data-i="bike"><span class="img" style="font-size:56px;background:linear-gradient(135deg,#0f172a,#334155)" aria-hidden="true">🏍️</span><b>Bike Wash</b><span>${aktifSahaja('bike').length ? aktifSahaja('bike').length + ' servis motosikal' : 'harga manual'}</span></button></div>
+      <div id="oBikeBox" hidden>${aktifSahaja('bike').length ? `<label>Servis Bike Wash</label><div class="choices" id="cBike">${aktifSahaja('bike').map((b,i) => `<button class="choice" data-bi="${i}">${imgItem(b, 'img', '🏍️')}<b>${esc(b.nama)}</b><span>${RM(b.harga)}${b.minit ? ` · ~${b.minit} min` : ''}</span></button>`).join('')}</div>` : ''}<label>Harga Bike Wash (RM) *</label><input id="oBikeHarga" type="number" inputmode="decimal" min="0" step="0.5" placeholder="cth: 15" style="font-size:22px;font-weight:800"></div>
       <label>Add-on</label><div class="choices" id="cAddon">${L.addon.map((a,i) => `<button class="choice" data-i="${i}">${(GAMBAR[a.id]||gambarAsal(a.id))?imgItem(a,'img'):''}<b>${esc(a.nama)}</b><span data-ha="${i}">+${RM(hargaAddonK(a, L.kenderaan[0]))}</span></button>`).join('')}</div>
       <label>📸 Gambar kenderaan</label>
       <div class="fotogrid">
@@ -1154,6 +1154,8 @@ VIEWS['Order Baru'] = {
     });
     pilih('#cKend','kenderaan'); pilih('#cPakej','pakej'); pilih('#cAddon',null,true);
     $('#oBikeHarga').oninput = () => kira();
+    $$('#cBike [data-bi]').forEach(b => b.onclick = () => { const i = +b.dataset.bi, x = aktifSahaja('bike')[i]; draf.bikeItem = i;
+      $$('#cBike [data-bi]').forEach(c => c.classList.toggle('sel', c === b)); $('#oBikeHarga').value = x.harga || ''; kira(); });
 
     // ---- Safari Members ----
     const lukisAhli = () => {
@@ -1239,7 +1241,8 @@ VIEWS['Order Baru'] = {
       if(bike && !(hargaBike > 0)) return toast('Sila masukkan harga Bike Wash');
       if(!draf.foto.plat || (!bike && !draf.foto.emblem)) return toast(bike ? 'Sila ambil gambar plat motosikal' : 'Sila ambil gambar plat dan emblem kenderaan');
       if(aktif.some(o => normPlat(o.plat) === normPlat(plat)) && !confirm(`${plat} sudah ada dalam queue. Tambah order kedua?`)) return;
-      const p = bike ? {id: 'bike-wash', nama: 'Bike Wash', harga: hargaBike} : L.pakej[draf.pakej], k = bike ? {nama: 'Motosikal', harga: 0} : (L.kenderaan[draf.kenderaan] || {nama:'',harga:0});
+      const bItem = bike && draf.bikeItem != null ? aktifSahaja('bike')[draf.bikeItem] : null;
+      const p = bike ? {id: 'bike-wash', nama: bItem ? `Bike Wash — ${bItem.nama}` : 'Bike Wash', harga: hargaBike} : L.pakej[draf.pakej], k = bike ? {nama: 'Motosikal', harga: 0} : (L.kenderaan[draf.kenderaan] || {nama:'',harga:0});
       const hp = bike ? hargaBike : hargaPakejK(p, k);
       if(hp == null) return toast(`${p.nama}: harga ikut permintaan bagi ${k.nama} — masukkan sebagai catatan & tetapkan harga di kaunter`);
       const addon = [...draf.addon].map(i => ({id: L.addon[i].id, nama: L.addon[i].nama, harga: hargaAddonK(L.addon[i], k) ?? 0}));
@@ -1267,7 +1270,7 @@ VIEWS['Order Baru'] = {
         if(ahli && !(ahli.plat || []).includes(normPlat(plat))) updateDoc(doc(ahliCol(), ahli.id), {plat: arrayUnion(normPlat(plat)), kenderaan: arrayUnion({plat, jenis:k.nama})}).catch(console.error);
         if(ahli) setDoc(doc(store, 'ahli_masuk', kunciMasuk(ahli.telefon || tel, plat)), {token: ahli.id}).catch(console.error);;
         const ref = doc(col('order'));
-        const data = {no, plat, nama, telefon: tel, kenderaan:k.nama, tambahanKenderaan: fw ? 0 : tambah, pakejId: p.id, pakej:p.nama, hargaPakej: fw ? 0 : p.harga, addon,
+        const data = {no, plat, nama, telefon: tel, kenderaan:k.nama, tambahanKenderaan: fw ? 0 : tambah, pakejId: p.id, pakej:p.nama, ...(bItem ? {bikeItemId: bItem.id} : {}), hargaPakej: fw ? 0 : p.harga, addon,
           jumlahKasar:kasar, diskaun:0, jumlah:kasar, bay: val('#oBay'), catatan: val('#oCat'), status:'Menunggu', aktif:true,
           ahli: ahli ? {id: ahli.id, kod: ahli.kod, nama: ahli.nama} : null, freeWash: fw,
           mo: sales ? {id: staf.id, nama: staf.nama, idStaf: staf.idStaf || ''} : null, komisen,

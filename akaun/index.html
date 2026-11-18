@@ -138,18 +138,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-5';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-6';
 bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-5';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-5';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-5';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-5';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-5';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-5';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.18-6';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.18-6';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-6';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.18-6';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-6';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.18-6';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-5';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-5';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-5';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.18-6';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.18-6';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.18-6';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1779,7 +1779,7 @@ function viewLogPK(){
 // ================================================================
 // TETAPAN APPS — ubah tetapan kaunter, pekerja & pelanggan dari Akaun
 // ================================================================
-const JENIS_TK = {pakej:{label:'Pakej cucian', ikon:'🚿', minit:true}, addon:{label:'Servis tambahan (add-on)', ikon:'✨'}, kenderaan:{label:'Jenis kenderaan (tambahan harga)', ikon:'🚗'}};
+const JENIS_TK = {pakej:{label:'Pakej cucian', ikon:'🚿', minit:true}, addon:{label:'Servis tambahan (add-on)', ikon:'✨'}, bike:{label:'Bike Wash (motosikal)', ikon:'🏍️', minit:true, tunggal:true}, kenderaan:{label:'Jenis kenderaan (tambahan harga)', ikon:'🚗'}};
 function viewTetapanApps(){
   const T = tetapanKaunter;
   const seg = `<div class="subnav">${['Kaunter','Pekerja','Pelanggan'].map(x => `<button class="${x===tkSeg?'on':''}" data-tkseg="${x}">${({Kaunter:'🦁 Kaunter (Lion Safari V2)',Pekerja:'👷 Apps Pekerja',Pelanggan:'⭐ Apps Pelanggan'})[x]}</button>`).join('')}</div>`;
@@ -1793,6 +1793,7 @@ function viewTetapanApps(){
   const KDv = (T.kenderaan || []).filter(k => k.aktif !== false && k.id);
   const ringkas = j => { const l = (T[j] || []).filter(x => x.aktif !== false); if(!l.length) return '<span class="muted">tiada</span>';
     if(j === 'kenderaan') return l.map(x => `${esc(x.nama)} ${x.harga ? (x.harga > 0 ? '+' : '') + RM(x.harga) : ''}`).join(' · ');
+    if(j === 'bike') return l.map(x => `${esc(x.nama)} ${RM(x.harga)}`).join(' · ');
     if(!l.some(x => x.hargaIkut) || KDv.length < 2) return l.map(x => `${esc(x.nama)} ${dari(x)}`).join(' · ');
     return `<div style="overflow-x:auto"><table class="tbl-harga"><thead><tr><th>${esc(JENIS_TK[j].label)}</th>${KDv.map(k => `<th>${esc(k.nama)}</th>`).join('')}</tr></thead><tbody>${l.map(x => `<tr><td>${esc(x.nama)}</td>${KDv.map(k => { const v = x.hargaIkut ? x.hargaIkut[k.id] : x.harga + (Number(k.harga) || 0); return `<td>${v == null ? '—' : Number(v).toFixed(2)}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`; };
   const fw = (T.pakej || []).find(p => p.id === T.pakejFreeWash);
@@ -2073,7 +2074,7 @@ function borangSenaraiKaunter(j){
     // kemas kini gambar di tempat — tidak lukis semula borang (input yang sedang ditaip tidak hilang)
     l.forEach(x => { const e = document.querySelector(`[data-skimg="${CSS.escape(x.id)}"]`); if(e) e.innerHTML = img(x); }); }).catch(() => { gbSedia = true; });
   const KD = (tetapanKaunter.kenderaan || []).filter(k => k.aktif !== false && k.id);
-  const matriks = j !== 'kenderaan' && KD.length > 1 && (l.some(x => x.hargaIkut) || (tetapanKaunter.pakej || []).some(x => x.hargaIkut));
+  const matriks = j !== 'kenderaan' && !J.tunggal && KD.length > 1 && (l.some(x => x.hargaIkut) || (tetapanKaunter.pakej || []).some(x => x.hargaIkut));
   const baca = () => { if(!$('#skBox')) return; l = l.map((x,i) => {
     const o = {...x, nama: val(`#skN${i}`), ket: val(`#skK${i}`), ...(J.minit ? {minit: parseInt($(`#skM${i}`).value) || 0} : {}), aktif: $(`#skA${i}`).checked};
     if(matriks){ o.hargaIkut = Object.fromEntries(KD.map(k => { const v = $(`#skMx${i}_${k.id}`).value.trim(); return [k.id, v === '' ? null : (parseFloat(v) || 0)]; })); o.harga = o.hargaIkut[KD[0].id] ?? 0; o.kategori = val(`#skKat${i}`); }
@@ -2083,6 +2084,7 @@ function borangSenaraiKaunter(j){
   const lukis = () => {
     bukaModal(`<div class="section-title"><h3>${J.ikon} ${J.label} — ${dua ? CAW.map(c => esc(c.nama)).join(' + ') : esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
       ${j === 'kenderaan' ? '<p class="muted">Harga ialah <b>tambahan</b> kepada harga pakej (boleh negatif, cth motosikal −5).</p>' : ''}
+      ${j === 'bike' ? '<p class="muted">Servis Bike Wash dipaparkan bila juruwang tekan kad 🏍️ Bike Wash di Order Baru. Harga tetap untuk motosikal (boleh diubah di kaunter jika perlu). Bike Wash tidak dicop.</p>' : ''}
       <div id="skBox">${l.map((x,i) => `<div style="border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:8px;${x.aktif?'':'opacity:.6'}">
         <div class="row" style="flex-wrap:nowrap;align-items:flex-start">${j !== 'kenderaan' ? `<label style="cursor:pointer;margin:0;position:relative;text-align:center;font-size:11px;font-weight:600;color:#475569"><span data-skimg="${esc(x.id)}">${img(x)}</span>📷 Tukar<input type="file" accept="image/*" data-skg="${i}" data-pf-abai style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:0;top:0"></label>` : ''}
           <div style="flex:1"><div class="two"><div><label>Nama</label><input id="skN${i}" value="${esc(x.nama||'')}"></div>${matriks ? `<div><label>Kategori</label><input id="skKat${i}" value="${esc(x.kategori||'')}" placeholder="cth Cucian"></div>` : `<div><label>${j === 'kenderaan' ? 'Tambahan (RM)' : 'Harga (RM)'}</label><input id="skH${i}" type="number" inputmode="decimal" step="0.5" value="${x.harga}"></div>`}

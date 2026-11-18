@@ -266,15 +266,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-5';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.18-6';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-5';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.18-6';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.18-5';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-5';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-5';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop } from '../safari-lib.js?v=2026.11.18-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.18-6';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.18-6';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.18-6';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop } from '../safari-lib.js?v=2026.11.18-6';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -786,6 +786,7 @@ function viewPakej(){
     ${!T ? '<p class="kosong">Memuatkan…</p>' : `
       ${senarai('pakej').map(p => `<div class="pakej"><div class="g" style="${(G[p.id] || gambarAsal(p.id)) ? `background-image:url('${G[p.id] || gambarAsal(p.id)}')` : ''}">${(G[p.id] || gambarAsal(p.id)) ? '' : '🚿'}</div>
         <div class="t"><b>${esc(p.nama)}</b><div class="h">${p.hargaIkut ? `${KD.map(k => { const h = hargaPakejK(p, k); return `<span style="font-size:12px;font-family:var(--sans);color:var(--kelabu);font-weight:700">${esc(k.nama)}</span> ${h == null ? '<small>ikut permintaan</small>' : RM(h)}`; }).join(' · ')}` : RM(p.harga)}</div>${p.minit ? `<small>Anggaran ${p.minit} minit</small>` : ''}${p.ket ? `<small>${esc(p.ket)}</small>` : ''}${layakCop(p.id) ? '<span class="lencana-fw" style="background:#fef3c7;color:#92400e">⭐ Dapat cop</span>' : ''}${p.id === fw ? '<span class="lencana-fw">Layak Free Wash</span>' : ''}</div></div>`).join('') || '<p class="kosong">Senarai pakej akan dikemas kini.</p>'}
+      ${senarai('bike').length ? `<h2>🏍️ Bike Wash</h2><div class="tambahan">${senarai('bike').map(b => `<span>${esc(b.nama)} <b>${RM(b.harga)}</b></span>`).join('')}</div>` : ''}
       ${senarai('addon').length ? `<h2>Servis tambahan</h2><div class="tambahan">${senarai('addon').map(a => `<span>${esc(a.nama)} <b>${a.hargaIkut ? 'dari ' + RM(Math.min(...Object.values(a.hargaIkut).filter(v => v != null))) : '+' + RM(a.harga)}</b></span>`).join('')}</div>` : ''}
       <button class="btn btn-emas" style="margin-top:16px" id="pkTempah">📲 Tempah servis</button>
       ${senarai('kenderaan').some(k => k.harga) ? `<p class="muted" style="margin-top:12px">Caj ikut kenderaan: ${senarai('kenderaan').filter(k => k.harga).map(k => `${esc(k.nama)} ${k.harga > 0 ? '+' : ''}${RM(k.harga)}`).join(', ')}.</p>` : ''}
