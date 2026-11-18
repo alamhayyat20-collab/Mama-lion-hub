@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-3">
+<meta name="app-versi" content="2026.11.19-4">
 <meta name="theme-color" content="#14532d">
-<title>Akaun Mama Lion</title>
+<title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -108,11 +108,12 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 @media(max-width:600px){#liveAk [data-lvsaiz]{display:none}#liveAk .bar b{font-size:14px}}
 #liveAk iframe{border:0;background:#fff;border-radius:10px;width:100%;height:100%;transition:width .2s}
 .tbl-harga{border-collapse:collapse;width:100%;font-size:13px}.tbl-harga th,.tbl-harga td{border-bottom:1px solid #e5e7eb;padding:5px 6px;text-align:right;white-space:nowrap}.tbl-harga th:first-child,.tbl-harga td:first-child{text-align:left;white-space:normal;min-width:160px}.tbl-harga thead th{background:#f8fafc;position:sticky;top:0}
+.jenama{display:flex;gap:10px;align-items:center}
 </style>
 </head>
 <body>
 <header>
-  <div><b>🦁 Akaun Mama Lion</b><small>Jualan • Pembelian • Belanja • Petty Cash • Laporan</small></div>
+  <div class="jenama"><img src="icon-192.png" alt="" style="width:42px;height:42px;border-radius:10px;flex:none"><div><b>Akaun Petunjuk Pictures Sdn. Bhd.</b><small>202101007513 (1407812-P) • Mama Lion • Lion King</small></div></div>
   <div class="row" id="hKananAk"><span id="bahasaBoxAk" style="color:#fff"></span><a href="../lionsafari/" id="keKaunterAk" style="color:#fff">Kembali ke Lion Safari V2</a><a href="../lionsafari/?c=mama-lion&amp;dari=akaun" id="keKaunterML" style="color:#fff">Ke Kaunter Mama Lion</a><a href="../lionsafari/?c=lion-king&amp;dari=akaun" id="keKaunterLK" style="color:#fff">Ke Kaunter Lion King</a><span id="userBox"></span></div>
 </header>
 <nav id="nav"></nav>
@@ -121,7 +122,7 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 <div id="cawBar" class="noprint"></div>
 <div id="bulanBar" class="row" style="max-width:1000px;margin:10px auto 0;padding:0 14px"></div>
 <main id="app"><div class="card muted">Memuatkan…</div></main>
-<footer>Akaun Mama Lion • Data disimpan di Firebase (lion-safari) • Akses Management sahaja</footer>
+<footer>Akaun Petunjuk Pictures Sdn. Bhd. (202101007513) • Tahun kewangan berakhir 31 Mac • Data disimpan di Firebase (lion-safari) • Akses Management sahaja</footer>
 
 <script>
 // Penyelamat: jika apps tersangkut "Memuatkan…" (fail lama dalam cache telefon), muat semula versi terbaru
@@ -138,18 +139,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-3';
-bannerPelayarDalaman({nama: 'Akaun Mama Lion'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-3';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-3';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-3';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-4';
+bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-4';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-4';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-4';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-4';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-4';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-3';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-4';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-4';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -162,7 +163,7 @@ const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)']
 const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
 const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
 const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
-const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan'];
+const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan'];
 
 // ---------- Utiliti ----------
 const $ = s => document.querySelector(s);
@@ -199,8 +200,17 @@ const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
   {id:'lion-king', nama:'Lion King', logo:'logo-lionking.jpg'}
 ];
-let cawangan = (() => { try{ const c = localStorage.getItem('akaun_cawangan'); return CAWANGAN.some(x => x.id === c) ? c : BRANCH_ID; }catch(_){ return BRANCH_ID; } })();
-const namaCawangan = () => CAWANGAN.find(x => x.id === cawangan)?.nama || cawangan;
+// 🏢 Syarikat induk (rekod SSM) — Mama Lion & Lion King ialah unit perniagaan / produk syarikat
+const SYARIKAT = {nama: 'PETUNJUK PICTURES SDN. BHD.', noDaftar: '202101007513 (1407812-P)', diperbadankan: '03-03-2021', jenis: 'Syarikat persendirian berhad menurut syer',
+  alamatDaftar: 'No. 15, Tingkat 1, Bangunan Tabung Haji, Jalan Penjara, 25000 Kuantan, Pahang',
+  alamatNiaga: 'Lot 3, Seksyen 20 (GRN 8392), Jalan Gambut / Tun Ismail 8 / Tun Ismail 10, 25000 Kuantan, Pahang',
+  pengarah: "Nur Safarini binti Ja'afar", setiausaha: 'Faridah binti Abdul Karim', juruaudit: 'AB Hadi & Co. (AF002493)',
+  modal: 62002, akhirTK: {bulan: 3, hari: 31}, piawaian: 'MPERS', logo: 'logo-petunjuk.jpg'};
+// Unit kewangan sahaja (tiada kaunter): Pejabat / HQ — kos bersama syarikat (kenderaan, petrol, pentadbiran)
+const UNIT_PEJABAT = {id:'pejabat', nama:'Pejabat / HQ', logo:'logo-pejabat.png'};
+const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan'];
+let cawangan = (() => { try{ const c = localStorage.getItem('akaun_cawangan'); return [...CAWANGAN, UNIT_PEJABAT].some(x => x.id === c) ? c : BRANCH_ID; }catch(_){ return BRANCH_ID; } })();
+const namaCawangan = () => [...CAWANGAN, UNIT_PEJABAT].find(x => x.id === cawangan)?.nama || cawangan;
 const colFor = c => collection(store, 'akaun', c, 'entri');
 let COL = colFor(cawangan);
 const ownerRecord = uid => doc(store, 'akaun', BRANCH_ID, 'pemilik', uid);
@@ -355,7 +365,9 @@ function renderCawangan(){
   bar.className = 'noprint' + (tab === 'Ringkasan' ? ' besar' : '');
   const bolehDua = tab === 'Tetapan Apps' && tkSeg === 'Kaunter'; if(!bolehDua) tkDua = false;
   if(bolehDua) bar.className += ' tiga';
-  bar.innerHTML = CAWANGAN.map(c => { const sel = c.id === cawangan && !tkDua; return `<button class="caw ${sel?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${sel?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`; }).join('')
+  const bolehPej = TAB_KEW.includes(tab) && tab !== 'Laporan Tahunan';
+  if(bolehPej) bar.className += ' tiga';
+  bar.innerHTML = (tab === 'Laporan Tahunan' ? [] : [...CAWANGAN, ...(bolehPej ? [UNIT_PEJABAT] : [])]).map(c => { const sel = c.id === cawangan && !tkDua; return `<button class="caw ${sel?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${sel?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`; }).join('')
     + (bolehDua ? `<button class="caw dua ${tkDua?'sel':''}" data-cawdua><span class="logo2">${CAWANGAN.map(c => `<img src="${c.logo}" alt="">`).join('')}</span><div><b>${CAWANGAN.map(c => esc(c.nama)).join(' + ')}</b><span>${tkDua ? '✓ Ubah serentak' : 'Ubah harga serentak'}</span></div></button>` : '');
   bar.querySelectorAll('[data-caw]').forEach(b => b.onclick = () => { if(tkDua && b.dataset.caw === cawangan){ tkDua = false; renderShell(); return; } tkDua = false; tukarCawangan(b.dataset.caw); });
   const d = bar.querySelector('[data-cawdua]'); if(d) d.onclick = () => { tkDua = true; muatTetapanSemua(); renderShell(); };
@@ -374,6 +386,7 @@ function tukarCawangan(id){
 }
 
 function renderShell(){
+  if(cawangan === 'pejabat' && !TAB_KEW.includes(tab)){ tukarCawangan('mama-lion'); return; }
   renderCawangan();
   $('#userBox').innerHTML = `<span class="synctag">👤 ${esc(nama)}</span> <button class="small" id="btnOut">Log Keluar</button>`;
   $('#btnOut').onclick = () => { if(confirm('Log keluar?')) signOut(auth); };
@@ -400,7 +413,7 @@ function refresh(){
   $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
   const ae = document.activeElement;
   if(ae && ae.dataset && ae.dataset.kekal && $('#dataBox').contains(ae)) return;   // jangan ganggu semasa menaip
-  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
   $('#dataBox').innerHTML = r();
   if(tab === 'Pekerja') pasangPekerja();
   if(tab === 'Pelanggan') pasangPelanggan();
@@ -409,9 +422,10 @@ function refresh(){
   if(tab === 'Queue Kaunter') pasangQueueAk();
   if(tab === 'Laporan Harian') pasangTutupAk();
   if(tab === 'Tetapan Apps') pasangTetapanApps();
+  if(tab === 'Laporan Tahunan') pasangTahunan();
   badgeArahan(); badgeQueue();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
-  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(`Laporan-${namaCawangan()}-${bulan}`);
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
 }
 
 // ---------- Borang ----------
@@ -760,6 +774,82 @@ function viewLaporan(){
     <tr><td>Hutang pembekal belum bayar (semua bulan)</td><td class="r">${RM(sum(hutangAll,e=>e.amaun))}</td></tr>
     <tr><td>Top-up petty cash bulan ini (bukan belanja)</td><td class="r">${RM(sum(entri.filter(e=>e.jenis==='petty'&&e.petty_arah==='masuk'),e=>e.amaun))}</td></tr>
   </table></div>`;
+}
+
+// ================================================================
+// 📘 LAPORAN TAHUN KEWANGAN — Petunjuk Pictures Sdn. Bhd. (TK berakhir 31 Mac)
+// Gabungan unit: Mama Lion · Lion King · Pejabat / HQ. Draf pengurusan (belum diaudit, belum termasuk susut nilai / akruan / cukai).
+// ================================================================
+const UNIT_TK = () => [...CAWANGAN, UNIT_PEJABAT];
+let fyAkhir = (() => { const d = new Date(); return d.getMonth() + 1 > SYARIKAT.akhirTK.bulan ? d.getFullYear() + 1 : d.getFullYear(); })();
+let fyData = null, fyMuat = false, fyRalat = '';
+const julatTK = y => ({mula: `${y - 1}-04`, akhir: `${y}-03`, bulan: Array.from({length: 12}, (_, i) => { const m = (3 + i) % 12 + 1, t = m >= 4 ? y - 1 : y; return `${t}-${pad2(m)}`; })});
+async function muatTahunan(){
+  if(fyMuat) return; fyMuat = true; fyRalat = ''; const J = julatTK(fyAkhir), yAsal = fyAkhir;
+  try{
+    const hasil = await Promise.all(UNIT_TK().map(u => getDocs(query(collection(store, 'akaun', u.id, 'entri'), where('bulan', '>=', J.mula), where('bulan', '<=', J.akhir)))));
+    if(yAsal === fyAkhir) fyData = Object.fromEntries(UNIT_TK().map((u, i) => [u.id, hasil[i].docs.map(d => d.data())]));
+  }catch(e){ fyRalat = e.code || e.message; }
+  fyMuat = false; if(tab === 'Laporan Tahunan') refresh();
+}
+function viewTahunan(){
+  if(!isOwner) return '<div class="card muted">Laporan tahunan untuk pemilik sahaja.</div>';
+  const J = julatTK(fyAkhir), pilihan = [fyAkhir + 1, fyAkhir, fyAkhir - 1, fyAkhir - 2].filter((v, i, a) => a.indexOf(v) === i);
+  const kepala = `<div class="row noprint" style="margin-bottom:10px;gap:8px;flex-wrap:wrap"><label style="margin:0">📘 Tahun kewangan berakhir</label>
+      <select id="fyPilih" style="width:auto;margin:0">${[...new Set([...pilihan, fyAkhir])].sort((a,b) => b - a).map(y => `<option value="${y}" ${y === fyAkhir ? 'selected' : ''}>31 Mac ${y}</option>`).join('')}</select>
+      <button id="fySegar">↻ Muat semula</button><button class="primary" id="btnPrint">🖨 Cetak / Simpan PDF</button><button id="fyCsv">⬇ CSV (Excel)</button></div>`;
+  if(fyRalat) return kepala + `<div class="notice">⚠ ${esc(fyRalat)}</div>`;
+  if(!fyData){ setTimeout(muatTahunan, 0); return kepala + '<div class="card muted">⏳ Memuatkan rekod 12 bulan semua unit…</div>'; }
+  const U = UNIT_TK(), K = Object.fromEntries(U.map(u => [u.id, kira(fyData[u.id] || [])])), semua = kira(U.flatMap(u => fyData[u.id] || []));
+  const katB = [...new Set(U.flatMap(u => K[u.id].belanja.map(e => e.kategori || 'Lain-lain')))].sort();
+  const katP = [...new Set(U.flatMap(u => K[u.id].beli.map(e => e.kategori || 'Lain-lain')))].sort();
+  const sel = (u, f) => `<td class="r">${RM(f(K[u.id]))}</td>`, jum = f => `<td class="r"><b>${RM(f(semua))}</b></td>`;
+  const baris = (lbl, f, kls = '') => `<tr class="${kls}"><td>${lbl}</td>${U.map(u => sel(u, f)).join('')}${jum(f)}</tr>`;
+  const kat = (list, k) => sum(list.filter(e => (e.kategori || 'Lain-lain') === k), e => e.amaun);
+  const bulanan = J.bulan.map(b => { const r = U.flatMap(u => (fyData[u.id] || []).filter(e => e.bulan === b)), k = kira(r);
+    return `<tr><td>${fmtBulan(b)}</td>${U.map(u => `<td class="r">${RM(kira((fyData[u.id] || []).filter(e => e.bulan === b)).jumJualan)}</td>`).join('')}<td class="r"><b>${RM(k.jumJualan)}</b></td><td class="r">${RM(k.jumBeli + k.jumBelanja)}</td><td class="r ${k.bersih < 0 ? 'neg' : 'pos'}">${RM(k.bersih)}</td></tr>`; }).join('');
+  const adaData = U.some(u => (fyData[u.id] || []).length);
+  return kepala + `<div class="card">
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-bottom:2px solid #b8860b;padding-bottom:10px;margin-bottom:10px">
+      <img src="${SYARIKAT.logo}" alt="Petunjuk Pictures" style="height:64px">
+      <div><b style="font-size:17px">${esc(SYARIKAT.nama)}</b><br><span class="muted">No. Pendaftaran: ${esc(SYARIKAT.noDaftar)}<br>${esc(SYARIKAT.alamatDaftar)}</span></div></div>
+    <h3 style="margin:0">Penyata Untung Rugi Pengurusan (Gabungan)</h3>
+    <p class="muted" style="margin-top:4px">Bagi tahun kewangan berakhir <b>31 Mac ${fyAkhir}</b> (1 April ${fyAkhir - 1} – 31 Mac ${fyAkhir}) · unit: ${U.map(u => esc(u.nama)).join(', ')}</p>
+    ${adaData ? '' : '<div class="notice">Tiada rekod dalam tempoh ini.</div>'}
+    <div class="scroll"><table>
+      <tr><th></th>${U.map(u => `<th class="r">${esc(u.nama)}</th>`).join('')}<th class="r">JUMLAH</th></tr>
+      <tr class="sub"><td>HASIL</td>${U.map(() => '<td></td>').join('')}<td></td></tr>
+      ${KAEDAH_JUALAN.map(([key, l]) => baris(`<span style="padding-left:14px">${l}</span>`, k => sum(k.jualan, e => e[key]))).join('')}
+      ${baris('Jumlah Hasil', k => k.jumJualan, 'tot')}
+      <tr class="sub"><td>TOLAK: KOS JUALAN (PEMBELIAN)</td>${U.map(() => '<td></td>').join('')}<td></td></tr>
+      ${katP.map(c => baris(`<span style="padding-left:14px">${esc(c)}</span>`, k => kat(k.beli, c))).join('') || ''}
+      ${baris('Jumlah Kos Jualan', k => k.jumBeli, 'tot')}
+      ${baris('UNTUNG KASAR', k => k.kasar, 'tot')}
+      <tr class="sub"><td>TOLAK: BELANJA OPERASI</td>${U.map(() => '<td></td>').join('')}<td></td></tr>
+      ${katB.map(c => baris(`<span style="padding-left:14px">${esc(c)}</span>`, k => kat(k.belanja, c))).join('')}
+      ${baris('Jumlah Belanja Operasi', k => k.jumBelanja, 'tot')}
+      ${baris('UNTUNG / (RUGI) BERSIH SEBELUM CUKAI', k => k.bersih, 'tot')}
+    </table></div>
+    <p class="muted" style="font-size:12px">Draf pengurusan — <b>bukan penyata kewangan teraudit</b>. Belum termasuk susut nilai aset, akruan / prabayar, stok akhir & cukai. Penyata kewangan rasmi disediakan ikut ${esc(SYARIKAT.piawaian)} & Akta Syarikat 2016 oleh juruaudit / akauntan.</p></div>
+  <div class="card"><h3 style="margin-top:0">Ringkasan bulanan</h3><div class="scroll"><table>
+    <tr><th>Bulan</th>${U.map(u => `<th class="r">Jualan ${esc(u.nama)}</th>`).join('')}<th class="r">Jumlah jualan</th><th class="r">Kos & belanja</th><th class="r">Bersih</th></tr>${bulanan}
+    <tr class="tot"><td>JUMLAH</td>${U.map(u => `<td class="r">${RM(K[u.id].jumJualan)}</td>`).join('')}<td class="r">${RM(semua.jumJualan)}</td><td class="r">${RM(semua.jumBeli + semua.jumBelanja)}</td><td class="r ${semua.bersih < 0 ? 'neg' : 'pos'}">${RM(semua.bersih)}</td></tr></table></div></div>
+  <details class="card"><summary style="font-weight:700;cursor:pointer">🏢 Maklumat syarikat (rekod SSM)</summary><table>
+    <tr><td>Nama</td><td>${esc(SYARIKAT.nama)}</td></tr><tr><td>No. pendaftaran</td><td>${esc(SYARIKAT.noDaftar)}</td></tr><tr><td>Diperbadankan</td><td>${esc(SYARIKAT.diperbadankan)}</td></tr>
+    <tr><td>Jenis</td><td>${esc(SYARIKAT.jenis)}</td></tr><tr><td>Alamat berdaftar</td><td>${esc(SYARIKAT.alamatDaftar)}</td></tr><tr><td>Alamat perniagaan</td><td>${esc(SYARIKAT.alamatNiaga)}</td></tr>
+    <tr><td>Pengarah</td><td>${esc(SYARIKAT.pengarah)}</td></tr><tr><td>Setiausaha syarikat</td><td>${esc(SYARIKAT.setiausaha)}</td></tr><tr><td>Juruaudit</td><td>${esc(SYARIKAT.juruaudit)}</td></tr>
+    <tr><td>Modal saham diterbitkan</td><td>${RM(SYARIKAT.modal)}</td></tr><tr><td>Tahun kewangan berakhir</td><td>31 Mac setiap tahun</td></tr><tr><td>Piawaian perakaunan</td><td>${esc(SYARIKAT.piawaian)} (Malaysian Private Entities Reporting Standard)</td></tr></table></details>`;
+}
+function pasangTahunan(){
+  if($('#fyPilih')) $('#fyPilih').onchange = e => { fyAkhir = +e.target.value; fyData = null; refresh(); };
+  if($('#fySegar')) $('#fySegar').onclick = () => { fyData = null; refresh(); };
+  if($('#fyCsv')) $('#fyCsv').onclick = () => {
+    if(!fyData) return; const kol = ['unit','tarikh','jenis','kategori','perkara','bayar','tunai','qr','kad','ewallet','lain','amaun','catatan'];
+    const q = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const rows = UNIT_TK().flatMap(u => (fyData[u.id] || []).map(e => ({...e, unit: u.nama}))).sort((a, b) => (a.tarikh || '').localeCompare(b.tarikh || ''));
+    const csv = '\ufeff' + kol.join(',') + '\n' + rows.map(e => kol.map(c => q(e[c])).join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'})); a.download = `petunjuk-pictures-TK${fyAkhir}.csv`; document.body.appendChild(a); a.click(); a.remove();
+  };
 }
 
 function eksportCsv(){
@@ -1478,7 +1568,7 @@ function csvGaji(){
 // ================================================================
 const KATEGORI = [
   {id:'kew', nama:'💰 Kewangan & Akaun', pendek:'💰 Kewangan', w:'biru', item:[
-    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Import', i:'⬆️'}]},
+    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Import', i:'⬆️'}]},
   {id:'pek', nama:'👷 Pekerja', pendek:'👷 Pekerja', w:'jingga', item:[
     {t:'Pekerja', pk:'Senarai', i:'👥', l:'Senarai & urus'}, {t:'Arahan', i:'💬', l:'Arahan & tugasan', b:'badgeArahan'}, {t:'Pekerja', pk:'Gaji Bulanan', i:'💰', l:'Gaji'},
     {t:'Pekerja', pk:'Kehadiran', i:'🕘', l:'Kehadiran'}, {t:'Pekerja', pk:'Roster', i:'📅', l:'Roster'}, {t:'Pekerja', pk:'Permohonan', i:'📝', l:'Permohonan'},
@@ -2499,7 +2589,7 @@ const standalone = () => matchMedia('(display-mode: standalone)').matches || nav
 function renderPasang(){
   const box = $('#pasangBox');
   if(standalone() || (()=>{ try{ return localStorage.getItem('akaun_pasang_tutup') === '1'; }catch(_){ return false; } })()){ box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="card"><div class="section-title" style="margin:0"><b>📲 Pasang Akaun Mama Lion di telefon ini</b>
+  box.innerHTML = `<div class="card"><div class="section-title" style="margin:0"><b>📲 Pasang Akaun Petunjuk Pictures di telefon ini</b>
     <div class="row"><button class="btn-gold small" id="btnPasang">PASANG SEKARANG</button><button class="small" id="btnCaraPasang">❓ Tidak boleh pasang?</button><button class="small" id="btnTutupPasang">Nanti</button></div></div>
     <div class="muted" id="pasangInfo" style="margin-top:6px">${iOS ? 'iPhone/iPad: buka dalam Safari → butang Kongsi ⬆ → "Add to Home Screen".' : 'Ikon Akaun akan muncul di skrin utama dan dibuka seperti apps biasa (tanpa bar pelayar).'}</div></div>`;
   $('#btnPasang').onclick = async () => {
