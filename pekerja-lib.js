@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.18-6';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.18-7';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)

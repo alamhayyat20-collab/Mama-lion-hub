@@ -218,6 +218,22 @@ const H = (sedan, suv, mpv, x4, dxl) => ({sedan, suv, mpv, '4x4': x4, dxl});
 const PROMO_A = 'Luar & dalam (wax shampoo), glass cleaner, water wax, interior wax, spray essential/sanitizes, vacuum & silicone wax tyre';
 const PROMO_B = 'Luar & dalam (wax shampoo), glass cleaner, water coating, interior wax, spray essential/sanitizes, vacuum & silicone wax tyre';
 const it = (id, nama, kategori, h, extra = {}) => ({id, nama, kategori, harga: h.sedan ?? 0, hargaIkut: h, aktif: true, ...extra});
+// ---------------- 🏍️ Motosikal: jenis & servis Bike Wash (boleh diubah admin di Akaun → Tetapan kaunter) ----------------
+export const BIKE_JENIS = [
+  {id: 'm-kecil', nama: 'Kecil', ket: 'Kapcai / skuter · ≤150cc'},
+  {id: 'm-sederhana', nama: 'Sederhana', ket: '150–400cc'},
+  {id: 'm-tinggi', nama: 'Berkuasa Tinggi', ket: 'Superbike / touring · >400cc'}
+];
+const hb = (k, s, t) => ({'m-kecil': k, 'm-sederhana': s, 'm-tinggi': t});
+export const BIKE_ASAL = [
+  {id: 'b-cuci', nama: 'Cuci Biasa', ket: 'Snow foam, bilas & lap kering', minit: 15, harga: 8, hargaIkut: hb(8, 12, 20), aktif: true},
+  {id: 'b-wax', nama: 'Cuci + Wax', ket: 'Cuci biasa + wax kilat badan', minit: 25, harga: 12, hargaIkut: hb(12, 18, 30), aktif: true},
+  {id: 'b-rantai', nama: 'Cuci + Rantai & Pelincir', ket: 'Cuci biasa + cuci rantai (degreaser) + pelincir', minit: 25, harga: 15, hargaIkut: hb(15, 22, 35), aktif: true},
+  {id: 'b-premium', nama: 'Premium Bike Wash', ket: 'Cuci + wax + rantai & pelincir + kilat tayar & plastik', minit: 40, harga: 20, hargaIkut: hb(20, 30, 50), aktif: true},
+  {id: 'b-detail', nama: 'Detailing Penuh', ket: 'Cuci terperinci, enjin, rim, rantai, wax, kilat plastik & tayar', minit: 90, harga: 40, hargaIkut: hb(40, 60, 100), aktif: true}
+];
+export const hargaBikeK = (b, motoId) => { const v = b?.hargaIkut?.[motoId]; return v == null ? (Number(b?.harga) || 0) : Number(v); };
+
 export const HARGA_RASMI = {
   kenderaan: [{id:'sedan', nama:'Sedan', harga:0, aktif:true}, {id:'suv', nama:'SUV', harga:0, aktif:true}, {id:'mpv', nama:'MPV', harga:0, aktif:true},
     {id:'4x4', nama:'4x4', harga:0, aktif:true}, {id:'dxl', nama:'DXL', harga:0, aktif:true}],
