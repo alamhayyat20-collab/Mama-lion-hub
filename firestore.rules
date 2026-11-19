@@ -218,14 +218,14 @@ service cloud.firestore {
       allow read: if staffApp();
     }
 
-    // Lion Safari V2 hantar jualan (ls-) & petty cash (lsp-) ke Akaun
+    // Lion Safari V2 hantar jualan (ls-), petty cash (lsp-) & tutup kaunter (tk-: consumables laci, minyak kenderaan syarikat) ke Akaun
     match /akaun/{cawangan}/entri/{id} {
       allow create, update: if dalaman() && cawangan in ['mama-lion', 'lion-king']
-        && (id.matches('ls-.*') || id.matches('lsp-.*'))
+        && (id.matches('ls-.*') || id.matches('lsp-.*') || id.matches('tk-.*'))
         && request.resource.data.sumber == 'lionsafari'
         && request.resource.data.cawangan == cawangan;
       allow delete: if dalaman() && cawangan in ['mama-lion', 'lion-king']
-        && (id.matches('ls-.*') || id.matches('lsp-.*'));
+        && (id.matches('ls-.*') || id.matches('lsp-.*') || id.matches('tk-.*'));
       // Kuasa 💳 Kaunter (Apps Pekerja): jualan harian hasil bayaran
       allow get: if staffApp() && id.matches('ls-.*');
       allow create, update: if staffApp() && id.matches('ls-.*')

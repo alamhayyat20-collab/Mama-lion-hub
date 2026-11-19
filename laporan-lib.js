@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.19-5';
-import { hariOperasi } from './safari-lib.js?v=2026.11.19-5';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.19-6';
+import { hariOperasi } from './safari-lib.js?v=2026.11.19-6';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -90,6 +90,7 @@ export function kiraLaporan(d){
   const advance = (d.advance || []).map(a => ({k: `adv-${a.id}`, id: a.id, stafId: a.stafId, nama: a.nama || '', amaun: r2(a.amaunLulus || a.amaun), tarikh: a.tarikh || ''}));
   advance.forEach(a => a.dibayar = !!pilih[a.k]);
   const belanjaLaci = (rekod.belanjaLaci || []).map(x => ({...x, amaun: r2(x.amaun)}));
+  const minyakLaci = (rekod.minyakLaci || []).map(x => ({...x, amaun: r2(x.amaun)}));   // ⛽ minyak kenderaan syarikat → kos Pejabat / HQ
   const petty = (d.petty || []).filter(p => p.jenis === 'Belanja');
 
   const jumBayaranStaf = r2(bayaran.filter(b => b.dibayar).reduce((t,b) => t + b.amaun, 0));
@@ -97,11 +98,12 @@ export function kiraLaporan(d){
   const jumPT = r2(bayaran.filter(b => b.dibayar && b.jenis !== 'Komisen').reduce((t,b) => t + b.amaun, 0));
   const jumAdvance = r2(advance.filter(a => a.dibayar).reduce((t,a) => t + a.amaun, 0));
   const jumBelanja = r2(belanjaLaci.reduce((t,x) => t + x.amaun, 0));
-  const keluar = r2(jumBayaranStaf + jumAdvance + jumBelanja);
+  const jumMinyak = r2(minyakLaci.reduce((t,x) => t + x.amaun, 0));
+  const keluar = r2(jumBayaranStaf + jumAdvance + jumBelanja + jumMinyak);
   const bop = r2(float + tunai - keluar);
   const dikira = rekod.tunaiDikira != null && rekod.tunaiDikira !== '' ? r2(rekod.tunaiDikira) : null;
   return {tarikh: d.tarikh, hari: namaHari(d.tarikh), c: d.c, namaKedai: NAMA_CAW[d.c] || d.c, baris, jumLajur, jumlah: r2(tunai + qr + kad + tf), kereta: baris.length,
-    tunai, qr, kad, tf, foc, jumFoc: r2(foc.reduce((t,x) => t + x.rm, 0)), bayaran, advance, belanjaLaci, petty, jumPetty: r2(petty.reduce((t,p) => t + (Number(p.amaun)||0), 0)),
+    tunai, qr, kad, tf, foc, jumFoc: r2(foc.reduce((t,x) => t + x.rm, 0)), bayaran, advance, belanjaLaci, minyakLaci, jumMinyak, petty, jumPetty: r2(petty.reduce((t,p) => t + (Number(p.amaun)||0), 0)),
     jumKomisen, jumPT, jumAdvance, jumBelanja, keluar, float, bop, dikira, beza: dikira == null ? null : r2(dikira - bop), bersih: dikira == null ? null : r2(dikira - float),
     hariBayarMingguan: hariIni};
 }
@@ -122,6 +124,7 @@ export function teksWhatsApp(L, rekod = {}){
   const adv = L.advance.filter(a => a.dibayar);
   if(adv.length){ b.push('', '💸 Advance staff:'); adv.forEach((x,i) => b.push(`${i+1}) ${x.nama} — RM ${RMx(x.amaun)}`)); }
   if(L.belanjaLaci.length){ b.push('', '🧾 Consumables / supplier (dari laci):'); L.belanjaLaci.forEach((x,i) => b.push(`${i+1}) ${x.perkara} — RM ${RMx(x.amaun)}`)); }
+  if(L.minyakLaci?.length){ b.push('', '⛽ Minyak kenderaan syarikat (dari laci → Pejabat):'); L.minyakLaci.forEach((x,i) => b.push(`${i+1}) ${x.kenderaan} — ${x.pengambil} — RM ${RMx(x.amaun)}`)); }
   b.push('', `📤 Cash paid out: RM ${RMx(L.keluar)}`, `🏦 Float: RM ${RMx(L.float)}`, `📊 Balance of payment (BOP): RM ${RMx(L.bop)}`);
   if(L.dikira != null){ b.push(`💵 Cash counted: RM ${RMx(L.dikira)}`, `${L.beza >= 0 ? '➕ Surplus' : '➖ Shortage'}: RM ${RMx(Math.abs(L.beza))}`, `*NET CASH BALANCE: RM ${RMx(L.bersih)}*`); }
   else b.push('💵 Cash counted: (belum)');
@@ -170,6 +173,7 @@ export function htmlCetak(L, rekod = {}, foto = '', pra = null){
       <p style="margin:8px 0 2px"><b>PARTIME / OVERTIME: (NAME &amp; RM)</b></p>${senarai(pt, x => `${esc(x.nama)} — RM ${RMx(x.amaun)} <span class="small">(${esc(x.ket)})</span>`)}
       <p style="margin:8px 0 2px"><b>ADVANCE STAFF: (NAME &amp; RM)</b></p>${senarai(L.advance.filter(a => a.dibayar), x => `${esc(x.nama)} — RM ${RMx(x.amaun)}`, 2)}</div>
     <div class="box"><p style="margin:0 0 2px"><b>CONSUMABLES / SUPPLIER PRODUCT</b> <span class="small">*attach with receipt*</span></p>${senarai(L.belanjaLaci, x => `${esc(x.perkara)} — RM ${RMx(x.amaun)}`, 2)}
+      ${L.minyakLaci?.length ? `<p style="margin:6px 0 2px"><b>FUEL — COMPANY VEHICLES</b> <span class="small">*receipt attached · charged to HQ*</span></p>${senarai(L.minyakLaci, x => `${esc(x.kenderaan)} · ${esc(x.pengambil)} — RM ${RMx(x.amaun)}`, 1)}` : ''}
       <div class="ln" style="margin-top:6px"><span>CASH PAID OUT (RM)</span><span>${RMx(L.keluar)}</span></div><div class="ln"><span>FLOAT / MODAL (RM)</span><span>${RMx(L.float)}</span></div>
       <div class="ln"><span>BALANCE OF PAYMENT (BOP) (RM)</span><span>${pra?.buta ? '________' : RMx(L.bop)}</span></div>
       <div class="ln"><span>KIRAAN 1 — JURUWANG (RM)</span><span>${rekod.kiraan1 ? RMx(rekod.kiraan1.jumlah) : '________'}</span></div>
@@ -202,6 +206,8 @@ export async function kongsiWhatsApp(teks){
 // Modul UI kongsi: mod 'kaunter' (Apps Kaunter: tutup & hantar), 'foto' (Apps Pekerja: gambar tunai),
 // 'semak' (sahkan), 'lihat' (baca sahaja). ctx = {store, fs, cawangan(), pengguna(), tanda?(), toast, refresh, capGambar, mod, bolehSemak?}
 // ---------------------------------------------------------------------
+export const KENDERAAN_SYARIKAT = ['Toyota Fortuner', 'Isuzu D-Max', 'Mercedes-Benz'];
+export const PENGAMBIL_MINYAK = ["Dato'", 'Datin / Madam', 'Office', 'Lain-lain'];
 export function modulTutup(ctx){
   const {store, fs} = ctx;
   const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null, lampiran: [], queue: null, k2oleh: null, k1ubah: false, draf: {}, fokus: null};
@@ -280,6 +286,10 @@ export function modulTutup(ctx){
       <h4>🧾 Consumables / supplier (dibayar dari laci)</h4>${L.belanjaLaci.map((x,i) => `<div class="lt-chk"><span>${e(x.perkara)}${x.resit ? ' 🧾' : ''}</span><b>RM ${RMx(x.amaun)}</b>${ed ? `<button class="lt-btn lt-x" data-lt-buang="${i}">✕</button>` : ''}</div>`).join('') || '<p class="lt-muted">Tiada.</p>'}
       ${ed ? `<div class="lt-row"><input data-lt-bperkara placeholder="Perkara (cth Sabun 20L)" style="flex:2;margin:0"><input data-lt-bamaun type="number" inputmode="decimal" step="0.01" placeholder="RM" style="flex:1;margin:0"></div>
         <div class="lt-row"><label class="lt-btn" style="flex:1;text-align:center">📷 Resit<input type="file" accept="image/*" capture="environment" data-lt-bresit style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-bresit style="display:none"></label><button class="lt-btn" data-lt-btambah style="flex:1">+ Tambah</button></div>` : ''}
+      <h4>⛽ Minyak kenderaan syarikat (dari laci)</h4><div class="lt-muted">Petrol / diesel kenderaan syarikat yang diambil tunai dari laci. Kos masuk ke <b>Pejabat / HQ</b>, bukan kos kedai. Resit & PIN penyelia wajib.</div>
+      ${(L.minyakLaci || []).map((x,i) => `<div class="lt-chk"><span>⛽ <b>${e(x.kenderaan)}</b> · ${e(x.pengambil)}${x.resit ? ' 🧾' : ''}<small> · lulus ${e(x.lulus || '')}</small></span><b>RM ${RMx(x.amaun)}</b>${ed ? `<button class="lt-btn lt-x" data-lt-mbuang="${i}">✕</button>` : ''}</div>`).join('') || '<p class="lt-muted">Tiada.</p>'}
+      ${ed ? `<div class="lt-row"><select data-lt-mkend style="flex:2;margin:0">${kenderaanSenarai().map(k => `<option>${e(k)}</option>`).join('')}</select><select data-lt-mambil style="flex:1;margin:0">${PENGAMBIL_MINYAK.map(k => `<option>${e(k)}</option>`).join('')}</select></div>
+        <div class="lt-row"><input data-lt-mamaun type="number" inputmode="decimal" step="0.01" placeholder="RM" style="flex:1;margin:0"><label class="lt-btn" style="flex:1;text-align:center">📷 Resit *<input type="file" accept="image/*" capture="environment" data-lt-mresit style="display:none"></label><label class="lt-btn" style="flex:1;text-align:center">🖼 Galeri<input type="file" accept="image/*" data-lt-mresit style="display:none"></label><button class="lt-btn" data-lt-mtambah style="flex:1">+ Tambah</button></div>` : ''}
       ${L.petty.length ? `<div class="lt-muted" style="margin-top:6px">Petty cash hari ini (dana berasingan, sudah direkod): RM ${RMx(L.jumPetty)}</div>` : ''}</div>`;
     const sk = semakan(L, r), siap = sk.every(x => x.ok || !x.wajib);
     const semakHtml = ed ? `<div class="lt-card lt-semak"><h3>✅ Senarai semak tutup kaunter</h3>${sk.map((x, i) => `<div class="lt-langkah ${x.ok ? 'ok' : x.wajib ? 'belum' : 'info'}"><span class="lt-no">${x.ok ? '✓' : i + 1}</span><div><b>${x.t}</b>${x.k ? `<small>${x.k}</small>` : ''}</div></div>`).join('')}</div>` : '';
@@ -290,6 +300,8 @@ export function modulTutup(ctx){
       ${ctx.mod === 'kaunter' && status === 'dihantar' ? '<div class="lt-muted">Sudah dihantar — menunggu semakan.</div>' : ''}</div>` + butangKongsi(L);
   }
   const tandaL = L => `${L.kereta}|${RMx(L.jumlah)}|${RMx(L.keluar)}`;
+  const kenderaanSenarai = () => { const l = (ctx.kenderaan && ctx.kenderaan()) || []; return [...(l.length ? l : KENDERAAN_SYARIKAT), 'Lain-lain (tulis dalam Nota)']; };
+  let resitMinyak = '';
   const praTerkini = (L, r) => !!(L && r.praCetak && r.praCetak.tanda === tandaL(L));
   function gridPecahan(id, pc = {}){
     pc = st.draf[id] || pc || {};
@@ -364,6 +376,16 @@ export function modulTutup(ctx){
       if(!perkara || !(amaun > 0)) return ctx.toast('Isi perkara & amaun');
       try{ await simpanRekod({belanjaLaci: [...(st.rekod?.belanjaLaci || []), {perkara, amaun: r2(amaun), resit: resitBaru, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitBaru = ''; }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
+    qa('[data-lt-mresit]').forEach(res => res.onchange = async e => { const f = e.target.files[0]; if(f){ resitMinyak = await ctx.capGambar(f, null, 900, 0.6); ctx.toast('🧾 Resit minyak dilampirkan'); } });
+    const mt = q('[data-lt-mtambah]'); if(mt) mt.onclick = async () => {
+      const amaun = parseFloat(q('[data-lt-mamaun]').value), kenderaan = q('[data-lt-mkend]').value, pengambil = q('[data-lt-mambil]').value;
+      if(!(amaun > 0)) return ctx.toast('Isi amaun minyak');
+      if(!resitMinyak) return ctx.toast('Ambil gambar resit minyak dahulu (wajib)');
+      const lulus = ctx.mintaPinTutup ? await ctx.mintaPinTutup(`Minyak ${kenderaan} (${pengambil}) RM ${RMx(amaun)} dari laci`, '⛽ KELULUSAN MINYAK') : ctx.pengguna();
+      if(!lulus) return;
+      try{ await simpanRekod({minyakLaci: [...(st.rekod?.minyakLaci || []), {kenderaan, pengambil, amaun: r2(amaun), resit: resitMinyak, lulus, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitMinyak = ''; ctx.toast('⛽ Minyak direkod'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+    };
+    qa('[data-lt-mbuang]').forEach(b => b.onclick = async () => { if(!confirm('Buang rekod minyak ini?')) return; const l = [...(st.rekod?.minyakLaci || [])]; l.splice(+b.dataset.ltMbuang, 1); await simpanRekod({minyakLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
     qa('[data-lt-buang]').forEach(b => b.onclick = async () => { const l = [...(st.rekod?.belanjaLaci || [])]; l.splice(+b.dataset.ltBuang, 1); await simpanRekod({belanjaLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
     // ---- kiraan tunai 2 orang ----
     qa('[data-lt-pc]').forEach(x => { x.oninput = () => { const id = x.dataset.ltPc.split('|')[0]; st.draf[id] = bacaPC(id); const el = q(`[data-lt-pcjum="${id}"]`); if(el) el.textContent = RMx(jumPecahan(st.draf[id])); };
@@ -438,6 +460,13 @@ export function modulTutup(ctx){
       if(L.jumBelanja > 0) await fs.setDoc(ref, {jenis: 'belanja', tarikh: st.tarikh, bulan: st.tarikh.slice(0,7), cawangan: st.c, kategori: 'Barang Guna Habis (Laci)',
         perkara: `Tutup kaunter ${fT(st.tarikh)}: ` + L.belanjaLaci.map(x => `${x.perkara} RM${RMx(x.amaun)}`).join(', '), amaun: L.jumBelanja, bayar: 'Tunai', guna_petty: false, hutang: false,
         sumber: 'lionsafari', auto: true, oleh: ctx.pengguna(), dikemaskini: fs.serverTimestamp(), ...T()}).catch(e => console.warn('belanja akaun', e));
+      // ⛽ Minyak kenderaan syarikat → pindahan tunai ke Pejabat / HQ (Apps Akaun: kos Pejabat, bukan kos kedai)
+      const refM = fs.doc(fs.collection(store, 'akaun', st.c, 'entri'), 'tk-minyak-' + st.tarikh);
+      if(L.jumMinyak > 0) await fs.setDoc(refM, {jenis: 'pindahan', keUnit: 'pejabat', tarikh: st.tarikh, bulan: st.tarikh.slice(0,7), cawangan: st.c, kategori: 'Pengangkutan & Minyak',
+        perkara: `Minyak kenderaan syarikat (tunai laci ${fT(st.tarikh)}): ` + L.minyakLaci.map(x => `${x.kenderaan} / ${x.pengambil} RM${RMx(x.amaun)}`).join(', '), amaun: L.jumMinyak, bayar: 'Tunai',
+        butiran: L.minyakLaci.map(x => ({kenderaan: x.kenderaan, pengambil: x.pengambil, amaun: x.amaun, lulus: x.lulus || ''})), guna_petty: false, hutang: false,
+        sumber: 'lionsafari', auto: true, oleh: ctx.pengguna(), dikemaskini: fs.serverTimestamp(), ...T()}).catch(e => console.warn('minyak akaun', e));
+      else await fs.deleteDoc(refM).catch(() => {});
       // Advance dibayar dari laci
       for(const a of L.advance.filter(x => x.dibayar)) await fs.updateDoc(fs.doc(K('permohonan'), a.id), {dibayar: {tarikh: st.tarikh, cawangan: st.c, oleh: ctx.pengguna()}}).catch(e => console.warn('advance', e));
       ctx.toast('✅ Kaunter ditutup — laporan dihantar untuk semakan');

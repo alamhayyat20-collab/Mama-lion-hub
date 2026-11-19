@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-5">
+<meta name="app-versi" content="2026.11.19-6">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-5';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-6';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-5';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-6';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.19-5';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-5';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.19-5';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.19-5';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.19-5';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-5';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-5';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-5';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.19-5';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.19-6';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-6';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.19-6';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.19-6';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.19-6';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-6';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-6';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-6';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.19-6';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -599,7 +599,7 @@ const PANDUAN = {
     en: ['Vehicles marked Ready wait for payment here. Tap 💳 Pay.', 'Check the items & total. Discounts only appear when approved (🙋 Request to ask for one).', 'Choose the payment method: Cash (enter cash received), QR / Transfer (check the money has arrived & enter the reference no.).', 'Tap SAVE & SHOW RECEIPT — print, PDF or send to the customer WhatsApp. Choose the receipt language BM / English.', 'Payments from the Customer App appear at the top — check the proof, then Confirm or Reject.']},
   'Petty Cash': {ms: ['Petty cash ialah tabung berasingan, bukan laci jualan.', '➕ Top-up bila tabung ditambah. ➖ Belanja untuk setiap perbelanjaan kecil (isi tujuan & amaun).', 'Belanja melebihi had perlu PIN Supervisor.', 'Setiap rekod masuk terus ke Apps Akaun.'],
     en: ['Petty cash is a separate fund, not the sales drawer.', '➕ Top-up when the fund is refilled. ➖ Expense for each small purchase (enter purpose & amount).', 'Expenses above the limit need a Supervisor PIN.', 'Every record goes straight to the Account App.']},
-  'Tutup Kaunter': {ms: ['Selesaikan semua kenderaan dalam Queue — bayar atau batalkan.', 'Tanda bayaran staf / advance dari laci & rekod consumables / supplier (lampirkan resit).', 'Juruwang tekan 🖨 Cetak Laporan Pra-Tutup — rekod jualan & wang keluar terkini. Jika ada transaksi baru selepas itu, cetak semula.', 'Kiraan 1 (juruwang, kiraan buta): kira semua wang dalam laci termasuk float, isi bilangan keping setiap nilai & simpan. BOP hanya dipaparkan selepas ini.', 'Kiraan 2 (penyelia / pengurus / pekerja kuasa 🔐): kira semula dengan PIN di kaunter atau dalam Apps Pekerja. Jika beza dengan Kiraan 1, kira semula atau tulis sebab.', 'Juruwang & penyelia tandatangan Laporan Pra-Tutup. Ikat wang bersama kertas itu & ambil gambar dalam satu bingkai.', 'Jika ada beza dengan BOP, tulis sebab dalam Nota. Muat naik lampiran lain (slip bank, penyata QR) jika ada.', 'Tekan ✅ TUTUP KAUNTER & HANTAR sebelum 4:00 pagi. Simpan wang & kertas di tempat selamat untuk bank-in.'],
+  'Tutup Kaunter': {ms: ['Selesaikan semua kenderaan dalam Queue — bayar atau batalkan.', 'Tanda bayaran staf / advance dari laci & rekod consumables / supplier (lampirkan resit). Minyak kenderaan syarikat yang diambil tunai: rekod di ⛽ Minyak (resit + PIN penyelia).', 'Juruwang tekan 🖨 Cetak Laporan Pra-Tutup — rekod jualan & wang keluar terkini. Jika ada transaksi baru selepas itu, cetak semula.', 'Kiraan 1 (juruwang, kiraan buta): kira semua wang dalam laci termasuk float, isi bilangan keping setiap nilai & simpan. BOP hanya dipaparkan selepas ini.', 'Kiraan 2 (penyelia / pengurus / pekerja kuasa 🔐): kira semula dengan PIN di kaunter atau dalam Apps Pekerja. Jika beza dengan Kiraan 1, kira semula atau tulis sebab.', 'Juruwang & penyelia tandatangan Laporan Pra-Tutup. Ikat wang bersama kertas itu & ambil gambar dalam satu bingkai.', 'Jika ada beza dengan BOP, tulis sebab dalam Nota. Muat naik lampiran lain (slip bank, penyata QR) jika ada.', 'Tekan ✅ TUTUP KAUNTER & HANTAR sebelum 4:00 pagi. Simpan wang & kertas di tempat selamat untuk bank-in.'],
     en: ['Finish every vehicle in the Queue — pay or cancel.', 'Tick staff payments / advances from the drawer & record consumables / suppliers (attach receipts).', 'The cashier taps 🖨 Print Pre-Closing Report — the latest sales & cash-out records. If there are new transactions afterwards, print again.', 'Count 1 (cashier, blind count): count all the money in the drawer including the float, enter the number of pieces of each value & save. The BOP is shown only after this.', 'Count 2 (supervisor / manager / staff with 🔐): recount with a PIN at the counter or in the Staff App. If it differs from Count 1, recount or write a reason.', 'The cashier & supervisor sign the Pre-Closing Report. Bundle the money with the paper & take one photo of both.', 'If there is a difference from the BOP, write the reason in Notes. Upload other attachments (bank slip, QR statement) if any.', 'Tap ✅ CLOSE COUNTER & SUBMIT before 4:00 am. Keep the money & paper somewhere safe for bank-in.']},
   'Stok': {ms: ['➕ Terima stok bila barang sampai. ➖ Guna bila barang dikeluarkan untuk kerja.', '⚖ Laras kiraan jika kiraan fizikal berbeza.', 'Item bertanda ⚠ sudah di bawah paras minimum — maklumkan pengurus.'],
     en: ['➕ Receive stock when goods arrive. ➖ Use when goods are taken out for work.', '⚖ Adjust the count if the physical count differs.', 'Items marked ⚠ are below the minimum level — tell the manager.']},
@@ -730,17 +730,17 @@ function mintaPinHarga(sebab){
 }
 
 // PIN kiraan 2 tutup kaunter: Supervisor / Manager / Admin atau pekerja berkuasa 🔐 Tutup (bukan juruwang yang sedang log masuk)
-function mintaPinTutup(sebab){
+function mintaPinTutup(sebab, tajuk = '🔐 KIRAAN PENYELIA'){
   return new Promise(resolve => {
     const ov = $('#lulus'); ov.classList.remove('hidden');
-    $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>🔐 KIRAAN PENYELIA</h3><div class="notice">${esc(sebab)}</div>
+    $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>${tajuk}</h3><div class="notice">${esc(sebab)}</div>
       <div class="muted">PIN Supervisor / Manager / Admin atau pekerja berkuasa 🔐 Tutup</div><div id="kpT"></div><button class="small" id="btnTolakT">Batal</button></div>`;
     const tutup = v => { ov.classList.add('hidden'); resolve(v); };
     $('#btnTolakT').onclick = () => tutup(null);
     keypad('#kpT', async pin => {
       for(const x of stafList.filter(x => x.aktif !== false && (PELULUS.includes(x.peranan) || adaKuasa(x, 'tutup'))))
         if(await hashPin(x.id, pin) === x.pinHash){
-          if(x.id === staf?.id && !PELULUS.includes(staf.peranan)) return 'Kiraan 2 mesti oleh orang lain (penyelia)';
+          if(x.id === staf?.id && !PELULUS.includes(staf.peranan)) return 'Mesti diluluskan oleh orang lain (penyelia)';
           tutup(`${x.nama}${x.idStaf ? ' (' + x.idStaf + ')' : ''}`); return; }
       return 'PIN tidak sah / tiada kuasa kiraan';
     });
@@ -1818,7 +1818,7 @@ VIEWS['Petty Cash'] = {
 // ---------- STOK ----------
 // Tutup kaunter harian (format Daily Sales Report). Gambar tunai diambil dalam Apps Pekerja (kuasa 🔐 Tutup).
 const MT = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp},
-  cawangan: () => cawD(), pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter', mintaPinTutup,
+  cawangan: () => cawD(), pengguna: () => `${staf?.nama || ''}${staf?.idStaf ? ' (' + staf.idStaf + ')' : ''}`, toast, capGambar, mod: 'kaunter', mintaPinTutup, kenderaan: () => T.kenderaanSyarikat || [],
   refresh: () => { if(tab === 'Tutup Kaunter') refreshLive(); }});
 VIEWS['Tutup Kaunter'] = {
   statik(){ if(MT.st.c !== cawangan || !MT.st.data) MT.mula(); else MT.muatData(); return ''; },
