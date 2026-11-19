@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 16 Nov 2026 (diskaun berkuasa, bayar sendiri Apps Pelanggan)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 19 Nov 2026 (pegawai kewangan, unit Pejabat & Media, daftar aset)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -13,6 +13,21 @@ service cloud.firestore {
     function pemilikAkaun() {
       return request.auth != null
         && exists(/databases/$(database)/documents/akaun/mama-lion/pemilik/$(request.auth.uid));
+    }
+
+    // Pegawai kewangan syarikat (Petunjuk Pictures) — didaftar pemilik ikut emel log masuk
+    function kewanganSyarikat() {
+      return request.auth != null && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/akaun/mama-lion/kewangan/$(request.auth.token.email.lower()))
+        && get(/databases/$(database)/documents/akaun/mama-lion/kewangan/$(request.auth.token.email.lower())).data.aktif != false;
+    }
+    match /akaun/mama-lion/kewangan/{emel} {
+      allow get: if request.auth != null && request.auth.token.email != null && request.auth.token.email.lower() == emel;
+      allow read, write: if pemilikAkaun();
+    }
+    // Daftar aset syarikat (susut nilai) — pemilik & pegawai kewangan
+    match /akaun/syarikat/aset/{id} {
+      allow read, write: if pemilikAkaun() || kewanganSyarikat();
     }
 
     // Dokumen peribadi pekerja (IC, kontrak, sijil) — pemilik Akaun sahaja
@@ -205,11 +220,11 @@ service cloud.firestore {
 
     // Lion Safari V2 hantar jualan (ls-) & petty cash (lsp-) ke Akaun
     match /akaun/{cawangan}/entri/{id} {
-      allow create, update: if dalaman()
+      allow create, update: if dalaman() && cawangan in ['mama-lion', 'lion-king']
         && (id.matches('ls-.*') || id.matches('lsp-.*'))
         && request.resource.data.sumber == 'lionsafari'
         && request.resource.data.cawangan == cawangan;
-      allow delete: if dalaman()
+      allow delete: if dalaman() && cawangan in ['mama-lion', 'lion-king']
         && (id.matches('ls-.*') || id.matches('lsp-.*'));
       // Kuasa 💳 Kaunter (Apps Pekerja): jualan harian hasil bayaran
       allow get: if staffApp() && id.matches('ls-.*');
@@ -219,7 +234,9 @@ service cloud.firestore {
         && olehKuasa(cawangan, 'kaunter');
     }
     match /akaun/{cawangan}/entri/{id} {
-      allow read, write: if cawangan != 'mama-lion' && dalaman();
+      // Unit syarikat (Pejabat / HQ, Pengiklanan & Media): pemilik & pegawai kewangan sahaja
+      allow read, write: if cawangan in ['pejabat', 'media'] && (pemilikAkaun() || kewanganSyarikat());
+      allow read, write: if !(cawangan in ['pejabat', 'media']) && cawangan != 'mama-lion' && dalaman();
     }
 
     // Rekod pekerja (IC, gaji, bank) & advance/OT manual: pemilik sahaja
@@ -429,9 +446,9 @@ service cloud.firestore {
         allow get: if signedIn() && request.auth.uid == uid;
       }
       match /entri/{id} {
-        allow read: if owner() || assigned(resource.data);
-        allow create: if owner() || (assigned(request.resource.data) && validEntry(request.resource.data));
-        allow update: if owner() || (assigned(resource.data) && assigned(request.resource.data)
+        allow read: if owner() || kewanganSyarikat() || assigned(resource.data);
+        allow create: if owner() || kewanganSyarikat() || (assigned(request.resource.data) && validEntry(request.resource.data));
+        allow update: if owner() || kewanganSyarikat() || (assigned(resource.data) && assigned(request.resource.data)
           && validEntry(request.resource.data)
           && request.resource.data.jenis == resource.data.jenis
           && !request.resource.data.diff(resource.data).affectedKeys()

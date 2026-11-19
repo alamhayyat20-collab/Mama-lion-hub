@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-4">
+<meta name="app-versi" content="2026.11.19-5">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -109,6 +109,7 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 #liveAk iframe{border:0;background:#fff;border-radius:10px;width:100%;height:100%;transition:width .2s}
 .tbl-harga{border-collapse:collapse;width:100%;font-size:13px}.tbl-harga th,.tbl-harga td{border-bottom:1px solid #e5e7eb;padding:5px 6px;text-align:right;white-space:nowrap}.tbl-harga th:first-child,.tbl-harga td:first-child{text-align:left;white-space:normal;min-width:160px}.tbl-harga thead th{background:#f8fafc;position:sticky;top:0}
 .jenama{display:flex;gap:10px;align-items:center}
+#cawBar.empat{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 </style>
 </head>
 <body>
@@ -139,18 +140,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-5';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-4';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-4';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-4';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-4';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-5';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-5';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-5';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-4';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-4';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-4';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-5';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-5';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -163,7 +164,7 @@ const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)']
 const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
 const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
 const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
-const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan'];
+const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan', 'Daftar Aset'];
 
 // ---------- Utiliti ----------
 const $ = s => document.querySelector(s);
@@ -208,14 +209,20 @@ const SYARIKAT = {nama: 'PETUNJUK PICTURES SDN. BHD.', noDaftar: '202101007513 (
   modal: 62002, akhirTK: {bulan: 3, hari: 31}, piawaian: 'MPERS', logo: 'logo-petunjuk.jpg'};
 // Unit kewangan sahaja (tiada kaunter): Pejabat / HQ — kos bersama syarikat (kenderaan, petrol, pentadbiran)
 const UNIT_PEJABAT = {id:'pejabat', nama:'Pejabat / HQ', logo:'logo-pejabat.png'};
-const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan'];
-let cawangan = (() => { try{ const c = localStorage.getItem('akaun_cawangan'); return [...CAWANGAN, UNIT_PEJABAT].some(x => x.id === c) ? c : BRANCH_ID; }catch(_){ return BRANCH_ID; } })();
-const namaCawangan = () => [...CAWANGAN, UNIT_PEJABAT].find(x => x.id === cawangan)?.nama || cawangan;
+const UNIT_MEDIA = {id:'media', nama:'Pengiklanan & Media', logo:'logo-media.png'};
+const UNIT_SYARIKAT = [UNIT_PEJABAT, UNIT_MEDIA];          // unit kewangan sahaja — pemilik & pegawai kewangan
+const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan', 'Daftar Aset'];
+const TAB_SYARIKAT = ['Laporan Tahunan', 'Daftar Aset'];     // peringkat syarikat (tiada pilihan unit)
+let isKewangan = false;                                     // pegawai kewangan syarikat (akaun/mama-lion/kewangan/{emel})
+const bolehKew = () => isOwner || isKewangan;
+const tabSaya = () => isOwner ? OWNER_TABS : isKewangan ? [...TABS, 'Laporan', ...TAB_SYARIKAT] : TABS;
+let cawangan = (() => { try{ const c = localStorage.getItem('akaun_cawangan'); return [...CAWANGAN, ...UNIT_SYARIKAT].some(x => x.id === c) ? c : BRANCH_ID; }catch(_){ return BRANCH_ID; } })();
+const namaCawangan = () => [...CAWANGAN, ...UNIT_SYARIKAT].find(x => x.id === cawangan)?.nama || cawangan;
 const colFor = c => collection(store, 'akaun', c, 'entri');
 let COL = colFor(cawangan);
 const ownerRecord = uid => doc(store, 'akaun', BRANCH_ID, 'pemilik', uid);
 const entryQuery = (...filters) => query(COL, ...filters,
-  ...(isOwner ? [] : [where('assignedUid', '==', user.uid)]));
+  ...(bolehKew() ? [] : [where('assignedUid', '==', user.uid)]));
 
 // ---------- Log masuk ----------
 function renderLogin(){
@@ -245,7 +252,7 @@ async function doLogin(){
 onAuthStateChanged(auth, async u => {
   stopListeners();
   user = null;
-  isOwner = false;
+  isOwner = false; isKewangan = false;
   entri = []; pettyAll = []; hutangAll = []; editing = null;
   monthLoaded = false;
   dataError = '';
@@ -259,12 +266,14 @@ onAuthStateChanged(auth, async u => {
       await signOut(auth); return;
     }
     const owner = await getDocFromServer(ownerRecord(u.uid));
+    let kew = false;
     if(!owner.exists()){
-      const akses = await getDocFromServer(doc(store, 'akaun', BRANCH_ID, 'pengurusan', u.uid));
-      if(!akses.exists()) throw new Error('Akses Akaun belum ditetapkan untuk pengguna ini.');
+      kew = await getDocFromServer(doc(store, 'akaun', BRANCH_ID, 'kewangan', u.email.toLowerCase())).then(d => d.exists() && d.data().aktif !== false).catch(() => false);
+      const akses = kew ? null : await getDocFromServer(doc(store, 'akaun', BRANCH_ID, 'pengurusan', u.uid));
+      if(!kew && !akses.exists()) throw new Error('Akses Akaun belum ditetapkan untuk pengguna ini.');
     }
     if(auth.currentUser !== u) return;
-    isOwner = owner.exists();
+    isOwner = owner.exists(); isKewangan = !isOwner && kew;
     tab = isOwner ? 'Ringkasan' : 'Jualan';
     user = u; nama = staff.name || u.email;
     startListeners();
@@ -365,9 +374,9 @@ function renderCawangan(){
   bar.className = 'noprint' + (tab === 'Ringkasan' ? ' besar' : '');
   const bolehDua = tab === 'Tetapan Apps' && tkSeg === 'Kaunter'; if(!bolehDua) tkDua = false;
   if(bolehDua) bar.className += ' tiga';
-  const bolehPej = TAB_KEW.includes(tab) && tab !== 'Laporan Tahunan';
-  if(bolehPej) bar.className += ' tiga';
-  bar.innerHTML = (tab === 'Laporan Tahunan' ? [] : [...CAWANGAN, ...(bolehPej ? [UNIT_PEJABAT] : [])]).map(c => { const sel = c.id === cawangan && !tkDua; return `<button class="caw ${sel?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${sel?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`; }).join('')
+  const bolehPej = bolehKew() && TAB_KEW.includes(tab) && !TAB_SYARIKAT.includes(tab);
+  if(bolehPej) bar.className += ' empat';
+  bar.innerHTML = (TAB_SYARIKAT.includes(tab) ? [] : [...CAWANGAN, ...(bolehPej ? UNIT_SYARIKAT : [])]).map(c => { const sel = c.id === cawangan && !tkDua; return `<button class="caw ${sel?'sel':''}" data-caw="${c.id}"><img src="${c.logo}" alt="${esc(c.nama)}"><div><b>${esc(c.nama)}</b><span>${sel?'✓ Sedang dipapar':'Tekan untuk tukar'}</span></div></button>`; }).join('')
     + (bolehDua ? `<button class="caw dua ${tkDua?'sel':''}" data-cawdua><span class="logo2">${CAWANGAN.map(c => `<img src="${c.logo}" alt="">`).join('')}</span><div><b>${CAWANGAN.map(c => esc(c.nama)).join(' + ')}</b><span>${tkDua ? '✓ Ubah serentak' : 'Ubah harga serentak'}</span></div></button>` : '');
   bar.querySelectorAll('[data-caw]').forEach(b => b.onclick = () => { if(tkDua && b.dataset.caw === cawangan){ tkDua = false; renderShell(); return; } tkDua = false; tukarCawangan(b.dataset.caw); });
   const d = bar.querySelector('[data-cawdua]'); if(d) d.onclick = () => { tkDua = true; muatTetapanSemua(); renderShell(); };
@@ -386,12 +395,12 @@ function tukarCawangan(id){
 }
 
 function renderShell(){
-  if(cawangan === 'pejabat' && !TAB_KEW.includes(tab)){ tukarCawangan('mama-lion'); return; }
+  if(UNIT_SYARIKAT.some(u => u.id === cawangan) && (!TAB_KEW.includes(tab) || !bolehKew())){ tukarCawangan('mama-lion'); return; }
   renderCawangan();
   $('#userBox').innerHTML = `<span class="synctag">👤 ${esc(nama)}</span> <button class="small" id="btnOut">Log Keluar</button>`;
   $('#btnOut').onclick = () => { if(confirm('Log keluar?')) signOut(auth); };
   $('#nav').classList.toggle('kat', isOwner);
-  if(isOwner) $('#nav').innerHTML = navKategori(); else $('#nav').innerHTML = (isOwner ? OWNER_TABS : TABS).map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t === 'Arahan' ? '💬 Arahan<span id="badgeArahan"></span>' : t === 'Queue Kaunter' ? '🚗 Queue kaunter<span id="badgeQueue"></span>' : t}</button>`).join('')
+  if(isOwner) $('#nav').innerHTML = navKategori(); else $('#nav').innerHTML = tabSaya().map(t => `<button class="${t===tab?'active':''}" data-t="${t}">${t === 'Arahan' ? '💬 Arahan<span id="badgeArahan"></span>' : t === 'Queue Kaunter' ? '🚗 Queue kaunter<span id="badgeQueue"></span>' : t}</button>`).join('')
 ;
   $('#bulanBar').innerHTML = `<label for="pilihBulan" style="margin:0">📅 Bulan:</label><input type="month" id="pilihBulan" value="${bulan}" style="width:auto;flex:1;max-width:220px;margin:0;padding:8px">`;
   if(isOwner) pasangNavKategori(); else $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; editing = null; renderShell(); });
@@ -409,11 +418,11 @@ function renderTab(){
 }
 
 function refresh(){
-  if(!user || !$('#dataBox') || !(isOwner ? OWNER_TABS : TABS).includes(tab)) return;
+  if(!user || !$('#dataBox') || !tabSaya().includes(tab)) return;
   $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
   const ae = document.activeElement;
   if(ae && ae.dataset && ae.dataset.kekal && $('#dataBox').contains(ae)) return;   // jangan ganggu semasa menaip
-  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja'), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Daftar Aset':viewAset, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
   $('#dataBox').innerHTML = r();
   if(tab === 'Pekerja') pasangPekerja();
   if(tab === 'Pelanggan') pasangPelanggan();
@@ -423,9 +432,10 @@ function refresh(){
   if(tab === 'Laporan Harian') pasangTutupAk();
   if(tab === 'Tetapan Apps') pasangTetapanApps();
   if(tab === 'Laporan Tahunan') pasangTahunan();
+  if(tab === 'Daftar Aset') pasangAset();
   badgeArahan(); badgeQueue();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
-  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : tab === 'Daftar Aset' ? `Daftar-Aset-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
 }
 
 // ---------- Borang ----------
@@ -780,7 +790,7 @@ function viewLaporan(){
 // 📘 LAPORAN TAHUN KEWANGAN — Petunjuk Pictures Sdn. Bhd. (TK berakhir 31 Mac)
 // Gabungan unit: Mama Lion · Lion King · Pejabat / HQ. Draf pengurusan (belum diaudit, belum termasuk susut nilai / akruan / cukai).
 // ================================================================
-const UNIT_TK = () => [...CAWANGAN, UNIT_PEJABAT];
+const UNIT_TK = () => [...CAWANGAN, ...UNIT_SYARIKAT];
 let fyAkhir = (() => { const d = new Date(); return d.getMonth() + 1 > SYARIKAT.akhirTK.bulan ? d.getFullYear() + 1 : d.getFullYear(); })();
 let fyData = null, fyMuat = false, fyRalat = '';
 const julatTK = y => ({mula: `${y - 1}-04`, akhir: `${y}-03`, bulan: Array.from({length: 12}, (_, i) => { const m = (3 + i) % 12 + 1, t = m >= 4 ? y - 1 : y; return `${t}-${pad2(m)}`; })});
@@ -793,7 +803,7 @@ async function muatTahunan(){
   fyMuat = false; if(tab === 'Laporan Tahunan') refresh();
 }
 function viewTahunan(){
-  if(!isOwner) return '<div class="card muted">Laporan tahunan untuk pemilik sahaja.</div>';
+  if(!bolehKew()) return '<div class="card muted">Laporan tahunan untuk pemilik & pegawai kewangan sahaja.</div>';
   const J = julatTK(fyAkhir), pilihan = [fyAkhir + 1, fyAkhir, fyAkhir - 1, fyAkhir - 2].filter((v, i, a) => a.indexOf(v) === i);
   const kepala = `<div class="row noprint" style="margin-bottom:10px;gap:8px;flex-wrap:wrap"><label style="margin:0">📘 Tahun kewangan berakhir</label>
       <select id="fyPilih" style="width:auto;margin:0">${[...new Set([...pilihan, fyAkhir])].sort((a,b) => b - a).map(y => `<option value="${y}" ${y === fyAkhir ? 'selected' : ''}>31 Mac ${y}</option>`).join('')}</select>
@@ -801,6 +811,7 @@ function viewTahunan(){
   if(fyRalat) return kepala + `<div class="notice">⚠ ${esc(fyRalat)}</div>`;
   if(!fyData){ setTimeout(muatTahunan, 0); return kepala + '<div class="card muted">⏳ Memuatkan rekod 12 bulan semua unit…</div>'; }
   const U = UNIT_TK(), K = Object.fromEntries(U.map(u => [u.id, kira(fyData[u.id] || [])])), semua = kira(U.flatMap(u => fyData[u.id] || []));
+  if(asetList){ U.forEach(u => K[u.id].susut = sum(asetList.filter(a => (a.unit || 'pejabat') === u.id), a => susutAset(a, fyAkhir).caj)); semua.susut = sum(asetList, a => susutAset(a, fyAkhir).caj); } else muatAset();
   const katB = [...new Set(U.flatMap(u => K[u.id].belanja.map(e => e.kategori || 'Lain-lain')))].sort();
   const katP = [...new Set(U.flatMap(u => K[u.id].beli.map(e => e.kategori || 'Lain-lain')))].sort();
   const sel = (u, f) => `<td class="r">${RM(f(K[u.id]))}</td>`, jum = f => `<td class="r"><b>${RM(f(semua))}</b></td>`;
@@ -828,9 +839,10 @@ function viewTahunan(){
       <tr class="sub"><td>TOLAK: BELANJA OPERASI</td>${U.map(() => '<td></td>').join('')}<td></td></tr>
       ${katB.map(c => baris(`<span style="padding-left:14px">${esc(c)}</span>`, k => kat(k.belanja, c))).join('')}
       ${baris('Jumlah Belanja Operasi', k => k.jumBelanja, 'tot')}
-      ${baris('UNTUNG / (RUGI) BERSIH SEBELUM CUKAI', k => k.bersih, 'tot')}
+      ${baris('<span style="padding-left:14px">Susut nilai aset (Daftar Aset)</span>', k => k.susut || 0)}
+      ${baris('UNTUNG / (RUGI) BERSIH SEBELUM CUKAI', k => k.bersih - (k.susut || 0), 'tot')}
     </table></div>
-    <p class="muted" style="font-size:12px">Draf pengurusan — <b>bukan penyata kewangan teraudit</b>. Belum termasuk susut nilai aset, akruan / prabayar, stok akhir & cukai. Penyata kewangan rasmi disediakan ikut ${esc(SYARIKAT.piawaian)} & Akta Syarikat 2016 oleh juruaudit / akauntan.</p></div>
+    <p class="muted" style="font-size:12px">Draf pengurusan — <b>bukan penyata kewangan teraudit</b>. Susut nilai diambil dari Daftar Aset (aset tanpa kos belum dikira). Belum termasuk akruan / prabayar, stok akhir & cukai. Penyata kewangan rasmi disediakan ikut ${esc(SYARIKAT.piawaian)} & Akta Syarikat 2016 oleh juruaudit / akauntan.</p></div>
   <div class="card"><h3 style="margin-top:0">Ringkasan bulanan</h3><div class="scroll"><table>
     <tr><th>Bulan</th>${U.map(u => `<th class="r">Jualan ${esc(u.nama)}</th>`).join('')}<th class="r">Jumlah jualan</th><th class="r">Kos & belanja</th><th class="r">Bersih</th></tr>${bulanan}
     <tr class="tot"><td>JUMLAH</td>${U.map(u => `<td class="r">${RM(K[u.id].jumJualan)}</td>`).join('')}<td class="r">${RM(semua.jumJualan)}</td><td class="r">${RM(semua.jumBeli + semua.jumBelanja)}</td><td class="r ${semua.bersih < 0 ? 'neg' : 'pos'}">${RM(semua.bersih)}</td></tr></table></div></div>
@@ -838,9 +850,124 @@ function viewTahunan(){
     <tr><td>Nama</td><td>${esc(SYARIKAT.nama)}</td></tr><tr><td>No. pendaftaran</td><td>${esc(SYARIKAT.noDaftar)}</td></tr><tr><td>Diperbadankan</td><td>${esc(SYARIKAT.diperbadankan)}</td></tr>
     <tr><td>Jenis</td><td>${esc(SYARIKAT.jenis)}</td></tr><tr><td>Alamat berdaftar</td><td>${esc(SYARIKAT.alamatDaftar)}</td></tr><tr><td>Alamat perniagaan</td><td>${esc(SYARIKAT.alamatNiaga)}</td></tr>
     <tr><td>Pengarah</td><td>${esc(SYARIKAT.pengarah)}</td></tr><tr><td>Setiausaha syarikat</td><td>${esc(SYARIKAT.setiausaha)}</td></tr><tr><td>Juruaudit</td><td>${esc(SYARIKAT.juruaudit)}</td></tr>
-    <tr><td>Modal saham diterbitkan</td><td>${RM(SYARIKAT.modal)}</td></tr><tr><td>Tahun kewangan berakhir</td><td>31 Mac setiap tahun</td></tr><tr><td>Piawaian perakaunan</td><td>${esc(SYARIKAT.piawaian)} (Malaysian Private Entities Reporting Standard)</td></tr></table></details>`;
+    <tr><td>Modal saham diterbitkan</td><td>${RM(SYARIKAT.modal)}</td></tr><tr><td>Tahun kewangan berakhir</td><td>31 Mac setiap tahun</td></tr><tr><td>Piawaian perakaunan</td><td>${esc(SYARIKAT.piawaian)} (Malaysian Private Entities Reporting Standard)</td></tr></table></details>
+  ${isOwner ? kadAksesKew() : ''}`;
 }
+// 👥 Pegawai kewangan: akses semua unit + laporan syarikat (didaftar oleh pemilik, ikut emel log masuk)
+let kewList = null;
+async function muatKew(){ try{ const s = await getDocs(collection(store, 'akaun', BRANCH_ID, 'kewangan')); kewList = s.docs.map(d => ({id: d.id, ...d.data()})); }catch(e){ kewList = []; toast('⚠ ' + (e.code || e.message)); } if(TAB_SYARIKAT.includes(tab)) refresh(); }
+function kadAksesKew(){
+  if(!kewList){ setTimeout(muatKew, 0); return ''; }
+  return `<details class="card noprint"><summary style="font-weight:700;cursor:pointer">👥 Akses laporan syarikat (${kewList.filter(k => k.aktif !== false).length} pegawai kewangan)</summary>
+    <p class="muted" style="margin-top:6px">Yang boleh lihat laporan gabungan: <b>pemilik (Dato' & Datin)</b> dan pegawai kewangan di bawah. Pegawai kewangan boleh rekod & lihat semua unit (Mama Lion, Lion King, Pejabat, Pengiklanan & Media), Laporan Tahunan dan Daftar Aset — tetapi <b>tidak</b> boleh lihat data peribadi pekerja (IC, gaji) atau Tetapan.</p>
+    ${kewList.map(k => `<div class="row" style="justify-content:space-between;border-top:1px solid #eee;padding:6px 0"><span>${k.aktif === false ? '⛔' : '✅'} <b>${esc(k.nama || '')}</b> · ${esc(k.id)}</span><button class="small" data-kewtog="${esc(k.id)}">${k.aktif === false ? 'Aktifkan' : 'Tarik balik akses'}</button></div>`).join('') || '<p class="muted">Belum ada pegawai kewangan.</p>'}
+    <label>Nama pegawai kewangan</label><input id="kewNama" placeholder="cth: Siti">
+    <label>Emel log masuk (mesti akaun Management di Lion Safari)</label><input id="kewEmel" type="email" placeholder="nama@contoh.com">
+    <button class="primary" id="kewTambah">➕ Beri akses</button></details>`;
+}
+function pasangAksesKew(){
+  const t = $('#kewTambah'); if(t) t.onclick = async () => {
+    const em = ($('#kewEmel').value || '').trim().toLowerCase(), nm = ($('#kewNama').value || '').trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('Masukkan emel yang betul');
+    if(!confirm(`Beri ${nm || em} akses penuh kewangan syarikat (semua unit & laporan tahunan)?`)) return;
+    try{ await setDoc(doc(store, 'akaun', BRANCH_ID, 'kewangan', em), {nama: nm, aktif: true, oleh: nama, dicipta: serverTimestamp()}); toast('✅ Akses diberi'); muatKew(); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  document.querySelectorAll('[data-kewtog]').forEach(b => b.onclick = async () => {
+    const k = kewList.find(x => x.id === b.dataset.kewtog); if(!k) return;
+    if(k.aktif !== false && !confirm(`Tarik balik akses ${k.nama || k.id}?`)) return;
+    try{ await updateDoc(doc(store, 'akaun', BRANCH_ID, 'kewangan', k.id), {aktif: k.aktif === false, dikemaskini: serverTimestamp(), oleh: nama}); muatKew(); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+}
+
+// ================================================================
+// 🚗 DAFTAR ASET & SUSUT NILAI (hartanah, loji & peralatan — MPERS Seksyen 17)
+// Kaedah garis lurus, dikira bulanan dari bulan pembelian. Disimpan di akaun/syarikat/aset.
+// ================================================================
+const KAT_ASET = [['Kenderaan', 20], ['Mesin & peralatan cucian', 20], ['Perabot & kelengkapan', 10], ['Komputer & elektronik', 33.33], ['Pengubahsuaian premis', 10], ['Peralatan media & penggambaran', 20], ['Lain-lain', 10]];
+const COL_ASET = () => collection(store, 'akaun', 'syarikat', 'aset');
+let asetList = null, asetMuat = false, asetEdit = null;
+async function muatAset(){
+  if(asetMuat) return; asetMuat = true;
+  try{ const s = await getDocs(COL_ASET()); asetList = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (a.tarikhBeli || '').localeCompare(b.tarikhBeli || '')); }
+  catch(e){ asetList = []; toast('⚠ Daftar aset: ' + (e.code || e.message)); }
+  asetMuat = false; if(TAB_SYARIKAT.includes(tab)) refresh();
+}
+// Bulan penuh dari bulan beli hingga tarikh d (termasuk bulan beli)
+const bulanDari = (tb, y, m) => { const [a, b] = tb.split('-').map(Number); return (y - a) * 12 + (m - b) + 1; };
+function susutAset(a, fy){
+  const kos = +a.kos || 0, sisa = +a.nilaiSisa || 0, kadar = +a.kadar || 0;
+  if(!kos || !a.tarikhBeli || !kadar) return {caj: 0, terkumpul: 0, nbv: kos, kosAkhir: kos, ada: false};
+  const bulanan = (kos - sisa) * kadar / 100 / 12, had = kos - sisa;
+  const sehingga = (y, m) => { if(a.tarikhLupus && a.tarikhLupus.slice(0, 7) < `${y}-${pad2(m)}`){ const [ly, lm] = a.tarikhLupus.split('-').map(Number); y = ly; m = lm; }
+    return Math.min(had, Math.max(0, bulanDari(a.tarikhBeli, y, m)) * bulanan); };
+  const akhir = sehingga(fy, 3), awal = sehingga(fy - 1, 3);
+  const dilupus = a.tarikhLupus && a.tarikhLupus <= `${fy}-03-31`;
+  if(a.tarikhBeli > `${fy}-03-31`) return {caj: 0, terkumpul: 0, nbv: 0, kosAkhir: 0, awal: 0, ada: true, belum: true};
+  return {caj: (a.tarikhLupus && a.tarikhLupus <= `${fy - 1}-03-31`) ? 0 : akhir - awal, awal, terkumpul: dilupus ? 0 : akhir, nbv: dilupus ? 0 : kos - akhir, kosAkhir: dilupus ? 0 : kos, ada: true, dilupus};
+}
+const CADANGAN_ASET = [
+  {nama: 'Toyota Fortuner', kategori: 'Kenderaan', tarikhBeli: '2024-01-01', kaedah: 'Belum dipastikan', catatan: 'Dibeli 2024 — sahkan tarikh, harga & cara bayaran (tunai / sewa beli)'},
+  {nama: 'Isuzu D-Max (terpakai)', kategori: 'Kenderaan', tarikhBeli: '', kaedah: 'Tunai', catatan: 'Beli tunai, kenderaan terpakai — sahkan tarikh & harga'},
+  {nama: 'Mercedes-Benz (recond)', kategori: 'Kenderaan', tarikhBeli: '2022-01-01', kaedah: 'Belum dipastikan', catatan: 'Recond, dibeli 2022 — sahkan tarikh, harga & cara bayaran'}];
+function viewAset(){
+  if(!bolehKew()) return '<div class="card muted">Daftar aset untuk pemilik & pegawai kewangan sahaja.</div>';
+  if(!asetList){ setTimeout(muatAset, 0); return '<div class="card muted">⏳ Memuatkan daftar aset…</div>'; }
+  const U = UNIT_TK(), un = id => U.find(u => u.id === id)?.nama || id;
+  const R_ = asetList.map(a => ({a, s: susutAset(a, fyAkhir)}));
+  const perlu = asetList.filter(a => !(+a.kos) || !a.tarikhBeli).length;
+  const e = asetEdit || {}, katPil = KAT_ASET.find(k => k[0] === e.kategori) || KAT_ASET[0];
+  const borang = `<div class="card noprint"><div class="section-title"><h3>${asetEdit?.id ? '✏️ Edit aset' : '➕ Tambah aset'}</h3>${asetEdit ? '<button class="small" id="asBatal">Batal</button>' : ''}</div>
+    <div class="grid2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px">
+      <div><label>Nama aset</label><input id="asNama" value="${esc(e.nama || '')}" placeholder="cth: Toyota Fortuner 2.8 VRZ"></div>
+      <div><label>No. pendaftaran / siri</label><input id="asNo" value="${esc(e.noSiri || '')}" placeholder="cth: CDE 1234"></div>
+      <div><label>Kategori</label><select id="asKat">${KAT_ASET.map(([k, r]) => `<option value="${k}" data-kadar="${r}" ${k === katPil[0] ? 'selected' : ''}>${k} (${r}%)</option>`).join('')}</select></div>
+      <div><label>Unit pengguna</label><select id="asUnit">${U.map(u => `<option value="${u.id}" ${(e.unit || 'pejabat') === u.id ? 'selected' : ''}>${esc(u.nama)}</option>`).join('')}</select></div>
+      <div><label>Tarikh beli</label><input id="asTarikh" type="date" value="${esc(e.tarikhBeli || '')}"></div>
+      <div><label>Kos (RM) — harga beli + kos pendaftaran</label><input id="asKos" type="number" inputmode="decimal" step="0.01" value="${e.kos ?? ''}"></div>
+      <div><label>Cara bayaran</label><select id="asKaedah">${['Tunai', 'Sewa beli (hire purchase)', 'Pinjaman bank', 'Dibayar pengarah', 'Belum dipastikan'].map(k => `<option ${e.kaedah === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
+      <div><label>Kadar susut nilai setahun (%)</label><input id="asKadar" type="number" step="0.01" value="${e.kadar ?? katPil[1]}"></div>
+      <div><label>Nilai sisa (RM)</label><input id="asSisa" type="number" step="0.01" value="${e.nilaiSisa ?? 0}"></div>
+      <div><label>Tarikh lupus / jual (jika ada)</label><input id="asLupus" type="date" value="${esc(e.tarikhLupus || '')}"></div>
+    </div><label>Catatan</label><input id="asCatatan" value="${esc(e.catatan || '')}">
+    <button class="primary" id="asSimpan" style="margin-top:8px">💾 Simpan aset</button></div>`;
+  const cadang = asetList.length ? '' : `<div class="notice noprint">Daftar aset masih kosong. <button class="small" id="asCadang">➕ Masukkan 3 kenderaan (Fortuner, D-Max, Mercedes) sebagai draf</button></div>`;
+  const pilihFy = `<div class="row noprint" style="gap:8px;margin-bottom:8px"><label style="margin:0">Pada akhir TK</label><select id="asFy" style="width:auto;margin:0">${[fyAkhir + 1, fyAkhir, fyAkhir - 1, fyAkhir - 2, fyAkhir - 3].map(y => `<option value="${y}" ${y === fyAkhir ? 'selected' : ''}>31 Mac ${y}</option>`).join('')}</select><button class="primary" id="btnPrint">🖨 Cetak</button></div>`;
+  return borang + cadang + `<div class="card">${pilihFy}
+    <h3 style="margin:0">Daftar Hartanah, Loji & Peralatan</h3><p class="muted" style="margin-top:4px">${esc(SYARIKAT.nama)} · pada 31 Mac ${fyAkhir} · garis lurus</p>
+    ${perlu ? `<div class="notice">⚠ ${perlu} aset belum lengkap (tarikh / kos) — susut nilai belum dikira.</div>` : ''}
+    <div class="scroll"><table><tr><th>Aset</th><th>Unit</th><th>Tarikh beli</th><th class="r">Kos</th><th class="r">%</th><th class="r">Susut terkumpul awal</th><th class="r">Caj tahun ini</th><th class="r">Susut terkumpul akhir</th><th class="r">Nilai buku bersih</th><th class="noprint"></th></tr>
+    ${R_.map(({a, s}) => `<tr><td><b>${esc(a.nama)}</b>${a.noSiri ? ` · ${esc(a.noSiri)}` : ''}<br><span class="muted">${esc(a.kategori || '')} · ${esc(a.kaedah || '')}${a.catatan ? ' · ' + esc(a.catatan) : ''}${s.dilupus ? ' · <b>dilupus</b>' : ''}${s.belum ? ' · dibeli selepas TK ini' : ''}</span></td>
+      <td>${esc(un(a.unit || 'pejabat'))}</td><td>${esc(a.tarikhBeli || '—')}</td><td class="r">${+a.kos ? RM(a.kos) : '<span class="neg">belum</span>'}</td><td class="r">${a.kadar ?? ''}</td>
+      <td class="r">${RM(s.awal || 0)}</td><td class="r">${RM(s.caj)}</td><td class="r">${RM(s.terkumpul)}</td><td class="r"><b>${RM(s.nbv)}</b></td>
+      <td class="noprint"><button class="small" data-asedit="${a.id}">✏️</button> <button class="small" data-aspadam="${a.id}">🗑</button></td></tr>`).join('') || '<tr><td colspan="10" class="muted">Tiada aset.</td></tr>'}
+    <tr class="tot"><td colspan="3">JUMLAH</td><td class="r">${RM(sum(R_, x => x.s.kosAkhir))}</td><td></td><td class="r">${RM(sum(R_, x => x.s.awal || 0))}</td><td class="r">${RM(sum(R_, x => x.s.caj))}</td><td class="r">${RM(sum(R_, x => x.s.terkumpul))}</td><td class="r">${RM(sum(R_, x => x.s.nbv))}</td><td class="noprint"></td></tr></table></div>
+    <p class="muted" style="font-size:12px">Kadar lazim: kenderaan & mesin 20%, komputer 33⅓%, perabot & pengubahsuaian 10% — sahkan dengan juruaudit. Kenderaan sewa beli: rekod kos penuh di sini; baki hutang sewa beli akan masuk lejar (Fasa B). Elaun modal cukai (LHDN) dikira berasingan oleh ejen cukai.</p></div>`;
+}
+function pasangAset(){
+  const k = $('#asKat'); if(k) k.onchange = () => { $('#asKadar').value = k.selectedOptions[0].dataset.kadar; };
+  if($('#asFy')) $('#asFy').onchange = e => { fyAkhir = +e.target.value; fyData = null; refresh(); };
+  if($('#asBatal')) $('#asBatal').onclick = () => { asetEdit = null; refresh(); };
+  if($('#asCadang')) $('#asCadang').onclick = async () => {
+    try{ const b = writeBatch(store); CADANGAN_ASET.forEach(a => b.set(doc(COL_ASET()), {...a, unit: 'pejabat', kos: 0, kadar: 20, nilaiSisa: 0, draf: true, oleh: nama, dicipta: serverTimestamp()})); await b.commit(); toast('✅ 3 kenderaan dimasukkan sebagai draf — lengkapkan tarikh & kos'); asetList = null; refresh(); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  if($('#asSimpan')) $('#asSimpan').onclick = async () => {
+    const v = id => ($(id).value || '').trim(), n = id => Number($(id).value) || 0;
+    const d = {nama: v('#asNama'), noSiri: v('#asNo'), kategori: v('#asKat'), unit: v('#asUnit'), tarikhBeli: v('#asTarikh'), kos: n('#asKos'), kaedah: v('#asKaedah'), kadar: n('#asKadar'), nilaiSisa: n('#asSisa'), tarikhLupus: v('#asLupus'), catatan: v('#asCatatan'), draf: !(n('#asKos') && v('#asTarikh')), oleh: nama, dikemaskini: serverTimestamp()};
+    if(!d.nama) return toast('Masukkan nama aset');
+    if(d.nilaiSisa > d.kos && d.kos) return toast('Nilai sisa melebihi kos');
+    try{ if(asetEdit?.id) await updateDoc(doc(COL_ASET(), asetEdit.id), d); else await addDoc(COL_ASET(), {...d, dicipta: serverTimestamp()}); toast('✅ Aset disimpan'); asetEdit = null; asetList = null; refresh(); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  document.querySelectorAll('[data-asedit]').forEach(b => b.onclick = () => { asetEdit = asetList.find(a => a.id === b.dataset.asedit); refresh(); scrollTo(0, 0); });
+  document.querySelectorAll('[data-aspadam]').forEach(b => b.onclick = async () => {
+    const a = asetList.find(x => x.id === b.dataset.aspadam); if(!a || !confirm(`Padam aset "${a.nama}" dari daftar?\n(Jika aset dijual, isi "Tarikh lupus" sahaja.)`)) return;
+    try{ await deleteDoc(doc(COL_ASET(), a.id)); asetList = null; refresh(); }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+}
+
 function pasangTahunan(){
+  pasangAksesKew();
   if($('#fyPilih')) $('#fyPilih').onchange = e => { fyAkhir = +e.target.value; fyData = null; refresh(); };
   if($('#fySegar')) $('#fySegar').onclick = () => { fyData = null; refresh(); };
   if($('#fyCsv')) $('#fyCsv').onclick = () => {
@@ -1568,7 +1695,7 @@ function csvGaji(){
 // ================================================================
 const KATEGORI = [
   {id:'kew', nama:'💰 Kewangan & Akaun', pendek:'💰 Kewangan', w:'biru', item:[
-    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Import', i:'⬆️'}]},
+    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Daftar Aset', i:'🚗', l:'Daftar aset & susut nilai'}, {t:'Import', i:'⬆️'}]},
   {id:'pek', nama:'👷 Pekerja', pendek:'👷 Pekerja', w:'jingga', item:[
     {t:'Pekerja', pk:'Senarai', i:'👥', l:'Senarai & urus'}, {t:'Arahan', i:'💬', l:'Arahan & tugasan', b:'badgeArahan'}, {t:'Pekerja', pk:'Gaji Bulanan', i:'💰', l:'Gaji'},
     {t:'Pekerja', pk:'Kehadiran', i:'🕘', l:'Kehadiran'}, {t:'Pekerja', pk:'Roster', i:'📅', l:'Roster'}, {t:'Pekerja', pk:'Permohonan', i:'📝', l:'Permohonan'},
