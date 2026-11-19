@@ -1,5 +1,5 @@
 rules_version = '2';
-// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 19 Nov 2026 (pegawai kewangan, unit Pejabat & Media, daftar aset)
+// Dipublish automatik oleh GitHub Actions (.github/workflows/deploy-rules.yml) - dikemas kini 20 Nov 2026 (pendahuluan perjalanan, pegawai kewangan, unit Pejabat & Media, daftar aset)
 service cloud.firestore {
   match /databases/{database}/documents {
     // Akaun Firebase khas telefon pekerja (Apps Pekerja) - akses terhad
@@ -27,6 +27,15 @@ service cloud.firestore {
     }
     // Daftar aset syarikat (susut nilai) — pemilik & pegawai kewangan
     match /akaun/syarikat/aset/{id} {
+      allow read, write: if pemilikAkaun() || kewanganSyarikat();
+    }
+    // 🧳 Pendahuluan perjalanan / urusan luar (aset semasa ikut penerima) — pemilik & pegawai kewangan.
+    // Apps Pekerja hanya baca pendahuluan pekerja (bukan pengarah); permohonan & tuntutan dihantar melalui kakitangan/{c}/permohonan.
+    match /akaun/syarikat/pendahuluan/{id} {
+      allow read, write: if pemilikAkaun() || kewanganSyarikat();
+      allow read: if staffApp() && resource.data.penerimaJenis == 'pekerja';
+    }
+    match /akaun/syarikat/pj_resit/{id} {
       allow read, write: if pemilikAkaun() || kewanganSyarikat();
     }
     // Memo perakaunan & audit (senarai semak dokumen, nota)

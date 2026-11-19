@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.19-8';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.20-1';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -82,6 +82,25 @@ export const JENIS_MOHON = {
   cuti:    {label:'Cuti', ikon:'🌴', ket:'Mohon cuti (tarikh mula hingga tamat)'},
   tukar:   {label:'Tukar syif', ikon:'🔁', ket:'Tukar syif dengan rakan sekerja yang sudah setuju'}
 };
+// 🧳 Pendahuluan perjalanan / urusan luar — rekod di akaun/syarikat/pendahuluan/{id} (aset semasa, BUKAN gaji).
+// Pekerja hantar permohonan jenis pjMohon (minta pendahuluan) & pjTuntut (tuntutan + resit) — diluluskan Dato' / Datin di Apps Akaun.
+export const KAT_PJ = 'Perjalanan & Urusan Luar';
+export const SUB_PJ = ['Penginapan', 'Petrol & Tol', 'Makan & Minum'];
+export const UNIT_PJ = [{id:'mama-lion', nama:'Mama Lion'}, {id:'lion-king', nama:'Lion King'}, {id:'pejabat', nama:'Pejabat / HQ'}, {id:'media', nama:'Pengiklanan & Media'}];
+export const JENIS_PJ = {pjMohon: {label:'Pendahuluan perjalanan', ikon:'🧳'}, pjTuntut: {label:'Tuntutan perjalanan', ikon:'🧾'}};
+export const STATUS_PJ = {terbuka:'🟢 Terbuka', tuntut:'🟡 Menunggu tuntutan', selesai:'✅ Selesai'};
+const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
+// Baki = diberi − tuntutan diluluskan − lebihan dipulangkan + bayaran tambahan syarikat
+export function kiraPJ(p){
+  const t = p?.tuntutan || [], g = p?.selesai || [];
+  const jum = l => r2(l.reduce((s, x) => s + (Number(x.amaun) || 0), 0));
+  const lulus = t.filter(x => x.status === 'lulus'), tunggu = t.filter(x => x.status === 'menunggu');
+  const diberi = r2(p?.amaun), dituntut = jum(lulus), pulang = jum(g.filter(x => x.arah === 'pulang')), bayar = jum(g.filter(x => x.arah === 'bayar'));
+  const baki = r2(diberi - dituntut - pulang + bayar);
+  const status = p?.ditutup ? 'selesai' : (t.length || g.length) ? 'tuntut' : 'terbuka';
+  const umur = p?.tarikh ? Math.max(0, Math.floor((Date.now() - new Date(p.tarikh + 'T00:00:00').getTime()) / 864e5)) : 0;
+  return {diberi, dituntut, menunggu: jum(tunggu), bilTunggu: tunggu.length, pulang, bayar, baki, status, umur, lewat: status !== 'selesai' && umur > 30};
+}
 // Permohonan yang tidak melibatkan wang — boleh diluluskan oleh pengelola (kuasa ✅ / 📅)
 export const MOHON_BUKAN_WANG = ['ot', 'cuti', 'tukar'];
 // Kuasa pengelola yang ditanda oleh pemilik di Akaun → Pekerja → Urus  (lionsafari/{c}/staf/{id}.kuasa)
@@ -255,14 +274,16 @@ export function modulPengurusan(ctx){
   }
 
   function kadMohon(m, bolehLulus){
-    const J = JENIS_MOHON[m.jenis] || {label:m.jenis, ikon:''};
+    const J = JENIS_MOHON[m.jenis] || JENIS_PJ[m.jenis] || {label:m.jenis, ikon:''};
+    const pj = !!JENIS_PJ[m.jenis];
     const nilai = m.jenis === 'ot' ? `${m.jamLulus ?? m.jam} jam${m.jamLulus != null && m.jamLulus != m.jam ? ` (mohon ${m.jam})` : ''}`
       : m.jenis === 'cuti' ? `${fTarikhPendek(m.tarikh)}${m.hingga && m.hingga !== m.tarikh ? ' – ' + fTarikhPendek(m.hingga) : ''}`
       : m.jenis === 'tukar' ? `dengan ${esc(m.denganNama || namaStaf(m.denganId))}`
       : `${RM(m.amaunLulus ?? m.amaun)}${m.amaunLulus != null && m.amaunLulus != m.amaun ? ` (mohon ${RM(m.amaun)})` : ''}`;
-    bolehLulus = bolehLulus && (ctx.bolehLulus ? ctx.bolehLulus(m) : true);
+    bolehLulus = bolehLulus && !pj && (ctx.bolehLulus ? ctx.bolehLulus(m) : true);
     return `<div class="km-row"><div class="km-nm"><b>${J.ikon} ${J.label} — ${esc(namaStaf(m.stafId))}</b>
-      <small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' · ' : ''}${esc(m.sebab||'')}${m.kategori ? ' · ' + esc(m.kategori) : ''}</small>
+      <small>${m.tarikh ? fTarikhPendek(m.tarikh) + ' · ' : ''}${esc(m.sebab||'')}${m.kategori ? ' · ' + esc(m.kategori) : ''}${m.sub ? ' · ' + esc(m.sub) : ''}</small>
+      ${pj && m.status === 'menunggu' ? '<small><b>Diluluskan di Apps Akaun → 🧳 Pendahuluan perjalanan</b></small>' : ''}
       <small>Dihantar ${new Date(masaMs(m)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${m.diprosesOleh ? ` · ${m.status==='lulus'?'Diluluskan':'Ditolak'} oleh ${esc(m.diprosesOleh)}` : ''}${m.catatanLulus ? ' · ' + esc(m.catatanLulus) : ''}</small>
       ${m.resit ? `<img class="km-resit" src="${m.resit}" alt="resit">` : ''}</div>
       <div class="km-aksi"><b>${nilai}</b><span class="km-tag">${STATUS_MOHON[m.status] || m.status}</span>
@@ -348,6 +369,7 @@ export function modulPengurusan(ctx){
   // ---------------- Tindakan ----------------
   async function proses(id, lulus){
     const m = st.menunggu.find(x => x.id === id); if(!m) return;
+    if(JENIS_PJ[m.jenis]) return ctx.toast('Lulus di Akaun → 🧳 Pendahuluan perjalanan');
     if(ctx.bolehLulus && !ctx.bolehLulus(m)) return ctx.toast('Anda tiada kuasa meluluskan permohonan ini');
     const d = {status: lulus ? 'lulus' : 'tolak', diprosesOleh: ctx.pengguna(), diproses: fs.serverTimestamp(), ...(ctx.tanda ? ctx.tanda() : {})};
     if(lulus && (m.jenis === 'cuti' || m.jenis === 'tukar')){

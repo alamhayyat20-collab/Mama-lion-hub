@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-8">
+<meta name="app-versi" content="2026.11.20-1">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -142,31 +142,31 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-8';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.20-1';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-8';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-8';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-8';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-8';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-8';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-8';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.20-1';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.20-1';
+import { pasangSync } from '../sync-lib.js?v=2026.11.20-1';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.20-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.20-1';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.20-1';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-8';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-8';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-8';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.20-1';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.20-1';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.20-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 // ---------- Senarai kategori (boleh ubah di sini) ----------
 const KAT_PEMBELIAN = ['Sabun & Kimia','Wax & Polish','Peralatan & Mesin','Tuala & Span','Barang Jualan (Minuman/Snek)','Alat Ganti','Lain-lain'];
-const KAT_BELANJA   = ['Gaji & Upah','Komisen Staff','Sewa Premis','Elektrik','Air','Internet & Telefon','Penyelenggaraan','Pemasaran & Iklan','Pengangkutan & Minyak','Makan & Minum Staff','Lesen & Permit','Yuran Bank / Caj Online','Lain-lain'];
+const KAT_BELANJA   = ['Gaji & Upah','Komisen Staff','Sewa Premis','Elektrik','Air','Internet & Telefon','Penyelenggaraan','Pemasaran & Iklan','Pengangkutan & Minyak','Perjalanan & Urusan Luar','Makan & Minum Staff','Lesen & Permit','Yuran Bank / Caj Online','Lain-lain'];
 const KAT_PETTY     = ['Makan & Minum Staff','Pengangkutan & Minyak','Alat Tulis','Barang Kecil / Runcit','Penyelenggaraan Kecil','Lain-lain'];
 const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)'];
 const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
 const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
 const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
-const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];
+const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan', 'Pendahuluan Perjalanan', 'Daftar Aset', 'Memo Akaun'];
 
 // ---------- Utiliti ----------
 const $ = s => document.querySelector(s);
@@ -213,8 +213,8 @@ const SYARIKAT = {nama: 'PETUNJUK PICTURES SDN. BHD.', noDaftar: '202101007513 (
 const UNIT_PEJABAT = {id:'pejabat', nama:'Pejabat / HQ', logo:'logo-pejabat.png'};
 const UNIT_MEDIA = {id:'media', nama:'Pengiklanan & Media', logo:'logo-media.png'};
 const UNIT_SYARIKAT = [UNIT_PEJABAT, UNIT_MEDIA];          // unit kewangan sahaja — pemilik & pegawai kewangan
-const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];
-const TAB_SYARIKAT = ['Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];     // peringkat syarikat (tiada pilihan unit)
+const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan', 'Pendahuluan Perjalanan', 'Daftar Aset', 'Memo Akaun'];
+const TAB_SYARIKAT = ['Laporan Tahunan', 'Pendahuluan Perjalanan', 'Daftar Aset', 'Memo Akaun'];     // peringkat syarikat (tiada pilihan unit)
 let isKewangan = false;                                     // pegawai kewangan syarikat (akaun/mama-lion/kewangan/{emel})
 const bolehKew = () => isOwner || isKewangan;
 const tabSaya = () => isOwner ? OWNER_TABS : isKewangan ? [...TABS, 'Laporan', ...TAB_SYARIKAT] : TABS;
@@ -298,6 +298,7 @@ function onErr(e){
 function startListeners(){
   subscribeBulan();
   if(isOwner) mulaHR();
+  mulaPJ();
   unsubPetty = onSnapshot(entryQuery(where('guna_petty','==',true)), s => { pettyAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
   unsubHutang = onSnapshot(entryQuery(where('hutang','==',true)), s => { hutangAll = s.docs.map(d => ({id:d.id, ...d.data()})); refresh(); }, onErr);
 }
@@ -319,7 +320,7 @@ function subscribeBulan(){
     pindahMasuk[c.id] = s.docs.map(d => jadiBebanPejabat({id: d.id, ...d.data()}, c.id)); gabung(); refresh(); }, e => console.warn('pindahan', e))));
   if(isOwner) langganHRBulan();
 }
-function stopListeners(){ unsubPindah.forEach(f => f()); unsubPindah = []; modulPK.henti(); if(unsubOrderBulan){ unsubOrderBulan(); unsubOrderBulan = null; } [unsubBulan,unsubPetty,unsubHutang,unsubHRBulan,...unsubHR].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=unsubHRBulan=null; unsubHR=[]; }
+function stopListeners(){ hentiPJ(); unsubPindah.forEach(f => f()); unsubPindah = []; modulPK.henti(); if(unsubOrderBulan){ unsubOrderBulan(); unsubOrderBulan = null; } [unsubBulan,unsubPetty,unsubHutang,unsubHRBulan,...unsubHR].forEach(f => f && f()); unsubBulan=unsubPetty=unsubHutang=unsubHRBulan=null; unsubHR=[]; }
 
 async function simpan(data){
   data.bulan = data.tarikh.slice(0,7);
@@ -454,7 +455,7 @@ function refresh(){
   $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
   const ae = document.activeElement;
   if(ae && ae.dataset && ae.dataset.kekal && $('#dataBox').contains(ae)) return;   // jangan ganggu semasa menaip
-  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja') + senaraiPindahan(), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Daftar Aset':viewAset, 'Memo Akaun':viewMemo, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja') + senaraiPindahan(), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Daftar Aset':viewAset, 'Memo Akaun':viewMemo, 'Pendahuluan Perjalanan':viewPJ, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
   $('#dataBox').innerHTML = r();
   if(tab === 'Pekerja') pasangPekerja();
   if(tab === 'Pelanggan') pasangPelanggan();
@@ -466,9 +467,10 @@ function refresh(){
   if(tab === 'Laporan Tahunan') pasangTahunan();
   if(tab === 'Daftar Aset') pasangAset();
   if(tab === 'Memo Akaun') pasangMemo();
-  badgeArahan(); badgeQueue();
+  if(tab === TAB_PJ) pasangPJ();
+  badgeArahan(); badgeQueue(); badgePJ();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
-  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Memo Akaun' ? 'Memo-Perakaunan-Petunjuk-Pictures' : tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : tab === 'Daftar Aset' ? `Daftar-Aset-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Memo Akaun' ? 'Memo-Perakaunan-Petunjuk-Pictures' : tab === TAB_PJ ? `Pendahuluan-Perjalanan-Petunjuk-Pictures-${today()}` : tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : tab === 'Daftar Aset' ? `Daftar-Aset-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
 }
 
 // ---------- Borang ----------
@@ -1024,16 +1026,18 @@ const kenderaanDari = e => e.kenderaan || (e.perkara?.startsWith(PREFIX_MINYAK_I
 const normPengambil = t => /dato/i.test(t) ? "Dato'" : /datin|madam/i.test(t) ? 'Datin / Madam' : /office/i.test(t) ? 'Office' : t;
 function pecahMinyak(e){ return e.butiran?.length ? e.butiran.map(b => ({kenderaan: b.kenderaan, pengambil: b.pengambil, amaun: +b.amaun || 0, bulan: e.bulan, sumber: e.dariUnit})) : [{kenderaan: kenderaanDari(e), pengambil: e.pengambil || normPengambil((e.perkara || '').match(/\(([^)]+)\)/)?.[1] || ''), amaun: +e.amaun || 0, bulan: e.bulan, sumber: e.dariUnit || 'pejabat'}]; }
 function kadMinyak(FD, J){
-  const rows = (FD.pejabat || []).filter(e => e.jenis === 'belanja' && e.kategori === 'Pengangkutan & Minyak').flatMap(pecahMinyak);
+  const rows = (FD.pejabat || []).filter(e => e.jenis === 'belanja' && e.kategori === 'Pengangkutan & Minyak').flatMap(pecahMinyak)
+    .concat(UNIT_TK().flatMap(u => (FD[u.id] || []).filter(e => e.jenis === 'belanja' && e.kategori === KAT_PJ && e.subkategori === 'Petrol & Tol' && e.kenderaan && !e.dariUnit)
+      .map(e => ({kenderaan: e.kenderaan, pengambil: e.pengambil || '', amaun: +e.amaun || 0, bulan: e.bulan, sumber: 'pendahuluan'}))));
   const lama = CAWANGAN.flatMap(c => (fyData[c.id] || []).filter(e => e.jenis === 'belanja' && (e.perkara || '').startsWith(PREFIX_MINYAK_IMPORT)).map(e => ({...e, c: c.id})));
   const kend = [...new Set(rows.map(r => r.kenderaan))].sort();
   const pg = [...new Set(rows.map(r => r.pengambil || '—'))].sort();
-  return `<div class="card"><h3 style="margin-top:0">⛽ Minyak kenderaan syarikat (kos Pejabat / HQ)</h3>
+  return `<div class="card"><h3 style="margin-top:0">⛽ Minyak kenderaan syarikat (Pejabat / HQ + petrol & tol perjalanan)</h3>
     ${lama.length && bolehKew() ? `<div class="notice noprint">${lama.length} rekod import lama (minyak DATO / MADAM / DATIN / OFFICE, ${RM(sum(lama, e => e.amaun))}) masih dicatat sebagai belanja kedai. <button class="small primary" id="fyPindahLama">➡ Pindahkan semua ke Pejabat / HQ</button></div>` : ''}
     ${rows.length ? `<div class="scroll"><table><tr><th>Kenderaan</th>${J.bulan.map(b => `<th class="r">${fmtBulan(b).slice(0, 3)}</th>`).join('')}<th class="r">JUMLAH</th></tr>
       ${kend.map(k => `<tr><td>${esc(k)}</td>${J.bulan.map(b => `<td class="r">${(v => v ? RM(v).replace('RM ', '') : '')(sum(rows.filter(r => r.kenderaan === k && r.bulan === b), r => r.amaun))}</td>`).join('')}<td class="r"><b>${RM(sum(rows.filter(r => r.kenderaan === k), r => r.amaun))}</b></td></tr>`).join('')}
       <tr class="tot"><td>JUMLAH</td>${J.bulan.map(b => `<td class="r">${(v => v ? RM(v).replace('RM ', '') : '')(sum(rows.filter(r => r.bulan === b), r => r.amaun))}</td>`).join('')}<td class="r">${RM(sum(rows, r => r.amaun))}</td></tr></table></div>
-      <p class="muted" style="margin-bottom:0">Ikut pengguna: ${pg.map(p => `${esc(p)} ${RM(sum(rows.filter(r => (r.pengambil || '—') === p), r => r.amaun))}`).join(' · ')} · Dari tunai kaunter: ${RM(sum(rows.filter(r => r.sumber && r.sumber !== 'pejabat'), r => r.amaun))}</p>`
+      <p class="muted" style="margin-bottom:0">Ikut pengguna: ${pg.map(p => `${esc(p)} ${RM(sum(rows.filter(r => (r.pengambil || '—') === p), r => r.amaun))}`).join(' · ')} · Dari tunai kaunter: ${RM(sum(rows.filter(r => r.sumber && !['pejabat', 'pendahuluan'].includes(r.sumber)), r => r.amaun))} · Dari pendahuluan perjalanan: ${RM(sum(rows.filter(r => r.sumber === 'pendahuluan'), r => r.amaun))}</p>`
       : '<p class="muted">Tiada rekod minyak kenderaan syarikat dalam tahun kewangan ini.</p>'}</div>`;
 }
 // ================================================================
@@ -1148,6 +1152,301 @@ function pasangMemo(){
   document.querySelectorAll('[data-mpadamnota]').forEach(b => b.onclick = async () => { if(!confirm('Padam nota ini?')) return; const l = [...(memo.notaUmum || [])]; l.splice(+b.dataset.mpadamnota, 1); await simpanMemo({notaUmum: l}); refresh(); });
 }
 
+// ================================================================
+// 🧳 PENDAHULUAN PERJALANAN / URUSAN LUAR — aset semasa ikut penerima (berasingan daripada Advance gaji)
+// akaun/syarikat/pendahuluan/{id}: penerimaJenis 'pekerja' | 'pengarah' | 'lain', stafId, penerimaNama, tujuan, unit, tarikh (diberi),
+//   amaun, sumber, tuntutan:[{id, tarikh, sub, unit, amaun, kenderaan, perkara, resit, status, oleh, masa, diprosesOleh, entriId}],
+//   selesai:[{id, tarikh, arah:'pulang'|'bayar', amaun, cara, oleh, masa}], ditutup
+// Tuntutan diluluskan (Dato' / Datin sahaja) → belanja "Perjalanan & Urusan Luar" di akaun/{unit}/entri/pj-{id}-{tid}
+// Resit: akaun/syarikat/pj_resit/{tid}. Permohonan dari Apps Pekerja: kakitangan/{PUSAT}/permohonan jenis pjMohon & pjTuntut.
+// ================================================================
+const TAB_PJ = 'Pendahuluan Perjalanan';
+const COL_PJ = () => collection(store, 'akaun', 'syarikat', 'pendahuluan');
+const COL_PJ_RESIT = () => collection(store, 'akaun', 'syarikat', 'pj_resit');
+const SUMBER_PJ = ['Tunai', 'Bank / Transfer', 'Petty Cash'];
+const PENGARAH_PJ = ["Dato' Muhammad Aris", 'Datin Nur Safarini'];
+let pjList = [], pjMohonList = [], unsubPJ = [], pjTapis = 'aktif', pjBuka = null, pjStaf = null, pjResitBaru = '';
+const idPJ = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const unitPJ = id => UNIT_PJ.find(u => u.id === id)?.nama || id || '';
+const masaPJ = m => m?.masa?.seconds ? m.masa.seconds * 1000 : 0;
+function hentiPJ(){ unsubPJ.forEach(f => f()); unsubPJ = []; }
+function mulaPJ(){
+  hentiPJ(); if(!bolehKew()) return;
+  unsubPJ.push(onSnapshot(COL_PJ(), s => { pjList = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.tarikh || '').localeCompare(a.tarikh || '')); badgePJ(); if(tab === TAB_PJ) refresh(); }, e => console.warn('pendahuluan', e)));
+  unsubPJ.push(onSnapshot(query(collection(store, 'kakitangan', PUSAT, 'permohonan'), where('status', '==', 'menunggu')), s => {
+    pjMohonList = s.docs.map(d => ({id: d.id, ...d.data()})).filter(m => JENIS_PJ[m.jenis]).sort((a, b) => masaPJ(a) - masaPJ(b)); badgePJ(); if(tab === TAB_PJ) refresh(); }, e => console.warn('pj mohon', e)));
+}
+const bilTungguPJ = () => pjMohonList.length + pjList.reduce((t, p) => t + kiraPJ(p).bilTunggu, 0);
+function badgePJ(){ const b = document.getElementById('badgePJ'); if(b){ const n = bilTungguPJ(); b.textContent = n ? ` (${n})` : ''; } }
+async function muatStafPJ(){
+  try{ const s = await getDocs(stafCol()); pjStaf = s.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.aktif !== false).sort((a, b) => String(a.nama || '').localeCompare(String(b.nama || ''))); }
+  catch(_){ pjStaf = []; }
+  if(tab === TAB_PJ) refresh();
+}
+function lihatGambarPJ(src, tajuk){
+  if(!src) return toast('Tiada gambar');
+  bukaModal(`<div class="section-title"><h3>${esc(tajuk || '🧾 Resit')}</h3><button class="small" id="pjTutupG">Tutup</button></div><img src="${src}" alt="resit" style="width:100%;border-radius:10px">`);
+  $('#pjTutupG').onclick = tutupModal;
+}
+async function lihatResitPJ(tid){
+  try{ const d = await getDoc(doc(COL_PJ_RESIT(), tid)); lihatGambarPJ(d.exists() ? d.data().gambar : '', '🧾 Resit tuntutan'); }
+  catch(e){ toast('⚠ ' + (e.code || e.message)); }
+}
+// Rekod belanja dari tuntutan yang diluluskan
+const refEntriPJ = (p, t) => doc(colFor(t.unit), `pj-${p.id}-${t.id}`);
+const entriPJ = (p, t) => ({jenis: 'belanja', kategori: KAT_PJ, subkategori: t.sub, amaun: t.amaun, tarikh: t.tarikh, bulan: t.tarikh.slice(0, 7), cawangan: t.unit,
+  perkara: `${t.sub} — ${p.tujuan || 'urusan luar'} (${p.penerimaNama})${t.perkara ? ': ' + t.perkara : ''}`, bayar: 'Pendahuluan perjalanan', kenderaan: t.kenderaan || '',
+  pengambil: p.penerimaNama, pendahuluanId: p.id, tuntutanId: t.id, sumber: 'pendahuluan', catatan: `Pendahuluan ${p.penerimaNama} (${p.tarikh}) · resit ${t.resit ? 'ada' : 'tiada'}`,
+  assignedUid: user.uid, oleh: nama, diluluskanOleh: t.diprosesOleh || nama, dicipta: serverTimestamp()});
+// Tutup automatik bila baki RM0 & tiada tuntutan menunggu
+const tutupAuto = p => { const k = kiraPJ(p); return k.baki === 0 && !k.bilTunggu ? {ditutup: true, tarikhTutup: today()} : {ditutup: false}; };
+
+function viewPJ(){
+  if(!bolehKew()) return '<div class="card muted">Pendahuluan perjalanan untuk pemilik & pegawai kewangan sahaja.</div>';
+  if(pjStaf === null){ pjStaf = []; muatStafPJ(); }
+  if(!asetList) setTimeout(muatAset, 0);
+  const L = pjList.map(p => ({p, k: kiraPJ(p)})), aktif = L.filter(x => x.k.status !== 'selesai');
+  const tunjuk = pjTapis === 'aktif' ? aktif : pjTapis === 'lewat' ? aktif.filter(x => x.k.lewat) : L;
+  const lewat = aktif.filter(x => x.k.lewat);
+  const kepala = `<div class="card"><div class="section-title"><h3>🧳 Pendahuluan Perjalanan / Urusan Luar</h3><span class="noprint row" style="gap:6px"><button id="pjCsv">⬇ CSV juruaudit</button><button id="btnPrint">🖨 Cetak</button></span></div>
+    <p class="muted" style="margin-top:0">Wang yang diberi untuk urusan luar dikira sebagai <b>aset (pendahuluan)</b>, bukan belanja. Bila resit dituntut & diluluskan oleh Dato' / Datin, amaun masuk belanja <b>${esc(KAT_PJ)}</b> ikut unit. Berasingan daripada <i>Advance</i> gaji pekerja.</p>
+    <div class="grid"><div><div class="muted">Baki belum diselesaikan</div><div class="metric">${RM(sum(aktif, x => x.k.baki))}</div></div><div><div class="muted">Pendahuluan aktif</div><div class="metric">${aktif.length}</div></div>
+      <div><div class="muted">Lebih 30 hari</div><div class="metric ${lewat.length ? 'neg' : ''}">${lewat.length}</div></div><div><div class="muted">Menunggu kelulusan</div><div class="metric">${bilTungguPJ()}</div></div></div>
+    ${lewat.length ? `<div class="notice" style="margin:10px 0 0">⚠ ${lewat.length} pendahuluan melebihi 30 hari belum diselesaikan: ${lewat.map(x => `${esc(x.p.penerimaNama)} (${x.k.umur} hari, ${RM(x.k.baki)})`).join(', ')}.</div>` : ''}</div>`;
+  return kepala + viewPJMenunggu() + viewPJBorang()
+    + `<div class="card"><div class="section-title"><h3>Senarai pendahuluan</h3><select id="pjTapis" class="noprint" style="width:auto;margin:0">${[['aktif', 'Belum selesai'], ['lewat', 'Lebih 30 hari'], ['semua', 'Semua']].map(([v, l]) => `<option value="${v}" ${pjTapis === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      ${tunjuk.map(x => kadPJ(x.p, x.k)).join('') || '<p class="muted">Tiada pendahuluan.</p>'}</div>` + viewPJLaporan(L);
+}
+function viewPJMenunggu(){
+  const pilihUnit = (id, sel) => `<select data-kekal="1" id="${id}" style="width:auto;margin:0">${UNIT_PJ.map(u => `<option value="${u.id}" ${u.id === sel ? 'selected' : ''}>${esc(u.nama)}</option>`).join('')}</select>`;
+  const kad = m => {
+    const J = JENIS_PJ[m.jenis], p = m.jenis === 'pjTuntut' ? pjList.find(x => x.id === m.pendId) : null;
+    return `<div class="memo-item"><div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:200px"><b>${J.ikon} ${J.label} — ${esc(m.nama || '')}</b><br>
+        <span class="muted">${m.tarikh ? fmtTarikh(m.tarikh) + ' · ' : ''}${esc(m.sebab || '')}${m.sub ? ' · ' + esc(m.sub) : ''}${m.kenderaan ? ' · 🚗 ' + esc(m.kenderaan) : ''} · ${esc(unitPJ(m.unit))}</span>
+        ${m.jenis === 'pjTuntut' ? `<br><span class="muted">Pendahuluan: ${p ? `${esc(p.tujuan || '')} (${fmtTarikh(p.tarikh)}) · baki ${RM(kiraPJ(p).baki)}${p.ditutup ? ' · <b class="neg">sudah ditutup</b>' : ''}` : '<b class="neg">tidak dijumpai</b>'}</span>` : ''}
+        ${m.resit ? `<br><img src="${m.resit}" data-pjimg="1" alt="resit" style="max-width:120px;max-height:120px;border-radius:8px;margin-top:6px;cursor:zoom-in">` : ''}</div>
+      <b>${RM(m.amaun)}</b></div>
+      ${isOwner ? `<div class="row noprint" style="gap:6px;margin-top:6px"><input data-kekal="1" id="pjA-${m.id}" type="number" step="0.01" inputmode="decimal" value="${m.amaun || ''}" style="width:110px;margin:0" title="Amaun diluluskan">
+        ${m.jenis === 'pjMohon' ? `<select data-kekal="1" id="pjS-${m.id}" style="width:auto;margin:0">${SUMBER_PJ.map(x => `<option>${x}</option>`).join('')}</select>` : pilihUnit('pjU-' + m.id, m.unit)}
+        <button class="primary small" data-pjml="${m.id}">✅ Lulus</button><button class="small danger" data-pjmt="${m.id}">Tolak</button></div>` : '<p class="muted" style="margin:4px 0 0">Menunggu kelulusan Dato\' / Datin.</p>'}</div>`;
+  };
+  if(!pjMohonList.length) return '';
+  return `<div class="card" style="border:2px solid #d97706"><h3 style="margin-top:0">⏳ Dari Apps Pekerja — menunggu kelulusan (${pjMohonList.length})</h3>${pjMohonList.map(kad).join('')}</div>`;
+}
+function viewPJBorang(){
+  const staf = pjStaf || [];
+  return `<details class="card noprint" ${pjList.length ? '' : 'open'}><summary style="font-weight:700;cursor:pointer">➕ Beri pendahuluan baharu</summary>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px;margin-top:8px">
+      <div><label>Penerima</label><select id="pjPenerima" data-kekal="1">
+        ${staf.length ? `<optgroup label="Pekerja">${staf.map(s => `<option value="p:${s.id}">${esc((s.idStaf ? s.idStaf + ' ' : '') + s.nama)}</option>`).join('')}</optgroup>` : ''}
+        <optgroup label="Pengarah (akaun semasa pengarah)">${PENGARAH_PJ.map((n, i) => `<option value="d:${i}">${esc(n)}</option>`).join('')}</optgroup>
+        <option value="l:">Lain-lain (taip nama)</option></select></div>
+      <div><label>Nama (jika Lain-lain)</label><input id="pjNamaLain" data-kekal="1" placeholder="cth: Ali (pemandu sambilan)"></div>
+      <div><label>Tarikh diberi</label><input id="pjTarikh" type="date" data-kekal="1" value="${today()}"></div>
+      <div><label>Amaun (RM)</label><input id="pjAmaun" type="number" step="0.01" inputmode="decimal" data-kekal="1"></div>
+      <div><label>Wang keluar dari</label><select id="pjSumber" data-kekal="1">${SUMBER_PJ.map(x => `<option>${x}</option>`).join('')}</select></div>
+      <div><label>Unit utama</label><select id="pjUnit" data-kekal="1">${UNIT_PJ.map(u => `<option value="${u.id}" ${u.id === 'pejabat' ? 'selected' : ''}>${esc(u.nama)}</option>`).join('')}</select></div></div>
+    <label>Tujuan / urusan</label><input id="pjTujuan" data-kekal="1" placeholder="cth: Urusan pembekal sabun di KL, 2 hari">
+    <button class="primary" id="pjSimpan">💾 Rekod pendahuluan</button>
+    <p class="muted" style="margin-bottom:0">Jika dari Petty Cash: <b>jangan</b> rekod lagi sebagai belanja petty cash (akan dikira dua kali) — baki petty cash dipadankan dalam lejar nanti. Pendahuluan kepada Dato' / Datin dilaporkan berasingan untuk akaun semasa pengarah.</p></details>`;
+}
+function kadPJ(p, k){
+  const ikonS = {terbuka: '🟢 Terbuka', tuntut: '🟡 Menunggu tuntutan', selesai: '✅ Selesai'}[k.status];
+  const buka = pjBuka?.id === p.id ? pjBuka.mod : null;
+  const tuntutan = (p.tuntutan || []).map(t => `<tr><td>${fmtTarikh(t.tarikh)}</td><td>${esc(t.sub)}${t.kenderaan ? `<br><span class="muted">🚗 ${esc(t.kenderaan)}</span>` : ''}</td><td>${esc(unitPJ(t.unit))}</td><td>${esc(t.perkara || '')}${t.oleh ? `<br><span class="muted">${esc(t.oleh)}${t.diprosesOleh && t.status !== 'menunggu' ? ' · ' + (t.status === 'lulus' ? 'lulus' : 'tolak') + ': ' + esc(t.diprosesOleh) : ''}</span>` : ''}</td>
+    <td class="r">${RM(t.amaun)}<br><span class="tag ${t.status === 'lulus' ? 'ok' : t.status === 'tolak' ? '' : 'warn'}">${t.status === 'lulus' ? '✅ Lulus' : t.status === 'tolak' ? '❌ Tolak' : '⏳ Menunggu'}</span></td>
+    <td class="noprint" style="white-space:nowrap">${t.resit ? `<button class="small" data-pjresit="${t.id}">📷</button> ` : ''}${isOwner && t.status === 'menunggu' ? `<button class="small primary" data-pjtl="${p.id}|${t.id}">✅</button> <button class="small danger" data-pjtt="${p.id}|${t.id}">❌</button> ` : ''}${isOwner && !p.ditutup ? `<button class="small" data-pjtp="${p.id}|${t.id}">🗑</button>` : ''}</td></tr>`).join('');
+  const selesai = (p.selesai || []).map(g => `<tr><td>${fmtTarikh(g.tarikh)}</td><td colspan="3">${g.arah === 'pulang' ? '↩ Lebihan dipulangkan' : '💵 Bayaran tambahan syarikat'} · ${esc(g.cara || '')}<br><span class="muted">${esc(g.oleh || '')}</span></td><td class="r">${RM(g.amaun)}</td><td class="noprint">${isOwner && !p.ditutup ? `<button class="small" data-pjgp="${p.id}|${g.id}">🗑</button>` : ''}</td></tr>`).join('');
+  const kend = senaraiKenderaan();
+  const borang = buka === 'tuntut' ? `<div class="card" style="background:#f9fafb;margin:8px 0 0"><b>➕ Tuntutan (resit)</b>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 10px;margin-top:6px">
+        <div><label>Tarikh resit</label><input id="pjtTarikh" type="date" data-kekal="1" value="${today()}"></div>
+        <div><label>Jenis</label><select id="pjtSub" data-kekal="1">${SUB_PJ.map(x => `<option>${x}</option>`).join('')}</select></div>
+        <div><label>Unit</label><select id="pjtUnit" data-kekal="1">${UNIT_PJ.map(u => `<option value="${u.id}" ${u.id === (p.unit || 'pejabat') ? 'selected' : ''}>${esc(u.nama)}</option>`).join('')}</select></div>
+        <div><label>Amaun (RM)</label><input id="pjtAmaun" type="number" step="0.01" inputmode="decimal" data-kekal="1"></div>
+        <div><label>Kenderaan (wajib untuk Petrol & Tol)</label><select id="pjtKend" data-kekal="1"><option value="">—</option>${kend.map(x => `<option>${esc(x)}</option>`).join('')}<option>Kenderaan sendiri / sewa</option></select></div></div>
+      <label>Keterangan</label><input id="pjtPerkara" data-kekal="1" placeholder="cth: Hotel 1 malam, Petronas Gambang">
+      <label>Gambar resit</label><input id="pjtResit" type="file" accept="image/*"><img id="pjtPrev" class="hidden" alt="" style="max-width:140px;border-radius:8px">
+      <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="pjtTiada" style="width:auto;margin:0"> Tiada resit (nyatakan sebab dalam keterangan)</label>
+      <div class="row" style="margin-top:6px"><button class="primary" data-pjtsimpan="${p.id}">💾 Simpan tuntutan${isOwner ? ' (terus lulus)' : ''}</button><button data-pjbatal="1">Batal</button></div></div>`
+    : buka === 'selesai' ? `<div class="card" style="background:#f9fafb;margin:8px 0 0"><b>${k.baki > 0 ? '↩ Pulang lebihan' : '💵 Bayar tambahan kepada penerima'}</b>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 10px;margin-top:6px">
+        <div><label>Tarikh</label><input id="pjgTarikh" type="date" data-kekal="1" value="${today()}"></div>
+        <div><label>Amaun (RM)</label><input id="pjgAmaun" type="number" step="0.01" data-kekal="1" value="${Math.abs(k.baki).toFixed(2)}"></div>
+        <div><label>Cara</label><select id="pjgCara" data-kekal="1">${SUMBER_PJ.map(x => `<option>${x}</option>`).join('')}</select></div></div>
+      <div class="row"><button class="primary" data-pjgsimpan="${p.id}|${k.baki > 0 ? 'pulang' : 'bayar'}">💾 Simpan</button><button data-pjbatal="1">Batal</button></div></div>` : '';
+  return `<div class="memo-item" style="${k.lewat ? 'background:#fef2f2;margin:0 -8px;padding:10px 8px;border-radius:8px' : ''}">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:200px"><b>${esc(p.penerimaNama)}</b> ${p.penerimaJenis === 'pengarah' ? '<span class="tag warn">Pengarah</span>' : ''} <span class="tag ${k.status === 'selesai' ? 'ok' : 'warn'}">${ikonS}</span>${k.lewat ? ` <span class="tag" style="background:#fee2e2">⚠ ${k.umur} hari</span>` : ''}<br>
+        <span class="muted">${esc(p.tujuan || '')} · diberi ${fmtTarikh(p.tarikh)} ${p.tarikh?.slice(0, 4) || ''} · ${esc(p.sumber || '')} · ${esc(unitPJ(p.unit))}${p.mohonId ? ' · dari Apps Pekerja' : ''}${k.status !== 'selesai' ? ` · ${k.umur} hari` : p.tarikhTutup ? ` · ditutup ${fmtTarikh(p.tarikhTutup)}` : ''}</span></div>
+      <div style="text-align:right"><div class="muted">Baki</div><b class="${k.baki < 0 ? 'neg' : ''}" style="font-size:18px">${RM(k.baki)}</b></div></div>
+    <div class="scroll"><table style="margin-top:6px"><tr><th class="r">Diberi</th><th class="r">Dituntut</th><th class="r">Menunggu</th><th class="r">Dipulang</th><th class="r">Bayar tambahan</th></tr>
+      <tr><td class="r">${RM(k.diberi)}</td><td class="r">${RM(k.dituntut)}</td><td class="r">${k.menunggu ? RM(k.menunggu) : '-'}</td><td class="r">${k.pulang ? RM(k.pulang) : '-'}</td><td class="r">${k.bayar ? RM(k.bayar) : '-'}</td></tr></table></div>
+    ${tuntutan || selesai ? `<div class="scroll"><table><tr><th>Tarikh</th><th>Jenis</th><th>Unit</th><th>Keterangan</th><th class="r">Amaun</th><th class="noprint"></th></tr>${tuntutan}${selesai}</table></div>` : ''}
+    <div class="row noprint" style="gap:6px;margin-top:6px">${p.ditutup ? (isOwner ? `<button class="small" data-pjbukasemula="${p.id}">↺ Buka semula</button>` : '')
+      : `<button class="small primary" data-pjbuka="${p.id}|tuntut">➕ Tuntutan</button>${k.baki !== 0 ? `<button class="small" data-pjbuka="${p.id}|selesai">${k.baki > 0 ? '↩ Pulang lebihan' : '💵 Bayar tambahan'}</button>` : ''}`}
+      ${isOwner && !(p.tuntutan || []).some(t => t.status === 'lulus') ? `<button class="small danger" data-pjpadam="${p.id}">🗑 Padam</button>` : ''}</div>${borang}</div>`;
+}
+function viewPJLaporan(L){
+  const J = julatTK(fyAkhir);
+  const baris = L.flatMap(({p}) => (p.tuntutan || []).filter(t => t.status === 'lulus' && J.bulan.includes((t.tarikh || '').slice(0, 7))).map(t => ({...t, bulan: t.tarikh.slice(0, 7)})));
+  const aktif = L.filter(x => x.k.status !== 'selesai');
+  const penerima = [...new Set(aktif.map(x => x.p.penerimaNama))].sort();
+  const sel = v => v ? RM(v).replace('RM ', '') : '';
+  return `<div class="card"><h3 style="margin-top:0">📋 Baki pendahuluan ikut penerima (belum selesai)</h3>
+    ${penerima.length ? `<div class="scroll"><table><tr><th>Penerima</th><th class="r">Bil.</th><th class="r">Baki</th><th class="r">Tertua (hari)</th></tr>
+      ${penerima.map(n => { const l = aktif.filter(x => x.p.penerimaNama === n), tua = Math.max(...l.map(x => x.k.umur)); return `<tr><td>${esc(n)}${l[0].p.penerimaJenis === 'pengarah' ? ' <span class="tag warn">Pengarah</span>' : ''}</td><td class="r">${l.length}</td><td class="r">${RM(sum(l, x => x.k.baki))}</td><td class="r ${tua > 30 ? 'neg' : ''}">${tua}${tua > 30 ? ' ⚠' : ''}</td></tr>`; }).join('')}
+      <tr class="tot"><td>JUMLAH</td><td class="r">${aktif.length}</td><td class="r">${RM(sum(aktif, x => x.k.baki))}</td><td></td></tr></table></div>` : '<p class="muted">Tiada baki tertunggak.</p>'}</div>
+  <div class="card"><div class="section-title"><h3>Belanja perjalanan ikut unit & bulan</h3><select id="pjFy" class="noprint" style="width:auto;margin:0">${[fyAkhir + 1, fyAkhir, fyAkhir - 1, fyAkhir - 2].map(y => `<option value="${y}" ${y === fyAkhir ? 'selected' : ''}>TK 31 Mac ${y}</option>`).join('')}</select></div>
+    ${baris.length ? `<div class="scroll"><table><tr><th>Bulan</th>${UNIT_PJ.map(u => `<th class="r">${esc(u.nama)}</th>`).join('')}<th class="r">JUMLAH</th></tr>
+      ${J.bulan.filter(b => baris.some(r => r.bulan === b)).map(b => `<tr><td>${fmtBulan(b)}</td>${UNIT_PJ.map(u => `<td class="r">${sel(sum(baris.filter(r => r.bulan === b && r.unit === u.id), r => r.amaun))}</td>`).join('')}<td class="r"><b>${RM(sum(baris.filter(r => r.bulan === b), r => r.amaun))}</b></td></tr>`).join('')}
+      <tr class="tot"><td>JUMLAH</td>${UNIT_PJ.map(u => `<td class="r">${sel(sum(baris.filter(r => r.unit === u.id), r => r.amaun))}</td>`).join('')}<td class="r">${RM(sum(baris, r => r.amaun))}</td></tr></table></div>
+      <p class="muted" style="margin-bottom:0">Ikut jenis: ${SUB_PJ.map(s => `${esc(s)} ${RM(sum(baris.filter(r => r.sub === s), r => r.amaun))}`).join(' · ')}. Angka ini juga masuk Laporan Tahunan (kategori ${esc(KAT_PJ)}); petrol & tol yang ada kenderaan masuk laporan minyak.</p>`
+      : '<p class="muted">Tiada tuntutan diluluskan dalam tahun kewangan ini.</p>'}</div>`;
+}
+function csvPJ(){
+  const kol = ['tarikh', 'penerima', 'jenis_penerima', 'tujuan', 'transaksi', 'subkategori', 'unit', 'kenderaan', 'keterangan', 'pendahuluan_debit', 'kredit', 'baki', 'status', 'resit', 'rujukan'];
+  const q = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  const rows = [];
+  [...pjList].sort((a, b) => (a.tarikh || '').localeCompare(b.tarikh || '')).forEach(p => {
+    const k = kiraPJ(p), asas = {penerima: p.penerimaNama, jenis_penerima: p.penerimaJenis === 'pengarah' ? 'Pengarah' : p.penerimaJenis === 'pekerja' ? 'Pekerja' : 'Lain-lain', tujuan: p.tujuan || '', status: ({terbuka: 'Terbuka', tuntut: 'Menunggu tuntutan', selesai: 'Selesai'})[k.status], rujukan: p.id};
+    const gerak = [{tarikh: p.tarikh, transaksi: 'Pendahuluan diberi (' + (p.sumber || '') + ')', unit: unitPJ(p.unit), d: k.diberi}]
+      .concat((p.tuntutan || []).filter(t => t.status === 'lulus').map(t => ({tarikh: t.tarikh, transaksi: 'Tuntutan diluluskan', subkategori: t.sub, unit: unitPJ(t.unit), kenderaan: t.kenderaan || '', keterangan: t.perkara || '', resit: t.resit ? 'Ada' : 'Tiada', k: +t.amaun || 0})))
+      .concat((p.selesai || []).map(g => g.arah === 'pulang' ? {tarikh: g.tarikh, transaksi: 'Lebihan dipulangkan (' + (g.cara || '') + ')', k: +g.amaun || 0} : {tarikh: g.tarikh, transaksi: 'Bayaran tambahan syarikat (' + (g.cara || '') + ')', d: +g.amaun || 0}))
+      .sort((a, b) => (a.tarikh || '').localeCompare(b.tarikh || ''));
+    let baki = 0;
+    gerak.forEach(g => { baki = Math.round((baki + (g.d || 0) - (g.k || 0)) * 100) / 100; rows.push({...asas, ...g, pendahuluan_debit: g.d || '', kredit: g.k || '', baki}); });
+  });
+  const csv = '﻿' + kol.join(',') + '\n' + rows.map(r => kol.map(c => q(r[c])).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'})); a.download = `pendahuluan-perjalanan-${today()}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+async function kemasPJ(p, ubah, mesej){
+  try{ await updateDoc(doc(COL_PJ(), p.id), {...ubah, dikemaskini: serverTimestamp(), dikemaskiniOleh: nama}); if(mesej) toast(mesej); return true; }
+  catch(e){ toast('⚠ ' + (e.code || e.message)); return false; }
+}
+function pasangPJ(){
+  const cariP = id => pjList.find(x => x.id === id);
+  if($('#pjCsv')) $('#pjCsv').onclick = csvPJ;
+  if($('#pjTapis')) $('#pjTapis').onchange = e => { pjTapis = e.target.value; refresh(); };
+  if($('#pjFy')) $('#pjFy').onchange = e => { fyAkhir = +e.target.value; fyData = null; refresh(); };
+  $$('[data-pjimg]').forEach(i => i.onclick = () => lihatGambarPJ(i.src));
+  $$('[data-pjresit]').forEach(b => b.onclick = () => lihatResitPJ(b.dataset.pjresit));
+  $$('[data-pjbuka]').forEach(b => b.onclick = () => { const [id, mod] = b.dataset.pjbuka.split('|'); pjBuka = {id, mod}; pjResitBaru = ''; refresh(); });
+  $$('[data-pjbatal]').forEach(b => b.onclick = () => { pjBuka = null; pjResitBaru = ''; refresh(); });
+  // ➕ Beri pendahuluan
+  if($('#pjSimpan')) $('#pjSimpan').onclick = async () => {
+    const pil = $('#pjPenerima').value, [j, v] = [pil.slice(0, 1), pil.slice(2)], amaun = num('#pjAmaun'), tarikh = val('#pjTarikh');
+    const s = j === 'p' ? (pjStaf || []).find(x => x.id === v) : null;
+    const penerimaNama = j === 'p' ? s?.nama : j === 'd' ? PENGARAH_PJ[+v] : val('#pjNamaLain');
+    if(!penerimaNama) return toast('Pilih / taip nama penerima');
+    if(!(amaun > 0)) return toast('Masukkan amaun');
+    if(!tarikh) return toast('Pilih tarikh');
+    if(!val('#pjTujuan')) return toast('Nyatakan tujuan / urusan');
+    if(!confirm(`Rekod pendahuluan ${RM(amaun)} kepada ${penerimaNama}?\nWang keluar dari: ${$('#pjSumber').value}`)) return;
+    try{ await addDoc(COL_PJ(), {penerimaJenis: j === 'p' ? 'pekerja' : j === 'd' ? 'pengarah' : 'lain', stafId: s?.id || '', idStaf: s?.idStaf || '', penerimaNama, tujuan: val('#pjTujuan'), unit: $('#pjUnit').value,
+      tarikh, amaun, sumber: $('#pjSumber').value, tuntutan: [], selesai: [], ditutup: false, oleh: nama, dicipta: serverTimestamp()}); toast('✅ Pendahuluan direkod'); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  };
+  // Tuntutan oleh pejabat (pemilik: terus lulus; pegawai kewangan: menunggu kelulusan)
+  if($('#pjtResit')) $('#pjtResit').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ pjResitBaru = await capGambar(f, null, 900, 0.62); $('#pjtPrev').src = pjResitBaru; $('#pjtPrev').classList.remove('hidden'); }catch(_){ toast('Gagal baca gambar'); } };
+  $$('[data-pjtsimpan]').forEach(b => b.onclick = async () => {
+    const p = cariP(b.dataset.pjtsimpan); if(!p) return;
+    const t = {id: idPJ('t'), tarikh: val('#pjtTarikh'), sub: $('#pjtSub').value, unit: $('#pjtUnit').value, amaun: num('#pjtAmaun'), kenderaan: $('#pjtKend').value, perkara: val('#pjtPerkara'), resit: !!pjResitBaru, oleh: nama, masa: Date.now(), status: isOwner ? 'lulus' : 'menunggu'};
+    if(!t.tarikh) return toast('Pilih tarikh resit');
+    if(!(t.amaun > 0)) return toast('Masukkan amaun');
+    if(t.sub === 'Petrol & Tol' && !t.kenderaan) return toast('Pilih kenderaan untuk Petrol & Tol');
+    if(!pjResitBaru && !$('#pjtTiada').checked) return toast('Sertakan gambar resit, atau tanda "Tiada resit"');
+    if(!pjResitBaru && !t.perkara) return toast('Nyatakan sebab tiada resit dalam keterangan');
+    if(isOwner) t.diprosesOleh = nama;
+    const baru = {...p, tuntutan: [...(p.tuntutan || []), t]};
+    b.disabled = true;
+    try{ const w = writeBatch(store);
+      if(pjResitBaru) w.set(doc(COL_PJ_RESIT(), t.id), {gambar: pjResitBaru, pendId: p.id, oleh: nama, dicipta: serverTimestamp()});
+      if(isOwner){ t.entriId = refEntriPJ(p, t).path; w.set(refEntriPJ(p, t), entriPJ(p, t)); }
+      w.update(doc(COL_PJ(), p.id), {tuntutan: baru.tuntutan, ...tutupAuto(baru), dikemaskini: serverTimestamp(), dikemaskiniOleh: nama});
+      await w.commit(); pjBuka = null; pjResitBaru = ''; toast(isOwner ? '✅ Tuntutan diluluskan & masuk belanja' : '✅ Tuntutan disimpan — menunggu kelulusan Dato\' / Datin'); }
+    catch(e){ b.disabled = false; toast('⚠ ' + (e.code || e.message)); }
+  });
+  // Lulus / tolak / padam tuntutan dalam pendahuluan (pemilik)
+  $$('[data-pjtl]').forEach(b => b.onclick = async () => {
+    const [pid, tid] = b.dataset.pjtl.split('|'), p = cariP(pid), t0 = p?.tuntutan?.find(x => x.id === tid); if(!t0 || !isOwner) return;
+    if(!confirm(`Luluskan tuntutan ${t0.sub} ${RM(t0.amaun)} (${unitPJ(t0.unit)})?`)) return;
+    const t = {...t0, status: 'lulus', diprosesOleh: nama, diproses: Date.now()}; t.entriId = refEntriPJ(p, t).path;
+    const baru = {...p, tuntutan: p.tuntutan.map(x => x.id === tid ? t : x)};
+    try{ const w = writeBatch(store); w.set(refEntriPJ(p, t), entriPJ(p, t)); w.update(doc(COL_PJ(), p.id), {tuntutan: baru.tuntutan, ...tutupAuto(baru), dikemaskini: serverTimestamp(), dikemaskiniOleh: nama}); await w.commit(); toast('✅ Diluluskan'); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+  $$('[data-pjtt]').forEach(b => b.onclick = async () => {
+    const [pid, tid] = b.dataset.pjtt.split('|'), p = cariP(pid); if(!p || !isOwner) return;
+    const sebab = prompt('Sebab tolak (pilihan):', ''); if(sebab === null) return;
+    const baru = {...p, tuntutan: p.tuntutan.map(x => x.id === tid ? {...x, status: 'tolak', diprosesOleh: nama, catatanTolak: sebab} : x)};
+    await kemasPJ(p, {tuntutan: baru.tuntutan, ...tutupAuto(baru)}, 'Tuntutan ditolak');
+  });
+  $$('[data-pjtp]').forEach(b => b.onclick = async () => {
+    const [pid, tid] = b.dataset.pjtp.split('|'), p = cariP(pid), t = p?.tuntutan?.find(x => x.id === tid); if(!t || !isOwner) return;
+    if(!confirm(`Padam tuntutan ${t.sub} ${RM(t.amaun)}?${t.status === 'lulus' ? '\nRekod belanja yang berkaitan juga akan dipadam.' : ''}`)) return;
+    const baru = {...p, tuntutan: p.tuntutan.filter(x => x.id !== tid)};
+    try{ const w = writeBatch(store); if(t.status === 'lulus') w.delete(refEntriPJ(p, t)); if(t.resit) w.delete(doc(COL_PJ_RESIT(), t.id));
+      w.update(doc(COL_PJ(), p.id), {tuntutan: baru.tuntutan, dikemaskini: serverTimestamp(), dikemaskiniOleh: nama}); await w.commit(); toast('🗑 Tuntutan dipadam'); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+  // Pulang lebihan / bayar tambahan
+  $$('[data-pjgsimpan]').forEach(b => b.onclick = async () => {
+    const [pid, arah] = b.dataset.pjgsimpan.split('|'), p = cariP(pid); if(!p) return;
+    const g = {id: idPJ('g'), tarikh: val('#pjgTarikh'), arah, amaun: num('#pjgAmaun'), cara: $('#pjgCara').value, oleh: nama, masa: Date.now()};
+    if(!g.tarikh || !(g.amaun > 0)) return toast('Isi tarikh & amaun');
+    const baru = {...p, selesai: [...(p.selesai || []), g]}, kb = kiraPJ(baru);
+    if(arah === 'pulang' ? kb.baki < 0 : kb.baki > 0) return toast('Amaun melebihi baki');
+    if(await kemasPJ(p, {selesai: baru.selesai, ...tutupAuto(baru)}, kb.baki === 0 && !kb.bilTunggu ? '✅ Baki RM0 — pendahuluan selesai' : '✅ Disimpan')){ pjBuka = null; }
+  });
+  $$('[data-pjgp]').forEach(b => b.onclick = async () => {
+    const [pid, gid] = b.dataset.pjgp.split('|'), p = cariP(pid); if(!p || !confirm('Padam rekod ini?')) return;
+    await kemasPJ(p, {selesai: (p.selesai || []).filter(x => x.id !== gid)}, '🗑 Dipadam');
+  });
+  $$('[data-pjbukasemula]').forEach(b => b.onclick = async () => { const p = cariP(b.dataset.pjbukasemula); if(p && confirm('Buka semula pendahuluan ini?')) await kemasPJ(p, {ditutup: false}, '↺ Dibuka semula'); });
+  $$('[data-pjpadam]').forEach(b => b.onclick = async () => {
+    const p = cariP(b.dataset.pjpadam); if(!p || !isOwner || !confirm(`Padam pendahuluan ${p.penerimaNama} ${RM(p.amaun)}?`)) return;
+    try{ const w = writeBatch(store); (p.tuntutan || []).filter(t => t.resit).forEach(t => w.delete(doc(COL_PJ_RESIT(), t.id))); w.delete(doc(COL_PJ(), p.id)); await w.commit(); toast('🗑 Pendahuluan dipadam'); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+  // ✅ Lulus / tolak permohonan dari Apps Pekerja (pemilik sahaja)
+  const refMohon = id => doc(store, 'kakitangan', PUSAT, 'permohonan', id);
+  $$('[data-pjml]').forEach(b => b.onclick = async () => {
+    const m = pjMohonList.find(x => x.id === b.dataset.pjml); if(!m || !isOwner) return;
+    const amaun = num('#pjA-' + m.id); if(!(amaun > 0)) return toast('Amaun tidak sah');
+    const tanda = {status: 'lulus', amaunLulus: amaun, diprosesOleh: nama, diproses: serverTimestamp()};
+    b.disabled = true;
+    try{ const w = writeBatch(store);
+      if(m.jenis === 'pjMohon'){
+        const sumber = $('#pjS-' + m.id).value; if(!confirm(`Luluskan pendahuluan ${RM(amaun)} kepada ${m.nama}?\nWang keluar dari: ${sumber}`)){ b.disabled = false; return; }
+        const ref = doc(COL_PJ());
+        w.set(ref, {penerimaJenis: 'pekerja', stafId: m.stafId || '', idStaf: m.idStaf || '', penerimaNama: m.nama || '', tujuan: m.sebab || '', unit: m.unit || 'pejabat', tarikh: today(), tarikhPerjalanan: m.tarikh || '',
+          amaun, amaunMohon: +m.amaun || 0, sumber, mohonId: m.id, tuntutan: [], selesai: [], ditutup: false, oleh: nama, dicipta: serverTimestamp()});
+        w.update(refMohon(m.id), {...tanda, pendId: ref.id});
+      } else {
+        const p = pjList.find(x => x.id === m.pendId); if(!p || p.ditutup){ b.disabled = false; return toast('Pendahuluan tidak dijumpai / sudah ditutup — tolak & minta pekerja hantar semula'); }
+        const unit = $('#pjU-' + m.id).value;
+        const t = {id: 'm' + m.id, tarikh: m.tarikh, sub: m.sub || SUB_PJ[0], unit, amaun, kenderaan: m.kenderaan || '', perkara: m.sebab || '', resit: !!m.resit, oleh: m.nama || '', masa: masaPJ(m) || Date.now(), status: 'lulus', diprosesOleh: nama, diproses: Date.now(), mohonId: m.id};
+        if(!confirm(`Luluskan tuntutan ${t.sub} ${RM(amaun)} (${unitPJ(unit)}) dari ${m.nama}?`)){ b.disabled = false; return; }
+        t.entriId = refEntriPJ(p, t).path;
+        const baru = {...p, tuntutan: [...(p.tuntutan || []), t]};
+        if(m.resit) w.set(doc(COL_PJ_RESIT(), t.id), {gambar: m.resit, pendId: p.id, oleh: m.nama || '', dicipta: serverTimestamp()});
+        w.set(refEntriPJ(p, t), entriPJ(p, t));
+        w.update(doc(COL_PJ(), p.id), {tuntutan: baru.tuntutan, ...tutupAuto(baru), dikemaskini: serverTimestamp(), dikemaskiniOleh: nama});
+        w.update(refMohon(m.id), {...tanda, pendId: p.id});
+      }
+      await w.commit(); toast('✅ Diluluskan');
+    }catch(e){ b.disabled = false; toast('⚠ ' + (e.code || e.message)); }
+  });
+  $$('[data-pjmt]').forEach(b => b.onclick = async () => {
+    const m = pjMohonList.find(x => x.id === b.dataset.pjmt); if(!m || !isOwner) return;
+    const sebab = prompt(`Tolak ${JENIS_PJ[m.jenis].label} ${m.nama}? Sebab (pilihan):`, ''); if(sebab === null) return;
+    try{ await updateDoc(refMohon(m.id), {status: 'tolak', catatanLulus: sebab, diprosesOleh: nama, diproses: serverTimestamp()}); toast('Permohonan ditolak'); }
+    catch(e){ toast('⚠ ' + (e.code || e.message)); }
+  });
+}
+
 function pasangTahunan(){
   pasangAksesKew();
   if($('#fyPindahLama')) $('#fyPindahLama').onclick = async () => {
@@ -1161,7 +1460,7 @@ function pasangTahunan(){
   if($('#fyPilih')) $('#fyPilih').onchange = e => { fyAkhir = +e.target.value; fyData = null; refresh(); };
   if($('#fySegar')) $('#fySegar').onclick = () => { fyData = null; refresh(); };
   if($('#fyCsv')) $('#fyCsv').onclick = () => {
-    if(!fyData) return; const kol = ['unit','tarikh','jenis','kategori','perkara','bayar','tunai','qr','kad','ewallet','lain','amaun','catatan'];
+    if(!fyData) return; const kol = ['unit','tarikh','jenis','kategori','subkategori','perkara','bayar','kenderaan','tunai','qr','kad','ewallet','lain','amaun','catatan'];
     const q = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
     const rows = UNIT_TK().flatMap(u => (fyData[u.id] || []).map(e => ({...e, unit: u.nama}))).sort((a, b) => (a.tarikh || '').localeCompare(b.tarikh || ''));
     const csv = '\ufeff' + kol.join(',') + '\n' + rows.map(e => kol.map(c => q(e[c])).join(',')).join('\n');
@@ -1885,7 +2184,7 @@ function csvGaji(){
 // ================================================================
 const KATEGORI = [
   {id:'kew', nama:'💰 Kewangan & Akaun', pendek:'💰 Kewangan', w:'biru', item:[
-    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Daftar Aset', i:'🚗', l:'Daftar aset & susut nilai'}, {t:'Memo Akaun', i:'📝', l:'Memo perakaunan & audit'}, {t:'Import', i:'⬆️'}]},
+    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Pendahuluan Perjalanan', i:'🧳', l:'Pendahuluan perjalanan', b:'badgePJ'}, {t:'Daftar Aset', i:'🚗', l:'Daftar aset & susut nilai'}, {t:'Memo Akaun', i:'📝', l:'Memo perakaunan & audit'}, {t:'Import', i:'⬆️'}]},
   {id:'pek', nama:'👷 Pekerja', pendek:'👷 Pekerja', w:'jingga', item:[
     {t:'Pekerja', pk:'Senarai', i:'👥', l:'Senarai & urus'}, {t:'Arahan', i:'💬', l:'Arahan & tugasan', b:'badgeArahan'}, {t:'Pekerja', pk:'Gaji Bulanan', i:'💰', l:'Gaji'},
     {t:'Pekerja', pk:'Kehadiran', i:'🕘', l:'Kehadiran'}, {t:'Pekerja', pk:'Roster', i:'📅', l:'Roster'}, {t:'Pekerja', pk:'Permohonan', i:'📝', l:'Permohonan'},
