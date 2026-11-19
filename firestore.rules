@@ -149,9 +149,10 @@ service cloud.firestore {
       allow get: if true;
       allow read: if staffApp();
       allow create: if request.resource.data.status == 'menunggu'
-        && request.resource.data.keys().hasOnly(['orderId', 'plat', 'no', 'jumlah', 'kaedah', 'rujukan', 'bukti', 'nama', 'telefon', 'ahliKod', 'status', 'masa', 'masaPeranti'])
+        && request.resource.data.keys().hasOnly(['orderId', 'plat', 'no', 'jumlah', 'amaunBayar', 'tepat', 'kaedah', 'rujukan', 'bukti', 'nama', 'telefon', 'ahliKod', 'status', 'masa', 'masaPeranti'])
         && request.resource.data.orderId is string
         && request.resource.data.jumlah is number
+        && (!('amaunBayar' in request.resource.data) || request.resource.data.amaunBayar is number)
         && request.resource.data.kaedah in ['QR / eWallet', 'Transfer']
         && request.resource.data.bukti is string && request.resource.data.bukti.size() > 100 && request.resource.data.bukti.size() < 900000
         && request.resource.data.masa == request.time

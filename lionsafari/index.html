@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-7">
+<meta name="app-versi" content="2026.11.19-8">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-7';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-8';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-7';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-8';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.19-7';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-7';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.19-7';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.19-7';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.19-7';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-7';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-7';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-7';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.19-7';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.19-8';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-8';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.19-8';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.19-8';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.19-8';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-8';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-8';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-8';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.19-8';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -336,10 +336,20 @@ function bunyiMaklum(tajuk, isi){
   try{ if('Notification' in window && Notification.permission === 'granted') navigator.serviceWorker?.getRegistration().then(r => r ? r.showNotification(tajuk, {body: isi, icon: 'icon-192.png', tag: 'kaunter-' + Date.now()}) : new Notification(tajuk, {body: isi})); }catch(_){}
 }
 // Bayaran dari Apps Pelanggan menunggu semakan kaunter
+// Semakan automatik: amaun dibayar pelanggan vs jumlah order semasa
+const jumOrder = o => Math.max(0, r2(o.jumlahKasar - (o.diskaunBeri?.amaun || 0)));
+function semakBayarPel(x, o){
+  const dibayar = r2(x.amaunBayar ?? x.jumlah), order = o ? jumOrder(o) : null;
+  if(order == null) return {dibayar, order, beza: 0, ok: false, html: ''};
+  const beza = r2(dibayar - order), berubah = Math.abs(r2(x.jumlah) - order) > 0.004;
+  const lencana = Math.abs(beza) < 0.005 ? '<span class="tag" style="background:#dcfce7;color:#166534">✅ Sama dengan order</span>'
+    : beza < 0 ? `<span class="tag" style="background:#fee2e2;color:#b91c1c">⚠ Kurang ${RM(-beza)}</span>` : `<span class="tag" style="background:#fef3c7;color:#92400e">⚠ Lebih ${RM(beza)}</span>`;
+  return {dibayar, order, beza, ok: Math.abs(beza) < 0.005, html: lencana + (berubah ? ` <span class="tag" style="background:#e0f2fe;color:#075985">⚠ Order berubah selepas pelanggan buka resit (${RM(x.jumlah)})</span>` : '') + (x.tepat === false ? ' <span class="tag">pelanggan isi amaun sendiri</span>' : '')};
+}
 const htmlBayarPel = () => bayarPel.length ? `<div class="card" style="border:2px solid #14532d;background:#f0fdf4"><h3 style="margin-top:0">📲 Bayaran dari Apps Pelanggan — perlu disemak (${bayarPel.length})</h3>
   ${bayarPel.map(x => { const o = aktif.find(a => a.id === x.orderId); return `<div class="between" style="padding:8px 0;border-bottom:1px solid #d1fae5;gap:8px">
     <div style="display:flex;gap:8px;align-items:center">${x.bukti ? `<img src="${x.bukti}" data-bpgambar="${x.id}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;cursor:pointer">` : ''}
-      <div><b>${esc(x.plat)}</b> <span class="muted">${esc(x.no || '')}</span><br><b>${RM(x.jumlah)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''}<br><span class="muted">${fMasa(x.masaPeranti)}${o ? ` · Order ${RM(Math.max(0, r2(o.jumlahKasar - (o.diskaunBeri?.amaun || 0))))}` : ' · ⚠ order tiada dalam queue'}</span></div></div>
+      <div><b>${esc(x.plat)}</b> <span class="muted">${esc(x.no || '')}</span><br><b>Dibayar ${RM(x.amaunBayar ?? x.jumlah)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''}<br><span class="muted">${fMasa(x.masaPeranti)}${o ? ` · Order ${RM(jumOrder(o))}` : ' · ⚠ order tiada dalam queue'}</span>${o ? `<div style="margin-top:3px">${semakBayarPel(x, o).html}</div>` : ''}</div></div>
     <div class="row" style="justify-content:flex-end">${o ? `<button class="btn-ok small" data-bpsah="${x.id}">✅ Semak & sahkan</button>` : ''}<button class="small btn-bad" data-bptolak="${x.id}">Tolak</button></div></div>`; }).join('')}</div>` : '';
 function pasangBayarPel(){
   $$('[data-bpgambar]').forEach(im => im.onclick = () => { const x = bayarPel.find(b => b.id === im.dataset.bpgambar); bukaPaparan(x.bukti, {tajuk: `Bukti bayaran ${x.plat}`, nama: `Bukti-${x.plat.replace(/\s/g,'')}`}); });
@@ -1679,7 +1689,11 @@ function bukaBayar(o, pra = null){
     <label>➕ Item manual (di luar pakej / cucian spot tertentu)</label><div id="pManual"></div>
     <div class="row" style="flex-wrap:nowrap;gap:6px"><input id="pMNama" placeholder="cth: Buang tahi burung bumbung" style="margin:0;flex:1"><input id="pMHarga" type="number" inputmode="decimal" step="0.01" placeholder="RM" style="margin:0;width:90px"><button class="small" id="pMTambah">+ Tambah</button></div>
     <label>🎟 Diskaun</label><div id="pDiskaun"></div>
-    ${pra ? `<div class="notice" style="background:#ecfdf5;border-color:#14532d"><b>📲 Pelanggan telah bayar melalui Apps Pelanggan: ${RM(pra.jumlah)}</b> (${esc(pra.kaedah)}${pra.rujukan ? ' · Ruj: ' + esc(pra.rujukan) : ''})<br>Semak duit telah masuk ke akaun bank / QR sebelum simpan.${pra.bukti ? `<img src="${pra.bukti}" id="pPraBukti" class="pp-zoom" style="width:100%;max-width:320px;border-radius:10px;margin-top:6px;display:block">` : ''}</div>` : ''}
+    ${pra ? `<div class="notice" style="background:#ecfdf5;border-color:#14532d"><b>📲 Pelanggan telah bayar melalui Apps Pelanggan: ${RM(pra.amaunBayar ?? pra.jumlah)}</b> <span id="pPraLencana"></span> (${esc(pra.kaedah)}${pra.rujukan ? ' · Ruj: ' + esc(pra.rujukan) : ''})<br>Semak duit telah masuk ke akaun bank / QR sebelum simpan.${pra.bukti ? `<img src="${pra.bukti}" id="pPraBukti" class="pp-zoom" style="width:100%;max-width:320px;border-radius:10px;margin-top:6px;display:block">` : ''}</div>` : ''}
+    ${pra ? `<div id="pPraBeza" class="notice hidden" style="background:#fef2f2;border-color:#b91c1c"><b id="pPraBezaTeks" style="display:block;margin-bottom:6px"></b>
+      <label>Amaun sebenar diterima dalam akaun bank (RM) *</label><input id="pPraTerima" type="number" inputmode="decimal" step="0.01" placeholder="semak di apps bank">
+      <label style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" id="pPraSemak" style="width:20px;height:20px;margin:0;flex:none"> Saya telah semak wang masuk di apps bank</label>
+      <div class="muted" style="font-size:12px">Jika kurang, kutip baki daripada pelanggan (tunai / QR) sebelum simpan.</div></div>` : ''}
     <div class="totalbar"><span>Perlu dibayar</span><b id="pJum">${RM(o.jumlahKasar)}</b></div>
     <label>Cara bayar</label><div class="choices" id="pKaedah">${KAEDAH.map(k => `<button class="choice ${k==='Tunai'?'sel':''}" data-k="${k}"><b>${k}</b></button>`).join('')}</div>
     <div id="pTunai"><label>Wang diterima (RM)</label><input id="pTerima" type="number" inputmode="decimal" step="0.01" placeholder="0.00">
@@ -1706,8 +1720,13 @@ function bukaBayar(o, pra = null){
     $$('[data-mbuang]').forEach(b => b.onclick = () => { manual.splice(+b.dataset.mbuang, 1); lukisManual(); kira(); }); };
   const paparInfoBayar = () => { const mod = kaedah === 'QR / eWallet' ? 'qr' : kaedah === 'Transfer' ? 'transfer' : '';
     $('#pInfoBayar').innerHTML = mod ? htmlTerimaBayar(T.terimaBayaran, {mod, jumlah: jum(), fail: 'QR-' + cawangan}) : ''; pasangTerimaBayar($('#pInfoBayar'), toast); };
+  const praBeza = () => pra ? r2(r2(pra.amaunBayar ?? pra.jumlah) - jum()) : 0;
   const kira = () => {
     $('#pJum').textContent = RM(jum()); if(kaedah !== 'Tunai') paparInfoBayar();
+    if(pra){ const b = praBeza(), sama = Math.abs(b) < 0.005;
+      $('#pPraLencana').innerHTML = sama ? '<span class="tag" style="background:#dcfce7;color:#166534">✅ Sama dengan order</span>' : `<span class="tag" style="background:#fee2e2;color:#b91c1c">⚠ ${b < 0 ? 'Kurang' : 'Lebih'} ${RM(Math.abs(b))}</span>`;
+      $('#pPraBeza').classList.toggle('hidden', sama);
+      $('#pPraBezaTeks').textContent = sama ? '' : `⚠ Amaun pelanggan ${RM(pra.amaunBayar ?? pra.jumlah)} ${b < 0 ? 'KURANG' : 'LEBIH'} ${RM(Math.abs(b))} daripada jumlah perlu dibayar ${RM(jum())}.`; }
     const t = numVal('#pTerima'); $('#pBaki').textContent = RM(Math.max(0, t - jum()));
     const j = jum(); const cadang = [...new Set([j, Math.ceil(j/10)*10, Math.ceil(j/50)*50, 100])].filter(x => x >= j).slice(0,4);
     $('#pCepat').innerHTML = cadang.map(x => `<button class="small" data-c="${x}">${RM(x)}</button>`).join('');
@@ -1736,6 +1755,14 @@ function bukaBayar(o, pra = null){
       if(diterima < j) return toast('Wang diterima kurang daripada jumlah');
       baki = r2(diterima - j);
     }
+    let praSemak = null;
+    if(pra && Math.abs(praBeza()) >= 0.005){
+      const terimaSebenar = numVal('#pPraTerima');
+      if(!(terimaSebenar > 0)) return toast('Isi amaun sebenar diterima dalam akaun bank');
+      if(!$('#pPraSemak').checked) return toast('Tandakan "Saya telah semak wang masuk di apps bank"');
+      if(terimaSebenar < j && !confirm(`Diterima ${RM(terimaSebenar)} — kurang ${RM(r2(j - terimaSebenar))}.\n\nPastikan baki telah dikutip daripada pelanggan. Teruskan simpan?`)) return;
+      praSemak = {dakwaPelanggan: r2(pra.amaunBayar ?? pra.jumlah), diterimaSebenar: r2(terimaSebenar), beza: r2(terimaSebenar - j), disemakOleh: staf.nama, masa: Date.now()};
+    }
     const diskaunLulus = cur.diskaunBeri ? labelDiskaun(cur.diskaunBeri) : '';
     let fwLulus = '';
     if(o.freeWash){
@@ -1745,13 +1772,13 @@ function bukaBayar(o, pra = null){
     }
     $('#pSimpan').disabled = $('#pCetak').disabled = true;
     const t = today();
-    const data = {bayar:{kaedah, rujukan: kaedah==='Tunai' ? '' : val('#pRuj'), bukti: kaedah==='Tunai' ? '' : bukti, diterima, baki},
+    const data = {bayar:{kaedah, rujukan: kaedah==='Tunai' ? '' : val('#pRuj'), bukti: kaedah==='Tunai' ? '' : bukti, diterima, baki, ...(pra ? {appsPelanggan: true, amaunPelanggan: r2(pra.amaunBayar ?? pra.jumlah)} : {}), ...(praSemak ? {semakBeza: praSemak} : {})},
       diskaun: dis_, diskaunLulus, diskaunMinta: null, jumlah: j, itemManual: manual, jumlahKasar: kasar(), status:'Selesai', aktif:false, tarikhBayar:t, bulanBayar:t.slice(0,7), dibayarOleh: staf.nama, masaBayar: Date.now()};
     if(o.freeWash) data.freeWash = {...o.freeWash, lulus: fwLulus};
     try{
       await updateDoc(doc(col('order'), o.id), data);
       KT.cermin({...cur, ...data}, cawD(), {status:'Selesai', aktif:false});
-      if(pra?.id) updateDoc(doc(col('bayar_pelanggan'), pra.id), {status: 'disahkan', disahkanOleh: staf.nama, masaSah: Date.now(), jumlahSah: j, no: o.no || ''}).catch(console.error);
+      if(pra?.id) updateDoc(doc(col('bayar_pelanggan'), pra.id), {status: 'disahkan', disahkanOleh: staf.nama, masaSah: Date.now(), jumlahSah: praSemak ? praSemak.diterimaSebenar : j, no: o.no || ''}).catch(console.error);
       kemasBayar = null; closeModal();
       toast(`✅ ${o.plat} dibayar ${RM(j)}${baki ? ' — baki ' + RM(baki) : ''}`);
       if(cetak) lihatResit({...cur, ...data});

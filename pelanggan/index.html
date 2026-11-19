@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-7">
+<meta name="app-versi" content="2026.11.19-8">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -269,15 +269,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-7';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-8';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.19-7';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.19-8';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-7';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-7';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.19-7';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-7';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-8';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-8';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.19-8';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-8';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -655,7 +655,7 @@ function viewBayar(){
   if(byHantar && byHantar.status !== 'hilang'){
     const h = byHantar, st = {menunggu: ['⏳ Menunggu semakan kaunter', 'Kaunter sedang menyemak bayaran anda. Sila tunggu sebentar — tidak perlu bayar sekali lagi.'], disahkan: ['✅ Bayaran disahkan', `Terima kasih! Bayaran ${RM(h.jumlahSah ?? h.jumlah)} untuk ${h.plat} telah diterima oleh ${esc(h.disahkanOleh || 'kaunter')}.`], ditolak: ['❌ Bayaran tidak dapat disahkan', `Sebab: ${esc(h.sebabTolak || '-')}. Sila hubungi kaunter.`]}[h.status] || ['', ''];
     $('#app').innerHTML = kepala + `<div class="panel" style="text-align:center"><h2 style="margin-top:0">${st[0]}</h2><p>${st[1]}</p>
-      <div class="muted">${esc(h.plat)} · ${esc(CAWANGAN.find(x => x.id === h.c)?.nama || '')} · ${RM(h.jumlah)} (${esc(h.kaedah || '')})</div>
+      <div class="muted">${esc(h.plat)} · ${esc(CAWANGAN.find(x => x.id === h.c)?.nama || '')} · ${RM(h.amaunBayar ?? h.jumlah)} (${esc(h.kaedah || '')})${h.amaunBayar != null && Math.abs(h.amaunBayar - h.jumlah) > 0.004 ? ` · resit ${RM(h.jumlah)}` : ''}</div>
       ${h.status !== 'menunggu' ? '<button class="btn btn-emas" id="byBaru" style="margin-top:12px">Selesai</button>' : '<button class="btn btn-garis" id="byBaru" style="margin-top:12px">Tutup paparan ini</button>'}</div>`;
     $('#byBaru').onclick = () => { if(h.status === 'menunggu' && !confirm('Tutup paparan? Bayaran anda masih akan disemak oleh kaunter.')) return; if(byUnsub){ byUnsub(); byUnsub = null; } byHantar = null; LS.set('sm_bayar', null); byData = null; byPlat = ''; tab = ahli ? 'Utama' : 'Bayar'; render(); };
     return;
@@ -675,6 +675,8 @@ function viewBayar(){
         <div style="border-top:1px dashed #94a3b8;margin:6px 0"></div><div style="display:flex;justify-content:space-between;font-size:18px"><b>JUMLAH</b><b>RM ${(+d.jumlah).toFixed(2)}</b></div></div></div>
       ${B && (B.qr || B.noAkaun) ? `<div class="panel"><div style="display:flex;gap:6px">${['QR / eWallet', 'Transfer'].filter(k => k === 'Transfer' ? B.noAkaun : B.qr).map(k => `<button data-bykaedah="${k}" style="flex:1;padding:10px;border-radius:999px;font-weight:700;border:2px solid ${byKaedah === k ? 'var(--emas)' : '#e2e8f0'};background:${byKaedah === k ? '#fffbeb' : '#fff'}">${k === 'Transfer' ? '🏦 Transfer bank' : '📱 Imbas QR'}</button>`).join('')}</div>
           ${htmlTerimaBayar(B, {mod: byKaedah === 'Transfer' ? 'transfer' : 'qr', jumlah: d.jumlah, fail: 'QR-' + byC})}
+          <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-weight:700;padding:10px;border-radius:12px;background:#f0fdf4"><input type="checkbox" id="byTepat" checked style="width:22px;height:22px;margin:0;flex:none"> Saya telah bayar tepat ${RM(d.jumlah)}</label>
+          <div id="byLainBox" style="display:none"><label style="display:block;margin-top:8px;font-weight:700">Amaun yang saya bayar (RM) *</label><input id="byAmaun" type="number" inputmode="decimal" step="0.01" placeholder="cth: 40.00" style="width:100%"></div>
           <label style="display:block;margin-top:12px;font-weight:700">No. rujukan transaksi (pilihan)</label><input id="byRuj" placeholder="cth: ID transaksi / 4 digit terakhir" style="width:100%">
           <label style="display:block;margin-top:10px;font-weight:700">Gambar / screenshot resit bayaran *</label><input id="byFail" type="file" accept="image/*" style="width:100%">
           <img id="byPrev" src="${byBukti}" style="max-width:100%;border-radius:10px;margin-top:6px;display:${byBukti ? 'block' : 'none'}">
@@ -701,14 +703,19 @@ function viewBayar(){
   $$('[data-byplat]').forEach(b => b.onclick = () => { $('#byPlatIn').value = b.dataset.byplat; cari(); });
   $$('[data-bykaedah]').forEach(b => b.onclick = () => { byKaedah = b.dataset.bykaedah; render(); });
   if($('#byFail')) $('#byFail').onchange = async e => { const f = e.target.files[0]; if(!f) return; try{ byBukti = await gambarBukti(f); $('#byPrev').src = byBukti; $('#byPrev').style.display = 'block'; }catch(_){ toast('Gagal baca gambar'); } };
+  const labelHantar = () => { const t = $('#byTepat').checked, v = parseFloat($('#byAmaun').value) || 0; $('#byHantarBtn').textContent = 'Hantar bukti bayaran ' + RM(t ? byData.jumlah : v); };
+  if($('#byTepat')) $('#byTepat').onchange = e => { $('#byLainBox').style.display = e.target.checked ? 'none' : 'block'; if(!e.target.checked) $('#byAmaun').focus(); labelHantar(); };
+  if($('#byAmaun')) $('#byAmaun').oninput = labelHantar;
   if($('#byHantarBtn')) $('#byHantarBtn').onclick = async () => { if(lihatSahaja()) return;
     if(!byBukti) return toast('Sila muat naik gambar resit bayaran');
-    const d = byData; $('#byHantarBtn').disabled = true; $('#byHantarBtn').textContent = 'Menghantar…';
+    const d = byData, tepat = $('#byTepat') ? $('#byTepat').checked : true;
+    const amaunBayar = tepat ? (Number(d.jumlah) || 0) : Math.round((parseFloat($('#byAmaun').value) || 0) * 100) / 100;
+    if(!tepat && !(amaunBayar > 0)) return toast('Isi amaun yang anda bayar'); $('#byHantarBtn').disabled = true; $('#byHantarBtn').textContent = 'Menghantar…';
     try{
       const ref = doc(collection(db, 'lionsafari', byC, 'bayar_pelanggan'));
-      await setDoc(ref, {orderId: d.orderId, plat: d.plat, no: d.no || '', jumlah: Number(d.jumlah) || 0, kaedah: byKaedah, rujukan: ($('#byRuj').value || '').trim(), bukti: byBukti,
+      await setDoc(ref, {orderId: d.orderId, plat: d.plat, no: d.no || '', jumlah: Number(d.jumlah) || 0, kaedah: byKaedah, rujukan: ($('#byRuj').value || '').trim(), bukti: byBukti, amaunBayar, tepat,
         nama: ahli?.nama || '', telefon: ahli?.telefon || '', ahliKod: ahli?.kod || '', status: 'menunggu', masa: serverTimestamp(), masaPeranti: Date.now()});
-      byHantar = {c: byC, id: ref.id, plat: d.plat, jumlah: d.jumlah, kaedah: byKaedah, status: 'menunggu'}; LS.set('sm_bayar', JSON.stringify({c: byC, id: ref.id}));
+      byHantar = {c: byC, id: ref.id, plat: d.plat, jumlah: d.jumlah, amaunBayar, kaedah: byKaedah, status: 'menunggu'}; LS.set('sm_bayar', JSON.stringify({c: byC, id: ref.id}));
       byBukti = ''; langganBayaran(); toast('✅ Bukti bayaran dihantar ke kaunter'); render(); window.scrollTo({top:0});
     }catch(e){ console.error(e); toast('⚠ Gagal hantar: ' + (e.code || e.message)); $('#byHantarBtn').disabled = false; $('#byHantarBtn').textContent = 'Hantar bukti bayaran'; }
   };
