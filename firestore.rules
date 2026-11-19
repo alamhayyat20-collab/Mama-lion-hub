@@ -29,6 +29,10 @@ service cloud.firestore {
     match /akaun/syarikat/aset/{id} {
       allow read, write: if pemilikAkaun() || kewanganSyarikat();
     }
+    // Memo perakaunan & audit (senarai semak dokumen, nota)
+    match /akaun/syarikat/memo/{id} {
+      allow read, write: if pemilikAkaun() || kewanganSyarikat();
+    }
 
     // Dokumen peribadi pekerja (IC, kontrak, sijil) — pemilik Akaun sahaja
     match /dokumen_staf/{id} {

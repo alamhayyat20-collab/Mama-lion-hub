@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-6">
+<meta name="app-versi" content="2026.11.19-7">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -269,15 +269,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-6';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-7';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.19-6';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.19-7';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-6';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-6';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.19-6';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-6';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-7';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-7';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.19-7';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.19-7';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},

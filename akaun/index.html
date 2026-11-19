@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.19-6">
+<meta name="app-versi" content="2026.11.19-7">
 <meta name="theme-color" content="#14532d">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -109,6 +109,8 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 #liveAk iframe{border:0;background:#fff;border-radius:10px;width:100%;height:100%;transition:width .2s}
 .tbl-harga{border-collapse:collapse;width:100%;font-size:13px}.tbl-harga th,.tbl-harga td{border-bottom:1px solid #e5e7eb;padding:5px 6px;text-align:right;white-space:nowrap}.tbl-harga th:first-child,.tbl-harga td:first-child{text-align:left;white-space:normal;min-width:160px}.tbl-harga thead th{background:#f8fafc;position:sticky;top:0}
 .jenama{display:flex;gap:10px;align-items:center}
+
+.memo-item{border-top:1px solid #eef0f2;padding:10px 0}.memo-item select{max-width:150px;font-size:14px;padding:6px}.memo-item textarea{font:inherit;font-size:14px;padding:8px}.memo-item b{font-weight:600}.memo-item.s-siap b,.memo-item.s-tiada b{color:#6b7280;text-decoration:line-through}.memo-item.s-proses{background:#fffbeb;margin:0 -8px;padding:10px 8px;border-radius:8px}
 #cawBar.empat{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 </style>
 </head>
@@ -140,18 +142,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-6';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.19-7';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-6';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-6';
-import { pasangSync } from '../sync-lib.js?v=2026.11.19-6';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-6';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-6';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-6';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.19-7';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen } from '../pekerja-lib.js?v=2026.11.19-7';
+import { pasangSync } from '../sync-lib.js?v=2026.11.19-7';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.19-7';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.19-7';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.19-7';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-6';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-6';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-6';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.19-7';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.19-7';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.19-7';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -164,7 +166,7 @@ const CARA_BAYAR    = ['Tunai','Bank / Transfer','Petty Cash','Kredit (Hutang)']
 const CARA_BAYAR_B  = ['Tunai','Bank / Transfer','Petty Cash'];
 const KAEDAH_JUALAN = [['tunai','Tunai'],['qr','QR / DuitNow'],['kad','Kad Debit/Kredit'],['ewallet','e-Wallet (TNG/Grab)'],['lain','Lain-lain']];
 const TABS = ['Jualan','Pembelian','Belanja','Petty Cash','Import'];
-const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan', 'Daftar Aset'];
+const OWNER_TABS = ['Ringkasan', 'Laporan Harian', 'Queue Kaunter', 'Arahan', ...TABS, 'Pekerja', 'Pelanggan', 'Promosi', 'Tetapan Apps', 'Laporan', 'Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];
 
 // ---------- Utiliti ----------
 const $ = s => document.querySelector(s);
@@ -211,8 +213,8 @@ const SYARIKAT = {nama: 'PETUNJUK PICTURES SDN. BHD.', noDaftar: '202101007513 (
 const UNIT_PEJABAT = {id:'pejabat', nama:'Pejabat / HQ', logo:'logo-pejabat.png'};
 const UNIT_MEDIA = {id:'media', nama:'Pengiklanan & Media', logo:'logo-media.png'};
 const UNIT_SYARIKAT = [UNIT_PEJABAT, UNIT_MEDIA];          // unit kewangan sahaja — pemilik & pegawai kewangan
-const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan', 'Daftar Aset'];
-const TAB_SYARIKAT = ['Laporan Tahunan', 'Daftar Aset'];     // peringkat syarikat (tiada pilihan unit)
+const TAB_KEW = ['Jualan', 'Pembelian', 'Belanja', 'Petty Cash', 'Laporan', 'Import', 'Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];
+const TAB_SYARIKAT = ['Laporan Tahunan', 'Daftar Aset', 'Memo Akaun'];     // peringkat syarikat (tiada pilihan unit)
 let isKewangan = false;                                     // pegawai kewangan syarikat (akaun/mama-lion/kewangan/{emel})
 const bolehKew = () => isOwner || isKewangan;
 const tabSaya = () => isOwner ? OWNER_TABS : isKewangan ? [...TABS, 'Laporan', ...TAB_SYARIKAT] : TABS;
@@ -452,7 +454,7 @@ function refresh(){
   $('#errBox').innerHTML = dataError ? `<div class="notice">⚠ ${esc(dataError)}</div>` : '';
   const ae = document.activeElement;
   if(ae && ae.dataset && ae.dataset.kekal && $('#dataBox').contains(ae)) return;   // jangan ganggu semasa menaip
-  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja') + senaraiPindahan(), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Daftar Aset':viewAset, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
+  const r = ({Ringkasan:viewRingkasan, Jualan:()=>senarai('jualan'), Pembelian:viewPembelian, Belanja:()=>senarai('belanja') + senaraiPindahan(), 'Petty Cash':viewPetty, Import:()=>'', Pekerja:viewPekerja, Pelanggan:viewPelanggan, Promosi:viewPromosi, Laporan:viewLaporan, 'Laporan Tahunan':viewTahunan, 'Daftar Aset':viewAset, 'Memo Akaun':viewMemo, 'Laporan Harian':viewTutupAk, 'Queue Kaunter':viewQueueAk, Arahan:viewArahanAk, 'Tetapan Apps':viewTetapanApps})[tab];
   $('#dataBox').innerHTML = r();
   if(tab === 'Pekerja') pasangPekerja();
   if(tab === 'Pelanggan') pasangPelanggan();
@@ -463,9 +465,10 @@ function refresh(){
   if(tab === 'Tetapan Apps') pasangTetapanApps();
   if(tab === 'Laporan Tahunan') pasangTahunan();
   if(tab === 'Daftar Aset') pasangAset();
+  if(tab === 'Memo Akaun') pasangMemo();
   badgeArahan(); badgeQueue();
   const csv = $('#btnCsv'); if(csv) csv.onclick = eksportCsv;
-  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : tab === 'Daftar Aset' ? `Daftar-Aset-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
+  const pr = $('#btnPrint'); if(pr) pr.onclick = () => cetakHalaman(tab === 'Memo Akaun' ? 'Memo-Perakaunan-Petunjuk-Pictures' : tab === 'Laporan Tahunan' ? `Laporan-Tahunan-Petunjuk-Pictures-TK${fyAkhir}` : tab === 'Daftar Aset' ? `Daftar-Aset-Petunjuk-Pictures-TK${fyAkhir}` : `Laporan-${namaCawangan()}-${bulan}`);
 }
 
 // ---------- Borang ----------
@@ -1033,6 +1036,118 @@ function kadMinyak(FD, J){
       <p class="muted" style="margin-bottom:0">Ikut pengguna: ${pg.map(p => `${esc(p)} ${RM(sum(rows.filter(r => (r.pengambil || '—') === p), r => r.amaun))}`).join(' · ')} · Dari tunai kaunter: ${RM(sum(rows.filter(r => r.sumber && r.sumber !== 'pejabat'), r => r.amaun))}</p>`
       : '<p class="muted">Tiada rekod minyak kenderaan syarikat dalam tahun kewangan ini.</p>'}</div>`;
 }
+// ================================================================
+// 📝 MEMO PERAKAUNAN & AUDIT — senarai semak dokumen & tindakan (Dato', Datin, pegawai kewangan)
+// Disimpan di akaun/syarikat/memo/utama. Item asal di bawah; item tambahan & nota disimpan dalam dokumen.
+// ================================================================
+const MEMO_KUMP = {A: 'Rekod kewangan yang belum ada', B: 'Dokumen syarikat & audit', C: 'Tindakan mulai sekarang'};
+const MEMO_ASAL = [
+  ['a1', 'A', 'Rekod jualan & belanja April – Disember 2025 (MASTER FINANCIAL 2025 / buku tunai / laporan harian lama)', 1],
+  ['a2', 'A', 'Penyata bank syarikat (Maybank / CIMB) — semua akaun, April 2025 hingga sekarang', 1],
+  ['a3', 'A', 'Penyata QR / DuitNow merchant untuk tempoh yang sama', 0],
+  ['a4', 'A', 'Gaji pekerja: senarai & gaji bulanan, slip gaji, caruman KWSP / PERKESO / EIS / PCB', 1],
+  ['a5', 'A', 'Sewa premis: perjanjian sewa & resit bayaran bulanan', 0],
+  ['a6', 'A', 'Bil bulanan: TNB, air, internet, telefon', 0],
+  ['a7', 'A', 'Kenderaan syarikat (Fortuner, D-Max, Mercedes): geran, harga & tarikh beli, perjanjian sewa beli (bank, ansuran, baki), insurans & cukai jalan', 1],
+  ['a8', 'A', 'Aset lain: mesin cuci, pressure washer, vakum, kontena, ubah suai premis (invois / anggaran harga & tarikh)', 0],
+  ['a9', 'A', 'Duit pengarah: bila Dato\' / Datin bayar kos syarikat guna duit sendiri, atau ambil duit syarikat untuk kegunaan sendiri', 0],
+  ['a10', 'A', 'Pinjaman / pembiayaan lain atas nama syarikat', 0],
+  ['a11', 'A', 'Hutang: invois pembekal belum bayar & pelanggan yang berhutang', 0],
+  ['a12', 'A', 'Baki stok sabun & kimia pada 31 Mac (anggaran pun boleh)', 0],
+  ['b1', 'B', 'Status penyata kewangan TK 2023, 2024, 2025 & 2026 — sudah diaudit & dihantar ke SSM? (rekod terakhir di SSM: TK 31 Mac 2022)', 1],
+  ['b2', 'B', 'Salinan penyata kewangan teraudit terakhir', 0],
+  ['b3', 'B', 'Hubungi juruaudit AB Hadi & Co. — status & jadual audit', 0],
+  ['b4', 'B', 'Hubungi setiausaha syarikat (Puan Faridah) — tarikh akhir hantar ke SSM & penyata tahunan', 1],
+  ['b5', 'B', 'No. cukai syarikat (LHDN), Borang e-C tahun lepas, nama ejen cukai', 0],
+  ['b6', 'B', 'Lesen perniagaan & permit premis', 0],
+  ['b7', 'B', 'Bilangan pekerja sekarang (tetap & part-time)', 0],
+  ['c1', 'C', 'Minyak kenderaan dari laci kaunter direkod di Tutup Kaunter → ⛽ Minyak (resit + PIN supervisor)', 0],
+  ['c2', 'C', 'Setiap belanja mesti ada resit — ambil gambar & simpan', 0],
+  ['c3', 'C', 'Asingkan duit syarikat & duit peribadi', 0],
+  ['c4', 'C', 'Pilih pegawai kewangan & daftarkan emel log masuk (Laporan tahun kewangan → 👥 Akses)', 0]
+].map(([id, k, teks, utama]) => ({id, k, teks, utama: !!utama, asal: true}));
+const MEMO_STATUS = [['belum', '⬜ Belum'], ['proses', '🟡 Dalam proses'], ['siap', '✅ Siap'], ['tiada', '➖ Tiada / tak berkaitan']];
+const refMemo = () => doc(store, 'akaun', 'syarikat', 'memo', 'utama');
+let memo = null, memoMuat = false, memoTapis = 'semua';
+async function muatMemo(){
+  if(memoMuat) return; memoMuat = true;
+  try{ const d = await getDoc(refMemo()); memo = d.exists() ? d.data() : {}; }catch(e){ memo = {}; toast('⚠ Memo: ' + (e.code || e.message)); }
+  memoMuat = false; if(tab === 'Memo Akaun') refresh();
+}
+const itemMemo = () => [...MEMO_ASAL.filter(x => !(memo?.buang || []).includes(x.id)).map(x => ({...x, utama: memo?.utamaUbah && x.id in memo.utamaUbah ? memo.utamaUbah[x.id] : x.utama})), ...(memo?.tambahan || [])].map(x => ({...x, status: memo?.status?.[x.id] || 'belum', nota: memo?.nota?.[x.id] || '', oleh: memo?.oleh?.[x.id] || ''}));
+function teksMemo(){
+  const L = itemMemo(), ikon = {belum: '⬜', proses: '🟡', siap: '✅', tiada: '➖'}, siap = L.filter(x => ['siap', 'tiada'].includes(x.status)).length;
+  const b = ['*MEMO PERAKAUNAN & AUDIT*', `${SYARIKAT.nama} (${SYARIKAT.noDaftar})`, `Dikemas kini: ${new Date().toLocaleDateString('en-GB')} · ${siap}/${L.length} selesai`, ''];
+  Object.entries(MEMO_KUMP).forEach(([k, t]) => { const l = L.filter(x => x.k === k); if(!l.length) return; b.push(`*${k}. ${t.toUpperCase()}*`);
+    l.forEach((x, i) => { b.push(`${ikon[x.status]} ${i + 1}. ${x.utama ? '⭐ ' : ''}${x.teks}`); if(x.nota) b.push(`    📝 ${x.nota}`); }); b.push(''); });
+  const n = memo?.notaUmum || []; if(n.length){ b.push('*NOTA*'); n.slice(-10).forEach(x => b.push(`• ${x.teks} — ${x.oleh || ''}, ${new Date(x.masa || 0).toLocaleDateString('en-GB')}`)); b.push(''); }
+  b.push('⬜ belum · 🟡 dalam proses · ✅ siap · ⭐ keutamaan');
+  return b.join('\n');
+}
+async function salinTeks(t){
+  try{ await navigator.clipboard.writeText(t); toast('📋 Disalin — tampal ke WhatsApp'); }
+  catch(_){ const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try{ document.execCommand('copy'); toast('📋 Disalin'); }catch(__){ toast('Tekan lama pada teks untuk salin'); } a.remove(); }
+}
+function viewMemo(){
+  if(!bolehKew()) return '<div class="card muted">Memo untuk pemilik & pegawai kewangan sahaja.</div>';
+  if(!memo){ setTimeout(muatMemo, 0); return '<div class="card muted">⏳ Memuatkan memo…</div>'; }
+  const L = itemMemo(), selesai = L.filter(x => ['siap', 'tiada'].includes(x.status)).length, pct = L.length ? Math.round(selesai / L.length * 100) : 0;
+  const tunjuk = x => memoTapis === 'semua' || (memoTapis === 'belum' ? !['siap', 'tiada'].includes(x.status) : x.utama);
+  const kump = Object.entries(MEMO_KUMP).map(([k, t]) => { const l = L.filter(x => x.k === k && tunjuk(x)); if(!l.length) return '';
+    return `<div class="card"><h3 style="margin-top:0">${k}. ${esc(t)}</h3>${l.map(x => `<div class="memo-item s-${x.status}">
+      <div class="row" style="gap:8px;align-items:flex-start;justify-content:space-between;flex-wrap:nowrap">
+        <div style="flex:1"><b>${x.utama ? '⭐ ' : ''}${esc(x.teks)}</b>${x.oleh ? `<br><span class="muted" style="font-size:12px">${esc(x.oleh)}</span>` : ''}</div>
+        <select data-mstatus="${x.id}" style="width:auto;margin:0;flex:none">${MEMO_STATUS.map(([v, l]) => `<option value="${v}" ${x.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <textarea data-mnota="${x.id}" data-kekal="1" rows="${x.nota ? 2 : 1}" placeholder="📝 Nota…" style="margin:6px 0 0">${esc(x.nota)}</textarea>
+      <div class="row noprint" style="gap:6px;margin-top:4px"><button class="small" data-mutama="${x.id}">${x.utama ? '☆ Buang keutamaan' : '⭐ Keutamaan'}</button><button class="small" data-mbuang="${x.id}">🗑 Buang</button></div></div>`).join('')}</div>`; }).join('');
+  const nota = (memo.notaUmum || []).map((x, i) => ({...x, i})).reverse();
+  return `<div class="card"><div class="section-title"><h3>📝 Memo Perakaunan & Audit</h3><b>${selesai}/${L.length} selesai</b></div>
+      <div style="height:10px;background:#e5e7eb;border-radius:6px;overflow:hidden"><div style="width:${pct}%;height:100%;background:#15803d"></div></div>
+      <p class="muted" style="margin:8px 0">Senarai dokumen & tindakan untuk audit ${esc(SYARIKAT.nama)}. Dikongsi antara Dato', Datin & pegawai kewangan — setiap perubahan disimpan terus.${memo.dikemaskini ? ` Kemas kini terakhir: ${esc(memo.dikemaskiniOleh || '')}, ${new Date(memo.dikemaskini).toLocaleString('en-GB')}.` : ''}</p>
+      <div class="row noprint" style="gap:8px;flex-wrap:wrap"><button class="primary" id="mSalin">📋 Salin memo (WhatsApp)</button><button id="mWa">💬 Hantar WhatsApp</button><button id="btnPrint">🖨 Cetak</button>
+        <select id="mTapis" style="width:auto;margin:0">${[['semua', 'Semua'], ['belum', 'Belum selesai'], ['utama', '⭐ Keutamaan']].map(([v, l]) => `<option value="${v}" ${memoTapis === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div></div>
+    <div class="card" style="border:2px solid #d97706"><b>⚠ Tarikh akhir</b><p class="muted" style="margin:4px 0 0">Akta Syarikat 2016: penyata kewangan diedarkan dalam masa 6 bulan selepas akhir TK & dihantar ke SSM dalam masa 30 hari selepas itu. Borang e-C LHDN biasanya 7 bulan selepas akhir TK. Untuk TK berakhir 31 Mac 2026 — kemungkinan sudah melepasi akhir Oktober 2026. Sahkan dengan setiausaha & juruaudit.</p></div>
+    ${kump || '<div class="card muted">Tiada item untuk tapisan ini.</div>'}
+    <div class="card noprint"><h3 style="margin-top:0">➕ Tambah item</h3>
+      <label>Bahagian</label><select id="mKump">${Object.entries(MEMO_KUMP).map(([k, t]) => `<option value="${k}">${k}. ${esc(t)}</option>`).join('')}</select>
+      <label>Item — satu setiap baris (boleh tampal senarai dari WhatsApp / Claude)</label><textarea id="mBaru" rows="3" placeholder="cth:\nSurat sokongan bank\nResit cukai tanah"></textarea>
+      <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="mBaruUtama" style="width:auto;margin:0"> ⭐ Keutamaan</label>
+      <button class="primary" id="mTambah">➕ Tambah ke memo</button></div>
+    <div class="card"><h3 style="margin-top:0">🗒 Nota & catatan</h3>
+      <div class="noprint"><textarea id="mNotaBaru" rows="3" style="font:inherit" placeholder="Tulis atau tampal nota di sini — cth: maklum balas juruaudit, arahan, peringatan…"></textarea><button class="primary" id="mNotaTambah">💾 Simpan nota</button></div>
+      ${nota.map(x => `<div style="border-top:1px solid #eee;padding:8px 0"><div style="white-space:pre-wrap">${esc(x.teks)}</div><div class="row" style="justify-content:space-between;gap:6px"><span class="muted" style="font-size:12px">${esc(x.oleh || '')} · ${new Date(x.masa || 0).toLocaleString('en-GB')}</span><span class="noprint"><button class="small" data-msalinnota="${x.i}">📋 Salin</button> <button class="small" data-mpadamnota="${x.i}">🗑</button></span></div></div>`).join('') || '<p class="muted">Belum ada nota.</p>'}</div>`;
+}
+async function simpanMemo(d){
+  try{ await setDoc(refMemo(), {...d, dikemaskini: Date.now(), dikemaskiniOleh: nama}, {merge: true}); const r = await getDoc(refMemo()); memo = r.exists() ? r.data() : {}; return true; }
+  catch(e){ toast('⚠ ' + (e.code || e.message)); return false; }
+}
+function pasangMemo(){
+  if($('#mSalin')) $('#mSalin').onclick = () => salinTeks(teksMemo());
+  if($('#mWa')) $('#mWa').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(teksMemo()), '_blank');
+  if($('#mTapis')) $('#mTapis').onchange = e => { memoTapis = e.target.value; refresh(); };
+  document.querySelectorAll('[data-mstatus]').forEach(x => x.onchange = async () => { const id = x.dataset.mstatus;
+    if(await simpanMemo({status: {...(memo.status || {}), [id]: x.value}, oleh: {...(memo.oleh || {}), [id]: `${nama}, ${new Date().toLocaleDateString('en-GB')}`}})){ toast('✅ Status dikemas kini'); refresh(); } });
+  document.querySelectorAll('[data-mnota]').forEach(x => x.onchange = async () => { const id = x.dataset.mnota;
+    if(await simpanMemo({nota: {...(memo.nota || {}), [id]: x.value.trim()}, oleh: {...(memo.oleh || {}), [id]: `${nama}, ${new Date().toLocaleDateString('en-GB')}`}})) toast('📝 Nota disimpan'); });
+  document.querySelectorAll('[data-mutama]').forEach(b => b.onclick = async () => { const id = b.dataset.mutama, asal = MEMO_ASAL.find(x => x.id === id);
+    if(asal){ const u = {...(memo.utamaUbah || {})}; const kini = id in u ? u[id] : asal.utama; await simpanMemo({utamaUbah: {...u, [id]: !kini}}); }
+    else await simpanMemo({tambahan: (memo.tambahan || []).map(x => x.id === id ? {...x, utama: !x.utama} : x)});
+    refresh(); });
+  document.querySelectorAll('[data-mbuang]').forEach(b => b.onclick = async () => { const id = b.dataset.mbuang; if(!confirm('Buang item ini dari memo?')) return;
+    if(MEMO_ASAL.some(x => x.id === id)) await simpanMemo({buang: [...new Set([...(memo.buang || []), id])]}); else await simpanMemo({tambahan: (memo.tambahan || []).filter(x => x.id !== id)});
+    refresh(); });
+  if($('#mTambah')) $('#mTambah').onclick = async () => {
+    const baris = $('#mBaru').value.split('\n').map(t => t.replace(/^\s*([-•*⬜🟡✅➖]|\d+[.)])\s*/u, '').trim()).filter(Boolean);
+    if(!baris.length) return toast('Tulis sekurang-kurangnya satu item');
+    const k = $('#mKump').value, u = $('#mBaruUtama').checked, t = Date.now();
+    if(await simpanMemo({tambahan: [...(memo.tambahan || []), ...baris.map((teks, i) => ({id: `x${t}${i}`, k, teks, utama: u, dicipta: t, olehCipta: nama}))]})){ toast(`➕ ${baris.length} item ditambah`); refresh(); }
+  };
+  if($('#mNotaTambah')) $('#mNotaTambah').onclick = async () => { const t = $('#mNotaBaru').value.trim(); if(!t) return toast('Tulis nota dahulu');
+    if(await simpanMemo({notaUmum: [...(memo.notaUmum || []), {teks: t, oleh: nama, masa: Date.now()}]})){ toast('💾 Nota disimpan'); refresh(); } };
+  document.querySelectorAll('[data-msalinnota]').forEach(b => b.onclick = () => salinTeks((memo.notaUmum || [])[+b.dataset.msalinnota]?.teks || ''));
+  document.querySelectorAll('[data-mpadamnota]').forEach(b => b.onclick = async () => { if(!confirm('Padam nota ini?')) return; const l = [...(memo.notaUmum || [])]; l.splice(+b.dataset.mpadamnota, 1); await simpanMemo({notaUmum: l}); refresh(); });
+}
+
 function pasangTahunan(){
   pasangAksesKew();
   if($('#fyPindahLama')) $('#fyPindahLama').onclick = async () => {
@@ -1770,7 +1885,7 @@ function csvGaji(){
 // ================================================================
 const KATEGORI = [
   {id:'kew', nama:'💰 Kewangan & Akaun', pendek:'💰 Kewangan', w:'biru', item:[
-    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Daftar Aset', i:'🚗', l:'Daftar aset & susut nilai'}, {t:'Import', i:'⬆️'}]},
+    {t:'Laporan Harian', i:'📅'}, {t:'Jualan', i:'🧾'}, {t:'Pembelian', i:'📦'}, {t:'Belanja', i:'💸'}, {t:'Petty Cash', i:'🪙'}, {t:'Laporan', i:'📊', l:'Laporan untung rugi'}, {t:'Laporan Tahunan', i:'📘', l:'Laporan tahun kewangan'}, {t:'Daftar Aset', i:'🚗', l:'Daftar aset & susut nilai'}, {t:'Memo Akaun', i:'📝', l:'Memo perakaunan & audit'}, {t:'Import', i:'⬆️'}]},
   {id:'pek', nama:'👷 Pekerja', pendek:'👷 Pekerja', w:'jingga', item:[
     {t:'Pekerja', pk:'Senarai', i:'👥', l:'Senarai & urus'}, {t:'Arahan', i:'💬', l:'Arahan & tugasan', b:'badgeArahan'}, {t:'Pekerja', pk:'Gaji Bulanan', i:'💰', l:'Gaji'},
     {t:'Pekerja', pk:'Kehadiran', i:'🕘', l:'Kehadiran'}, {t:'Pekerja', pk:'Roster', i:'📅', l:'Roster'}, {t:'Pekerja', pk:'Permohonan', i:'📝', l:'Permohonan'},
