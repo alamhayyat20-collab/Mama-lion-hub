@@ -1,5 +1,5 @@
 // Lion Safari V2 — simpan fail apps untuk guna tanpa internet (data Firebase diurus berasingan)
-const V = 'lionsafari-v2-62';
+const V = 'lionsafari-v2-63';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'logo-mamalion.jpg', 'logo-lionking.jpg', '../firebase-config.js', '../pekerja-lib.js', '../safari-lib.js', '../sync-lib.js', '../i18n-lib.js', '../pasang-lib.js', '../kamus-en.js'];
 self.addEventListener('install', e => e.waitUntil(caches.open(V).then(c => Promise.allSettled(SHELL.map(u => c.add(u)))).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('lionsafari-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));

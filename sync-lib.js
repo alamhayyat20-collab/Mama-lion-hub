@@ -15,6 +15,9 @@ import { waitForPendingWrites, disableNetwork, enableNetwork } from 'https://www
 export const versiApps = () => document.querySelector('meta[name="app-versi"]')?.content || '';
 
 const CSS = `
+.jam-chip{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;padding:3px 10px;background:#1e293b;color:#f8fafc;
+  font-family:inherit;line-height:1.15;white-space:nowrap;font-variant-numeric:tabular-nums}
+.jam-chip b{font-size:15px;font-weight:800;letter-spacing:.5px}.jam-chip small{font-size:10.5px;color:#cbd5e1;font-weight:600;display:block;margin:0}
 .sync-btn{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;
   background:#1e293b;color:#e2e8f0;font-family:inherit;white-space:nowrap;line-height:1.2}
 .sync-btn .ik{display:inline-block}
@@ -71,6 +74,22 @@ async function segarkanFail(awalan){
  *   awalan   — awalan nama cache service worker apps (cth 'lionsafari-')
  *   sebelum  — fungsi pilihan; pulangkan teks amaran jika muat semula perlu disahkan (cth borang separuh diisi)
  */
+// 🕒 Jam digital & tarikh semasa (waktu Malaysia) — dipaparkan di kepala setiap apps
+const HARI_BM = ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'], BULAN_BM = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+const p2 = n => String(n).padStart(2, '0');
+export function waktuMY(){ try{ return new Date(new Date().toLocaleString('en-US', {timeZone: 'Asia/Kuala_Lumpur'})); }catch(_){ return new Date(); } }
+export function fmtJam(d = waktuMY()){ return {jam: `${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`, tarikh: `${HARI_BM[d.getDay()]}, ${d.getDate()} ${BULAN_BM[d.getMonth()]} ${d.getFullYear()}`}; }
+export function pasangJam(tempat, {sebelum = null} = {}){
+  const el = typeof tempat === 'string' ? document.querySelector(tempat) : tempat;
+  if(!el) return null;
+  if(!document.getElementById('syncCss')) document.head.insertAdjacentHTML('beforeend', `<style id="syncCss">${CSS}</style>`);
+  let c = el.querySelector('.jam-chip');
+  if(!c){ c = document.createElement('span'); c.className = 'jam-chip'; c.innerHTML = '<b></b><small></small>'; sebelum && el.contains(sebelum) ? el.insertBefore(c, sebelum) : el.appendChild(c); }
+  const kemas = () => { const f = fmtJam(); c.querySelector('b').textContent = f.jam; c.querySelector('small').textContent = f.tarikh; };
+  kemas(); clearInterval(c._t); c._t = setInterval(kemas, 1000);
+  return c;
+}
+
 export function pasangSync({store = null, tempat, awalan = '', sebelum = null} = {}){
   if(!document.getElementById('syncCss')) document.head.insertAdjacentHTML('beforeend', `<style id="syncCss">${CSS}</style>`);
   const versi = versiApps();
@@ -86,6 +105,8 @@ export function pasangSync({store = null, tempat, awalan = '', sebelum = null} =
     if(el && !el.contains(btn)) el.appendChild(btn);
   }
   letak();
+  // Jam digital di sebelah butang Sync (kecuali apps yang ada jam sendiri: #jam)
+  if(!document.getElementById('jam')){ const el = typeof tempat === 'string' ? document.querySelector(tempat) : tempat; if(el) pasangJam(el, {sebelum: btn}); }
 
   async function semakVersi(diam = true){
     if(!navigator.onLine || !versi) return false;
