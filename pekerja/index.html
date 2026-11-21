@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.21-4">
-<meta name="theme-color" content="#14532d">
+<meta name="app-versi" content="2026.11.21-5">
+<meta name="theme-color" content="#1F3A68">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,18 +15,21 @@
 <link rel="icon" href="icon-192.png">
 <title>Apps Pekerja — Mama Lion & Lion King</title>
 <style>
-:root{--hijau:#14532d;--hijau2:#dcfce7;--emas:#f59e0b;--emas2:#fef3c7;--merah:#b91c1c;--muted:#64748b;--line:#e5e7eb}
+:root{--hijau:#1F3A68;--hijau2:#EEF2FA;--navy:#1F3A68;--emasJ:#C9A646;--emas:#f59e0b;--emas2:#fef3c7;--merah:#b91c1c;--muted:#64748b;--line:#e5e7eb}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f1f5f9;color:#0f172a}
-header{background:var(--hijau);color:#fff;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
-header b{font-size:17px}header small{display:block;color:#bbf7d0;font-size:12px}
+header{background:var(--navy);border-bottom:3px solid var(--emasJ);color:#fff;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
+header b{font-size:17px}header small{display:block;color:#E5C97A;font-size:12px}
 .hlogo{width:40px;height:40px;border-radius:9px;background:#fff;object-fit:contain}
 nav{display:flex;overflow-x:auto;scrollbar-width:none;background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px #0002}
 nav::-webkit-scrollbar{display:none}
-nav button{flex:1 0 62px;border:0;background:none;padding:10px 4px;font-size:12px;color:var(--muted);font-family:inherit;position:relative;white-space:nowrap}
+nav button{flex:1 0 66px;border:0;background:none;padding:8px 4px 9px;font-size:11.5px;font-weight:600;color:#475569;font-family:inherit;position:relative;white-space:nowrap;transition:color .15s,background .15s}
+nav button:hover{background:#F5F7FB}
 nav button i{position:absolute;top:4px;right:8px;background:var(--merah);color:#fff;border-radius:999px;font-size:10px;font-style:normal;padding:1px 5px;font-weight:700}
-nav button b{display:block;font-size:20px;margin-bottom:2px}
-nav button.on{color:var(--hijau);font-weight:700;box-shadow:inset 0 -3px var(--hijau)}
+nav button b{display:flex;justify-content:center;font-size:20px;margin-bottom:3px;height:28px;align-items:center}
+nav button b .i3d{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 2px #0f172a26);transition:transform .15s}
+nav button.on b .i3d{transform:translateY(-1px) scale(1.08)}
+nav button.on{color:var(--navy);font-weight:800;box-shadow:inset 0 -3px var(--emasJ);background:#F5F7FB}
 main{max-width:640px;margin:auto;padding:12px;padding-bottom:50px}
 .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px #0000000d;margin-bottom:12px}
 h3{margin:0 0 10px;font-size:17px}
@@ -45,7 +48,7 @@ label{font-size:13px;font-weight:650}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .tag{display:inline-block;padding:3px 9px;border-radius:999px;background:#f1f5f9;font-size:12px;white-space:nowrap}
-.tag.ok{background:var(--hijau2);color:var(--hijau)}.tag.warn{background:var(--emas2)}.tag.bad{background:#fee2e2;color:#991b1b}
+.tag.ok{background:#dcfce7;color:#166534}.tag.warn{background:var(--emas2)}.tag.bad{background:#fee2e2;color:#991b1b}
 .item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .item:last-child{border-bottom:0}
 .item b{display:block}.item small{color:var(--muted);font-size:12px}
@@ -116,20 +119,21 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-5';
 bannerPelayarDalaman({nama: 'Apps Pekerja'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.21-4';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.21-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.21-4';
-import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.21-4';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.21-4';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.21-4';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.21-4';
-import { pasangSync } from '../sync-lib.js?v=2026.11.21-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.21-4';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.21-5';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.21-5';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.21-5';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.21-5';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.21-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.21-5';
+import { i3d } from '../ikon3d.js?v=2026.11.21-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.21-5';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -348,7 +352,7 @@ function renderNav(){
   if(!saya) return;
   $('#nav').classList.remove('hidden');
   const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length, baru = memoBaru();
-  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Tutup' && tutupMenunggu.length ? `<i>${tutupMenunggu.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
+  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i3d(i)}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Tutup' && tutupMenunggu.length ? `<i>${tutupMenunggu.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
 }
 function render(){

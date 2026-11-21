@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.21-4">
+<meta name="app-versi" content="2026.11.21-5">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -89,6 +89,10 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 .navkat,.navsub{display:flex;gap:6px;overflow:auto;padding-bottom:1px}
 .navkat button{background:#fff;color:#334155;font-weight:700;border:1px solid #E2E8F0;border-radius:10px;padding:9px 14px;transition:background .15s,border-color .15s}
 .navkat button:hover{border-color:#1F3A68;color:#1F3A68}
+.i3d{width:22px;height:22px;object-fit:contain;flex:none;vertical-align:-5px;filter:drop-shadow(0 1px 1px #0f172a22)}
+.navkat button,.navsub button{display:inline-flex;align-items:center;gap:7px}
+.i3d-t{width:28px;height:28px}.i3d-h{width:24px;height:24px}
+.menutiles button i .i3d{filter:drop-shadow(0 2px 2px #0f172a26)}
 .navkat button.active{background:#1F3A68;color:#fff;border-color:#1F3A68;box-shadow:inset 0 -3px 0 #C9A646}
 .navsub{border-bottom:1px solid #E2E8F0;gap:2px}
 .navsub button{background:transparent;border:0;border-radius:0;color:#475569;font-weight:600;padding:10px 12px;box-shadow:inset 0 -3px 0 transparent}
@@ -148,18 +152,19 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-5';
+import { i3d, teks3d } from '../ikon3d.js?v=2026.11.21-5';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-4';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-4';
-import { pasangSync } from '../sync-lib.js?v=2026.11.21-4';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-4';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-5';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-5';
+import { pasangSync } from '../sync-lib.js?v=2026.11.21-5';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-5';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-4';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-4';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-4';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-5';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-5';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -2206,10 +2211,10 @@ const KATEGORI = [
     {t:'Tetapan Apps', tk:'Kaunter', i:'🦁', l:'Kaunter'}, {t:'Tetapan Apps', tk:'Pekerja', i:'👷', l:'Apps Pekerja'}, {t:'Tetapan Apps', tk:'Pelanggan', i:'⭐', l:'Apps Pelanggan'}]}];
 const itemAktif = x => x.t === tab && (!x.pk || x.pk === pkMod || (x.pk === 'Senarai' && ![...MOD_KM, ...MOD_EXTRA, 'Gaji Bulanan', 'Rekod Bulan Ini'].includes(pkMod))) && (!x.tk || x.tk === tkSeg);
 const katSemasa = () => tab === 'Ringkasan' ? null : (KATEGORI.find(k => k.item.some(itemAktif)) || KATEGORI.find(k => k.item.some(x => x.t === tab)));
-const labelItem = x => `${x.i} ${esc(x.l || x.t)}${x.b ? `<span id="${x.b}"></span>` : ''}`;
+const labelItem = x => `${i3d(x.i)}<span>${esc(x.l || x.t)}</span>${x.b ? `<span id="${x.b}"></span>` : ''}`;
 function navKategori(){
   const k = katSemasa();
-  return `<div class="navkat"><button class="kat-navy ${tab === 'Ringkasan' ? 'active' : ''}" data-kat="__utama">🏠 Ringkasan</button>${KATEGORI.map(c => `<button class="kat-${c.w} ${k?.id === c.id ? 'active' : ''}" data-kat="${c.id}">${c.pendek}</button>`).join('')}</div>
+  return `<div class="navkat"><button class="kat-navy ${tab === 'Ringkasan' ? 'active' : ''}" data-kat="__utama">${teks3d('🏠 Ringkasan')}</button>${KATEGORI.map(c => `<button class="kat-${c.w} ${k?.id === c.id ? 'active' : ''}" data-kat="${c.id}">${teks3d(c.pendek)}</button>`).join('')}</div>
     ${k ? `<div class="navsub kat-${k.w}">${k.item.map((x, j) => `<button class="${itemAktif(x) ? 'active' : ''}" data-katitem="${k.id}|${j}">${labelItem(x)}</button>`).join('')}</div>` : ''}`;
 }
 function pergiItem(x){
@@ -2222,8 +2227,8 @@ function pasangNavKategori(){
   $$('[data-katitem]').forEach(b => b.onclick = () => { const [kid, j] = b.dataset.katitem.split('|'); pergiItem(KATEGORI.find(c => c.id === kid).item[+j]); });
 }
 function menuUtama(){
-  return `<div class="noprint" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:12px">${KATEGORI.filter(k => k.id !== 'tet').map(k => `<div class="menukat kat-${k.w}"><h3>${k.nama}</h3>
-    <div class="menutiles">${k.item.map((x, j) => `<button data-katitem="${k.id}|${j}"><i>${x.i}</i><span>${esc(x.l || x.t)}${x.b === 'badgeQueue' ? `<span class="badgeQ2"></span>` : ''}</span></button>`).join('')}</div></div>`).join('')}</div>`;
+  return `<div class="noprint" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:12px">${KATEGORI.filter(k => k.id !== 'tet').map(k => `<div class="menukat kat-${k.w}"><h3>${teks3d(k.nama, 'i3d i3d-h')}</h3>
+    <div class="menutiles">${k.item.map((x, j) => `<button data-katitem="${k.id}|${j}"><i>${i3d(x.i, 'i3d i3d-t')}</i><span>${esc(x.l || x.t)}${x.b === 'badgeQueue' ? `<span class="badgeQ2"></span>` : ''}</span></button>`).join('')}</div></div>`).join('')}</div>`;
 }
 
 // ================================================================
