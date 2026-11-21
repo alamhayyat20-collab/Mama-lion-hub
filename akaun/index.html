@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.21-3">
+<meta name="app-versi" content="2026.11.21-4">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -55,7 +55,8 @@ tr.sub td{background:#f9fafb;font-weight:650}
 .totalbox{background:#EEF2FA;border-radius:10px;padding:10px;font-weight:700;margin-bottom:10px}
 .synctag{font-size:12px;padding:5px 9px;border-radius:999px;background:#2B4C9B;color:#F6ECCF}
 .scroll{overflow-x:auto}
-footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
+footer{text-align:center;color:#C9D3E8;background:#1F3A68;border-top:3px solid #C9A646;padding:22px 16px calc(22px + env(safe-area-inset-bottom));font-size:12px;margin-top:18px;line-height:1.6}
+footer b{color:#E5C97A}
 #pasangBox{max-width:1000px;margin:10px auto 0;padding:0 14px}
 .overlay{position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .overlay .box{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
@@ -86,16 +87,21 @@ header{padding-top:max(14px,env(safe-area-inset-top))}
 .kat-biru{--k:#1d4ed8;--kl:#dbeafe}.kat-jingga{--k:#c2410c;--kl:#ffedd5}.kat-hijau{--k:#15803d;--kl:#dcfce7}.kat-navy{--k:#1F3A68;--kl:#F6ECCF}.kat-emas{--k:#92400e;--kl:#fef3c7}.kat-kelabu{--k:#374151;--kl:#e5e7eb}
 nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 .navkat,.navsub{display:flex;gap:6px;overflow:auto;padding-bottom:1px}
-.navkat button{background:var(--kl);color:var(--k);font-weight:700;border:2px solid transparent}
-.navkat button.active{background:var(--k);color:#fff}
-.navsub button{background:#fff;border:1.5px solid var(--kl);color:var(--k);font-weight:600}
-.navsub button.active{background:var(--kl);border-color:var(--k);font-weight:800}
-.menukat{border-radius:14px;padding:12px;background:#fff;border-top:6px solid var(--k);box-shadow:0 1px 4px #0001}
-.menukat h3{margin:0 0 8px;color:var(--k);font-size:16px}
-.menutiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-.menutiles button{background:var(--kl);color:#111827;text-align:left;padding:12px;border-radius:12px;min-height:58px;font-weight:700;display:flex;gap:8px;align-items:center}
-.menutiles button i{font-style:normal;font-size:20px}
-.menutiles button:hover,.navsub button:hover{outline:2px solid var(--k)}
+.navkat button{background:#fff;color:#334155;font-weight:700;border:1px solid #E2E8F0;border-radius:10px;padding:9px 14px;transition:background .15s,border-color .15s}
+.navkat button:hover{border-color:#1F3A68;color:#1F3A68}
+.navkat button.active{background:#1F3A68;color:#fff;border-color:#1F3A68;box-shadow:inset 0 -3px 0 #C9A646}
+.navsub{border-bottom:1px solid #E2E8F0;gap:2px}
+.navsub button{background:transparent;border:0;border-radius:0;color:#475569;font-weight:600;padding:10px 12px;box-shadow:inset 0 -3px 0 transparent}
+.navsub button:hover{color:#1F3A68;background:#F5F7FB}
+.navsub button.active{color:#1F3A68;font-weight:800;box-shadow:inset 0 -3px 0 #C9A646;background:transparent}
+.menukat{border-radius:14px;padding:14px;background:#fff;border:1px solid #E5E7EB;box-shadow:0 1px 2px #0f172a0d}
+.menukat h3{margin:0 0 10px;color:#1F3A68;font-size:15px;letter-spacing:.2px;padding-bottom:8px;border-bottom:1px solid #EEF2F7;display:flex;align-items:center;gap:6px}
+.menukat h3::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--k)}
+.menutiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.menutiles button{background:#fff;color:#0F172A;text-align:left;padding:10px 12px;border-radius:10px;min-height:58px;font-weight:650;display:flex;gap:10px;align-items:center;border:1px solid #E5E7EB;transition:border-color .15s,background .15s}
+.menutiles button i{font-style:normal;font-size:18px;width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:9px;background:var(--kl)}
+.menutiles button:hover{border-color:#1F3A68;background:#F8FAFD}
+.menutiles button:active{transform:scale(.98)}
 .appkad{border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:6px}
 .appkad:hover{border-color:#1F3A68}
 .appkad .row button{flex:1}
@@ -125,7 +131,7 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 <div id="cawBar" class="noprint"></div>
 <div id="bulanBar" class="row" style="max-width:1000px;margin:10px auto 0;padding:0 14px"></div>
 <main id="app"><div class="card muted">Memuatkan…</div></main>
-<footer>Akaun Petunjuk Pictures Sdn. Bhd. (202101007513) • Tahun kewangan berakhir 31 Mac • Data disimpan di Firebase (lion-safari) • Akses Management sahaja</footer>
+<footer><b>Akaun Petunjuk Pictures Sdn. Bhd.</b> (202101007513)<br>Tahun kewangan berakhir 31 Mac • Data disimpan di Firebase (lion-safari) • Akses Management sahaja</footer>
 
 <script>
 // Penyelamat: jika apps tersangkut "Memuatkan…" (fail lama dalam cache telefon), muat semula versi terbaru
@@ -142,18 +148,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-4';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-3';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-3';
-import { pasangSync } from '../sync-lib.js?v=2026.11.21-3';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-3';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-4';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.21-4';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-4';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-4';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-4';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-3';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-4';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-4';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
