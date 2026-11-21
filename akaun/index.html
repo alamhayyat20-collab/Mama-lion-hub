@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.21-1">
-<meta name="theme-color" content="#14532d">
+<meta name="app-versi" content="2026.11.21-2">
+<meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,13 +17,13 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,Arial;background:#f3f4f6;color:#111827}
-header{background:#14532d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+header{background:#1F3A68;border-bottom:3px solid #C9A646;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 header b{font-size:19px}
-header small{display:block;color:#bbf7d0;margin-top:2px}
+header small{display:block;color:#E5C97A;margin-top:2px}
 nav{display:flex;gap:6px;overflow:auto;background:#fff;padding:9px;position:sticky;top:0;box-shadow:0 1px 4px #0002;z-index:5}
 nav button{white-space:nowrap}
 button{border:0;border-radius:9px;padding:10px 12px;cursor:pointer;background:#e5e7eb;font-size:14px}
-button.active,.primary{background:#14532d;color:#fff}
+button.active,.primary{background:#1F3A68;color:#fff}
 .danger{background:#fee2e2;color:#991b1b}
 .small{padding:6px 9px;font-size:12px}
 .aksi{display:flex;flex-direction:column;gap:4px;align-items:flex-end;margin-top:5px}
@@ -49,11 +49,11 @@ tr.sub td{background:#f9fafb;font-weight:650}
 .err{color:#b91c1c;font-size:13px;min-height:18px}
 .notice{background:#fef3c7;border-radius:10px;padding:10px;font-size:13px;margin-bottom:10px}
 .bars{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid #d1d5db}
-.bars div{flex:1;background:#16a34a;border-radius:3px 3px 0 0;min-height:1px}
+.bars div{flex:1;background:#2B4C9B;border-radius:3px 3px 0 0;min-height:1px}
 .bars div.z{background:#e5e7eb}
 .barlbl{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:3px}
-.totalbox{background:#f0fdf4;border-radius:10px;padding:10px;font-weight:700;margin-bottom:10px}
-.synctag{font-size:12px;padding:5px 9px;border-radius:999px;background:#166534;color:#dcfce7}
+.totalbox{background:#EEF2FA;border-radius:10px;padding:10px;font-weight:700;margin-bottom:10px}
+.synctag{font-size:12px;padding:5px 9px;border-radius:999px;background:#2B4C9B;color:#F6ECCF}
 .scroll{overflow-x:auto}
 footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 #pasangBox{max-width:1000px;margin:10px auto 0;padding:0 14px}
@@ -64,7 +64,7 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 .pk{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e5e7eb}
 .pk.off{opacity:.55}
 .subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.subnav button.on{background:#14532d;color:#fff}
+.subnav button.on{background:#1F3A68;color:#fff}
 #cawBar{max-width:1000px;margin:10px auto 0;padding:0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #cawBar:empty{display:none}
 #cawBar.tiga{grid-template-columns:1fr 1fr 1fr}
@@ -73,8 +73,8 @@ footer{text-align:center;color:#6b7280;padding:22px;font-size:12px}
 .caw{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid #e5e7eb;border-radius:14px;padding:8px 10px;text-align:left;box-shadow:0 2px 10px #0001}
 .caw img{width:46px;height:46px;object-fit:contain;border-radius:8px;background:#fff;flex:none}
 .caw b{display:block;font-size:15px}.caw span{font-size:12px;color:#6b7280}
-.caw.sel{border-color:#14532d;background:#f0fdf4}
-.caw.sel span{color:#15803d;font-weight:650}
+.caw.sel{border-color:#1F3A68;background:#EEF2FA}
+.caw.sel span{color:#8A6A12;font-weight:650}
 #cawBar.besar .caw{flex-direction:column;text-align:center;padding:14px 8px}
 #cawBar.besar .caw img{width:min(130px,100%);height:auto;aspect-ratio:1}
 #pasangBox .card{margin:0;border:2px solid #f59e0b}
@@ -83,7 +83,7 @@ header{padding-top:max(14px,env(safe-area-inset-top))}
 @media(max-width:600px){.two{grid-template-columns:1fr}.metric{font-size:19px}}
 @media print{header,nav,footer,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
 /* Kategori warna dashboard */
-.kat-biru{--k:#1d4ed8;--kl:#dbeafe}.kat-jingga{--k:#c2410c;--kl:#ffedd5}.kat-hijau{--k:#14532d;--kl:#dcfce7}.kat-emas{--k:#92400e;--kl:#fef3c7}.kat-kelabu{--k:#374151;--kl:#e5e7eb}
+.kat-biru{--k:#1d4ed8;--kl:#dbeafe}.kat-jingga{--k:#c2410c;--kl:#ffedd5}.kat-hijau{--k:#15803d;--kl:#dcfce7}.kat-navy{--k:#1F3A68;--kl:#F6ECCF}.kat-emas{--k:#92400e;--kl:#fef3c7}.kat-kelabu{--k:#374151;--kl:#e5e7eb}
 nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 .navkat,.navsub{display:flex;gap:6px;overflow:auto;padding-bottom:1px}
 .navkat button{background:var(--kl);color:var(--k);font-weight:700;border:2px solid transparent}
@@ -97,13 +97,13 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 .menutiles button i{font-style:normal;font-size:20px}
 .menutiles button:hover,.navsub button:hover{outline:2px solid var(--k)}
 .appkad{border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:6px}
-.appkad:hover{border-color:#14532d}
+.appkad:hover{border-color:#1F3A68}
 .appkad .row button{flex:1}
 #liveAk{position:fixed;inset:0;z-index:9000;background:#0f172a;display:flex;flex-direction:column}
-#liveAk .bar{display:flex;gap:6px;align-items:center;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top));background:#14532d;border-bottom:3px solid #d7b25a;flex-wrap:wrap}
+#liveAk .bar{display:flex;gap:6px;align-items:center;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top));background:#1F3A68;border-bottom:3px solid #d7b25a;flex-wrap:wrap}
 #liveAk .bar b{color:#fff;flex:1;min-width:120px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #liveAk .bar button{min-height:42px;font-weight:800}
-#liveAk .bar .on{background:#d7b25a;color:#14532d}
+#liveAk .bar .on{background:#d7b25a;color:#1F3A68}
 #liveAk .bingkai{flex:1;display:flex;justify-content:center;align-items:stretch;overflow:auto;padding:8px}
 @media(max-width:600px){#liveAk [data-lvsaiz]{display:none}#liveAk .bar b{font-size:14px}}
 #liveAk iframe{border:0;background:#fff;border-radius:10px;width:100%;height:100%;transition:width .2s}
@@ -132,7 +132,7 @@ nav.kat{flex-direction:column;gap:6px;padding:8px 9px}
 setTimeout(function(){
   var a = document.getElementById('app');
   if(!a || !/^\s*Memuatkan…\s*$/.test(a.innerText || '')) return;
-  a.innerHTML = '<div class="card" style="padding:16px"><b>Apps tidak dapat dimuatkan.</b><p style="color:#64748b">Mungkin versi lama tersimpan dalam telefon. Tekan butang di bawah untuk memuat versi terkini.</p><button id="btnPulih" style="width:100%;padding:14px;border:0;border-radius:12px;background:#14532d;color:#fff;font-weight:700;font-size:16px">🔄 MUAT VERSI TERKINI</button></div>';
+  a.innerHTML = '<div class="card" style="padding:16px"><b>Apps tidak dapat dimuatkan.</b><p style="color:#64748b">Mungkin versi lama tersimpan dalam telefon. Tekan butang di bawah untuk memuat versi terkini.</p><button id="btnPulih" style="width:100%;padding:14px;border:0;border-radius:12px;background:#1F3A68;color:#fff;font-weight:700;font-size:16px">🔄 MUAT VERSI TERKINI</button></div>';
   document.getElementById('btnPulih').onclick = function(){
     var p = [];
     if(window.caches) p.push(caches.keys().then(function(k){ return Promise.all(k.map(function(x){ return caches.delete(x); })); }));
@@ -142,18 +142,18 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-2';
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-1';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.21-1';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.21-2';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.21-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.21-2';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.21-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.21-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-1';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.21-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.21-2';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.21-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1639,7 +1639,7 @@ function toolImport(){
   return `<div class="card noprint"><h3 style="margin-top:0">📥 Import dari Excel</h3>
     <p class="muted">Masukkan banyak rekod sekali gus (cth rekod lama). Guna templat supaya lajur betul. Fail CSV yang dimuat turun dari apps ini juga boleh diimport semula.</p>
     <div class="row"><button id="btnTemplat">⬇ Muat turun templat Excel</button>
-    <label class="primary" style="padding:10px 12px;border-radius:9px;cursor:pointer;background:#14532d;color:#fff;font-size:14px">📂 Pilih fail Excel / CSV<input type="file" id="fImport" accept=".xlsx,.xls,.csv" style="display:none"></label></div>
+    <label class="primary" style="padding:10px 12px;border-radius:9px;cursor:pointer;background:#1F3A68;color:#fff;font-size:14px">📂 Pilih fail Excel / CSV<input type="file" id="fImport" accept=".xlsx,.xls,.csv" style="display:none"></label></div>
     <div id="importBox"></div></div>`;
 }
 
@@ -2031,7 +2031,7 @@ function borangPekerja(id){
       <label class="foto-btn">📷 Ambil gambar<input id="pFotoKam" type="file" accept="image/*" capture="user" style="display:none"></label>
       <label class="foto-btn" style="background:#475569">🖼 Galeri<input id="pFotoGal" type="file" accept="image/*" style="display:none"></label>
       <button class="small danger" id="pFotoBuang">Buang</button></div></div>
-    <div class="card" style="background:#f0fdf4;box-shadow:none"><b>🔑 Log masuk kaunter</b>
+    <div class="card" style="background:#EEF2FA;box-shadow:none"><b>🔑 Log masuk kaunter</b>
     <div class="two"><div><label>ID Staf</label><input id="pId" value="${esc(p?.idStaf || idSeterus())}" style="text-transform:uppercase"></div>
       <div><label>Peranan di kaunter</label><select id="pPeranan">${PERANAN_KAUNTER.map(r => `<option ${r===(p?.peranan||'Cashier')?'selected':''}>${r}</option>`).join('')}</select></div></div>
     <div class="muted" id="pKet" style="margin:-6px 0 8px"></div>
@@ -2203,7 +2203,7 @@ const katSemasa = () => tab === 'Ringkasan' ? null : (KATEGORI.find(k => k.item.
 const labelItem = x => `${x.i} ${esc(x.l || x.t)}${x.b ? `<span id="${x.b}"></span>` : ''}`;
 function navKategori(){
   const k = katSemasa();
-  return `<div class="navkat"><button class="kat-hijau ${tab === 'Ringkasan' ? 'active' : ''}" data-kat="__utama">🏠 Ringkasan</button>${KATEGORI.map(c => `<button class="kat-${c.w} ${k?.id === c.id ? 'active' : ''}" data-kat="${c.id}">${c.pendek}</button>`).join('')}</div>
+  return `<div class="navkat"><button class="kat-navy ${tab === 'Ringkasan' ? 'active' : ''}" data-kat="__utama">🏠 Ringkasan</button>${KATEGORI.map(c => `<button class="kat-${c.w} ${k?.id === c.id ? 'active' : ''}" data-kat="${c.id}">${c.pendek}</button>`).join('')}</div>
     ${k ? `<div class="navsub kat-${k.w}">${k.item.map((x, j) => `<button class="${itemAktif(x) ? 'active' : ''}" data-katitem="${k.id}|${j}">${labelItem(x)}</button>`).join('')}</div>` : ''}`;
 }
 function pergiItem(x){
@@ -2231,7 +2231,7 @@ function bukaLive(app, {lihat = '', tajuk = ''} = {}){
   $('#liveAk')?.remove();
   const w = document.createElement('div'); w.id = 'liveAk';
   const lebar = {telefon: '400px', tablet: '820px', penuh: '100%'};
-  w.innerHTML = `<div class="bar"><button id="lvTutup" style="background:#fff;color:#14532d">← Kembali ke Akaun</button><b>${esc(tajuk || A.nama)}</b>
+  w.innerHTML = `<div class="bar"><button id="lvTutup" style="background:#fff;color:#1F3A68">← Kembali ke Akaun</button><b>${esc(tajuk || A.nama)}</b>
     ${Object.entries({telefon: '📱', tablet: '📲', penuh: '🖥'}).map(([k, ik]) => `<button data-lvsaiz="${k}" class="${k === liveSaiz ? 'on' : ''}" title="${k}">${ik}</button>`).join('')}
     <button id="lvMuat" title="Muat semula">🔄</button><a id="lvTab" href="${url}" target="_blank" rel="noopener" style="color:#fff;padding:0 8px;font-weight:800;text-decoration:none" title="Buka dalam tab baru">↗</a></div>
     <div class="bingkai"><iframe id="lvFrame" src="${url}" title="${esc(A.nama)}" allow="camera; geolocation; clipboard-read; clipboard-write; fullscreen"></iframe></div>`;
@@ -2279,7 +2279,7 @@ function viewQueueAk(){
   const notif = 'Notification' in window && Notification.permission !== 'granted';
   return `<div class="card"><div class="section-title"><h3 style="margin:0">🚗 Queue kaunter — ${esc(namaCawangan())} (${q.length})</h3>${notif ? '<button class="small" id="qNotif">🔔 Hidupkan notifikasi</button>' : ''}</div>
       <p class="muted" style="margin:4px 0 0">Dikemas kini serentak dengan kaunter. Diskaun yang Dato' / Datin beri di sini <b>terus aktif</b> di skrin bayaran & resit kaunter. Pekerja berkuasa 🎟 boleh beri RM5 / RM10 / RM20 sahaja.</p>${lain ? `<div class="row" style="margin-top:6px">${lain}</div>` : ''}</div>
-    ${bp.length ? `<div class="card" style="border:2px solid #14532d"><h3 style="margin-top:0">📲 Bayaran dari Apps Pelanggan — menunggu semakan kaunter (${bp.length})</h3>${bp.map(x => `<div class="pk"><div style="display:flex;gap:10px;align-items:center;flex:1">${x.bukti ? `<img src="${x.bukti}" data-bpbesar="${x.id}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;cursor:pointer">` : ''}
+    ${bp.length ? `<div class="card" style="border:2px solid #1F3A68"><h3 style="margin-top:0">📲 Bayaran dari Apps Pelanggan — menunggu semakan kaunter (${bp.length})</h3>${bp.map(x => `<div class="pk"><div style="display:flex;gap:10px;align-items:center;flex:1">${x.bukti ? `<img src="${x.bukti}" data-bpbesar="${x.id}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;cursor:pointer">` : ''}
       <div><b>${esc(x.plat)}</b> ${esc(x.no || '')}<br><b>${RM(x.jumlah)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''}<br><span class="muted">${fMasaAk(x.masaPeranti)}${x.nama ? ' · ' + esc(x.nama) : ''}</span></div></div><span class="tag warn">Kaunter perlu sahkan</span></div>`).join('')}</div>` : ''}
     ${q.map(o => { const d = o.diskaunBeri, m = o.diskaunMinta, dr = qDraf[o.id] || {};
       const kasar = +o.jumlahKasar || 0, perlu = Math.max(0, Math.round((kasar - (d ? +d.amaun : 0)) * 100) / 100);
@@ -2349,8 +2349,8 @@ function viewArahanAk(){
   return `${kepala}
     <div class="subnav"><button class="${arahanSegAk==='Chat'?'on':''}" data-arseg="Chat">💬 Chat</button><button class="${arahanSegAk==='Tugas'?'on':''}" data-arseg="Tugas">📋 Tugasan (${tg.filter(t => t.status !== 'selesai').length} aktif)</button></div></div>
     ${arahanSegAk === 'Chat' ? `<div class="card"><div id="akChat" style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto;padding:4px">
-      ${ms.map(m => { const p = m.dari === 'pemilik'; return `<div style="align-self:${p?'flex-end':'flex-start'};max-width:78%;background:${p?'#14532d':'#f1f5f9'};color:${p?'#fff':'#0f172a'};border-radius:14px;padding:8px 11px">
-        <b style="font-size:12px;${p?'color:#bbf7d0':'color:#14532d'}">${esc(m.nama||'')}${m.kumpulanId ? ` · 👥 ${esc(m.kumpulanNama||'Kumpulan')}` : ''}</b><br>${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" data-zoom="Gambar chat" style="width:100%;border-radius:10px;margin-top:4px;cursor:zoom-in">` : ''}
+      ${ms.map(m => { const p = m.dari === 'pemilik'; return `<div style="align-self:${p?'flex-end':'flex-start'};max-width:78%;background:${p?'#1F3A68':'#f1f5f9'};color:${p?'#fff':'#0f172a'};border-radius:14px;padding:8px 11px">
+        <b style="font-size:12px;${p?'color:#E5C97A':'color:#1F3A68'}">${esc(m.nama||'')}${m.kumpulanId ? ` · 👥 ${esc(m.kumpulanNama||'Kumpulan')}` : ''}</b><br>${m.teks ? esc(m.teks).replace(/\n/g,'<br>') : ''}${m.gambar ? `<img src="${m.gambar}" data-zoom="Gambar chat" style="width:100%;border-radius:10px;margin-top:4px;cursor:zoom-in">` : ''}
         <div style="font-size:10px;opacity:.7;text-align:right">${fMasaAk(m.masaPeranti)}${p && m.dibaca ? ' · ✓✓ dibaca' : ''}</div></div>`; }).join('') || `<p class="muted">Belum ada mesej dengan ${esc(st.nama)}.</p>`}</div>
       <div class="row" style="flex-wrap:nowrap;margin-top:10px"><label class="small" style="cursor:pointer;margin:0;padding:10px;background:#e2e8f0;border-radius:10px">📷<input id="akGambar" type="file" accept="image/*" style="display:none"></label>
         <input id="akTeks" data-kekal="1" placeholder="Mesej kepada ${esc(st.nama)}…" style="margin:0;flex:1" autocomplete="off"><button class="primary" id="akHantar">Hantar</button></div></div>`
@@ -2443,7 +2443,7 @@ function viewKumpulanAk(calon, kepala){
       <div class="subnav" style="margin-top:6px">${chip(kumpPilih.size === calon.length, 'data-ksemua="1"', '✅ Semua')}${chip(false, 'data-kkosong="1"', '✖ Kosongkan')}
         ${kumpArahan.map(k => chip(kumpAktif === k.id && nm === k.nama, `data-kguna="${k.id}"`, `👥 ${esc(k.nama)} (${k.ahli.filter(id => calon.some(x => x.id === id)).length})`, `<button class="small" data-kbuang="${k.id}" title="Padam kumpulan" style="padding:4px 7px">🗑</button>`)).join('')}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:8px">
-        ${calon.map(x => `<label style="display:flex;align-items:center;gap:8px;margin:0;padding:10px;border-radius:12px;cursor:pointer;border:2px solid ${kumpPilih.has(x.id) ? '#14532d' : '#e2e8f0'};background:${kumpPilih.has(x.id) ? '#f0fdf4' : '#fff'}">
+        ${calon.map(x => `<label style="display:flex;align-items:center;gap:8px;margin:0;padding:10px;border-radius:12px;cursor:pointer;border:2px solid ${kumpPilih.has(x.id) ? '#1F3A68' : '#e2e8f0'};background:${kumpPilih.has(x.id) ? '#f0fdf4' : '#fff'}">
           <input type="checkbox" data-kpilih="${x.id}" ${kumpPilih.has(x.id) ? 'checked' : ''} style="width:20px;height:20px;margin:0"><span><b>${esc(x.idStaf || '')}</b> ${esc(x.nama)}<br><span class="muted" style="font-size:12px">${esc(x.peranan || '')}</span></span></label>`).join('')}</div>
       <p class="muted" style="font-size:12px;margin-bottom:0">Senarai ini hanya pekerja yang ada kuasa <b>💬 Chat & arahan pemilik</b>. Untuk tambah pekerja lain, hidupkan kuasa itu di Pekerja → Urus.</p></div>
       <div class="card">${kumpSeg === 'Mesej' ? `<h3 style="margin-top:0">💬 Mesej kepada ${kumpPilih.size} pekerja · ${esc(nm)}</h3>
@@ -2507,7 +2507,7 @@ const JENIS_TK = {pakej:{label:'Pakej cucian', ikon:'🚿', minit:true}, addon:{
 function viewTetapanApps(){
   const T = tetapanKaunter;
   const seg = `<div class="subnav">${['Kaunter','Pekerja','Pelanggan'].map(x => `<button class="${x===tkSeg?'on':''}" data-tkseg="${x}">${({Kaunter:'🦁 Kaunter (Lion Safari V2)',Pekerja:'👷 Apps Pekerja',Pelanggan:'⭐ Apps Pelanggan'})[x]}</button>`).join('')}</div>`;
-  const head = (tkDua && tkSeg === 'Kaunter') ? `<div class="card" style="border:2px solid #14532d"><h3 style="margin:0">⚙️ Tetapan Kaunter — ${CAW.map(c => esc(c.nama)).join(' + ')} (serentak)</h3>
+  const head = (tkDua && tkSeg === 'Kaunter') ? `<div class="card" style="border:2px solid #1F3A68"><h3 style="margin:0">⚙️ Tetapan Kaunter — ${CAW.map(c => esc(c.nama)).join(' + ')} (serentak)</h3>
       <p class="muted" style="margin:4px 0 8px">Pakej cucian, servis tambahan & jenis kenderaan yang disimpan di sini <b>terus digunakan oleh kaunter kedua-dua cawangan pada masa yang sama</b>. Senarai dipaparkan dari ${esc(CAW.find(c => c.id === cawangan)?.nama || '')}.</p>${seg}</div>`
     : `<div class="card"><h3 style="margin:0">⚙️ Tetapan Apps — ${esc(namaCawangan())}</h3><p class="muted" style="margin:4px 0 8px">Perubahan di sini terus digunakan oleh semua apps cawangan ${esc(namaCawangan())}. Tukar logo cawangan di atas untuk cawangan lain.</p>${seg}</div>`;
   if(tkSeg === 'Pekerja') return head + viewStesen() + modulPK.html('Tetapan Pekerja', []) + `<div class="card"><p class="muted" style="margin:0">Kuasa pengelola, MO, ID & PIN: <button class="small" data-ketab="Pekerja">Pekerja → Urus</button> · Roster, memo & peraturan: <button class="small" data-ketab="Pekerja">Pekerja</button></p></div>`;
