@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.20-2';
-import { hariOperasi } from './safari-lib.js?v=2026.11.20-2';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.21-1';
+import { hariOperasi } from './safari-lib.js?v=2026.11.21-1';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -208,6 +208,23 @@ export async function kongsiWhatsApp(teks){
 // ---------------------------------------------------------------------
 export const KENDERAAN_SYARIKAT = ['Toyota Fortuner', 'Isuzu D-Max', 'Mercedes-Benz'];
 export const PENGAMBIL_MINYAK = ["Dato'", 'Datin / Madam', 'Office', 'Lain-lain'];
+// ✍️ Jaga teks yang sedang ditaip: paparan dilukis semula setiap kali data berubah (order, lampiran, rekod),
+// jadi nilai medan disimpan dalam draf & fokus/kursor dipulihkan selepas lukis semula.
+function jagaMedan(st, pemilih){
+  st.tdraf = st.tdraf || {};
+  pemilih.forEach(sel => document.querySelectorAll(sel).forEach(el => {
+    if(el.disabled) return;
+    if(st.tdraf[sel] !== undefined && el.value !== st.tdraf[sel]) el.value = st.tdraf[sel];
+    const simpan = () => { st.tdraf[sel] = el.value; };
+    el.addEventListener('input', simpan); el.addEventListener('change', simpan);
+    el.addEventListener('focus', () => { st.tfokus = sel; });
+    el.addEventListener('blur', () => setTimeout(() => { if(st.tfokus === sel && !document.activeElement?.matches?.(sel)) st.tfokus = null; }, 0));
+    if(st.tfokus === sel && document.activeElement !== el){ el.focus({preventScroll: true}); try{ const n = el.value.length; el.setSelectionRange?.(n, n); }catch(_){} }
+  }));
+}
+const buangDraf = (st, ...sel) => sel.forEach(k => { if(st.tdraf) delete st.tdraf[k]; if(st.tfokus === k) st.tfokus = null; });
+const MEDAN_TUTUP = ['[data-lt-catatan]', '[data-lt-csemak]', '[data-lt-bperkara]', '[data-lt-bamaun]', '[data-lt-mamaun]', '[data-lt-mkend]', '[data-lt-mambil]'];
+
 export function modulTutup(ctx){
   const {store, fs} = ctx;
   const st = {tarikh: hariIniT(), data: null, rekod: null, foto: '', muat: false, ralat: '', unsub: [], c: null, lampiran: [], queue: null, k2oleh: null, k1ubah: false, draf: {}, fokus: null};
@@ -219,7 +236,7 @@ export function modulTutup(ctx){
   const stop = () => { st.unsub.forEach(f => f && f()); st.unsub = []; };
 
   function mula(tarikh){
-    stop(); if(tarikh) st.tarikh = tarikh; st.c = ctx.cawangan(); st.rekod = null; st.foto = ''; st.data = null; st.ralat = '';
+    stop(); if(tarikh) st.tarikh = tarikh; st.c = ctx.cawangan(); st.rekod = null; st.foto = ''; st.data = null; st.ralat = ''; st.tdraf = {}; st.tfokus = null;
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup'), st.tarikh), s => { st.rekod = s.exists() ? s.data() : null; ctx.refresh(); }, e => { st.ralat = e.code || e.message; ctx.refresh(); }));
     st.unsub.push(fs.onSnapshot(fs.doc(col(st.c, 'tutup_foto'), st.tarikh), s => { st.foto = s.exists() ? s.data().data : ''; ctx.refresh(); }, () => {}));
     st.lampiran = [];
@@ -294,7 +311,7 @@ export function modulTutup(ctx){
     const sk = semakan(L, r), siap = sk.every(x => x.ok || !x.wajib);
     const semakHtml = ed ? `<div class="lt-card lt-semak"><h3>✅ Senarai semak tutup kaunter</h3>${sk.map((x, i) => `<div class="lt-langkah ${x.ok ? 'ok' : x.wajib ? 'belum' : 'info'}"><span class="lt-no">${x.ok ? '✓' : i + 1}</span><div><b>${x.t}</b>${x.k ? `<small>${x.k}</small>` : ''}</div></div>`).join('')}</div>` : '';
     return kepala + semakHtml + jadual + ringkasHtml(L, r) + bayaranHtml + kiraanBox + fotoBox + lampiranBox +
-      `<div class="lt-card"><label>Nota / catatan${L.beza != null && Math.abs(L.beza) >= 1 ? ' * (wajib — terangkan beza tunai)' : ''}</label><textarea data-lt-catatan rows="2" ${ed ? '' : 'disabled'}>${e(r.catatan || '')}</textarea>
+      `<div class="lt-card"><label>Nota / catatan${L.beza != null && Math.abs(L.beza) >= 1 ? ' * (wajib — terangkan beza tunai)' : ''}</label>${ed ? `<textarea data-lt-catatan rows="3" placeholder="Catatan juruwang / supervisor">${e(r.catatan || '')}</textarea>` : `<div class="lt-nota">${r.catatan ? e(r.catatan) : '<span class="lt-muted">Tiada nota daripada kaunter.</span>'}</div>`}
       ${ed ? `<button class="lt-btn lt-pri lt-bigbtn" data-lt-hantar ${siap ? '' : 'disabled'}>✅ TUTUP KAUNTER & HANTAR</button>${siap ? '' : '<div class="lt-muted" style="text-align:center">Lengkapkan langkah bertanda dalam senarai semak dahulu.</div>'}` : ''}
       ${r.lewat ? `<div class="lt-notice">🕐 Ditutup lewat${r.lewatSebab ? ' — ' + e(r.lewatSebab) : ''}</div>` : ''}
       ${ctx.mod === 'kaunter' && status === 'dihantar' ? '<div class="lt-muted">Sudah dihantar — menunggu semakan.</div>' : ''}</div>` + butangKongsi(L);
@@ -360,21 +377,22 @@ export function modulTutup(ctx){
       <div class="lt-ln"><span>Surplus / Shortage</span><b class="${L.beza == null ? '' : L.beza >= 0 ? 'lt-pos' : 'lt-neg'}">${L.beza == null ? '—' : (L.beza >= 0 ? '+' : '−') + RMx(Math.abs(L.beza))}</b></div>
       <div class="lt-ln lt-big"><span>NET CASH BALANCE</span><b>${L.bersih == null ? '—' : 'RM ' + RMx(L.bersih)}</b></div></div></div>
       ${r.ditutupOleh ? `<div class="lt-muted" style="margin-top:6px">Ditutup oleh ${esc(r.ditutupOleh)}${r.disemakOleh ? ` · Disemak ${esc(r.disemakOleh)}` : ''}</div>` : ''}
-      ${ctx.bolehSemak && r.status === 'dihantar' ? `<label>Catatan semakan</label><input data-lt-csemak placeholder="pilihan"><div class="lt-row"><button class="lt-btn lt-pri" data-lt-sahkan style="flex:1">✅ Sahkan</button><button class="lt-btn" data-lt-pulang style="flex:1">↩ Pulangkan</button></div>` : ''}</div>`;
+      ${ctx.bolehSemak && r.status === 'dihantar' ? `<label>Catatan / komen semakan</label><textarea data-lt-csemak rows="3" placeholder="Pilihan semasa sahkan · wajib jika dipulangkan (nyatakan sebab)"></textarea><div class="lt-row"><button class="lt-btn lt-pri" data-lt-sahkan style="flex:1">✅ Sahkan</button><button class="lt-btn" data-lt-pulang style="flex:1">↩ Pulangkan</button></div>` : ''}</div>`;
   }
   const butangKongsi = L => L ? `<div class="lt-row" style="margin:10px 0 20px"><button class="lt-btn" data-lt-cetak style="flex:1">🖨 Cetak / PDF</button><button class="lt-btn lt-wa" data-lt-wa style="flex:1">📤 WhatsApp</button></div>` : '';
 
   let resitBaru = '';
   function pasang(){
     const q = s => document.querySelector(s), qa = s => document.querySelectorAll(s);
+    jagaMedan(st, MEDAN_TUTUP);
     const t = q('[data-lt-tarikh]'); if(t) t.onchange = e => { if(e.target.value) mula(e.target.value); };
     qa('[data-lt-bayar]').forEach(x => x.onchange = async () => { try{ await simpanRekod({bayar: {...(st.rekod?.bayar || {}), [x.dataset.ltBayar]: x.checked}, status: st.rekod?.status || 'draf'}); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } });
-    const cat = q('[data-lt-catatan]'); if(cat && !cat.disabled) cat.onchange = () => simpanRekod({catatan: cat.value, status: st.rekod?.status || 'draf'}).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
+    const cat = q('[data-lt-catatan]'); if(cat && !cat.disabled) cat.onchange = () => simpanRekod({catatan: cat.value, status: st.rekod?.status || 'draf'}).then(() => { if(st.tfokus !== '[data-lt-catatan]') buangDraf(st, '[data-lt-catatan]'); }).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
     qa('[data-lt-bresit]').forEach(res => res.onchange = async e => { const f = e.target.files[0]; if(f){ resitBaru = await ctx.capGambar(f, null, 900, 0.6); ctx.toast('🧾 Resit dilampirkan'); } });
     const bt = q('[data-lt-btambah]'); if(bt) bt.onclick = async () => {
       const perkara = q('[data-lt-bperkara]').value.trim(), amaun = parseFloat(q('[data-lt-bamaun]').value);
       if(!perkara || !(amaun > 0)) return ctx.toast('Isi perkara & amaun');
-      try{ await simpanRekod({belanjaLaci: [...(st.rekod?.belanjaLaci || []), {perkara, amaun: r2(amaun), resit: resitBaru, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitBaru = ''; }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+      try{ await simpanRekod({belanjaLaci: [...(st.rekod?.belanjaLaci || []), {perkara, amaun: r2(amaun), resit: resitBaru, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitBaru = ''; buangDraf(st, '[data-lt-bperkara]', '[data-lt-bamaun]'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
     qa('[data-lt-mresit]').forEach(res => res.onchange = async e => { const f = e.target.files[0]; if(f){ resitMinyak = await ctx.capGambar(f, null, 900, 0.6); ctx.toast('🧾 Resit minyak dilampirkan'); } });
     const mt = q('[data-lt-mtambah]'); if(mt) mt.onclick = async () => {
@@ -383,7 +401,7 @@ export function modulTutup(ctx){
       if(!resitMinyak) return ctx.toast('Ambil gambar resit minyak dahulu (wajib)');
       const lulus = ctx.mintaPinTutup ? await ctx.mintaPinTutup(`Minyak ${kenderaan} (${pengambil}) RM ${RMx(amaun)} dari laci`, '⛽ KELULUSAN MINYAK') : ctx.pengguna();
       if(!lulus) return;
-      try{ await simpanRekod({minyakLaci: [...(st.rekod?.minyakLaci || []), {kenderaan, pengambil, amaun: r2(amaun), resit: resitMinyak, lulus, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitMinyak = ''; ctx.toast('⛽ Minyak direkod'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+      try{ await simpanRekod({minyakLaci: [...(st.rekod?.minyakLaci || []), {kenderaan, pengambil, amaun: r2(amaun), resit: resitMinyak, lulus, oleh: ctx.pengguna(), masa: Date.now()}], status: st.rekod?.status || 'draf'}); resitMinyak = ''; buangDraf(st, '[data-lt-mamaun]'); ctx.toast('⛽ Minyak direkod'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
     qa('[data-lt-mbuang]').forEach(b => b.onclick = async () => { if(!confirm('Buang rekod minyak ini?')) return; const l = [...(st.rekod?.minyakLaci || [])]; l.splice(+b.dataset.ltMbuang, 1); await simpanRekod({minyakLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
     qa('[data-lt-buang]').forEach(b => b.onclick = async () => { const l = [...(st.rekod?.belanjaLaci || [])]; l.splice(+b.dataset.ltBuang, 1); await simpanRekod({belanjaLaci: l}).catch(e => ctx.toast('⚠ ' + e.message)); });
@@ -475,7 +493,7 @@ export function modulTutup(ctx){
   async function semak(ok){
     const c = document.querySelector('[data-lt-csemak]')?.value || '';
     if(!ok && !c) return ctx.toast('Nyatakan sebab dipulangkan');
-    try{ await simpanRekod({status: ok ? 'disahkan' : 'draf', disemakOleh: ctx.pengguna(), masaSemak: Date.now(), catatanSemak: c}); ctx.toast(ok ? '✅ Laporan disahkan' : '↩ Laporan dipulangkan ke kaunter'); }
+    try{ await simpanRekod({status: ok ? 'disahkan' : 'draf', disemakOleh: ctx.pengguna(), masaSemak: Date.now(), catatanSemak: c}); buangDraf(st, '[data-lt-csemak]'); ctx.toast(ok ? '✅ Laporan disahkan' : '↩ Laporan dipulangkan ke kaunter'); }
     catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
   }
   return {mula, henti: stop, html, pasang, st, muatData};
@@ -507,7 +525,7 @@ export const CSS_TUTUP = `
 .lt-no{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:#e2e8f0;color:#334155}
 .lt-langkah.ok .lt-no{background:#16a34a;color:#fff}
 .lt-pc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}.lt-pc label{display:flex;flex-direction:column;font-size:11px;font-weight:700;color:#334155;margin:0}
-.lt-pc input{margin:2px 0 0;padding:8px 4px;text-align:center;font-size:16px}@media(max-width:420px){.lt-pc{grid-template-columns:repeat(3,1fr)}}.lt-langkah.belum .lt-no{background:#f59e0b;color:#fff}.lt-langkah.ok b{color:#166534}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
+.lt-card textarea{font:inherit;font-size:15px}.lt-nota{white-space:pre-wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:4px}.lt-pc input{margin:2px 0 0;padding:8px 4px;text-align:center;font-size:16px}@media(max-width:420px){.lt-pc{grid-template-columns:repeat(3,1fr)}}.lt-langkah.belum .lt-no{background:#f59e0b;color:#fff}.lt-langkah.ok b{color:#166534}.lt-notice{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
 .lt-tag{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#e2e8f0}.lt-dihantar{background:#fef3c7;color:#92400e}.lt-disahkan{background:#dcfce7;color:#166534}
 .lt-scroll{overflow-x:auto}.lt-t{border-collapse:collapse;width:100%;font-size:12px;min-width:820px}.lt-t th,.lt-t td{border-bottom:1px solid #e2e8f0;padding:5px 4px;text-align:left;vertical-align:top}
 .lt-t th{background:#fff7d6;font-size:11px}.lt-t td.r{text-align:right;white-space:nowrap}.lt-tot td{font-weight:800;background:#fffbea}
@@ -574,6 +592,7 @@ export function modulDuty(ctx){
   const T = () => ctx.tanda ? ctx.tanda() : {};
   const id = () => `${st.tarikh}_${st.c}`;
   async function mula(){
+    st.tdraf = {}; st.tfokus = null;
     st.unsub.forEach(f => f()); st.unsub = [];
     try{
       const [staf, tp, rs, kh] = await Promise.all([
@@ -608,6 +627,7 @@ export function modulDuty(ctx){
     const t = q('[data-dt-tarikh]'); if(t) t.onchange = e => { if(e.target.value){ st.tarikh = e.target.value; st.D = null; mula(); } };
     qa('[data-dt-c]').forEach(b => b.onclick = () => { st.c = b.dataset.dtC; st.D = null; mula(); });
     qa('[data-dt-pic]').forEach(s => s.onchange = () => simpan({[s.dataset.dtPic]: s.value}));
+    jagaMedan(st, ['[data-dt-nota="notaPagi"]', '[data-dt-nota="notaPetang"]']);
     qa('[data-dt-nota]').forEach(s => s.onchange = () => simpan({[s.dataset.dtNota]: s.value}));
     const sh = q('[data-dt-sahkan]'); if(sh) sh.onclick = () => fs.setDoc(fs.doc(K('duty'), id()), {disahkanOleh: ctx.pengguna(), masaSah: Date.now(), ...T()}, {merge: true}).then(() => ctx.toast('✅ Disahkan')).catch(e => ctx.toast('⚠ ' + (e.code || e.message)));
     const ct = q('[data-dt-cetak]'); if(ct) ct.onclick = () => cetak(htmlDuty(st.D, st.n));

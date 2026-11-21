@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.20-2">
+<meta name="app-versi" content="2026.11.21-1">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -269,15 +269,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.20-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-1';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.20-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.21-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.20-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.20-2';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.20-2';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.20-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.21-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-1';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.21-1';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.21-1';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -336,6 +336,8 @@ function renderNav(){
   $$('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); window.scrollTo({top:0}); });
 }
 
+// Borang yang sedang diisi (Daftar / Profil / Bayar) tidak dilukis semula oleh kemas kini data latar
+const sedangIsiBorang = () => { if(!['Daftar', 'Profil', 'Bayar'].includes(tab)) return false; return [...document.querySelectorAll('#app input, #app textarea')].some(x => x === document.activeElement || (!['checkbox', 'radio', 'file', 'hidden'].includes(x.type) && x.value && x.value !== x.defaultValue)); };
 function render(){
   renderNav();
   if(MOD_ADMIN) requestAnimationFrame(() => { if(!$('#bannerAdmin')) $('#app').insertAdjacentHTML('afterbegin', `<div id="bannerAdmin" style="background:#fef3c7;border:2px solid #d7b25a;border-radius:12px;padding:8px 12px;margin-top:10px;font-size:13px"><b>🛡 Mod Admin</b> — ${LIHAT ? `lihat kad ahli${ahli ? ' ' + esc(ahli.kod) : ''} (tiada perubahan disimpan)` : 'paparan seperti orang ramai'}</div>`); });
@@ -352,7 +354,7 @@ function mulaAhli(){
     ahli = {id: s.id, ...s.data()};
     langganTempahan();
     if(tab === 'Alu-aluan' || tab === 'Daftar') tab = 'Utama';
-    render();
+    if(!sedangIsiBorang()) render();
     // 🎉 Makluman naik taraf (selepas disahkan Dato' / Datin)
     const np = ahli.notisPeringkat;
     if(np && PERINGKAT[np.id] && String(LS.get('sm_notisP') || '') !== String(np.masa)){
@@ -387,7 +389,7 @@ async function muatTetapan(c){
     const s = await getDoc(doc(db, 'lionsafari', c, 'tetapan', 'umum')); tetapan[c] = s.exists() ? s.data() : {};
     const g = await getDocs(collection(db, 'lionsafari', c, 'gambar')); gambarPakej[c] = Object.fromEntries(g.docs.map(d => [d.id, d.data().data]));
   }catch(e){ console.error(e); tetapan[c] = {}; gambarPakej[c] = {}; }
-  if(tab === 'Pakej' || tab === 'Bayar' || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
+  if(tab === 'Pakej' || (tab === 'Bayar' && !sedangIsiBorang()) || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
 }
 
 // ---------- Notifikasi pelanggan (semasa apps dibuka / di latar) ----------
@@ -931,7 +933,7 @@ if(bukaQS === 'bayar' && ['mama-lion', 'lion-king'].includes(QS.get('c'))) byC =
 if(bukaQS) history.replaceState(null, '', location.pathname + location.hash);
 mulaAhli();
 muatPromosi();
-onSnapshot(doc(db, 'tetapan_ahli', 'kad'), s => { terapTetapanKad(s.data()); render(); }, () => {});
+onSnapshot(doc(db, 'tetapan_ahli', 'kad'), s => { terapTetapanKad(s.data()); if(!sedangIsiBorang()) render(); }, () => {});
 render();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 // Butang 🔄 Sync: tarik data kad terkini & pastikan apps pelanggan versi terbaru
