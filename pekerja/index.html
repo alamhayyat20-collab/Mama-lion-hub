@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.21-5">
+<meta name="app-versi" content="2026.11.22-1">
 <meta name="theme-color" content="#1F3A68">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -27,8 +27,8 @@ nav button{flex:1 0 66px;border:0;background:none;padding:8px 4px 9px;font-size:
 nav button:hover{background:#F5F7FB}
 nav button i{position:absolute;top:4px;right:8px;background:var(--merah);color:#fff;border-radius:999px;font-size:10px;font-style:normal;padding:1px 5px;font-weight:700}
 nav button b{display:flex;justify-content:center;font-size:20px;margin-bottom:3px;height:28px;align-items:center}
-nav button b .i3d{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 2px #0f172a26);transition:transform .15s}
-nav button.on b .i3d{transform:translateY(-1px) scale(1.08)}
+nav button b .ikB{width:26px;height:26px;color:#64748B;transition:transform .15s,color .15s}
+nav button.on b .ikB{color:#1F3A68;transform:translateY(-1px) scale(1.06)}
 nav button.on{color:var(--navy);font-weight:800;box-shadow:inset 0 -3px var(--emasJ);background:#F5F7FB}
 main{max-width:640px;margin:auto;padding:12px;padding-bottom:50px}
 .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px #0000000d;margin-bottom:12px}
@@ -119,21 +119,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.21-5';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-1';
 bannerPelayarDalaman({nama: 'Apps Pekerja'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.21-5';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.22-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.21-5';
-import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.21-5';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.21-5';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.21-5';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.21-5';
-import { pasangSync } from '../sync-lib.js?v=2026.11.21-5';
-import { i3d } from '../ikon3d.js?v=2026.11.21-5';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.21-5';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.21-5';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.22-1';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.22-1';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-1';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.22-1';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.22-1';
+import { pasangSync } from '../sync-lib.js?v=2026.11.22-1';
+import { ikB, pasangCssIkon } from '../ikon.js?v=2026.11.22-1';
+pasangCssIkon();
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-1';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.22-1';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -352,7 +353,7 @@ function renderNav(){
   if(!saya) return;
   $('#nav').classList.remove('hidden');
   const menunggu = mohonSaya.filter(m => m.status === 'menunggu').length, baru = memoBaru();
-  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${i3d(i)}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Tutup' && tutupMenunggu.length ? `<i>${tutupMenunggu.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
+  $('#nav').innerHTML = TABS().map(([t,i]) => `<button class="${t===tab?'on':''}" data-t="${t}"><b>${ikB(i)}</b>${t}${t==='Mohon' && menunggu ? ` (${menunggu})` : ''}${t==='Info' && baru ? `<i>${baru}</i>` : ''}${t==='Arahan' && arahanBaru() ? `<i>${arahanBaru()}</i>` : ''}${t==='Queue' && (aktifQ.length + tempahanQ.length) ? `<i>${aktifQ.length + tempahanQ.length}</i>` : ''}${t==='Tutup' && tutupMenunggu.length ? `<i>${tutupMenunggu.length}</i>` : ''}${t==='Pengelola' && pgBadge() ? `<i>${pgBadge()}</i>` : ''}</button>`).join('');
   $$('#nav button').forEach(b => b.onclick = () => { $('#app').dataset.sibuk = ''; tab = b.dataset.t; renderNav(); render(); window.scrollTo(0,0); });
 }
 function render(){
