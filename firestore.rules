@@ -362,7 +362,9 @@ service cloud.firestore {
       allow update: if dalaman() || request.resource.data.diff(resource.data).affectedKeys()
         .hasOnly(['nama', 'emel', 'tarikhLahir', 'kenderaan', 'plat', 'cawanganUtama', 'setujuPromosi', 'dikemaskini', 'foto', 'tempahan'])
         || (staffApp() && request.resource.data.olehCaw in ['mama-lion', 'lion-king'] && olehKuasa(request.resource.data.olehCaw, 'kaunter')
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cop', 'ganjaran', 'freeWash', 'kadSelesai', 'copTerakhir', 'jumlahServis', 'dikemaskini', 'olehId', 'olehCaw', 'kadAktif', 'kadAktifMasa', 'lawatan']));
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cop', 'ganjaran', 'freeWash', 'kadSelesai', 'copTerakhir', 'jumlahServis', 'dikemaskini', 'olehId', 'olehCaw', 'kadAktif', 'kadAktifMasa', 'lawatan']))
+        // 📤 Tanda kad digital sudah dihantar (senarai Belum terima kad di kaunter)
+        || (staffApp() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kadDihantar']) && request.resource.data.kadDihantar is map);
       match /sejarah/{id} {
         allow read: if true;
         allow write: if dalaman();

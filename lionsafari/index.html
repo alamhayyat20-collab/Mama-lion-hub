@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.22-3">
+<meta name="app-versi" content="2026.11.23-1">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-1';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.22-3';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.22-3';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-3';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.22-3';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.22-3';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.22-3';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.22-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.22-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.22-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.23-1';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.23-1';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.23-1';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.23-1';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.23-1';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.23-1';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-1';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.23-1';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1075,7 +1075,7 @@ VIEWS['Safari Members'] = {
       <p class="muted">Untuk hantar jemputan keahlian & melihat rekod pelanggan. Buka dengan PIN pekerja berkuasa <b>⭐ Safari Members</b> atau Admin.</p>
       <button class="btn-gold big" id="smBuka" style="max-width:320px">🔓 BUKA DENGAN PIN</button></div>`;
     return `<div class="card"><div class="between" style="flex-wrap:wrap;gap:8px"><div><b>⭐ Safari Members ${esc(infoCaw().nama)}</b><br><span class="muted" style="font-size:13px">${staf.akaun ? `ID Akaun: ${esc(staf.nama)}` : `Dibuka oleh ${esc(ahliBuka.oleh)} · dikunci semula ${new Date(ahliBuka.sampai).toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}`}</span></div>
-      <div class="row"><button class="btn-ok" id="smJemput">💌 Jemput pelanggan baru</button>${staf.akaun ? '' : '<button class="small" id="smKunci">🔒 Kunci</button>'}</div></div></div><div id="smCari"></div>`;
+      <div class="row"><button class="btn-ok" id="smJemput">💌 Jemput pelanggan baru</button><button class="btn-gold" id="smBelumKad">📋 Belum terima kad <span id="smBelumBil">…</span></button>${staf.akaun ? '' : '<button class="small" id="smKunci">🔒 Kunci</button>'}</div></div></div><div id="smCari"></div>`;
   },
   pasang(){
     if(!ahliTerbuka()){ $('#smBuka').onclick = () => {
@@ -1101,8 +1101,11 @@ VIEWS['Safari Members'] = {
         $('#kpCopBatal').onclick = () => { closeModal(); res(null); };
         keypad('#kpCop', async pin => { const x = await semakPinLayak(pin, x => PELULUS.includes(x.peranan)); if(!x) return 'PIN tidak sah / tiada kuasa'; res(namaPin(x)); });
       }),
+      selepasBelumKad: () => { const e = $('#smBelumBil'); if(e) MPS.kiraBelumKad().then(n => { if(n != null) e.textContent = `(${n})`; }); },
       buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
     $('#smCari').innerHTML = MPS.htmlKotak(); MPS.pasang($('#smCari'));
+    const kiraBK = () => MPS.kiraBelumKad().then(n => { const e = $('#smBelumBil'); if(e) e.textContent = n == null ? '' : `(${n})`; });
+    $('#smBelumKad').onclick = () => MPS.bukaBelumKad(); kiraBK();
   }
 };
 VIEWS['Order Baru'] = {

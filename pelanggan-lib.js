@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.22-3';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.23-1';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -34,6 +34,9 @@ export function modulPelanggan(ctx){
     if(!muat || paksa) muat = fs.getDocs(fs.collection(store, 'ahli')).then(s => ahli = s.docs.map(d => ({id: d.id, ...d.data()})));
     return muat;
   }
+  // 📤 Kad digital dihantar (WhatsApp) — ahli.kadDihantar = {masa, oleh}; untuk senarai "Belum terima kad"
+  const tandaKad = a => { const d = {masa: Date.now(), oleh: ctx.pengguna()}; a.kadDihantar = d; const l = (ahli || []).find(x => x.id === a.id); if(l) l.kadDihantar = d;
+    return fs.updateDoc(fs.doc(store, 'ahli', a.id), {kadDihantar: d}).catch(e => console.warn('tandaKad', e)); };
   const log = (a, tindakan, butiran = '') => (AKAUN || ctx.log) && fs.setDoc(fs.doc(fs.collection(store, 'ahli_log')), {ahliId: a.id, kod: a.kod || '', tindakan, butiran, oleh: ctx.pengguna(), masa: Date.now()}).catch(() => {});
 
   // ---------------- CARIAN ----------------
@@ -164,11 +167,11 @@ export function modulPelanggan(ctx){
     if(x('tolak')) x('tolak').onclick = () => { const sebab = prompt(`Sebab tolak naik taraf ke ${CALON.nama}:`); if(sebab === null) return; kemas({peringkatTolak: CALON.id}, 'Tolak naik taraf', `${CALON.nama}${sebab ? ' · ' + sebab : ''}`, 'Naik taraf ditolak'); };
     if(!AKAUN){
       if(ctx.jemput){ x('wa').onclick = () => ctx.jemput({jenis: 'wa', nama: a.nama, telefon: a.telefon, kod: a.kod});
-        x('hantar').onclick = () => ctx.jemput({jenis: 'kad', nama: a.nama, telefon: a.telefon, kod: a.kod, pautan: ctx.pautanKad(a.id)}); }
+        x('hantar').onclick = () => { ctx.jemput({jenis: 'kad', nama: a.nama, telefon: a.telefon, kod: a.kod, pautan: ctx.pautanKad(a.id)}); tandaKad(a); }; }
       return;
     }
     x('hantar').onclick = () => { const teks = `Salam ${a.nama}, ini kad digital Safari Members anda (${a.kod}) — Mama Lion & Lion King Premium Car Wash.\nBuka & pasang apps: ${ctx.pautanKad(a.id)}\n\nSetiap cucian berbayar = 1 cop. Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH!`;
-      window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(teks)}`, '_blank'); log(a, 'Hantar kad', 'WhatsApp'); };
+      window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(teks)}`, '_blank'); log(a, 'Hantar kad', 'WhatsApp'); tandaKad(a); };
     x('lihat').onclick = () => { ctx.tutup(); ctx.lihatKad?.(a); };
     x('nota').onclick = async () => { const nota = q('[data-cp-nota]').value.trim(); try{ await fs.setDoc(fs.doc(store, 'ahli_nota', id), {nota, oleh: ctx.pengguna(), masa: Date.now()}); log(a, 'Catatan dalaman dikemas kini'); ctx.toast('✅ Catatan disimpan'); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     x('fw').onclick = () => { const sebab = prompt('Sebab beri Free Wash manual:'); if(!sebab) return; const t = Date.now();
@@ -339,5 +342,43 @@ export function modulPelanggan(ctx){
     };
   }
 
-  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true)};
+  // ---------------- 📋 BELUM TERIMA KAD ----------------
+  // Ahli yang didaftar oleh kaunter / Akaun / import rekod lama (bukan daftar sendiri) & kad digital belum dihantar.
+  async function senaraiBelumKad(){
+    const list = await pastikanAhli(true), c = ctx.cawangan?.();
+    return list.filter(a => !a.kadDihantar && a.daftarOleh && a.daftarOleh !== 'pelanggan' && telefonSah(a.telefon) && (!c || !a.cawanganUtama || a.cawanganUtama === c))
+      .sort((x, y) => (y.daftarMasa || 0) - (x.daftarMasa || 0));
+  }
+  async function kiraBelumKad(){ try{ return (await senaraiBelumKad()).length; }catch(_){ return null; } }
+  async function bukaBelumKad(){
+    ctx.buka('<div class="cp-p"><h3>📋 Belum terima kad</h3><div class="muted">⏳ Memuat senarai…</div></div>');
+    let L; try{ L = await senaraiBelumKad(); }catch(e){ return ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📋 Belum terima kad</h3><button class="small" data-cp-tutup>✕</button></div><div class="muted">⚠ ${esc(e.code || e.message)}</div></div>`); }
+    const siap = new Set(); let tapis = '';
+    const baris = a => { const ok = siap.has(a.id);
+      return `<div class="cp-kad" style="cursor:default${ok ? ';opacity:.55' : ''}"><span class="cp-av" style="background:${warna(a.id)}">${esc(inisial(a.nama))}</span><span style="flex:1;min-width:0">
+        <b>${esc(a.nama || '—')} · ${esc(telP(a.telefon))}</b><small>🚗 ${(a.plat || []).map(esc).join(', ') || '—'} · daftar ${esc(fT(a.daftarMasa))}</small>
+        <span class="cp-tag cp-ahli">${esc(a.kod || '')}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Rekod lama</span>' : '<span class="cp-tag cp-belum">Daftar di kaunter</span>'}</span>
+        ${ok ? '<b style="color:#15803d;white-space:nowrap">✅ Dihantar</b>' : `<span style="display:flex;flex-direction:column;gap:4px"><button class="lt-btn" data-bk-hantar="${esc(a.id)}" style="background:#16a34a;color:#fff;border:0;border-radius:10px;padding:10px 12px;font-weight:700;white-space:nowrap;cursor:pointer">📤 Hantar kad</button>
+        <button data-bk-sudah="${esc(a.id)}" style="background:#e2e8f0;border:0;border-radius:10px;padding:6px 10px;font-size:12px;cursor:pointer">✓ Sudah dihantar</button></span>`}</div>`; };
+    const lukis = () => {
+      const t = tapis.trim().toLowerCase(), papar = L.filter(a => !t || (a.nama || '').toLowerCase().includes(t) || (a.plat || []).some(p => p.toLowerCase().includes(t.replace(/\s+/g, ''))));
+      const baki = L.filter(a => !siap.has(a.id)).length;
+      ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📋 Belum terima kad (${baki})</h3><button class="small" data-cp-tutup>✕</button></div>
+        <p class="muted" style="font-size:13px;margin:4px 0 8px">Ahli yang didaftar di kaunter / dari rekod lama tetapi kad digital Safari Members belum dihantar. Tekan <b>📤 Hantar kad</b> — WhatsApp dibuka dengan pautan kad. Hantar seorang demi seorang.</p>
+        <input data-bk-cari placeholder="Tapis nama atau plat" value="${esc(tapis)}" autocomplete="off">
+        <div class="cp-hasil">${papar.map(baris).join('') || '<div class="muted">🎉 Semua ahli sudah menerima kad.</div>'}</div></div>`);
+      const box = document.querySelector('[data-bk-cari]')?.closest('.cp-p'); if(!box) return;
+      box.querySelector('[data-cp-tutup]').onclick = () => { ctx.tutup(); ctx.selepasBelumKad?.(); };
+      const inp = box.querySelector('[data-bk-cari]'); inp.oninput = () => { tapis = inp.value; const p = inp.selectionStart; lukis(); const i2 = document.querySelector('[data-bk-cari]'); if(i2){ i2.focus(); i2.setSelectionRange(p, p); } };
+      box.querySelectorAll('[data-bk-hantar]').forEach(b => b.onclick = () => { const a = L.find(x => x.id === b.dataset.bkHantar); if(!a) return;
+        if(ctx.jemput) ctx.jemput({jenis: 'kad', nama: a.nama, telefon: a.telefon, kod: a.kod, pautan: ctx.pautanKad(a.id)});
+        else window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(`Salam ${a.nama}, ini kad digital Safari Members anda (${a.kod}) — Mama Lion & Lion King Premium Car Wash.\nBuka & pasang apps: ${ctx.pautanKad(a.id)}\n\nSetiap cucian berbayar = 1 cop. Cop ke-${KAD.ganjaranPada[0]} & ke-${KAD.saiz} = FREE WASH!`)}`, '_blank');
+        log(a, 'Hantar kad', 'WhatsApp (senarai belum terima kad)'); tandaKad(a); siap.add(a.id); lukis(); });
+      box.querySelectorAll('[data-bk-sudah]').forEach(b => b.onclick = () => { const a = L.find(x => x.id === b.dataset.bkSudah); if(!a || !confirm(`Tanda kad ${a.nama} sudah dihantar (tanpa buka WhatsApp)?`)) return;
+        log(a, 'Tanda kad sudah dihantar'); tandaKad(a); siap.add(a.id); lukis(); });
+    };
+    lukis();
+  }
+
+  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true), kiraBelumKad, bukaBelumKad};
 }
