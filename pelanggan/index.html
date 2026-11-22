@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.22-2">
+<meta name="app-versi" content="2026.11.22-3">
 <meta name="theme-color" content="#0d2a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -269,15 +269,15 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-3';
 bannerPelayarDalaman({nama: 'Safari Members'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.22-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.22-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, updateDoc, setDoc, addDoc, writeBatch, query, orderBy, limit, arrayUnion, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangSync } from '../sync-lib.js?v=2026.11.22-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-2';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.22-2';
-import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.22-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-3';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.22-3';
+import { KAD, keadaanKad, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, hargaPakejK, hargaAddonK, HARGA_RASMI, STATUS_ORDER, gambarAsal, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, MEDAN_PROFIL, peringkatAhli, kemajuanPeringkat, PERINGKAT, SUSUNAN_PERINGKAT, layakCop, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-3';
 
 const CAWANGAN = [
   {id:'mama-lion', nama:'Mama Lion', logo:'logo-mamalion.jpg'},
@@ -292,6 +292,10 @@ const LOKAL = BHS.bahasa() === 'en' ? 'en-MY' : 'ms-MY';
 const tarikhBM = ms => new Date(ms).toLocaleDateString(LOKAL, {day:'numeric', month:'short', year:'numeric'});
 const hariIni = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 const urlSelamat = u => /^https:\/\//.test(u || '') ? u : '';
+// ⭐ Review Google — tetapan/umum.linkReview (Akaun → Maklumat kedai); asal jika belum ditetapkan.
+// Polisi Google: dipapar kepada SEMUA pelanggan, tiada hadiah/syarat, tiada tapisan rating dalam apps.
+const REVIEW_ASAL = {'mama-lion': 'https://g.page/r/CUW-exGTcgPMEBM/review'};
+const linkReview = c => urlSelamat(tetapan[c]?.linkReview) || REVIEW_ASAL[c] || '';
 function toast(m){ const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3400); }
 const LS = {get: k => { try{ return localStorage.getItem(k); }catch(_){ return null; } }, set: (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(_){} }};
 
@@ -389,7 +393,7 @@ async function muatTetapan(c){
     const s = await getDoc(doc(db, 'lionsafari', c, 'tetapan', 'umum')); tetapan[c] = s.exists() ? s.data() : {};
     const g = await getDocs(collection(db, 'lionsafari', c, 'gambar')); gambarPakej[c] = Object.fromEntries(g.docs.map(d => [d.id, d.data().data]));
   }catch(e){ console.error(e); tetapan[c] = {}; gambarPakej[c] = {}; }
-  if(tab === 'Pakej' || (tab === 'Bayar' && !sedangIsiBorang()) || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran))) render();
+  if(tab === 'Pakej' || (tab === 'Bayar' && !sedangIsiBorang()) || (tab === 'Utama' && adaTerimaBayar(tetapan[c]?.terimaBayaran)) || (['Kad','Utama'].includes(tab) && tetapan[c]?.linkReview)) render();
 }
 
 // ---------- Notifikasi pelanggan (semasa apps dibuka / di latar) ----------
@@ -446,6 +450,13 @@ function infoKadHtml(){
     <i>🕘</i><div>${esc(T.waktuOperasi || HARGA_RASMI.waktuOperasi)}</div></div>${petaHtml(T, T.namaKedai || 'kedai')}${ikonServis}
     <p class="muted" style="text-align:center;margin:12px 0 0;font-style:italic">Thank you for your support — Same Car, Brighter Days</p></div>`;
 }
+function reviewHtml(c, siap){
+  const u = linkReview(c); if(!u) return '';
+  const nama = CAWANGAN.find(x => x.id === c)?.nama || 'kami';
+  return `<div class="panel" style="border:1px solid var(--emas)"><h3 style="margin-top:0">⭐ ${siap ? 'Bagaimana cucian hari ini?' : 'Kongsi pengalaman anda'}</h3>
+    <p class="muted" style="margin:0 0 10px">Kongsi pengalaman anda bersama ${esc(nama)} di Google — baik atau kurang, pendapat jujur anda bantu kami jadi lebih baik.</p>
+    <a class="btn btn-emas" style="padding:12px" href="${esc(u)}" target="_blank" rel="noopener">✍️ Beri review di Google</a></div>`;
+}
 const STATUS_LABEL = {Menunggu:'Dalam giliran', Cuci:'Sedang dicuci', Kering:'Sedang dikeringkan', QC:'Pemeriksaan akhir', Siap:'SIAP — sila ambil', Selesai:'Selesai & dibayar', Batal:'Dibatalkan'};
 function statusHtml(){
   const hari = Date.now() - 18*3600e3;
@@ -460,6 +471,7 @@ function statusHtml(){
       <div>${esc(x.pakej)}${(x.addon || []).length ? ' + ' + x.addon.map(esc).join(', ') : ''} · <b>${RM(x.jumlah)}</b></div>
       <div class="langkah">${STATUS_ORDER.map((st, j) => `<div class="${selesai || j <= i ? 'on' : ''}">${st}</div>`).join('')}</div>
       <b style="color:${x.status === 'Siap' ? 'var(--emas-gelap)' : 'var(--zamrud)'}">${esc(STATUS_LABEL[x.status] || x.status)}</b></div>`; }).join('')}
+    ${[...new Set(aktif.filter(x => x.status === 'Siap' || x.status === 'Selesai').map(x => x.cawangan))].map(c => { if(!tetapan[c]) muatTetapan(c); return reviewHtml(c, true); }).join('')}
     ${'Notification' in window && Notification.permission !== 'granted' ? '<button class="btn btn-garis" style="margin-top:10px;padding:12px" id="btnNotifPl">🔔 Maklumkan saya bila kenderaan siap</button>' : ''}`;
 }
 function pasangStatus(){
@@ -772,7 +784,7 @@ function viewKad(){
   muatTetapan(ahli.cawanganUtama || 'mama-lion');
   $('#app').innerHTML = `<h1 style="margin-top:12px">Kad ahli</h1>${kadHtml()}${aktifKadHtml()}
     <h2>Peringkat kad</h2>${peringkatHtml()}
-    <h2>Cop anda</h2>${dulangHtml()}${infoKadHtml()}
+    <h2>Cop anda</h2>${dulangHtml()}${reviewHtml(ahli.cawanganUtama || 'mama-lion')}${infoKadHtml()}
     ${baucarHtml()}
     <div class="panel"><h3>Cara kad berfungsi</h3><div class="muted">Setiap cucian pakej layak memberi 1 cop (maksimum 1 cop bagi satu kenderaan sehari). Pakej layak cop: <b>${esc(namaPakejCop())}</b>. Cuci Luar & servis tambahan (add-on) tidak dicop. Cop ke-${KAD.ganjaranPada[0]} dan ke-${KAD.saiz} memberi 1 Free Wash — pakej ${esc(namaPakejFW())} untuk semua jenis kenderaan (2 Free Wash bagi setiap kad ${KAD.saiz} cop). Selepas cop ke-${KAD.saiz}, kad bermula semula. Cop pertama perlu pakej ${esc(namaPakejAktif())} untuk mengaktifkan kad. Cop dan Free Wash sah selama 12 bulan.</div></div>
     <h2>Sejarah cucian</h2><div class="panel sejarah">${sejarah.length ? sejarah.map(h => `<div><span>${tarikhBM(h.tarikh + 'T12:00:00')}<br><span class="muted">${esc(CAWANGAN.find(c => c.id === h.cawangan)?.nama || '')} · ${esc(h.plat)}</span></span><span style="text-align:right">${esc(h.pakej)}<br><span class="muted">${h.freeWash ? 'Free Wash' : '+1 cop'}</span></span></div>`).join('') : '<p class="muted" style="margin:0">Belum ada rekod cucian.</p>'}</div>`;

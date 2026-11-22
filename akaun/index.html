@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.22-2">
+<meta name="app-versi" content="2026.11.22-3">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -154,20 +154,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-2';
-import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.22-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-3';
+import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.22-3';
 pasangCssIkon();
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.22-2';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.22-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.22-2';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.22-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.22-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.22-3';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.22-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.22-3';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.22-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.22-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.22-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.22-2';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.22-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.22-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.22-3';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.22-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -2873,13 +2873,16 @@ function borangKedai(){
     <label>Pautan Google Maps</label><input id="kdMaps" value="${esc(T.mapsUrl||'')}" placeholder="https://maps.app.goo.gl/...">
     <label>📍 Koordinat lokasi (untuk peta & Waze dalam Apps Pelanggan)</label><input id="kdLokasi" value="${esc(T.lokasi||'')}" placeholder="cth: 3.8168, 103.3317">
     <div class="muted" style="font-size:12px">Google Maps: tekan lama pada lokasi kedai → salin nombor koordinat yang muncul di atas. Kosongkan untuk guna alamat.</div>
+    <label>⭐ Pautan review Google (butang "Beri review" dalam Apps Pelanggan)</label><input id="kdReview" value="${esc(T.linkReview||'')}" placeholder="https://g.page/r/.../review">
+    <div class="muted" style="font-size:12px">Google Business Profile → "Minta ulasan" → salin pautan. Butang dipapar kepada semua pelanggan, tanpa hadiah atau syarat (polisi Google).</div>
     <label>Bay cucian (satu setiap baris)</label><textarea id="kdBay" rows="3">${esc((T.bay||['Bay 1']).join('\n'))}</textarea>
     <button class="primary" style="width:100%;padding:14px" id="kdSimpan">SIMPAN</button>`);
   $('#mTutup').onclick = tutupModal;
   $('#kdSimpan').onclick = async () => {
     const mp = val('#kdMaps'); if(mp && !/^https:\/\//.test(mp)) return toast('Pautan Maps mesti bermula dengan https://');
+    const rv = val('#kdReview'); if(rv && !/^https:\/\//.test(rv)) return toast('Pautan review mesti bermula dengan https://');
     const lk = val('#kdLokasi').replace(/\s+/g, ''); if(lk && !/^-?\d{1,2}\.\d+,-?\d{1,3}\.\d+$/.test(lk)) return toast('Koordinat tidak sah. Contoh: 3.8168, 103.3317');
-    const d = {namaKedai: val('#kdNama'), alamat: val('#kdAlamat'), telefon: val('#kdTel'), whatsapp: val('#kdWa'), notaResit: val('#kdNota'), pakejFreeWash: val('#kdFW'), waktuOperasi: val('#kdWaktu'), mapsUrl: mp, lokasi: lk,
+    const d = {namaKedai: val('#kdNama'), alamat: val('#kdAlamat'), telefon: val('#kdTel'), whatsapp: val('#kdWa'), notaResit: val('#kdNota'), pakejFreeWash: val('#kdFW'), waktuOperasi: val('#kdWaktu'), mapsUrl: mp, lokasi: lk, linkReview: rv,
       bay: $('#kdBay').value.split('\n').map(x => x.trim()).filter(Boolean), dikemaskiniOleh: nama};
     if(!d.bay.length) d.bay = ['Bay 1'];
     try{ await setDoc(refTK(), d, {merge: true});
