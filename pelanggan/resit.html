@@ -24,8 +24,8 @@ pre{white-space:pre-wrap;text-align:left;font-family:ui-monospace,Menlo,Consolas
 import { firebaseConfig } from '../firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-1';
-import { KAMUS, POLA } from './kamus-en.js?v=2026.11.23-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-2';
+import { KAMUS, POLA } from './kamus-en.js?v=2026.11.23-2';
 try{ if(new URLSearchParams(location.search).get('en') === '1' && !localStorage.getItem('sm_bahasa')) localStorage.setItem('sm_bahasa', 'en'); }catch(_){}
 pasangBahasa({kamus: KAMUS, pola: POLA, kunci: 'sm_bahasa', tempat: '#bahasaBox'});
 const db = getFirestore(initializeApp(firebaseConfig));

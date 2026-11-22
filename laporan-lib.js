@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.23-1';
-import { hariOperasi } from './safari-lib.js?v=2026.11.23-1';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.23-2';
+import { hariOperasi } from './safari-lib.js?v=2026.11.23-2';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -44,7 +44,7 @@ const kaedahPendek = k => ({'Tunai':'CASH', 'QR / eWallet':'QR', 'Kad':'CARD', '
 // d = {tarikh, c, orders, ordersMinggu, petty, staf, tetapanPK, kehadiran, kehadiranMinggu, advance, rekod}
 // ---------------------------------------------------------------------
 export function kiraLaporan(d){
-  const rekod = d.rekod || {}, float = Number(d.tetapanPK?.modalFloat ?? MODAL_FLOAT);
+  const rekod = d.rekod || {}, float = Number(d.tetapanPK?.modalFloatCaw?.[d.c] ?? d.tetapanPK?.modalFloat ?? MODAL_FLOAT);   // 💵 float ikut cawangan (Akaun → Laporan Harian → kad Float)
   const hariBayar = Number(d.tetapanPK?.hariBayarMingguan ?? 0), hariIni = new Date(d.tarikh + 'T00:00:00').getDay() === hariBayar;
   const sah = (d.orders || []).filter(o => o.status !== 'Batal' && (o.bayar || o.freeWash)).sort((a,b) => (a.masaBayar||a.masaDibuat||0) - (b.masaBayar||b.masaDibuat||0));
   const baris = sah.map((o, i) => {

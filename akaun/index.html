@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.23-1">
+<meta name="app-versi" content="2026.11.23-2">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -154,20 +154,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-1';
-import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.23-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-2';
+import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.23-2';
 pasangCssIkon();
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-1';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.23-1';
-import { pasangSync } from '../sync-lib.js?v=2026.11.23-1';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.23-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.23-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-2';
+import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.23-2';
+import { pasangSync } from '../sync-lib.js?v=2026.11.23-2';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.23-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.23-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.23-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-1';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.23-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.23-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-2';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.23-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -780,6 +780,61 @@ const MTA = modulTutup({store, fs:{collection, doc, query, where, getDoc, getDoc
   cawangan: () => tutupBuka?.c || cawangan, pengguna: () => nama, toast, capGambar: null, mod: 'lihat', bolehSemak: true,
   refresh: () => { if(tab === 'Laporan Harian' && tutupBuka) refresh(); muatTutupBulanLambat(); }});
 let _tl = null; const muatTutupBulanLambat = () => { clearTimeout(_tl); _tl = setTimeout(muatTutupBulan, 800); };
+// ================================================================
+// 💵 FLOAT LACI (modal tunai) — kakitangan/mama-lion/tetapan/umum.modalFloatCaw[c]
+// Digunakan untuk BOP di Tutup Kaunter (laporan-lib) & disalin ke lionsafari/{c}/tetapan/umum.floatTunai (kaunter).
+// Pilih RM150 / 200 / 250 / manual. Selepas ditetapkan, perubahan melalui ✏️ Edit WAJIB nota sebab → floatSejarah.
+// ================================================================
+const FLOAT_PILIHAN = [150, 200, 250];
+let floatTP = null, floatMuat = false;
+const refFloat = () => doc(store, 'kakitangan', 'mama-lion', 'tetapan', 'umum');
+async function muatFloat(){ if(floatMuat) return; floatMuat = true;
+  try{ const s = await getDoc(refFloat()); floatTP = s.exists() ? s.data() : {}; }catch(e){ console.warn('float', e); floatTP = {}; }
+  floatMuat = false; if(tab === 'Laporan Harian' && !tutupBuka) refresh(); }
+const floatSemasa = c => { const t = floatTP || {}; const v = t.modalFloatCaw?.[c]; return v != null ? {amaun: Number(v), sah: true} : {amaun: Number(t.modalFloat ?? 150), sah: false}; };
+function kadFloatHtml(){
+  if(!floatTP){ muatFloat(); return '<div class="card muted">⏳ Memuat float laci…</div>'; }
+  const f = floatSemasa(cawangan), sej = (floatTP.floatSejarah || []).filter(x => x.c === cawangan).slice(-5).reverse();
+  const chip = (v, pilih) => `<button class="small ${pilih ? 'primary' : ''}" data-flpilih="${v}" style="min-width:84px">RM${v}</button>`;
+  return `<div class="card"><div class="section-title"><h3>💵 Float laci — ${esc(namaCawangan())}</h3>${f.sah ? '<button class="small" id="flEdit">✏️ Edit</button>' : ''}</div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><b style="font-size:28px">${RM(f.amaun)}</b>
+      <span class="muted">${f.sah ? 'modal tunai dalam laci setiap hari · digunakan untuk BOP Tutup Kaunter' : 'nilai asal — belum ditetapkan untuk cawangan ini'}</span></div>
+    ${f.sah ? '' : `<div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px">${FLOAT_PILIHAN.map(v => chip(v, false)).join('')}<input id="flManual" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Manual RM" style="max-width:140px;margin:0"><button class="small primary" id="flManualOk">Tetapkan</button></div>`}
+    ${sej.length ? `<div style="margin-top:10px"><div class="muted" style="font-size:12px;font-weight:700">Sejarah pembetulan</div>${sej.map(x => `<div style="font-size:13px;border-top:1px dotted #e2e8f0;padding:4px 0">${new Date(x.masa).toLocaleString('ms-MY', {day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit'})} · ${x.dari != null ? RM(x.dari) + ' → ' : ''}<b>${RM(x.ke)}</b> · ${esc(x.oleh || '')}${x.sebab ? `<br><span class="muted">Sebab: ${esc(x.sebab)}</span>` : ''}</div>`).join('')}</div>` : ''}
+    <div class="muted" style="font-size:12px;margin-top:8px">Perubahan terpakai untuk Tutup Kaunter yang belum ditutup. Laporan yang sudah dihantar / disahkan tidak berubah.</div></div>`;
+}
+async function simpanFloat(amaun, sebab){
+  amaun = Math.round(Number(amaun) * 100) / 100; if(!isFinite(amaun) || amaun < 0) return toast('Amaun float tidak sah');
+  const c = cawangan, lama = floatSemasa(c);
+  try{
+    const s = await getDoc(refFloat()); const t = s.exists() ? s.data() : {};
+    const rek = {c, dari: t.modalFloatCaw?.[c] ?? null, ke: amaun, sebab: sebab || '', oleh: nama, masa: Date.now()};
+    await setDoc(refFloat(), {modalFloatCaw: {...(t.modalFloatCaw || {}), [c]: amaun}, floatSejarah: [...(t.floatSejarah || []), rek].slice(-60), dikemaskiniOleh: nama}, {merge: true});
+    await setDoc(doc(store, 'lionsafari', c, 'tetapan', 'umum'), {floatTunai: amaun, dikemaskiniOleh: nama}, {merge: true}).catch(e => console.warn('floatTunai', e));
+    floatTP = null; toast(`✅ Float ${namaCawangan()} ${lama.sah ? 'dibetulkan' : 'ditetapkan'}: ${RM(amaun)}`); tutupModal(); refresh();
+  }catch(e){ toast('⚠ ' + (e.code || e.message)); }
+}
+function pasangKadFloat(){
+  $$('[data-flpilih]').forEach(b => b.onclick = () => { const v = +b.dataset.flpilih; if(confirm(`Tetapkan float laci ${namaCawangan()} = ${RM(v)}?`)) simpanFloat(v, 'Tetapan awal'); });
+  if($('#flManualOk')) $('#flManualOk').onclick = () => { const v = num('#flManual'); if(!(v > 0)) return toast('Isi amaun manual'); if(confirm(`Tetapkan float laci ${namaCawangan()} = ${RM(v)}?`)) simpanFloat(v, 'Tetapan awal'); };
+  if($('#flEdit')) $('#flEdit').onclick = () => {
+    const f = floatSemasa(cawangan); let pilih = f.amaun;
+    bukaModal(`<div class="section-title"><h3>✏️ Pembetulan float — ${esc(namaCawangan())}</h3><button class="small" id="mTutup">✕</button></div>
+      <div class="muted">Float semasa: <b>${RM(f.amaun)}</b></div>
+      <label>Float baharu</label><div class="row" style="flex-wrap:wrap;gap:6px">${FLOAT_PILIHAN.map(v => `<button class="small" data-fledit="${v}" style="min-width:84px">RM${v}</button>`).join('')}</div>
+      <input id="flEditAmaun" type="number" inputmode="decimal" step="0.01" min="0" value="${f.amaun}" placeholder="Atau isi manual (RM)" style="margin-top:8px">
+      <label>Sebab pembetulan *</label><textarea id="flSebab" rows="3" placeholder="cth: Tambah duit kecil untuk hujung minggu / salah isi sebelum ini"></textarea>
+      <button class="primary" style="width:100%;padding:14px;margin-top:10px" id="flSimpan">💾 SIMPAN PEMBETULAN</button>`);
+    $('#mTutup').onclick = tutupModal;
+    const tanda = () => $$('[data-fledit]').forEach(b => b.classList.toggle('primary', +b.dataset.fledit === num('#flEditAmaun')));
+    $$('[data-fledit]').forEach(b => b.onclick = () => { $('#flEditAmaun').value = b.dataset.fledit; tanda(); }); $('#flEditAmaun').oninput = tanda; tanda();
+    $('#flSimpan').onclick = () => { const v = num('#flEditAmaun'), sebab = $('#flSebab').value.trim();
+      if(!(v >= 0) || $('#flEditAmaun').value === '') return toast('Isi amaun float');
+      if(v === f.amaun) return toast('Amaun sama dengan float semasa');
+      if(sebab.length < 5) return toast('Sila tulis sebab pembetulan');
+      simpanFloat(v, sebab); };
+  };
+}
 function viewTutupAk(){
   if(tutupBuka){ const r = tutupBulan.find(x => x.cawangan === tutupBuka.c && x.tarikh === tutupBuka.t) || {};
     return `<button class="small" id="tkBalik" style="margin-bottom:10px">← Senarai laporan</button>
@@ -790,7 +845,7 @@ function viewTutupAk(){
   const jh = jualanHarianOrder[cawangan] || {};
   const hari = [...new Set([...Object.keys(jh), ...Object.keys(tutup)])].sort().reverse();
   const T = k => hari.filter(h => !tutup[h]?.percubaan).reduce((t,h) => t + (jh[h]?.[k] || 0), 0);
-  return `<div class="card"><div class="section-title"><h3>📊 Laporan Jualan Harian — ${esc(namaCawangan())}</h3><span class="muted">${fmtBulan(bulan)}</span></div>
+  return kadFloatHtml() + `<div class="card"><div class="section-title"><h3>📊 Laporan Jualan Harian — ${esc(namaCawangan())}</h3><span class="muted">${fmtBulan(bulan)}</span></div>
     <p class="muted" style="margin-top:0">Semua hari yang ada jualan di kaunter, terus dari order yang dibayar. Tekan satu tarikh untuk lihat laporan penuh (senarai kereta, bayaran, gambar tunai), cetak atau hantar ke WhatsApp. Tukar cawangan di atas & bulan di 📅.</p>
     ${hari.length ? `<div class="scroll"><table><tr><th>Tarikh</th><th class="r">Kereta</th><th class="r">Jualan</th><th class="r">Tunai</th><th class="r">QR</th><th class="r">Kad</th><th class="r">Transfer</th><th class="r">Surplus/(Kurang)</th><th>Tutup kaunter</th></tr>
     ${hari.map(h => { const x = jh[h] || {}, r = tutup[h] || {}, L = r.laporan || {}; return `<tr data-tkbuka="${h}" style="cursor:pointer;${r.percubaan ? 'opacity:.6;background:#fff7ed' : ''}"><td><b>${esc(h)}</b>${r.percubaan ? '<br><span class="tag warn" style="text-decoration:none">🧪 Percubaan</span>' : ''}${r.catatanPemilik ? `<br><span class="muted" style="text-decoration:none">${esc(r.catatanPemilik)}</span>` : ''}</td><td class="r">${x.kereta || 0}</td><td class="r"><b>${RM(x.jumlah || 0)}</b></td><td class="r">${RM(x.tunai || 0)}</td><td class="r">${RM(x.qr || 0)}</td><td class="r">${RM(x.kad || 0)}</td><td class="r">${RM(x.tf || 0)}</td>
@@ -804,6 +859,7 @@ function pasangTutupAk(){
       try{ await setDoc(doc(store, 'lionsafari', c, 'tutup', t), {tarikh: t, bulan: t.slice(0,7), cawangan: c, percubaan: $('#tkUji').checked, catatanPemilik: val('#tkRemark'), remarkOleh: nama, remarkMasa: Date.now()}, {merge: true});
         toast('✅ Remark disimpan'); await muatTutupBulan(); }catch(e){ toast('⚠ ' + (e.code || e.message)); } };
     return; }
+  pasangKadFloat();
   if($('#tkSegerak')) $('#tkSegerak').onclick = segerakJualan;
   document.querySelectorAll('[data-tkbuka]').forEach(r => r.onclick = () => { tutupBuka = {c: cawangan, t: r.dataset.tkbuka}; MTA.st.c = null; MTA.mula(r.dataset.tkbuka); refresh(); });
 }
