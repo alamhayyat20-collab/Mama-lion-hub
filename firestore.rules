@@ -288,6 +288,16 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'diprosesOleh', 'diproses', 'jamLulus', 'catatanLulus', 'olehId', 'olehCaw'])
         && olehKuasa(cawangan, resource.data.jenis == 'tukar' ? 'roster' : 'lulus');
+      // 💰 Manager (kuasa advance): lulus / tolak advance — bukan permohonan sendiri, maksimum RM200 setiap kelulusan (had bulanan disemak dalam apps)
+      allow update: if staffApp()
+        && resource.data.status == 'menunggu'
+        && resource.data.jenis == 'advance'
+        && request.resource.data.status in ['lulus', 'tolak']
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'diprosesOleh', 'diproses', 'amaunLulus', 'catatanLulus', 'olehId', 'olehCaw'])
+        && request.resource.data.olehId != resource.data.stafId
+        && (request.resource.data.status == 'tolak' || (request.resource.data.amaunLulus is number && request.resource.data.amaunLulus > 0 && request.resource.data.amaunLulus <= 200))
+        && olehKuasa(cawangan, 'advance');
       allow create: if staffApp()
         && request.resource.data.status == 'menunggu'
         && request.resource.data.masa == request.time;
@@ -295,6 +305,17 @@ service cloud.firestore {
     match /kakitangan/{cawangan}/roster/{id} {
       allow read: if staffApp();
       allow create, update: if staffApp() && (olehKuasa(cawangan, 'roster') || olehKuasa(cawangan, 'lulus'));
+    }
+    // ⏱ Pindaan jam kerja oleh manager (kuasa pindaJam) — bukan jam sendiri, sebab wajib
+    match /kakitangan/{cawangan}/pinda_jam/{id} {
+      allow read: if staffApp();
+      allow create, update: if staffApp()
+        && id == request.resource.data.tarikh + '__' + request.resource.data.stafId
+        && request.resource.data.stafId != request.resource.data.olehId
+        && request.resource.data.sebab is string && request.resource.data.sebab.size() >= 5
+        && request.resource.data.minit is int && request.resource.data.minit >= 0 && request.resource.data.minit <= 960
+        && request.resource.data.masa == request.time
+        && olehKuasa(cawangan, 'pindaJam');
     }
     // Log tindakan pengelola (dibaca pemilik di Akaun)
     match /kakitangan/{cawangan}/log/{id} {

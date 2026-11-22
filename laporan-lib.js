@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.23-2';
-import { hariOperasi } from './safari-lib.js?v=2026.11.23-2';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.23-3';
+import { hariOperasi } from './safari-lib.js?v=2026.11.23-3';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)
@@ -78,7 +78,8 @@ export function kiraLaporan(d){
       hadir.filter(h => h.stafId === s.id && (h.cawangan || 'mama-lion') === d.c && h.tarikh >= (k === 'harian' ? d.tarikh : dari7) && h.tarikh <= d.tarikh)
         .forEach(h => (ikutHari[h.tarikh] = ikutHari[h.tarikh] || []).push(h));
       let minit = 0;
-      for(const l of Object.values(ikutHari)){ const x = [...l].sort((a,b) => masaMs(a) - masaMs(b)); let buka = null, m = 0;
+      for(const [tH, l] of Object.entries(ikutHari)){ const pd = (d.pinda || []).find(p => p.stafId === s.id && p.tarikh === tH); if(pd){ minit += Math.min(Number(pd.minit) || 0, JAM_MAKS_MINIT); continue; }   // ⏱ pindaan jam
+        const x = [...l].sort((a,b) => masaMs(a) - masaMs(b)); let buka = null, m = 0;
         for(const r of x){ if(r.jenis === 'masuk'){ if(!buka) buka = r; } else if(r.jenis === 'keluar' && buka){ m += (masaMs(r) - masaMs(buka)) / 60000; buka = null; } }
         minit += Math.min(m, JAM_MAKS_MINIT); }
       const jam = r2(minit / 60), amaun = r2(jam * Number(s.kadarJamPT));
@@ -254,13 +255,14 @@ export function modulTutup(ctx){
     try{
       const t = st.tarikh, c = st.c, dari7 = tambahHariT(t, -6);
       const g = async q => (await fs.getDocs(q)).docs.map(x => ({id: x.id, ...x.data()}));
-      const [orders, petty, staf, tp, kehadiran, adv] = await Promise.all([
+      const [orders, petty, staf, tp, kehadiran, adv, pinda] = await Promise.all([
         g(fs.query(col(c, 'order'), fs.where('tarikhBayar', '==', t))),
         g(fs.query(col(c, 'petty'), fs.where('tarikh', '==', t))).catch(() => []),
         g(col('mama-lion', 'staf')),
         fs.getDoc(fs.doc(K('tetapan'), 'umum')).then(s => s.exists() ? s.data() : {}).catch(() => ({})),
         g(fs.query(K('kehadiran'), fs.where('tarikh', '==', t))).catch(() => []),
-        g(fs.query(K('permohonan'), fs.where('jenis', '==', 'advance'))).catch(() => [])
+        g(fs.query(K('permohonan'), fs.where('jenis', '==', 'advance'))).catch(() => []),
+        g(fs.query(K('pinda_jam'), fs.where('bulan', 'in', [...new Set([dari7.slice(0,7), t.slice(0,7)])]))).catch(() => [])
       ]);
       const mingguan = new Date(t + 'T00:00:00').getDay() === Number(tp.hariBayarMingguan ?? 0) && staf.some(s => s.kaedahBayar === 'mingguan');
       const [ordersMinggu, kehadiranMinggu] = mingguan ? await Promise.all([
@@ -268,7 +270,7 @@ export function modulTutup(ctx){
         g(fs.query(K('kehadiran'), fs.where('tarikh', '>=', dari7), fs.where('tarikh', '<=', t))).catch(() => [])]) : [[], []];
       const namaStaf = id => staf.find(s => s.id === id)?.nama || '';
       const advance = adv.filter(a => a.status === 'lulus' && (!a.dibayar || (a.dibayar.tarikh === t && a.dibayar.cawangan === c))).map(a => ({...a, nama: a.nama || namaStaf(a.stafId)}));
-      st.data = {tarikh: t, c, orders, ordersMinggu, petty, staf: staf.filter(s => s.aktif !== false), tetapanPK: tp, kehadiran, kehadiranMinggu, advance};
+      st.data = {tarikh: t, c, orders, ordersMinggu, petty, staf: staf.filter(s => s.aktif !== false), tetapanPK: tp, kehadiran, kehadiranMinggu, advance, pinda};
     }catch(e){ console.error(e); st.ralat = 'Gagal memuat data: ' + (e.code || e.message); }
     st.muat = false; ctx.refresh();
   }

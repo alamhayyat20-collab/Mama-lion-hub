@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.23-2">
+<meta name="app-versi" content="2026.11.23-3">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -154,20 +154,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-2';
-import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.23-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-3';
+import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.23-3';
 pasangCssIkon();
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-2';
-import { modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.23-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.23-2';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.23-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.23-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-3';
+import { KUASA_MANAGER, modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ } from '../pekerja-lib.js?v=2026.11.23-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.23-3';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.23-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.23-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.23-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-2';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.23-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.23-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-3';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.23-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -1928,7 +1928,8 @@ const stafCol = () => collection(store, 'lionsafari', PUSAT, 'staf');   // peker
 const pekerjaCol = () => collection(store, 'akaun', PUSAT, 'pekerja');
 const hrCol = () => collection(store, 'akaun', PUSAT, 'hr');
 const modulPK = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
-  cawangan: () => PUSAT, pengguna: () => nama, esc, RM, toast, refresh: () => refresh(), kehadiranBulan: true});
+  cawangan: () => PUSAT, pengguna: () => nama, esc, RM, toast, refresh: () => refresh(), kehadiranBulan: true,
+  bolehPinda: () => true});   // pemilik: pinda jam bila-bila tarikh (sebab wajib, direkod)
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS_MODUL}${CSS_AVATAR}${CSS_DOK}</style>`);
 let fotoStaf = {};   // gambar profil staf: lionsafari/{cawangan}/staf_foto/{id}
 const fotoColAk = () => collection(store, 'lionsafari', PUSAT, 'staf_foto');
@@ -2035,7 +2036,7 @@ function viewPekerja(){
   if(pkMod === 'Log Pengelola') return sub + err + viewLogPK();
   if(pkMod === 'Senarai') return sub + err + `<div class="card"><div class="section-title"><h3>👥 Pekerja Mama Lion &amp; Lion King</h3><span class="muted">${list.filter(p=>p.aktif!==false).length} aktif</span></div>
     <p class="muted" style="margin-top:0">Pekerja <b>dikongsi Mama Lion & Lion King</b>: ID & PIN yang sama untuk kedua-dua kaunter dan Apps Pekerja. Maklumat gaji hanya boleh dilihat oleh pemilik.</p><div id="gabungBox"></div>
-    ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}">${avatar(fotoStaf[p.id], p.nama, 44)}<div style="flex:1"><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${jenisPekerja(p.info) === 'parttime' ? ' <span class="tag">⏱ Part-time</span>' : jenisPekerja(p.info) === 'pengurusan' ? ' <span class="tag">🧑‍💼 Pengurusan</span>' : ''}${p.punchBebas ? ' <span class="tag" title="Punch selfie lokasi semasa, tanpa stesen">📍 Punch bebas</span>' : ''}${ikonKuasa(p)?` <span class="tag" style="background:#fef3c7" title="${esc([p.mo?'MO':'', ...KUASA.filter(x => adaKuasa(p,x.k)).map(x => x.label)].filter(Boolean).join(', '))}">${ikonKuasa(p)}</span>`:''}${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
+    ${list.length ? list.map(p => { const g = kiraGaji(p); return `<div class="pk ${p.aktif===false?'off':''}">${avatar(fotoStaf[p.id], p.nama, 44)}<div style="flex:1"><b>${esc(p.idStaf||'— tiada ID')}</b> · ${esc(p.nama)} <span class="tag">${esc(p.peranan)}</span>${p.manager ? ' <span class="tag ok">👔 Manager</span>' : ''}${jenisPekerja(p.info) === 'parttime' ? ' <span class="tag">⏱ Part-time</span>' : jenisPekerja(p.info) === 'pengurusan' ? ' <span class="tag">🧑‍💼 Pengurusan</span>' : ''}${p.punchBebas ? ' <span class="tag" title="Punch selfie lokasi semasa, tanpa stesen">📍 Punch bebas</span>' : ''}${ikonKuasa(p)?` <span class="tag" style="background:#fef3c7" title="${esc([p.mo?'MO':'', ...KUASA.filter(x => adaKuasa(p,x.k)).map(x => x.label)].filter(Boolean).join(', '))}">${ikonKuasa(p)}</span>`:''}${p.aktif===false?' <span class="tag warn">tidak aktif</span>':''}
         <br><span class="muted">${esc(p.info.jawatan||'')}${p.info.telefon?' · '+esc(p.info.telefon):''}${p.info.jenisGaji ? ' · '+(p.info.jenisGaji==='Harian' ? RM(p.info.kadarHarian)+'/hari' : RM(p.info.gajiBulanan)+'/bulan') : ''}</span>
         ${g.advance ? `<br><span class="tag warn">Advance ${fmtBulan(bulan)}: ${RM(g.advance)}</span>` : ''}</div>
         <div class="aksi">${jenisPekerja(p.info) === 'parttime' ? `<button class="small" data-pkpt="${p.id}" title="Borang kehadiran part-time">🧾 PT</button><button class="small" data-pkpt="${p.id}" data-wa="1" title="WhatsApp">📤</button>` : ''}<button class="small primary" data-pkrekod="${p.id}">+ Rekod</button><button class="small" data-pkurus="${p.id}">Urus</button></div></div>`; }).join('')
@@ -2111,8 +2112,9 @@ function borangPekerja(id){
       <div class="muted" style="margin-top:4px">Butang Order muncul di Apps Pekerja pekerja ini (selepas punch in). Komisen ikut Kadar Komisen, dikira bila order dibayar & masuk ke gaji.</div>
       <label class="row" style="font-weight:650;margin:10px 0 0"><input type="checkbox" id="pBebas" ${p?.punchBebas?'checked':''} style="width:22px;height:22px;margin:0"> 📍 Punch bebas (tidak perlu imbas QR stesen)</label>
       <div class="muted" style="margin-top:4px">Untuk pekerja pengurusan tertentu: punch dengan selfie & lokasi semasa sahaja.</div></div>
-    <div class="card" style="background:#eff6ff;box-shadow:none"><b>🛠 Kuasa pengelola / HR</b>
-      <div class="muted" style="margin:2px 0 6px">Ditanda oleh Dato' / Datin sahaja. Pengelola <b>tidak boleh</b> masuk apps Akaun, melihat gaji atau meluluskan advance & claim.</div>
+    <div class="card" style="background:#eff6ff;box-shadow:none"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><b>🛠 Kuasa pengelola / HR</b>
+      <button type="button" class="small ${p?.manager ? 'primary' : ''}" id="pManager" data-manager="${p?.manager ? '1' : ''}">${p?.manager ? '👔 Manager ✓ — batalkan lantikan' : '👔 Lantik sebagai Manager'}</button></div>
+      <div class="muted" style="margin:2px 0 6px">Ditanda oleh Dato' / Datin sahaja. <b>👔 Manager</b> menanda sekali gus: lihat kehadiran, lulus OT & cuti, roster, <b>lulus advance (had RM200 sebulan setiap pekerja)</b>, <b>pinda jam kerja (7 hari terakhir)</b> & chat — setiap kelulusan disahkan dengan PIN manager & direkod. Pengelola <b>tidak boleh</b> masuk apps Akaun, melihat gaji atau meluluskan claim.</div>
       ${KUASA.map(x => `<label class="row" style="font-weight:400;margin:6px 0;align-items:flex-start"><input type="checkbox" data-kuasa="${x.k}" ${p?.kuasa?.[x.k]?'checked':''} style="width:22px;height:22px;margin:0;flex:none"> <span><b>${x.ikon} ${esc(x.label)}</b><br><span class="muted">${esc(x.ket)}</span></span></label>`).join('')}</div>
     <label>Nama penuh</label><input id="pNama" value="${esc(p?.nama||'')}">
     <div class="two"><div><label>Jawatan</label><input id="pJawatan" value="${esc(i.jawatan||'')}" placeholder="cth: Pencuci, Juruwang"></div>
@@ -2156,6 +2158,11 @@ function borangPekerja(id){
   $('#pFotoKam').onchange = ambilFoto; $('#pFotoGal').onchange = ambilFoto;
   $('#pFotoBuang').onclick = () => { fotoBaru = ''; prevFoto(); };
   $('#pNama').oninput = () => { if(!(fotoBaru || (p && fotoStaf[p.id]))) prevFoto(); };
+  $('#pManager').onclick = () => { const b = $('#pManager'), jadi = b.dataset.manager !== '1';
+    if(!jadi && !confirm('Batalkan lantikan Manager? Kuasa manager (advance, pinda jam dll) akan dibuang.')) return;
+    b.dataset.manager = jadi ? '1' : ''; b.classList.toggle('primary', jadi); b.textContent = jadi ? '👔 Manager ✓ — batalkan lantikan' : '👔 Lantik sebagai Manager';
+    $$('[data-kuasa]').forEach(i => { if(KUASA_MANAGER.includes(i.dataset.kuasa)) i.checked = jadi; });
+    toast(jadi ? '👔 Kuasa manager ditanda — tekan SIMPAN' : 'Kuasa manager dibuang — tekan SIMPAN'); };
   $('#pSimpan').onclick = async () => {
     const nama_ = val('#pNama'), idStaf = val('#pId').toUpperCase().replace(/\s+/g,''), peranan = val('#pPeranan'), pin = val('#pPin');
     const aktifF = p ? $('#pAktif').checked : true;
@@ -2167,7 +2174,7 @@ function borangPekerja(id){
     if(p && p.peranan === 'Admin' && (peranan !== 'Admin' || !aktifF) && !adminLain) return toast('Mesti ada sekurang-kurangnya seorang Admin aktif di kaunter');
     const ref = p ? doc(stafCol(), p.id) : doc(stafCol());
     const kuasa = Object.fromEntries($$('[data-kuasa]').map(i => [i.dataset.kuasa, i.checked]));
-    const k = {nama:nama_, idStaf, peranan, aktif:aktifF, mo: $('#pMO').checked, punchBebas: $('#pBebas').checked, kuasa, jenisPekerja: val('#pJenis'), telefon: val('#pTel'), jawatan: val('#pJawatan'), kaedahBayar: val('#pKaedahBayar'), kadarJamPT: val('#pJenis') === 'parttime' && $('#pKadarJam') ? num('#pKadarJam') : 0, dikemaskiniOleh:nama};
+    const k = {manager: $('#pManager')?.dataset.manager === '1', nama:nama_, idStaf, peranan, aktif:aktifF, mo: $('#pMO').checked, punchBebas: $('#pBebas').checked, kuasa, jenisPekerja: val('#pJenis'), telefon: val('#pTel'), jawatan: val('#pJawatan'), kaedahBayar: val('#pKaedahBayar'), kadarJamPT: val('#pJenis') === 'parttime' && $('#pKadarJam') ? num('#pKadarJam') : 0, dikemaskiniOleh:nama};
     if(pin) k.pinHash = await hashPin(ref.id, pin);
     if(!p) k.dicipta = serverTimestamp();
     const jn = val('#pJenis'), harian = jn === 'harian';

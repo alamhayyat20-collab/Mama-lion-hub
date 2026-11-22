@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.23-2';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.23-3';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -115,6 +115,8 @@ export const KUASA = [
   {k:'harga',   ikon:'🏷', label:'Harga, pakej & servis', ket:'Buka tab Tetapan di kaunter Lion Safari V2'},
   {k:'roster',  ikon:'📅', label:'Roster & tukar syif', ket:'Susun roster, luluskan tukar syif'},
   {k:'lulus',   ikon:'✅', label:'Lulus OT & cuti', ket:'Luluskan OT dan cuti (bukan advance / claim)'},
+  {k:'advance', ikon:'💰', label:'Lulus pendahuluan gaji (advance)', ket:'Had RM200 sebulan bagi setiap pekerja. Lebih had → Dato\' / Datin. Tidak boleh lulus permohonan sendiri. Sahkan dengan PIN'},
+  {k:'pindaJam', ikon:'⏱', label:'Pinda jam kerja (cut / tambah jam)', ket:'Pinda jam kerja pekerja untuk 7 hari terakhir dengan sebab wajib. Punch asal kekal. Tidak boleh pinda jam sendiri. Sahkan dengan PIN'},
   {k:'hadir',   ikon:'👀', label:'Lihat kehadiran', ket:'Lihat punch in / out semua pekerja'},
   {k:'info',    ikon:'📢', label:'Memo, peraturan & SOP', ket:'Tulis memo, Buku Peraturan Kerja dan SOP'},
   {k:'promosi', ikon:'🎁', label:'Promosi Apps Pelanggan', ket:'Urus promosi & iklan dalam Apps Pelanggan'},
@@ -123,8 +125,14 @@ export const KUASA = [
   {k:'buka',    ikon:'🔓', label:'Buka kunci kaunter', ket:'Buka skrin kaunter yang dikunci automatik (ID latihan cth OFFICE) dengan PIN sendiri'}
 ];
 export const adaKuasa = (st, k) => !!st?.kuasa?.[k];
+// 👔 Manager: satu butang di Akaun → tanda kuasa ini sekali gus (staf.manager = true)
+export const KUASA_MANAGER = ['hadir', 'lulus', 'roster', 'advance', 'pindaJam', 'chat'];
+export const HAD_ADVANCE_BULAN = 200;   // RM sebulan bagi setiap pekerja (kelulusan manager)
+export const HARI_PINDA = 7;            // manager boleh pinda jam kerja untuk 7 hari terakhir
+// ⏱ Pindaan jam kerja: kakitangan/{c}/pinda_jam/{tarikh}__{stafId} = {stafId, tarikh, bulan, minitAsal, minit, sebab, oleh, olehId, masa}
+export const idPinda = (tarikh, stafId) => `${tarikh}__${stafId}`;
 export const ikonKuasa = st => [st?.mo ? '🧾' : '', ...KUASA.filter(x => st?.kuasa?.[x.k]).map(x => x.ikon)].join('');
-export const pengelola = st => ['roster','lulus','hadir','info','promosi'].some(k => st?.kuasa?.[k]);
+export const pengelola = st => ['roster','lulus','hadir','info','promosi','advance','pindaJam'].some(k => st?.kuasa?.[k]);
 export const STATUS_MOHON = {menunggu:'⏳ Menunggu', lulus:'✅ Lulus', tolak:'❌ Ditolak'};
 const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -193,7 +201,7 @@ export function modulPengurusan(ctx){
   const {store, fs, esc, RM} = ctx;
   const C = n => fs.collection(store, 'kakitangan', ctx.cawangan(), n);
   let unsub = [], unsubTarikh = null, unsubMinggu = null, unsubBulan = [];
-  const st = {staf:[], tetapan:{}, menunggu:[], mohonBulan:[], hadir:[], hadirBulan:[], roster:{}, tarikh: hariIni(), minggu: isninMinggu(hariIni()), bulan: hariIni().slice(0,7), ralat:''};
+  const st = {staf:[], tetapan:{}, menunggu:[], mohonBulan:[], hadir:[], hadirBulan:[], roster:{}, pinda:{}, pindaBulan:{}, pindaBuka:null, tarikh: hariIni(), minggu: isninMinggu(hariIni()), bulan: hariIni().slice(0,7), ralat:''};
   const gambar = {};
   const err = e => { console.error(e); st.ralat = e.code === 'permission-denied' ? 'Firebase menolak akses data kakitangan — Firestore Rules perlu dikemas kini (blok "kakitangan").' : 'Ralat: ' + (e.message || e); ctx.refresh(); };
   const stop = () => { [...unsub, unsubTarikh, unsubMinggu, ...unsubBulan].forEach(f => f && f()); unsub = []; unsubTarikh = unsubMinggu = null; unsubBulan = []; };
@@ -211,7 +219,9 @@ export function modulPengurusan(ctx){
   }
   function langganTarikh(){
     if(unsubTarikh) unsubTarikh();
-    unsubTarikh = fs.onSnapshot(fs.query(C('kehadiran'), fs.where('tarikh','==',st.tarikh)), s => { st.hadir = s.docs.map(d => ({id:d.id, ...d.data()})); ctx.refresh(); }, err);
+    const u1 = fs.onSnapshot(fs.query(C('kehadiran'), fs.where('tarikh','==',st.tarikh)), s => { st.hadir = s.docs.map(d => ({id:d.id, ...d.data()})); ctx.refresh(); }, err);
+    const u2 = fs.onSnapshot(fs.query(C('pinda_jam'), fs.where('tarikh','==',st.tarikh)), s => { st.pinda = Object.fromEntries(s.docs.map(d => [d.data().stafId, d.data()])); ctx.refresh(); }, e => console.warn('pinda_jam', e));
+    unsubTarikh = () => { u1(); u2(); };
   }
   function langganMinggu(){
     if(unsubMinggu) unsubMinggu();
@@ -221,7 +231,8 @@ export function modulPengurusan(ctx){
   function langganBulan(){
     unsubBulan.forEach(f => f && f()); unsubBulan = [];
     unsubBulan.push(fs.onSnapshot(fs.query(C('permohonan'), fs.where('bulan','==',st.bulan)), s => { st.mohonBulan = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => masaMs(b) - masaMs(a)); ctx.refresh(); }, err));
-    if(ctx.kehadiranBulan) unsubBulan.push(fs.onSnapshot(fs.query(C('kehadiran'), fs.where('bulan','==',st.bulan)), s => { st.hadirBulan = s.docs.map(d => ({id:d.id, ...d.data()})); ctx.refresh(); }, err));
+    if(ctx.kehadiranBulan){ unsubBulan.push(fs.onSnapshot(fs.query(C('kehadiran'), fs.where('bulan','==',st.bulan)), s => { st.hadirBulan = s.docs.map(d => ({id:d.id, ...d.data()})); ctx.refresh(); }, err));
+      unsubBulan.push(fs.onSnapshot(fs.query(C('pinda_jam'), fs.where('bulan','==',st.bulan)), s => { st.pindaBulan = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); ctx.refresh(); }, e => console.warn('pinda_jam', e))); }
   }
   function setBulan(b){ if(b && b !== st.bulan){ st.bulan = b; langganBulan(); } }
 
@@ -236,11 +247,13 @@ export function modulPengurusan(ctx){
     const hari = {}; st.hadirBulan.filter(r => r.stafId === id).forEach(r => (hari[r.tarikh] ||= []).push(r));
     let minit = 0, lewatKali = 0, lewatMinit = 0, minitBayar = 0; const ikutCaw = {};
     for(const [t, l] of Object.entries(hari)){
-      const k = jamKerja(l); minit += k.minit; minitBayar += Math.min(k.minit, JAM_BIASA_SEHARI * 60);
+      const k = jamKerja(l), pd = st.pindaBulan[idPinda(t, id)], mHari = pd ? Number(pd.minit) || 0 : k.minit;   // ⏱ pindaan manager / pemilik
+      minit += mHari; minitBayar += Math.min(mHari, JAM_BIASA_SEHARI * 60);
       for(const [m, kl, mm] of k.pasangan){ const c = m.cawangan || PUSAT; ikutCaw[c] = (ikutCaw[c] || 0) + mm; }
       const lw = minitLewat(k.masuk, t, syifDari(st.tetapan, syifStaf(t, id))); if(lw > 5){ lewatKali++; lewatMinit += lw; }
     }
-    return {advance: j('advance').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0), claim: j('claim').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0),
+    const pindaan = Object.values(st.pindaBulan).filter(p => p.stafId === id);
+    return {pindaan, advance: j('advance').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0), claim: j('claim').reduce((t,m) => t + (Number(m.amaunLulus ?? m.amaun)||0), 0),
       otJam: j('ot').reduce((t,m) => t + (Number(m.jamLulus ?? m.jam)||0), 0), hariHadir: Object.keys(hari).length, minit, minitBayar, ikutCaw, lewatKali, lewatMinit, permohonan: lulus};
   }
 
@@ -256,14 +269,16 @@ export function modulPengurusan(ctx){
     const baris = ids.map(id => {
       const s = st.staf.find(x => x.id === id) || {nama:'(staf dipadam)'}, l = ikut[id] || [], k = jamKerja(l);
       const kod = syifStaf(st.tarikh, id), sy = syifDari(st.tetapan, kod);
-      const lw = minitLewat(k.masuk, st.tarikh, sy);
-      if(!l.length && (!kod || ['OFF','CUTI'].includes(kod))) return null;
+      const lw = minitLewat(k.masuk, st.tarikh, sy), pd = st.pinda[id], bolehP = !!ctx.bolehPinda?.(id, st.tarikh) && (l.length || pd) && !(k.masihMasuk && st.tarikh === hariIni());
+      if(!l.length && !pd && (!kod || ['OFF','CUTI'].includes(kod))) return null;
       return `<div class="km-row"><div class="km-nm"><b>${esc(s.idStaf||'')} ${esc(s.nama)}</b>
         <small>${sy ? `${esc(sy.nama)}${sy.mula ? ` ${sy.mula}–${sy.tamat}` : ''}` : 'Tiada syif'}${tempatStaf(st.roster[st.tarikh], id) ? ' @ ' + esc(labelTempat(st.tetapan, tempatStaf(st.roster[st.tarikh], id))) : ''}</small>
         ${l.length ? '' : (sy?.mula ? '<span class="km-tag km-bad">Belum / tidak hadir</span>' : '')}
         ${lw > 5 ? `<span class="km-tag km-warn">Lewat ${lw} min</span>` : ''}
         ${k.masihMasuk && st.tarikh === hariIni() ? '<span class="km-tag km-ok">Sedang bekerja</span>' : ''}
-        ${l.length ? `<small>Jam kerja: <b>${fMinit(k.minit + (st.tarikh === hariIni() ? k.berjalan : 0))}</b>${k.masihMasuk && st.tarikh === hariIni() ? ' (termasuk sesi sedang berjalan)' : ''}</small>` : ''}</div>
+        ${l.length && !pd ? `<small>Jam kerja: <b>${fMinit(k.minit + (st.tarikh === hariIni() ? k.berjalan : 0))}</b>${k.masihMasuk && st.tarikh === hariIni() ? ' (termasuk sesi sedang berjalan)' : ''}</small>` : ''}
+        ${pd ? `<small>Jam kerja: <b>${fMinit(pd.minit)}</b> <span class="km-tag km-warn">⏱ dipinda</span> asal ${fMinit(pd.minitAsal)} · oleh ${esc(pd.oleh || '')}<br>Sebab: ${esc(pd.sebab || '')}</small>` : ''}
+        ${bolehP ? (st.pindaBuka?.id === id ? borangPinda(id, k, pd) : `<button class="km-btn" data-km-pinda="${id}" style="margin-top:4px">⏱ Pinda jam</button>`) : ''}</div>
         <div class="km-pics">${k.rekod.map(r => { const jr = r.jarak ?? jarakMeter(r.gps, kedai); const luar = kedai && jr != null && jr > (Number(st.tetapan.radius)||200);
           return `<div class="km-pic"><img data-km-img="${r.id}" alt=""><span class="km-tag ${r.jenis==='masuk'?'km-ok':''}">${r.jenis==='masuk'?'MASUK':'KELUAR'} ${fJam(masaMs(r))}</span>
           <small>${r.stesenNama ? `${esc((CAW.find(c => c.id === r.cawangan)?.kod || '') + ' · ' + r.stesenNama)}${r.bukanJadual ? ' <b class="km-merah">bukan jadual</b>' : ''}<br>` : r.bebas ? 'Punch bebas<br>' : ''}${r.gps ? `📍${jr != null ? jr + 'm' : 'GPS'}${luar && !r.stesenNama ? ' <b class="km-merah">LUAR</b>' : ''}` : '📍 tiada GPS'}</small></div>`; }).join('')}</div></div>`;
@@ -271,6 +286,33 @@ export function modulPengurusan(ctx){
     return `<div class="km-card"><div class="km-between"><h3>🕘 Kehadiran</h3><input type="date" data-km-tarikh value="${st.tarikh}"></div>
       ${!kedai ? '<div class="km-notice">Lokasi kedai belum ditetapkan — jarak GPS tidak dapat disemak (Akaun → Pekerja → Tetapan Pekerja).</div>' : ''}
       ${baris.join('') || '<p class="km-muted">Tiada rekod / roster untuk tarikh ini.</p>'}</div>`;
+  }
+
+  function borangPinda(id, k, pd){
+    const b = st.pindaBuka, asal = pd ? pd.minitAsal : Math.round(k.minit), kini = b.minit ?? (pd ? pd.minit : asal);
+    return `<div class="km-card" style="margin-top:6px;border:2px solid #d7b25a"><b>⏱ Pinda jam kerja — ${esc(namaStaf(id))} · ${fTarikhPendek(st.tarikh)}</b>
+      <div class="km-muted">Jam asal (punch): <b>${fMinit(asal)}</b>. Punch asal tidak dipadam.</div>
+      <div class="km-two"><div><label>Jam</label><input data-kp-jam data-kekal="1" type="number" inputmode="numeric" min="0" max="16" value="${Math.floor(kini / 60)}"></div>
+        <div><label>Minit</label><input data-kp-min data-kekal="1" type="number" inputmode="numeric" min="0" max="59" step="5" value="${Math.round(kini % 60)}"></div></div>
+      <label>Sebab pindaan *</label><textarea data-kp-sebab rows="2" placeholder="cth: lupa punch out, keluar 6:00 petang / balik awal tanpa kebenaran">${esc(b.sebab || '')}</textarea>
+      <div class="km-rowbtn" style="margin-top:6px"><button class="km-btn km-primary" data-kp-simpan="${id}">💾 Simpan pindaan</button><button class="km-btn" data-kp-batal>Batal</button></div></div>`;
+  }
+  async function simpanPinda(id){
+    const b = st.pindaBuka; if(!b || b.id !== id) return;
+    const jam = parseInt(document.querySelector('[data-kp-jam]')?.value) || 0, mn = parseInt(document.querySelector('[data-kp-min]')?.value) || 0;
+    const minit = jam * 60 + mn, sebab = (document.querySelector('[data-kp-sebab]')?.value || '').trim();
+    if(jam < 0 || jam > 16 || mn < 0 || mn > 59) return ctx.toast('Jam / minit tidak sah');
+    if(sebab.length < 5) return ctx.toast('Sila tulis sebab pindaan');
+    if(!ctx.bolehPinda?.(id, st.tarikh)) return ctx.toast('Anda tiada kuasa meminda jam ini');
+    const l = st.hadir.filter(r => r.stafId === id), pd = st.pinda[id], asal = pd ? pd.minitAsal : Math.round(jamKerja(l).minit);
+    if(minit === (pd ? pd.minit : asal)) return ctx.toast('Tiada perubahan');
+    if(ctx.sahkanPin && !(await ctx.sahkanPin(`Pinda jam ${namaStaf(id)}: ${fMinit(asal)} → ${fMinit(minit)}`))) return;
+    try{
+      await fs.setDoc(fs.doc(C('pinda_jam'), idPinda(st.tarikh, id)), {stafId: id, tarikh: st.tarikh, bulan: st.tarikh.slice(0,7), minitAsal: asal, minit, sebab,
+        arah: minit < asal ? 'kurang' : 'tambah', oleh: ctx.pengguna(), masa: fs.serverTimestamp(), ...(ctx.tanda ? ctx.tanda() : {olehId: 'akaun'})});
+      if(ctx.log) ctx.log('Pinda jam kerja', `${namaStaf(id)} · ${st.tarikh} · ${fMinit(asal)} → ${fMinit(minit)} · ${sebab}`);
+      st.pindaBuka = null; ctx.toast('✅ Jam kerja dipinda & direkod'); ctx.refresh();
+    }catch(e){ err(e); }
   }
 
   function kadMohon(m, bolehLulus){
@@ -372,7 +414,9 @@ export function modulPengurusan(ctx){
     if(JENIS_PJ[m.jenis]) return ctx.toast('Lulus di Akaun → 🧳 Pendahuluan perjalanan');
     if(ctx.bolehLulus && !ctx.bolehLulus(m)) return ctx.toast('Anda tiada kuasa meluluskan permohonan ini');
     const d = {status: lulus ? 'lulus' : 'tolak', diprosesOleh: ctx.pengguna(), diproses: fs.serverTimestamp(), ...(ctx.tanda ? ctx.tanda() : {})};
+    const pinOk = async () => !ctx.sahkanPin || await ctx.sahkanPin(`${lulus ? 'Lulus' : 'Tolak'} ${JENIS_MOHON[m.jenis]?.label || m.jenis} — ${namaStaf(m.stafId)}${d.amaunLulus ? ' · RM' + d.amaunLulus : ''}`);
     if(lulus && (m.jenis === 'cuti' || m.jenis === 'tukar')){
+      if(!(await pinOk())) return;
       try{
         if(m.jenis === 'cuti'){
           let t = m.tarikh, n = 0;
@@ -390,8 +434,21 @@ export function modulPengurusan(ctx){
     }
     if(lulus){
       if(m.jenis === 'ot'){ const j = prompt(`Jam OT diluluskan untuk ${namaStaf(m.stafId)}:`, m.jam); if(j === null) return; const n = parseFloat(j); if(!(n > 0)) return ctx.toast('Jam tidak sah'); d.jamLulus = n; }
-      else { const a = prompt(`Amaun ${JENIS_MOHON[m.jenis]?.label} diluluskan (RM):`, m.amaun); if(a === null) return; const n = parseFloat(a); if(!(n > 0)) return ctx.toast('Amaun tidak sah'); d.amaunLulus = Math.round(n*100)/100; }
+      else {
+        let had = Infinity, sudah = 0;
+        if(m.jenis === 'advance' && ctx.hadAdvance){   // 💰 manager: had sebulan bagi setiap pekerja
+          try{ const q = await fs.getDocs(fs.query(C('permohonan'), fs.where('stafId','==',m.stafId), fs.where('bulan','==',m.bulan || (m.tarikh || hariIni()).slice(0,7))));
+            sudah = Math.round(q.docs.map(x => x.data()).filter(x => x.jenis === 'advance' && x.status === 'lulus').reduce((t,x) => t + (Number(x.amaunLulus ?? x.amaun)||0), 0) * 100) / 100; }
+          catch(e){ return err(e); }
+          had = Math.round((ctx.hadAdvance - sudah) * 100) / 100;
+          if(had <= 0) return ctx.toast(`Had advance RM${ctx.hadAdvance} sebulan untuk ${namaStaf(m.stafId)} sudah dicapai — perlu kelulusan Dato' / Datin`);
+        }
+        const a = prompt(`Amaun ${JENIS_MOHON[m.jenis]?.label} diluluskan (RM):${had < Infinity ? `\nSudah diluluskan bulan ini: RM${sudah} · baki had: RM${had}` : ''}`, Math.min(Number(m.amaun) || 0, had)); if(a === null) return;
+        const n = parseFloat(a); if(!(n > 0)) return ctx.toast('Amaun tidak sah');
+        if(n > had) return ctx.toast(`Melebihi had — maksimum RM${had}. Lebih dari itu perlu Dato' / Datin`);
+        d.amaunLulus = Math.round(n*100)/100; }
     } else { const c = prompt('Sebab ditolak (pilihan):', ''); if(c === null) return; if(c) d.catatanLulus = c; }
+    if(!(await pinOk())) return;
     try{ await fs.updateDoc(fs.doc(C('permohonan'), id), d); if(ctx.log) ctx.log(`${lulus ? 'Lulus' : 'Tolak'} ${JENIS_MOHON[m.jenis]?.label || m.jenis}`, namaStaf(m.stafId)); ctx.toast(lulus ? '✅ Diluluskan' : 'Permohonan ditolak'); }catch(e){ err(e); }
   }
   async function muatGambar(){
@@ -404,9 +461,15 @@ export function modulPengurusan(ctx){
   }
   function pasang(onMod){
     document.querySelectorAll('[data-km-mod]').forEach(b => b.onclick = () => onMod(b.dataset.kmMod));
-    const t = document.querySelector('[data-km-tarikh]'); if(t) t.onchange = e => { if(e.target.value){ st.tarikh = e.target.value; langganTarikh(); } };
+    const t = document.querySelector('[data-km-tarikh]'); if(t) t.onchange = e => { if(e.target.value){ st.tarikh = e.target.value; st.pindaBuka = null; st.pinda = {}; langganTarikh(); } };
     document.querySelectorAll('[data-km-lulus]').forEach(b => b.onclick = () => proses(b.dataset.kmLulus, true));
     document.querySelectorAll('[data-km-tolak]').forEach(b => b.onclick = () => proses(b.dataset.kmTolak, false));
+    document.querySelectorAll('[data-km-pinda]').forEach(b => b.onclick = () => { st.pindaBuka = {id: b.dataset.kmPinda}; ctx.refresh(); });
+    const kpS = document.querySelector('[data-kp-sebab]'); if(kpS){ kpS.oninput = () => { if(st.pindaBuka) st.pindaBuka.sebab = kpS.value; };
+      const sm = () => { if(st.pindaBuka) st.pindaBuka.minit = (parseInt(document.querySelector('[data-kp-jam]').value) || 0) * 60 + (parseInt(document.querySelector('[data-kp-min]').value) || 0); };
+      document.querySelector('[data-kp-jam]').oninput = sm; document.querySelector('[data-kp-min]').oninput = sm; }
+    document.querySelectorAll('[data-kp-simpan]').forEach(b => b.onclick = () => simpanPinda(b.dataset.kpSimpan));
+    document.querySelectorAll('[data-kp-batal]').forEach(b => b.onclick = () => { st.pindaBuka = null; ctx.refresh(); });
     document.querySelectorAll('[data-km-minggu]').forEach(b => b.onclick = () => { st.minggu = tambahHari(st.minggu, +b.dataset.kmMinggu); langganMinggu(); ctx.refresh(); });
     document.querySelectorAll('[data-km-syif]').forEach(s => s.onchange = async () => {
       const [t, id] = s.dataset.kmSyif.split('|');

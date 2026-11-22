@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.23-2">
+<meta name="app-versi" content="2026.11.23-3">
 <meta name="theme-color" content="#1F3A68">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -119,22 +119,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-3';
 bannerPelayarDalaman({nama: 'Apps Pekerja'});
-import { firebaseConfig } from '../firebase-config.js?v=2026.11.23-2';
+import { firebaseConfig } from '../firebase-config.js?v=2026.11.23-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, doc, query, where, onSnapshot, setDoc, getDoc, getDocs, updateDoc, deleteDoc, runTransaction, arrayUnion, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.23-2';
-import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.23-2';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.23-2';
-import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.23-2';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.23-2';
-import { pasangSync } from '../sync-lib.js?v=2026.11.23-2';
-import { ikB, pasangCssIkon } from '../ikon.js?v=2026.11.23-2';
+import { JENIS_PEKERJA, JENIS_MOHON, STATUS_MOHON, hariIni, tambahHari, fTarikhPendek, fJam, fMinit, masaMs, syifDari, jarakMeter, jamKerja, minitLewat, capGambar, avatar, kadID, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, MOHON_BUKAN_WANG, adaKuasa, HAD_ADVANCE_BULAN, HARI_PINDA, idPinda, ikonKuasa, pengelola, modulPengurusan, CSS_MODUL, PUSAT, CAW, namaCaw, tempatStaf, labelTempat, bacaQRStesen, JENIS_PJ, SUB_PJ, UNIT_PJ, kiraPJ, STATUS_PJ } from '../pekerja-lib.js?v=2026.11.23-3';
+import { bukaPaparan, htmlSenaraiLampiran, pasangSenaraiLampiran } from '../paparan-lib.js?v=2026.11.23-3';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, DISKAUN_KUASA, kunciMasuk, terapTetapanKad, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.23-3';
+import { kaunter, KAEDAH_BAYAR } from '../kaunter-lib.js?v=2026.11.23-3';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, modulDuty } from '../laporan-lib.js?v=2026.11.23-3';
+import { pasangSync } from '../sync-lib.js?v=2026.11.23-3';
+import { ikB, pasangCssIkon } from '../ikon.js?v=2026.11.23-3';
 pasangCssIkon();
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.23-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA } from '../kamus-en.js?v=2026.11.23-3';
 pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA], kunci: 'bahasa', tempat: '#bahasaBox', ringkas: true});
 
 // Akaun Firebase khas untuk telefon pekerja (dicipta oleh pemilik di Firebase Console)
@@ -167,7 +167,7 @@ const auth = getAuth(fbApp);
 const store = getFirestore(fbApp);
 const K = (c, n) => collection(store, 'kakitangan', c, n);
 
-let dev = null, stafSemua = {}, sesi = null, saya = null, tab = 'Kehadiran';
+let dev = null, stafSemua = {}, sesi = null, saya = null, tab = 'Kehadiran', pindaSaya = {};
 let unsubAsas = [], unsubSaya = [];
 let rosterBulan = {}, hadirHariIni = [], tetapan = {}, roster = {}, mohonSaya = [], pjSaya = [], pjTuntutId = '', hadirBulan = [], bulanRekod = hariIni().slice(0,7), mohonJenis = 'advance';
 const stopAll = l => { l.forEach(f => f && f()); l.length = 0; };
@@ -315,6 +315,9 @@ function langganBulan(){
   if(unsubSaya.bulan) unsubSaya.bulan();
   const f = onSnapshot(query(K(saya.c,'kehadiran'), where('stafId','==',saya.id), where('bulan','==',bulanRekod)), s => { hadirBulan = s.docs.map(d => ({id:d.id, ...d.data()})); render(); }, onErr);
   const g = onSnapshot(query(K(saya.c,'roster'), where('bulan','==',bulanRekod)), s => { rosterBulan = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); render(); }, onErr);
+  if(unsubSaya.bulanP) unsubSaya.bulanP();
+  unsubSaya.bulanP = onSnapshot(query(K(saya.c,'pinda_jam'), where('stafId','==',saya.id), where('bulan','==',bulanRekod)), s => { pindaSaya = Object.fromEntries(s.docs.map(d => [d.data().tarikh, d.data()])); if(tab === 'Rekod') render(); }, e => console.warn('pinda_jam', e));
+  unsubSaya.push(unsubSaya.bulanP);
   if(unsubSaya.bulanR) unsubSaya.bulanR();
   unsubSaya.bulan = f; unsubSaya.bulanR = g; unsubSaya.push(f, g);
 }
@@ -463,12 +466,35 @@ const tanda = () => ({olehId: saya.id, olehCaw: saya.c});
 const logTindakan = (tindakan, butiran = '') => setDoc(doc(K(saya.c,'log')), {stafId: saya.id, idStaf: saya.idStaf || '', nama: saya.nama, tindakan, butiran, tarikh: hariIni(), bulan: hariIni().slice(0,7), sumber: 'apps-pekerja', masa: serverTimestamp(), ...tanda()}).catch(console.error);
 const modulPG = modulPengurusan({store, fs:{collection, doc, query, where, onSnapshot, getDoc, getDocs, setDoc, updateDoc, serverTimestamp},
   cawangan: () => saya.c, pengguna: () => `${saya.nama} (${saya.idStaf || ''})`, esc, RM, toast, refresh: () => { if(tab === 'Pengelola' && ['Kehadiran','Permohonan','Roster'].includes(pgSeg)) render(); },
-  bolehLulus: m => MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus')),
+  bolehLulus: m => bolehLulusPG(m),
+  // 💰 / ⏱ Manager: had advance sebulan, pinda jam 7 hari terakhir (bukan diri sendiri), setiap tindakan disahkan dengan PIN
+  hadAdvance: HAD_ADVANCE_BULAN, sahkanPin: sahkanPinPG,
+  bolehPinda: (id, t) => adaKuasa(saya,'pindaJam') && id !== saya.id && t <= hariIni() && t >= tambahHari(hariIni(), -HARI_PINDA),
   tanda, log: logTindakan});
+function bolehLulusPG(m){
+  if(m.jenis === 'advance') return adaKuasa(saya,'advance') && m.stafId !== saya.id;
+  return MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus'));
+}
+// 🔒 Sahkan tindakan dengan PIN sendiri (akaun Apps Pekerja dikongsi)
+function sahkanPinPG(apa){
+  return new Promise(res => {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    ov.innerHTML = `<div class="card" style="max-width:340px;width:100%;margin:0"><h3 style="margin-top:0">🔒 Sahkan dengan PIN</h3><div class="muted" style="margin-bottom:8px">${esc(apa || '')}</div>
+      <label>PIN ${esc(saya.nama)}</label><input id="spPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off">
+      <div class="grid2" style="margin-top:10px"><button class="btn" id="spBatal">Batal</button><button class="btn pri" id="spOk">Sahkan</button></div></div>`;
+    document.body.appendChild(ov);
+    const tamat = v => { ov.remove(); res(v); };
+    ov.querySelector('#spBatal').onclick = () => tamat(false);
+    const ok = async () => { const p = ov.querySelector('#spPin').value; if(await hashPin(saya.id, p) !== saya.pinHash){ toast('PIN salah'); ov.querySelector('#spPin').value = ''; return; } tamat(true); };
+    ov.querySelector('#spOk').onclick = ok; ov.querySelector('#spPin').onkeydown = e => { if(e.key === 'Enter') ok(); };
+    setTimeout(() => ov.querySelector('#spPin').focus(), 50);
+  });
+}
 let pgMula = false;
-const pgBadge = () => pgMula ? modulPG.st.menunggu.filter(m => MOHON_BUKAN_WANG.includes(m.jenis) && (m.jenis === 'tukar' ? adaKuasa(saya,'roster') : adaKuasa(saya,'lulus'))).length : 0;
+const pgBadge = () => pgMula ? modulPG.st.menunggu.filter(bolehLulusPG).length : 0;
 function segPengelola(){
-  return [adaKuasa(saya,'hadir') && 'Kehadiran', (adaKuasa(saya,'lulus') || adaKuasa(saya,'roster')) && 'Permohonan', adaKuasa(saya,'roster') && 'Roster', adaKuasa(saya,'hadir') && 'Duty', adaKuasa(saya,'info') && 'Info', adaKuasa(saya,'promosi') && 'Promosi'].filter(Boolean);
+  return [(adaKuasa(saya,'hadir') || adaKuasa(saya,'pindaJam')) && 'Kehadiran', (adaKuasa(saya,'lulus') || adaKuasa(saya,'roster') || adaKuasa(saya,'advance')) && 'Permohonan', adaKuasa(saya,'roster') && 'Roster', adaKuasa(saya,'hadir') && 'Duty', adaKuasa(saya,'info') && 'Info', adaKuasa(saya,'promosi') && 'Promosi'].filter(Boolean);
 }
 function viewPengelola(){
   const segs = segPengelola();
@@ -477,7 +503,7 @@ function viewPengelola(){
   const atas = `<div class="card" style="padding:10px 14px"><b>🛠 Pengelola</b> <span class="muted">— kuasa diberi oleh Dato' / Datin. Setiap perubahan direkod.</span></div>
     <div class="seg" style="grid-template-columns:repeat(${segs.length},1fr)">${segs.map(x => `<button class="${x===pgSeg?'on':''}" data-pgseg="${x}" style="font-size:12px"><b>${({Kehadiran:'👀',Permohonan:'✅',Roster:'📅',Duty:'📋',Info:'📢',Promosi:'🎁'})[x]}</b>${x}${x === 'Permohonan' && pgBadge() ? ` (${pgBadge()})` : ''}</button>`).join('')}</div>`;
   if(['Kehadiran','Permohonan','Roster'].includes(pgSeg)){
-    $('#app').innerHTML = atas + `<div>${modulPG.html(pgSeg, [])}</div>` + (pgSeg === 'Permohonan' ? '<p class="muted center">Advance & claim hanya diluluskan oleh Dato\' / Datin.</p>' : '');
+    $('#app').innerHTML = atas + `<div>${modulPG.html(pgSeg, [])}</div>` + (pgSeg === 'Permohonan' ? `<p class="muted center">${adaKuasa(saya,'advance') ? `💰 Advance: had RM${HAD_ADVANCE_BULAN} sebulan bagi setiap pekerja — lebih had & claim diluluskan oleh Dato' / Datin.` : 'Advance & claim hanya diluluskan oleh Dato\' / Datin.'}</p>` : '') + (pgSeg === 'Kehadiran' && adaKuasa(saya,'pindaJam') ? `<p class="muted center">⏱ Pinda jam: ${HARI_PINDA} hari terakhir, bukan jam sendiri, sebab wajib & sahkan PIN.</p>` : '');
     modulPG.pasang(m => { pgSeg = m; render(); });
   } else if(pgSeg === 'Duty'){
     if(!MDP.st.D && !MDP.mulaD){ MDP.mulaD = true; MDP.mula(); }
@@ -1400,14 +1426,15 @@ function viewRoster(){
 function viewRekod(){
   const hari = {}; hadirBulan.forEach(r => (hari[r.tarikh] ||= []).push(r));
   const baris = Object.entries(hari).sort(([a],[b]) => b.localeCompare(a)).map(([t,l]) => ({t, k: jamKerja(l), lw: minitLewat(jamKerja(l).masuk, t, syifDari(tetapan, (rosterBulan[t] || roster[t])?.syif?.[saya.id] || ''))}));
-  const jumMinit = baris.reduce((s,b) => s + b.k.minit, 0);
+  const mH = b => pindaSaya[b.t] ? Number(pindaSaya[b.t].minit) || 0 : b.k.minit;   // ⏱ pindaan manager
+  const jumMinit = baris.reduce((s,b) => s + mH(b), 0);
   const lulus = mohonSaya.filter(m => m.status === 'lulus' && m.bulan === bulanRekod);
   const j = k => lulus.filter(m => m.jenis === k).reduce((s,m) => s + (Number(k === 'ot' ? (m.jamLulus ?? m.jam) : (m.amaunLulus ?? m.amaun))||0), 0);
   $('#app').innerHTML = `<div class="card"><div class="between"><h3 style="margin:0">📊 Rekod saya</h3><input type="month" id="rBulan" value="${bulanRekod}" style="width:auto;margin:0"></div></div>
     <div class="grid2"><div class="card"><div class="muted">Hari hadir</div><div class="metric">${baris.length}</div></div><div class="card"><div class="muted">Jam kerja</div><div class="metric">${fMinit(jumMinit)}</div></div>
       <div class="card"><div class="muted">OT diluluskan</div><div class="metric">${j('ot')} jam</div></div><div class="card"><div class="muted">Advance diluluskan</div><div class="metric">${RM(j('advance'))}</div></div></div>
     ${j('claim') ? `<div class="card"><div class="muted">Claim diluluskan</div><div class="metric">${RM(j('claim'))}</div></div>` : ''}
-    <div class="card"><h3>Kehadiran harian</h3>${baris.map(b => `<div class="item"><div><b>${fTarikhPendek(b.t)}</b><small>${fJam(masaMs(b.k.masuk))} – ${b.k.keluar ? fJam(masaMs(b.k.keluar)) : '…'}${b.lw > 5 ? ` · <b style="color:var(--merah)">lewat ${b.lw} min</b>` : ''}</small></div><b>${fMinit(b.k.minit)}</b></div>`).join('') || '<p class="muted">Tiada rekod bulan ini.</p>'}</div>`;
+    <div class="card"><h3>Kehadiran harian</h3>${baris.map(b => `<div class="item"><div><b>${fTarikhPendek(b.t)}</b><small>${fJam(masaMs(b.k.masuk))} – ${b.k.keluar ? fJam(masaMs(b.k.keluar)) : '…'}${b.lw > 5 ? ` · <b style="color:var(--merah)">lewat ${b.lw} min</b>` : ''}${pindaSaya[b.t] ? `<br>⏱ <b>Jam dipinda</b> dari ${fMinit(pindaSaya[b.t].minitAsal)} oleh ${esc(pindaSaya[b.t].oleh || '')} — ${esc(pindaSaya[b.t].sebab || '')}` : ''}</small></div><b>${fMinit(mH(b))}</b></div>`).join('') || '<p class="muted">Tiada rekod bulan ini.</p>'}</div>`;
   $('#rBulan').onchange = e => { if(e.target.value){ bulanRekod = e.target.value; langganBulan(); } };
 }
 
