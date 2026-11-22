@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.22-1">
+<meta name="app-versi" content="2026.11.22-2">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -171,22 +171,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.22-2';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.22-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.22-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.22-1';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-1';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.22-1';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.22-1';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.22-1';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.22-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.22-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.22-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.22-2';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.22-2';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.22-2';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.22-2';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.22-2';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.22-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.22-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.22-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.22-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1326,7 +1326,7 @@ VIEWS['Order Baru'] = {
 
 // Selepas order disimpan: kongsi ke WhatsApp (pilihan)
 function selepasOrder(o, foto){
-  const teks = `🦁 *${infoCaw().nama}* — Order ${o.no}\nPlat: *${o.plat}* (${o.kenderaan})\nPakej: ${o.pakej}${o.freeWash ? ' 🎁 FREE WASH' : ''}${(o.addon||[]).length ? '\nAdd-on: ' + o.addon.map(a => a.nama).join(', ') : ''}\nJumlah: ${RM(o.jumlah)}\nPelanggan: ${o.nama}${o.ahli ? ' ⭐ ' + o.ahli.kod : ''}\nBay: ${o.bay}\nOleh: ${staf.nama}${o.catatan ? '\nCatatan: ' + o.catatan : ''}`;
+  const teks = `🦁 *${infoCaw().nama}* — Order ${o.no}\nPlat: *${o.plat}* (${o.kenderaan})\nPakej: ${o.pakej}${o.freeWash ? ' 🎁 FREE WASH' : ''}${(o.addon||[]).length ? '\nAdd-on: ' + o.addon.map(a => a.nama).join(', ') : ''}\nJumlah: ${RM(o.jumlah)}\nPelanggan: ${o.nama}${o.ahli ? ' ⭐ ' + o.ahli.kod : ''}${o.telefon ? '\n📞 Tel: +' + normTelefon(o.telefon) : ''}\nBay: ${o.bay}\nOleh: ${staf.nama}${o.catatan ? '\nCatatan: ' + o.catatan : ''}`;
   openModal(`<div style="text-align:center"><h3>✅ Order ${esc(o.no)} disimpan</h3><div class="plate" style="font-size:22px">${esc(o.plat)}</div>
     <div class="fotothumbs" style="justify-content:center;margin:10px 0"><img src="${foto.plat}">${foto.emblem ? `<img src="${foto.emblem}">` : ''}${foto.calar.map(c => `<img src="${c}">`).join('')}</div>
     <div class="muted">Order sudah masuk ke Queue & Bayaran kaunter.</div>
