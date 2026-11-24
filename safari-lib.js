@@ -112,6 +112,35 @@ export function tambahCop(a, {orderId, plat, cawangan, tarikh, pakejId = '', pak
     jumlahServis: (a.jumlahServis || 0) + 1, dikemaskini: kini}};
 }
 
+// ---------------- 📇 Pindah kad cop fizikal lama (sebelum apps) ----------------
+// Sekali sahaja bagi setiap ahli. Kad lama ikut peraturan sama (cop ke-5 & ke-10 = Free Wash).
+// Selepas KAD_LAMA_TAMAT kaunter tidak lagi menerima kad lama (Akaun / pemilik masih boleh).
+export const KAD_LAMA_TAMAT = '2026-12-31';
+export function pindahKadLama(a, {bilCop = 0, tuntut1 = false, tuntut2 = false, cawangan = '', oleh = '', tindakan = '', kini = Date.now()}){
+  const n = Number(bilCop);
+  if(!Number.isInteger(n) || n < 0 || n > KAD.saiz) return {ok:false, sebab:`Bilangan cop mesti 0 – ${KAD.saiz}`};
+  if(a?.kadLama) return {ok:false, sebab:'Kad lama ahli ini sudah dipindah sebelum ini'};
+  const [g1, g2] = KAD.ganjaranPada.length > 1 ? KAD.ganjaranPada : [KAD.ganjaranPada[0], KAD.ganjaranPada[0]];
+  const freeWash = [...(a.freeWash || [])]; let dapat = 0, dariKadLama = 0;
+  const beri = sebab => { freeWash.push({id: 'fwk' + kini.toString(36) + rawak(3), t: kini, tamat: kini + KAD.tempohFreeWashHari * HARI_MS, sebab, dariOrder: 'kad-lama', cawangan, guna: null}); dapat++; };
+  // 1) Free Wash kad lama yang belum dituntut
+  if(g1 !== g2 && n >= g1 && !tuntut1){ beri(`Kad lama: cop ke-${g1}`); dariKadLama++; }
+  if(n >= g2 && !tuntut2){ beri(`Kad lama: cop ke-${g2}`); dariKadLama++; }
+  // 2) Baki cop kad lama (kad penuh = tiada baki) dicampur ke kad digital, bermula hari ini
+  const baki = n >= g2 ? 0 : n, k = keadaanKad(a, kini);
+  let cop = [...k.cop], ganjaran = k.bil === 0 ? 0 : (a.ganjaran || 0), kadSelesai = (a.kadSelesai || 0) + (n >= g2 ? 1 : 0);
+  if(g1 !== g2 && baki >= g1) ganjaran = 1;   // ganjaran cop ke-5 kad lama sudah dikira di (1)
+  for(let i = 0; i < baki; i++){
+    cop.push({t: kini, o: 'kadlama-' + kini.toString(36) + '-' + i, p: 'KADLAMA', c: cawangan});
+    if(g1 !== g2 && cop.length >= g1 && ganjaran < 1){ beri(`Cop ke-${g1}`); ganjaran = 1; }
+    if(cop.length >= g2){ beri(`Cop ke-${g2}`); cop = []; ganjaran = 0; kadSelesai++; }
+  }
+  return {ok:true, dapatFreeWash: dapat, freeWashKadLama: dariKadLama, copMasuk: baki, copAkhir: cop.length,
+    data: {cop, ganjaran, freeWash, kadSelesai,
+      kadLama: {t: kini, oleh, cawangan, bilCop: n, tuntut1: !!tuntut1, tuntut2: !!tuntut2, cop: baki, fw: dapat, tindakan},
+      ...(kadAktif(a) ? {} : {kadAktif: true, kadAktifMasa: kini}), dikemaskini: kini}};
+}
+
 // ---------------- Peringkat kad: Bronze · Silver · Gold · Lion Pride ----------------
 export const PERINGKAT = {
   bronze: {id: 'bronze', nama: 'Lion Bronze', pendek: 'BRONZE', bintang: 1, diskaun: 0, syarat: 'Automatik bila daftar Safari Members',
@@ -132,7 +161,7 @@ export const SUSUNAN_PERINGKAT = ['bronze', 'silver', 'gold', 'pride'];
 export function statLawatan(a, kini = Date.now()){
   const had = kini - 365 * HARI_MS, m = new Map();
   (a.lawatan || []).forEach(l => { if(l.t > had) m.set(l.o || l.t, {rm: l.rm || 0, c: l.c !== 0}); });
-  (a.cop || []).forEach(c => { if(c.t > had && !m.has(c.o || c.t) && !String(c.o || '').startsWith('manual')) m.set(c.o || c.t, {rm: 0, c: true}); });
+  (a.cop || []).forEach(c => { if(c.t > had && !m.has(c.o || c.t) && !/^(manual|kadlama)/.test(String(c.o || ''))) m.set(c.o || c.t, {rm: 0, c: true}); });
   let rm = 0, cucian = 0; m.forEach(v => { rm += v.rm; if(v.c) cucian++; });
   return {cucian, rm: Math.round(rm)};   // cucian = pakej layak cop sahaja; belanja = semua order berbayar
 }

@@ -401,6 +401,10 @@ service cloud.firestore {
             && request.resource.data.freeWash.size() == resource.data.freeWash.size())
         // 📤 Tanda kad digital sudah dihantar (senarai Belum terima kad di kaunter)
         || (staffApp() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kadDihantar']) && request.resource.data.kadDihantar is map);
+      // 📇 Gambar kad cop fizikal lama (bukti pindah kad) — dalaman sahaja
+      match /kadlama/{id} {
+        allow read, write: if dalaman();
+      }
       match /sejarah/{id} {
         allow read: if true;
         allow write: if dalaman();

@@ -5,11 +5,11 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), tebusFW?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.25-1';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat, pindahKadLama, KAD_LAMA_TAMAT } from './safari-lib.js?v=2026.11.25-2';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
-const fT = t => { if(!t) return ''; if(typeof t === 'number') t = new Date(t).toISOString().slice(0, 10); return `${+t.slice(8,10)} ${BLN[+t.slice(5,7)-1]} ${t.slice(0,4)}`; };
+const fT = t => { if(!t) return ''; if(typeof t === 'number') t = new Date(t).toLocaleDateString('en-CA', {timeZone: 'Asia/Kuala_Lumpur'}); return `${+t.slice(8,10)} ${BLN[+t.slice(5,7)-1]} ${t.slice(0,4)}`; };
 const RM = n => 'RM' + (Number(n) || 0).toLocaleString('en-MY', {maximumFractionDigits: 0});
 const sorok = t => { const d = paparTelefon(t || '').replace(/\D/g, ''); return d.length >= 8 ? `${d.slice(0,3)}-${d.slice(3,4)}xx xx${d.slice(-2)}` : d; };
 
@@ -29,6 +29,10 @@ export function modulPelanggan(ctx){
   let ahli = null, muat = null, q0 = '';
   if(!document.getElementById('cp-gaya')){ const s = document.createElement('style'); s.id = 'cp-gaya'; s.textContent = CSS; document.head.appendChild(s); }
   const telP = t => AKAUN ? paparTelefon(t) : sorok(t);
+  // 📇 Pindah kad lama: kaunter sehingga KAD_LAMA_TAMAT; Akaun (pemilik) bila-bila masa
+  const hariMY = () => new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Kuala_Lumpur'});
+  const bolehKadLama = a => !a.kadLama && (AKAUN || hariMY() <= KAD_LAMA_TAMAT);
+  const TINDAKAN_KAD = ['Dicop "DIPINDAH" & dipulangkan kepada pelanggan', 'Dikutip oleh kaunter', 'Dikoyak / dimusnahkan'];
   async function pastikanAhli(paksa = false){
     if(ahli && !paksa) return ahli;
     if(!muat || paksa) muat = fs.getDocs(fs.collection(store, 'ahli')).then(s => ahli = s.docs.map(d => ({id: d.id, ...d.data()})));
@@ -74,12 +78,13 @@ export function modulPelanggan(ctx){
     <span class="cp-tag cp-lama">🕘 Pelanggan lama (belum ahli)</span></span>›</button>`;
 
   function htmlKotak(){
-    return `<div class="card noprint"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">🔍 Carian Pelanggan</h3>${AKAUN ? '<button class="small" data-cp-segar title="Muat semula">↻</button>' : ''}</div>
+    return `<div class="card noprint"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">🔍 Carian Pelanggan</h3>${AKAUN ? '<span style="display:flex;gap:6px"><button class="small" data-cp-kadlama>📇 Kad lama</button><button class="small" data-cp-segar title="Muat semula">↻</button></span>' : ''}</div>
       <input data-cp-cari placeholder="Nama, no. telefon, no. plat atau kod ahli" value="${esc(q0)}" autocomplete="off" style="margin-top:8px">
       <div class="cp-hasil" data-cp-hasil><div class="muted" style="font-size:13px">Contoh: <b>Ahmad</b>, <b>012-345 6789</b>, <b>VAB 1234</b> atau <b>SM-1234</b>. Carian merangkumi Safari Members & rekod pelanggan lama.</div></div></div>`;
   }
   function pasang(root = document){
     const inp = root.querySelector('[data-cp-cari]'), out = root.querySelector('[data-cp-hasil]'); if(!inp || !out) return;
+    const bkl = root.querySelector('[data-cp-kadlama]'); if(bkl) bkl.onclick = () => bukaSenaraiKadLama();
     let t, giliran = 0;
     const jalan = async () => {
       const q = inp.value; q0 = q; const g = ++giliran;
@@ -110,9 +115,9 @@ export function modulPelanggan(ctx){
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
         ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}${ctx.tebusFW && k.freeWash.length ? `<button class="pri" data-cp-x="tebusfw" style="background:#C9A646;color:#1F3A68;font-weight:800">🎁 Tebus Free Wash (${k.freeWash.length})</button>` : ''}
         ${!AKAUN && ctx.jemput ? '<button class="wa" data-cp-x="wa">💬 WhatsApp</button><button class="pri" data-cp-x="hantar">📤 Hantar kad</button>' : ''}
-        ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual 🔒</button>' : ''}
+        ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual 🔒</button>' : ''}${!AKAUN && bolehKadLama(a) ? '<button data-cp-x="kadlama">📇 Pindah kad lama 🔒</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
-        <button data-cp-x="cop">⭐ +1 cop manual</button><button data-cp-x="fw">🎁 +1 Free Wash</button>${aktif ? '' : '<button data-cp-x="aktif">🔓 Aktifkan kad</button>'}
+        <button data-cp-x="cop">⭐ +1 cop manual</button><button data-cp-x="fw">🎁 +1 Free Wash</button>${bolehKadLama(a) ? '<button data-cp-x="kadlama">📇 Pindah kad lama</button>' : ''}${aktif ? '' : '<button data-cp-x="aktif">🔓 Aktifkan kad</button>'}
         <button data-cp-x="gabung">🔗 Gabung rekod</button><button class="bahaya" data-cp-x="padam">🚫 Padam ahli</button>` : ''}</div>
       <div class="cp-sek"><h4>👤 Profil</h4>
         <div class="cp-ln"><span>No. telefon</span><b>${esc(telP(a.telefon))}</b></div>
@@ -133,7 +138,8 @@ export function modulPelanggan(ctx){
       <div class="cp-sek"><h4>⭐ Kad loyalti</h4>
         <div class="cp-ln"><span>Cop semasa</span><b>${k.bil}/${KAD.saiz}</b></div><div class="cp-ln"><span>Free Wash tersedia</span><b>${k.freeWash.length}</b></div>
         ${k.freeWash.map(f => `<div class="muted" style="font-size:12.5px">🎁 ${esc(f.sebab || '')} · luput ${esc(fT(f.tamat))}</div>`).join('')}
-        <div class="cp-ln"><span>Free Wash sudah ditebus</span><b>${k.digunakan.length}</b></div><div class="cp-ln"><span>Kad lengkap (10 cop)</span><b>${a.kadSelesai || 0}</b></div></div>
+        <div class="cp-ln"><span>Free Wash sudah ditebus</span><b>${k.digunakan.length}</b></div><div class="cp-ln"><span>Kad lengkap (10 cop)</span><b>${a.kadSelesai || 0}</b></div>
+        ${a.kadLama ? `<div class="cp-ln"><span>📇 Kad lama dipindah</span><b>${a.kadLama.bilCop} cop → ${a.kadLama.fw} Free Wash</b></div><div class="muted" style="font-size:12.5px">${esc(fT(a.kadLama.t))} · oleh ${esc(a.kadLama.oleh || '')} · ${esc(a.kadLama.tindakan || '')}${AKAUN ? ' · <a href="#" data-cp-x="kadlamafoto">📷 Lihat gambar kad</a>' : ''}</div>` : ''}</div>
       <div class="cp-sek"><h4>🧾 Sejarah cucian & belanja</h4><div data-cp-sej class="muted">⏳ Memuatkan…</div></div>
       ${AKAUN ? `<div class="cp-sek"><h4>📝 Catatan dalaman <small class="muted">(pelanggan tidak nampak)</small></h4><textarea data-cp-nota rows="2" placeholder="cth: VIP, suka fokus rim, bayar bulanan"></textarea><button class="small" data-cp-x="nota" style="margin-top:4px">💾 Simpan catatan</button></div>
       <div class="cp-sek"><h4>📜 Log tindakan</h4><div data-cp-log class="muted">⏳</div></div>` : ''}</div>`);
@@ -162,6 +168,8 @@ export function modulPelanggan(ctx){
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
     if(x('tebusfw')) x('tebusfw').onclick = () => { ctx.tutup(); ctx.tebusFW((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
     if(x('cop')) x('cop').onclick = () => borangCopManual(a);
+    if(x('kadlama')) x('kadlama').onclick = () => borangKadLama(a);
+    if(x('kadlamafoto')) x('kadlamafoto').onclick = e => { e.preventDefault(); lihatFotoKadLama(a); };
     if(x('sah')) x('sah').onclick = () => { if(!confirm(`Sahkan ${a.nama} naik ke ${CALON.nama}?\nPelanggan akan dimaklumkan dalam Apps Safari Members & kad dikemas kini di semua apps.`)) return;
       kemas({peringkat: CALON.id, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, notisPeringkat: {id: CALON.id, masa: Date.now()}}, 'Sahkan naik taraf', CALON.nama, `✅ ${a.nama} kini ${CALON.nama}`);
       if(confirm('Maklumkan pelanggan melalui WhatsApp sekarang?')) window.open(`https://wa.me/${a.telefon}?text=${encodeURIComponent(`Tahniah ${a.nama}! 🎉 Kad Safari Members anda (${a.kod}) telah dinaik taraf ke *${CALON.nama}*.\nTerima kasih atas kesetiaan anda bersama Mama Lion & Lion King. Buka kad anda: ${ctx.pautanKad(a.id)}`)}`, '_blank'); };
@@ -214,6 +222,87 @@ export function modulPelanggan(ctx){
         ctx.toast(r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
       }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
+  }
+
+  // ---------------- 📇 PINDAH KAD LAMA (kad cop fizikal sebelum apps) ----------------
+  const kecilFoto = (f, maks = 1000, q = .6) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => {
+    const sk = Math.min(1, maks / Math.max(i.width, i.height)), c = document.createElement('canvas'); c.width = Math.round(i.width * sk); c.height = Math.round(i.height * sk);
+    c.getContext('2d').drawImage(i, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q)); }; i.src = r.result; }; r.readAsDataURL(f); });
+  function borangKadLama(a){
+    const [g1, g2] = KAD.ganjaranPada.length > 1 ? KAD.ganjaranPada : [KAD.ganjaranPada[0], KAD.ganjaranPada[0]];
+    let n = null, foto = '';
+    ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📇 Pindah kad lama — ${esc(a.nama || '')}</h3><button class="small" data-kl-tutup>✕</button></div>
+      <div class="muted" style="font-size:13px">Untuk pelanggan yang memegang <b>kad cop fizikal</b> sebelum apps. <b>Sekali sahaja</b> bagi setiap ahli. Kad lama ikut peraturan sama (cop ke-${g1} & ke-${g2} = Free Wash). Cop yang dipindah dikira bermula hari ini.${AKAUN ? '' : ` Kaunter terima kad lama sehingga <b>${esc(fT(KAD_LAMA_TAMAT))}</b>.`}</div>
+      <label>1. Bilangan cop pada kad lama *</label>
+      <div data-kl-bil style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">${Array.from({length: KAD.saiz + 1}, (_, i) => `<button type="button" data-kl-n="${i}" style="padding:10px 0;font-weight:700">${i}</button>`).join('')}</div>
+      <div data-kl-tuntut></div>
+      <label>2. Gambar kad lama * <small class="muted">(bukti — nampak semua cop)</small></label>
+      <input type="file" accept="image/*" capture="environment" data-kl-foto><img data-kl-prev style="display:none;max-width:100%;max-height:220px;margin-top:6px;border-radius:10px">
+      <label>3. Kad fizikal selepas dipindah *</label>
+      <select data-kl-tindakan>${TINDAKAN_KAD.map(t => `<option>${esc(t)}</option>`).join('')}</select>
+      <div data-kl-hasil class="cp-sek" style="margin-top:10px"><div class="muted">Pilih bilangan cop.</div></div>
+      ${!AKAUN && ctx.mintaPinCop ? '<div class="muted" style="font-size:12.5px;margin-top:4px">🔒 Perlu PIN Supervisor / Manager / Admin selepas tekan butang di bawah.</div>' : ''}
+      <button class="primary" data-kl-ok style="width:100%;padding:13px;margin-top:10px">📇 PINDAH KAD LAMA</button></div>`);
+    const q = s => document.querySelector(s);
+    const kira = () => {
+      const t1 = !!q('[data-kl-t1]')?.checked, t2 = !!q('[data-kl-t2]')?.checked;
+      if(n == null) return null;
+      const r = pindahKadLama(a, {bilCop: n, tuntut1: t1, tuntut2: t2});
+      q('[data-kl-hasil]').innerHTML = r.ok ? `<h4 style="margin:0 0 4px">Hasil dalam kad digital</h4>
+        <div class="cp-ln"><span>Cop dimasukkan</span><b>${r.copMasuk}</b></div><div class="cp-ln"><span>Cop dalam kad selepas pindah</span><b>${r.copAkhir}/${KAD.saiz}</b></div>
+        <div class="cp-ln"><span>🎁 Free Wash baharu</span><b>${r.dapatFreeWash}</b></div>` : `<div class="muted">⚠ ${esc(r.sebab)}</div>`;
+      return r;
+    };
+    const lukisTuntut = () => { q('[data-kl-tuntut]').innerHTML =
+      (g1 !== g2 && n >= g1 ? `<label class="chk" style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" data-kl-t1 style="width:20px;height:20px"> Free Wash cop ke-${g1} kad lama <b>sudah dituntut</b></label>` : '')
+      + (n >= g2 ? `<label class="chk" style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" data-kl-t2 style="width:20px;height:20px"> Free Wash cop ke-${g2} kad lama <b>sudah dituntut</b></label>` : '');
+      document.querySelectorAll('[data-kl-tuntut] input').forEach(i => i.onchange = kira); };
+    document.querySelectorAll('[data-kl-n]').forEach(b => b.onclick = () => { n = Number(b.dataset.klN);
+      document.querySelectorAll('[data-kl-n]').forEach(x => { const on = x === b; x.style.background = on ? '#1F3A68' : ''; x.style.color = on ? '#fff' : ''; });
+      lukisTuntut(); kira(); });
+    q('[data-kl-foto]').onchange = async e => { const f = e.target.files[0]; if(!f) return;
+      try{ foto = await kecilFoto(f); const im = q('[data-kl-prev]'); im.src = foto; im.style.display = 'block'; }catch(_){ ctx.toast('Gagal baca gambar'); } };
+    q('[data-kl-tutup]').onclick = () => bukaProfil({ahli: a.id});
+    q('[data-kl-ok]').onclick = async () => {
+      if(n == null) return ctx.toast('Pilih bilangan cop pada kad lama');
+      if(!foto) return ctx.toast('Ambil gambar kad lama sebagai bukti');
+      const t1 = !!q('[data-kl-t1]')?.checked, t2 = !!q('[data-kl-t2]')?.checked, tindakan = q('[data-kl-tindakan]').value;
+      const pra = kira(); if(!pra?.ok) return ctx.toast(pra?.sebab || 'Tidak sah');
+      if(!confirm(`Pindah kad lama ${a.nama}: ${n} cop → ${pra.copMasuk} cop dalam kad digital + ${pra.dapatFreeWash} Free Wash?\n\nKad fizikal: ${tindakan}`)) return;
+      let pelulus = ctx.pengguna();
+      if(!AKAUN && ctx.mintaPinCop){ pelulus = await ctx.mintaPinCop(); if(!pelulus) return; }
+      const btn = q('[data-kl-ok]'); if(btn){ btn.disabled = true; btn.textContent = 'Menyimpan…'; }
+      try{
+        const s0 = await fs.getDoc(fs.doc(store, 'ahli', a.id)), b = s0.exists() ? {id: a.id, ...s0.data()} : a, t = Date.now();
+        const r = pindahKadLama(b, {bilCop: n, tuntut1: t1, tuntut2: t2, cawangan: ctx.cawangan?.() || '', oleh: pelulus, tindakan, kini: t});
+        if(!r.ok){ ctx.toast('⚠ ' + r.sebab); return bukaProfil({ahli: a.id}); }
+        const butiran = `${n} cop${t1 ? ' · FW cop ke-' + g1 + ' sudah dituntut' : ''}${t2 ? ' · FW cop ke-' + g2 + ' sudah dituntut' : ''} → ${r.copMasuk} cop + ${r.dapatFreeWash} Free Wash · ${tindakan}`;
+        await fs.setDoc(fs.doc(store, 'ahli', a.id, 'kadlama', 'utama'), {gambar: foto, t, oleh: pelulus, cawangan: ctx.cawangan?.() || '', bilCop: n, tuntut1: t1, tuntut2: t2, tindakan, kod: a.kod || '', nama: a.nama || ''});
+        await fs.updateDoc(fs.doc(store, 'ahli', a.id), {...r.data, logManual: [...(b.logManual || []), {t, oleh: pelulus, apa: '📇 Pindah kad lama', sebab: butiran}]});
+        log(a, '📇 Pindah kad lama', `${butiran} · diluluskan ${pelulus}`); ctx.logLuar?.('Pindah kad lama Safari Members', `${a.nama} · ${a.kod} · ${butiran} · lulus ${pelulus}`);
+        ctx.toast(`✅ Kad lama dipindah — ${r.copMasuk} cop${r.dapatFreeWash ? ' + ' + r.dapatFreeWash + ' Free Wash' : ''}`);
+        await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
+      }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); if(btn){ btn.disabled = false; btn.textContent = '📇 PINDAH KAD LAMA'; } }
+    };
+  }
+  async function lihatFotoKadLama(a){
+    ctx.buka('<div class="cp-p"><h3>📷 Gambar kad lama</h3><div class="muted">⏳ Memuat…</div></div>');
+    let d = null; try{ const s = await fs.getDoc(fs.doc(store, 'ahli', a.id, 'kadlama', 'utama')); d = s.exists() ? s.data() : null; }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
+    ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📷 Kad lama — ${esc(a.nama || '')}</h3><button class="small" data-kl-tutup>✕</button></div>
+      ${d?.gambar ? `<img src="${d.gambar}" style="max-width:100%;border-radius:10px">` : '<div class="muted">Tiada gambar.</div>'}
+      ${d ? `<div class="muted" style="font-size:13px;margin-top:6px">${d.bilCop} cop · ${esc(fT(d.t))} · oleh ${esc(d.oleh || '')} · ${esc(d.tindakan || '')}</div>` : ''}</div>`);
+    document.querySelector('[data-kl-tutup]').onclick = () => bukaProfil({ahli: a.id});
+  }
+  // Senarai kad lama yang sudah dipindah (Akaun)
+  async function bukaSenaraiKadLama(){
+    const L = (await pastikanAhli(true)).filter(a => a.kadLama).sort((x, y) => y.kadLama.t - x.kadLama.t);
+    const jCop = L.reduce((s, a) => s + (a.kadLama.bilCop || 0), 0), jFW = L.reduce((s, a) => s + (a.kadLama.fw || 0), 0);
+    ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📇 Kad lama dipindah (${L.length})</h3><button class="small" data-cp-tutup>✕</button></div>
+      <p class="muted" style="font-size:13px;margin:4px 0 8px">Jumlah ${jCop} cop kad lama · ${jFW} Free Wash diberi. Kaunter terima kad lama sehingga <b>${esc(fT(KAD_LAMA_TAMAT))}</b>. Tekan nama untuk profil & gambar kad.</p>
+      <div class="cp-hasil">${L.map(a => `<div class="cp-kad" data-kl-ahli="${esc(a.id)}"><span class="cp-av" style="background:${warna(a.id)}">${esc(inisial(a.nama))}</span><span style="flex:1;min-width:0">
+        <b>${esc(a.nama || '—')} · ${esc(a.kod || '')}</b><small>${a.kadLama.bilCop} cop → ${a.kadLama.cop} cop + ${a.kadLama.fw} Free Wash · ${esc(fT(a.kadLama.t))} · ${esc({'mama-lion': 'Mama Lion', 'lion-king': 'Lion King'}[a.kadLama.cawangan] || a.kadLama.cawangan || '')} · oleh ${esc(a.kadLama.oleh || '')}</small></span></div>`).join('') || '<div class="muted">Belum ada kad lama dipindah.</div>'}</div></div>`);
+    document.querySelector('[data-cp-tutup]').onclick = ctx.tutup;
+    document.querySelectorAll('[data-kl-ahli]').forEach(e => e.onclick = () => bukaProfil({ahli: e.dataset.klAhli}));
   }
 
   // ---------------- UBAH MAKLUMAT ----------------
@@ -381,5 +470,5 @@ export function modulPelanggan(ctx){
     lukis();
   }
 
-  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true), kiraBelumKad, bukaBelumKad};
+  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true), kiraBelumKad, bukaBelumKad, bukaSenaraiKadLama};
 }
