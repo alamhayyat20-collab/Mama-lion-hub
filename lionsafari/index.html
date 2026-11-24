@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.23-3">
+<meta name="app-versi" content="2026.11.25-1">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -121,6 +121,9 @@ tr.tot td{font-weight:800;border-top:2px solid var(--navy)}
 .copbar i.on{background:radial-gradient(circle at 35% 35%,#fde68a,#d97706);border-color:#fbbf24}.copbar i.g{box-shadow:0 0 0 2px #fbbf24 inset}.copbar span{margin-left:6px;font-weight:700;color:#fde68a}
 .fwtoggle{display:flex;gap:8px;align-items:center;background:#14532d;color:#fff;border-radius:10px;padding:10px;margin:6px 0;font-weight:700}
 .fwtoggle input{width:22px;height:22px;margin:0;flex:none}
+.btn-fw{display:block;width:100%;border:2px solid #C9A646;background:linear-gradient(135deg,#C9A646,#E5C97A);color:#1F3A68;font-weight:800;font-size:17px;border-radius:12px;padding:12px;margin:8px 0;cursor:pointer}
+.btn-fw.on{background:#14532d;border-color:#14532d;color:#fff}
+.btn-fw small{display:block;font-weight:600;font-size:12px;opacity:.85}
 .ogt{display:flex;gap:3px}.ogt img{width:44px;height:44px;object-fit:cover;border-radius:8px;background:#e2e8f0;cursor:pointer}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:99;max-width:90%;text-align:center;display:none}
 .thumb{max-width:100%;max-height:180px;border-radius:8px;margin:4px 0 10px}
@@ -171,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.23-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.25-1';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.23-3';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.25-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.23-3';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.23-3';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.23-3';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.23-3';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.23-3';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.23-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.23-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.23-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.23-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.25-1';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.25-1';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.25-1';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.25-1';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.25-1';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.25-1';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.25-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.25-1';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.25-1';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -368,7 +371,8 @@ let MPK = null;
 function bukaCariPelanggan(){
   MPK ||= modulPelanggan({store, fs: {collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion}, mod: 'kaunter',
     buka: openModal, tutup: closeModal, toast, pengguna: () => staf?.nama || 'Kaunter', cawangan: () => cawangan, pautanKad: id => new URL('../pelanggan/#k=' + id, location.href).href,
-    buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
+    buatOrder: (plat, a) => { ahliAwal = {plat, a}; tab = 'Order Baru'; renderShell(); },
+      tebusFW: (plat, a) => { ahliAwal = {plat, a, fw: true}; tab = 'Order Baru'; renderShell(); }});
   openModal(`<div class="between"><h3 style="margin:0">🔍 Cari pelanggan</h3><button class="small" id="cpTutupK">✕</button></div>${MPK.htmlKotak()}`);
   $('#cpTutupK').onclick = closeModal; MPK.pasang($('#modalBox')); $('#modalBox [data-cp-cari]')?.focus();
 }   // id item -> gambar (data URL), dari koleksi lionsafari/{cawangan}/gambar
@@ -384,6 +388,7 @@ const aktifSahaja = j => senarai(j).filter(x => x.aktif);
 const senaraiBike = () => (T.bike && T.bike.length) ? aktifSahaja('bike') : BIKE_ASAL.filter(x => x.aktif !== false);
 const imgItem = (x, kelas='img', ikon='🚗') => { const g = GAMBAR[x.id] || gambarAsal(x.id); return g ? `<img class="${kelas}" src="${g}" alt="" loading="lazy">` : `<div class="${kelas}">${ikon}</div>`; };
 let pilihPakejAwal = null;
+let ahliAwal = null;   // {plat, a, fw} dari profil ahli → Order Baru (🎁 Tebus Free Wash)
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pasangPrompt = e; });
 
 function onErr(e){
@@ -723,6 +728,23 @@ function mintaLulus(sebab){
   });
 }
 const perluLulus = async sebab => PELULUS.includes(staf.peranan) ? staf.nama : await mintaLulus(sebab);
+// 🎁 Tebus Free Wash: PIN Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash
+const bolehFW = x => PELULUS.includes(x?.peranan) || adaKuasa(x, 'freewash');
+function lulusFW(sebab){
+  if(bolehFW(staf)) return Promise.resolve(staf.nama);
+  return new Promise(resolve => {
+    const ov = $('#lulus'); ov.classList.remove('hidden');
+    $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>🎁 TEBUS FREE WASH</h3><div class="notice">${esc(sebab)}</div>
+      <div class="muted">PIN Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash</div><div id="kpFW"></div><button class="small" id="btnTolakFW">Batal</button></div>`;
+    const tutup = v => { ov.classList.add('hidden'); resolve(v); };
+    $('#btnTolakFW').onclick = () => tutup(null);
+    keypad('#kpFW', async pin => {
+      for(const x of stafList.filter(x => x.aktif !== false && bolehFW(x)))
+        if(await hashPin(x.id, pin) === x.pinHash){ tutup(x.nama); return; }
+      return 'PIN tidak sah / tiada kuasa tebus Free Wash';
+    });
+  });
+}
 // PIN pekerja berkuasa (Supervisor / Manager / Admin atau kuasa 🏷 Harga) — sentiasa diminta
 function mintaPinHarga(sebab){
   return new Promise(resolve => {
@@ -1102,7 +1124,8 @@ VIEWS['Safari Members'] = {
         keypad('#kpCop', async pin => { const x = await semakPinLayak(pin, x => PELULUS.includes(x.peranan)); if(!x) return 'PIN tidak sah / tiada kuasa'; res(namaPin(x)); });
       }),
       selepasBelumKad: () => { const e = $('#smBelumBil'); if(e) MPS.kiraBelumKad().then(n => { if(n != null) e.textContent = `(${n})`; }); },
-      buatOrder: plat => { tab = 'Order Baru'; renderShell(); const i = $('#oPlat'); if(i){ i.value = plat; i.dispatchEvent(new Event('input')); i.focus(); } }});
+      buatOrder: (plat, a) => { ahliAwal = {plat, a}; tab = 'Order Baru'; renderShell(); },
+      tebusFW: (plat, a) => { ahliAwal = {plat, a, fw: true}; tab = 'Order Baru'; renderShell(); }});
     $('#smCari').innerHTML = MPS.htmlKotak(); MPS.pasang($('#smCari'));
     const kiraBK = () => MPS.kiraBelumKad().then(n => { const e = $('#smBelumBil'); if(e) e.textContent = n == null ? '' : `(${n})`; });
     $('#smBelumKad').onclick = () => MPS.bukaBelumKad(); kiraBK();
@@ -1205,22 +1228,29 @@ VIEWS['Order Baru'] = {
           <div id="oCopLayak" style="margin:4px 0;font-weight:700"></div>
           <div class="copbar">${Array.from({length:KAD.saiz}, (_,i) => `<i class="${i < k.bil ? 'on' : ''} ${KAD.ganjaranPada.includes(i+1) ? 'g' : ''}"></i>`).join('')}<span>${k.bil}/${KAD.saiz}</span></div>
           ${!k.aktif ? `<div style="color:#fbbf24;margin:4px 0">🔓 Kad belum aktif — cop pertama perlu pakej ${esc(KAD.pakejAktif.map(id => aktifSahaja('pakej').find(p => p.id === id)?.nama || id).join(' / ') || 'berbayar')}${k.profilKurang.length ? ` & pelanggan lengkapkan profil (${k.profilKurang.map(m => MEDAN_PROFIL[m]).join(', ')}) dalam Apps Pelanggan` : ''}.</div>` : ''}
-          ${k.freeWash.length ? `<label class="fwtoggle"><input type="checkbox" id="oFW" ${draf.fw ? 'checked' : ''}> 🎁 Guna Free Wash (${k.freeWash.length} ada) — ${esc(KAD.teksFreeWash || 'pakej ' + (fwp?.nama || ''))}</label>` : `<div class="muted" style="color:#cbd5e1">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
+          ${k.freeWash.length ? `<button type="button" class="btn-fw ${draf.fw ? 'on' : ''}" id="oFW">${draf.fw ? '✅ FREE WASH DIPILIH — tekan untuk batal' : `🎁 TEBUS FREE WASH (${k.freeWash.length} ada)`}<small>${esc(KAD.teksFreeWash || 'Pakej ' + (fwp?.nama || ''))} · disahkan dengan PIN semasa bayaran</small></button>` : `<div class="muted" style="color:#cbd5e1">Lagi ${k.lagiUntukGanjaran} cop untuk Free Wash</div>`}</div>`;
         $('#oLepas').onclick = () => { draf.ahli = null; draf.fw = null; lukisAhli(); lukisDaftar(); kira(); };
-        if($('#oFW')) $('#oFW').onchange = e => {
-          if(e.target.checked){
-            const i = L.pakej.findIndex(p => p.id === fwp?.id);
-            if(i < 0){ e.target.checked = false; return toast('Pakej Free Wash belum ditetapkan dalam Tetapan'); }
-            draf.fw = {fwId: k.freeWash.sort((x,y) => x.tamat - y.tamat)[0].id}; draf.pakej = i;
-            $$('#cPakej .choice').forEach((x,j) => x.classList.toggle('sel', j === i));
-          } else draf.fw = null;
-          kira();
-        };
+        if($('#oFW')) $('#oFW').onclick = () => setFW(!draf.fw);
       }
     };
     const lukisDaftar = () => {
       $('#oDaftarBox').innerHTML = latihan ? '<div class="notice">🎓 Mod latihan: order tidak dihubungkan dengan Safari Members.</div>' : draf.ahli ? '' : `<label class="fwtoggle" style="background:#f8fafc;color:#0f172a"><input type="checkbox" id="oDaftar" checked> ⭐ Daftar sebagai Safari Members (kad cop digital)</label>
         <label class="fwtoggle" style="background:#f8fafc;color:#0f172a;font-weight:400"><input type="checkbox" id="oPromo"> Pelanggan setuju terima promosi melalui WhatsApp</label>`;
+    };
+    // 🎁 Tebus Free Wash: pilih pakej Free Wash & tanda order sebagai Free Wash
+    const setFW = on => {
+      if(!draf.ahli) return;
+      if(on){
+        const k = keadaanKad(draf.ahli), fwp = pakejFW();
+        if(!k.freeWash.length) return toast('Ahli ini tiada Free Wash tersedia');
+        if(draf.pakej === 'bike') return toast('Free Wash tidak boleh untuk motosikal — pilih jenis kereta dahulu');
+        const i = L.pakej.findIndex(p => p.id === fwp?.id);
+        if(i < 0) return toast('Pakej Free Wash belum ditetapkan dalam Tetapan');
+        draf.fw = {fwId: [...k.freeWash].sort((x,y) => x.tamat - y.tamat)[0].id}; draf.pakej = i;
+        $$('#cPakej .choice').forEach((x,j) => x.classList.toggle('sel', j === i));
+        toast('🎁 Free Wash dipilih — pakej ' + (fwp?.nama || ''));
+      } else draf.fw = null;
+      lukisAhli(); kira();
     };
     const pilihAhli = a => {
       draf.ahli = a; draf.calon = []; draf.fw = null;
@@ -1247,8 +1277,15 @@ VIEWS['Order Baru'] = {
       if(!l.length) return toast('Ahli tidak dijumpai');
       pilihAhli(l[0]);
     };
-    $('#oImbas').onclick = () => imbasKod(async kod => { const l = await cariAhli('kod', kod); if(!l.length) return toast(`Kod ${kod} tidak dijumpai`); pilihAhli(l[0]); });
+    $('#oImbas').onclick = () => imbasKod(async kod => { const l = await cariAhli('kod', kod); if(!l.length) return toast(`Kod ${kod} tidak dijumpai`); pilihAhli(l[0]);
+      if(keadaanKad(l[0]).freeWash.length) toast(`🎁 ${l[0].nama || 'Ahli'} ada ${keadaanKad(l[0]).freeWash.length} Free Wash — tekan TEBUS FREE WASH`); });
     lukisDaftar(); kira();
+    // Dari profil ahli: isi plat, pilih ahli & (jika diminta) terus tebus Free Wash
+    if(ahliAwal){ const x = ahliAwal; ahliAwal = null;
+      if(x.plat) $('#oPlat').value = x.plat;
+      if(x.a && !latihan){ pilihAhli(x.a); if(x.fw) setFW(true); }
+      else if(x.plat) $('#oPlat').dispatchEvent(new Event('input'));
+      $('#oPlat').focus(); }
 
     // ---- Gambar ----
     const thumb = (id, src) => { const el = $(id); el.classList.add('ada'); el.style.backgroundImage = `url(${src})`; };
@@ -1404,7 +1441,7 @@ VIEWS['Queue'] = {
           ${seterus ? `<button class="btn-dark" data-st="${o.id}|${seterus}">→ ${seterus}</button>` : ''}
           <select data-bay="${o.id}" style="width:auto;margin:0;padding:8px">${T.bay.map(b => `<option ${b===o.bay?'selected':''}>${esc(b)}</option>`).join('')}</select>
           ${i>0 ? `<button class="small" data-st="${o.id}|${STATUS[i-1]}">↩ ${STATUS[i-1]}</button>` : ''}
-          ${bolehBayar ? `<button class="btn-ok" data-bayar="${o.id}">💳 Bayar</button>` : ''}
+          ${bolehBayar ? `<button class="${o.freeWash ? 'btn-gold' : 'btn-ok'}" data-bayar="${o.id}">${o.freeWash ? '🎁 Tebus Free Wash' : '💳 Bayar'}</button>` : ''}
           ${bolehBayar ? `<button class="small btn-bad" data-batal="${o.id}">Batal</button>` : ''}
           ${PELULUS.includes(staf.peranan) ? `<button class="small" data-tukarmo="${o.id}">🧾 ${o.mo ? 'Tukar MO' : 'Set MO'}</button>` : ''}
           ${bolehBayar ? `<button class="small" data-edit="${o.id}">✏️ Edit</button>` : ''}
@@ -1608,7 +1645,7 @@ VIEWS['Bayaran'] = {
     const l = [...aktif].sort((a,b) => (b.status==='Siap') - (a.status==='Siap') || (a.masaDibuat||0)-(b.masaDibuat||0));
     const notif = 'Notification' in window && Notification.permission === 'default' ? `<div class="notice">🔔 Hidupkan notifikasi supaya kaunter dimaklumkan bila pelanggan bayar melalui apps. <button class="small" id="kNotif">Hidupkan</button></div>` : '';
     return notif + htmlBayarPel() + `<div class="card"><h3>💳 Belum dibayar (${l.length})</h3>${l.length ? `<table>${l.map(o => `<tr><td><div style="display:flex;gap:8px;align-items:center">${ogThumb(o)}<div><b>${esc(o.plat)}</b><br><span class="muted">${esc(o.pakej)}</span><br>${tagAhli(o)}</div></div></td>
-        <td><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)}</span></td><td class="r"><b>${RM(o.jumlah)}</b><br><button class="btn-ok small" data-bayar="${o.id}" style="margin-top:4px">Bayar</button></td></tr>`).join('')}</table>` : '<p class="muted">Tiada bayaran tertunggak.</p>'}</div>
+        <td><span class="tag ${o.status==='Siap'?'ok':'gold'}">${esc(o.status)}</span></td><td class="r"><b>${RM(o.jumlah)}</b><br><button class="${o.freeWash ? 'btn-gold' : 'btn-ok'} small" data-bayar="${o.id}" style="margin-top:4px">${o.freeWash ? '🎁 Tebus' : 'Bayar'}</button></td></tr>`).join('')}</table>` : '<p class="muted">Tiada bayaran tertunggak.</p>'}</div>
       <div class="card"><h3>✅ Dibayar hari ini (${bayarHari.filter(o=>o.status!=='Batal').length})</h3>${bayarHari.length ? `<table>${bayarHari.map(o => `<tr><td>${fMasa(o.masaBayar)}<br><span class="muted">${esc(o.no)}</span></td>
         <td><b>${esc(o.plat)}</b><br>${o.status==='Batal'?`<span class="tag bad">Batal: ${esc(o.batal?.sebab||'')}</span>`:`<span class="tag">${esc(o.bayar?.kaedah)}</span>`}${o.diskaun?` <span class="tag gold">Diskaun ${RM(o.diskaun)}</span>`:''}${tagAhli(o)}${o.copInfo ? `<br><span class="muted">${esc(o.copInfo)}</span>` : ''}${o.copGagal && o.status !== 'Batal' ? `<br><button class="small" data-copsemula="${o.id}">⚠ Cop belum diberi — cuba lagi</button>` : ''}</td>
         <td class="r"><b>${RM(o.jumlah)}</b><br>${o.status!=='Batal'?`<button class="small" data-resit="${o.id}">🧾 Resit</button> <button class="small btn-bad" data-batalb="${o.id}">Batal</button>`:''}</td></tr>`).join('')}</table>` : '<p class="muted">Belum ada.</p>'}</div>`;
@@ -1689,7 +1726,7 @@ function bukaBayar(o, pra = null){
   const kasar = () => r2(asas + sum(manual, a => a.harga));
   openModal(`<div class="between"><h3 style="margin:0">💳 Bayaran — ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
     <div class="muted">${esc(o.no)} · ${esc(o.kenderaan)}${o.nama ? ' · ' + esc(o.nama) : ''}</div><div>${tagAhli(o)}</div>
-    <table style="margin:8px 0">${barisItem(o).map(([n,h]) => `<tr><td>${esc(n)}</td><td class="r">${RM(h)}</td></tr>`).join('')}${o.freeWash ? `<tr><td>🎁 Free Wash (nilai ${RM(o.freeWash.nilai)}) — perlu PIN Supervisor</td><td class="r">${RM(0)}</td></tr>` : ''}</table>
+    <table style="margin:8px 0">${barisItem(o).map(([n,h]) => `<tr><td>${esc(n)}</td><td class="r">${RM(h)}</td></tr>`).join('')}${o.freeWash ? `<tr><td>🎁 Free Wash (nilai ${RM(o.freeWash.nilai)}) — perlu PIN Supervisor / pekerja berkuasa 🎁</td><td class="r">${RM(0)}</td></tr>` : ''}</table>
     <label>➕ Item manual (di luar pakej / cucian spot tertentu)</label><div id="pManual"></div>
     <div class="row" style="flex-wrap:nowrap;gap:6px"><input id="pMNama" placeholder="cth: Buang tahi burung bumbung" style="margin:0;flex:1"><input id="pMHarga" type="number" inputmode="decimal" step="0.01" placeholder="RM" style="margin:0;width:90px"><button class="small" id="pMTambah">+ Tambah</button></div>
     <label>🎟 Diskaun</label><div id="pDiskaun"></div>
@@ -1704,7 +1741,7 @@ function bukaBayar(o, pra = null){
       <div class="row" id="pCepat"></div><div class="totalbar" style="background:#14532d"><span>Baki dipulangkan</span><b id="pBaki" style="color:#bbf7d0">RM 0.00</b></div></div>
     <div id="pBukan" class="hidden"><div id="pInfoBayar"></div><label>No. rujukan transaksi</label><input id="pRuj" placeholder="cth: 4 digit terakhir / ID transaksi">
       <label>Bukti bayaran (gambar, pilihan)</label><input id="pBukti" type="file" accept="image/*" capture="environment"><img id="pThumb" class="thumb hidden"></div>
-    <div class="row" style="margin-top:6px"><button class="btn-ok big" style="flex:1" id="pSimpan">SIMPAN BAYARAN</button><button class="btn-gold big" style="flex:1" id="pCetak">SIMPAN & PAPAR RESIT</button></div>`);
+    <div class="row" style="margin-top:6px"><button class="btn-ok big" style="flex:1" id="pSimpan">${o.freeWash ? '🎁 TEBUS FREE WASH' : 'SIMPAN BAYARAN'}</button><button class="btn-gold big" style="flex:1" id="pCetak">${o.freeWash ? '🎁 TEBUS & PAPAR RESIT' : 'SIMPAN & PAPAR RESIT'}</button></div>`);
   const jum = () => Math.max(0, r2(kasar() - dis()));
   const lukisDiskaun = () => { const c = semasa(), d = c.diskaunBeri, m = c.diskaunMinta;
     $('#pDiskaun').innerHTML = d ? `<div class="mrow" style="background:#fef3c7"><span>✅ ${esc(labelDiskaun(d))}</span><b>-${RM(dis())}</b></div>`
@@ -1770,7 +1807,7 @@ function bukaBayar(o, pra = null){
     const diskaunLulus = cur.diskaunBeri ? labelDiskaun(cur.diskaunBeri) : '';
     let fwLulus = '';
     if(o.freeWash){
-      fwLulus = await perluLulus(`Tebus Free Wash ${o.ahli?.kod || ''} — ${o.plat}`);
+      fwLulus = await lulusFW(`Tebus Free Wash ${o.ahli?.kod || ''} — ${o.plat}`);
       if(!fwLulus) return;
       try{ await tebusFreeWash(o, fwLulus); }catch(e){ return toast('⚠ Free Wash tidak dapat ditebus: ' + e.message); }
     }

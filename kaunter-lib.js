@@ -5,7 +5,7 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.23-3';
+import { tambahCop, gunaFreeWash, pulangFreeWash, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.25-1';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
@@ -88,6 +88,34 @@ export function kaunter(ctx){
     return {data: baru, mesej: [cop, mesej].filter(Boolean).join(' · ')};
   }
 
+  // 🎁 Tebus Free Wash (Apps Pekerja, kuasa 🎁 — disahkan dengan PIN sendiri): guna Free Wash ahli & selesaikan order
+  async function tebusFW(o, c, {kaedah = 'Tunai', rujukan = '', bukti = '', diterima = 0, lulus = '', lulusId = ''}){
+    if(!o?.freeWash?.fwId || !o?.ahli?.id) throw new Error('Order ini bukan order Free Wash ahli');
+    const ref = fs.doc(store, 'ahli', o.ahli.id);
+    await fs.runTransaction(store, async tx => {
+      const s = await tx.get(ref); if(!s.exists()) throw new Error('Ahli tidak dijumpai');
+      const r = gunaFreeWash(s.data(), o.freeWash.fwId, {orderId: o.id, cawangan: c, oleh: lulus});
+      if(!r.ok) throw new Error(r.sebab);
+      tx.update(ref, {...r.data, ...T()});
+    });
+    const t = hariIni(), jumlah = r2(Number(o.jumlahKasar) || 0);
+    const data = {bayar: {kaedah, rujukan, bukti, diterima: kaedah === 'Tunai' ? (diterima || jumlah) : 0, baki: kaedah === 'Tunai' ? Math.max(0, r2((diterima || jumlah) - jumlah)) : 0},
+      diskaun: 0, diskaunLulus: '', jumlah, status: 'Selesai', aktif: false, tarikhBayar: t, bulanBayar: t.slice(0,7),
+      dibayarOleh: ctx.pengguna(), masaBayar: Date.now(), freeWash: {...o.freeWash, lulus, lulusId}, ...T()};
+    try{ await fs.updateDoc(fs.doc(col(c, 'order'), o.id), data); }
+    catch(e){
+      // Order gagal dikemas kini → pulangkan Free Wash ahli
+      try{ await fs.runTransaction(store, async tx => { const s = await tx.get(ref); if(s.exists()) tx.update(ref, {...pulangFreeWash(s.data(), o.id), ...T()}); }); }catch(_){}
+      throw e;
+    }
+    const baru = {...o, ...data};
+    cermin(baru, c, {status: 'Selesai', aktif: false});
+    fs.setDoc(fs.doc(store, 'ahli', o.ahli.id, 'sejarah', o.id), {tarikh: t, cawangan: c, plat: o.plat, pakej: o.pakej, jumlah, freeWash: true, masa: Date.now(), ...T()}).catch(console.error);
+    let mesej = '';
+    try{ await akaunHari(c, t); }catch(e){ mesej = e.message; }
+    return {data: baru, mesej};
+  }
+
   // Tempahan dari Apps Pelanggan → order kaunter
   async function terimaTempahan(tp, c, {no, bay = ''}){
     const t = hariIni(), ref = fs.doc(col(c, 'order'));
@@ -106,5 +134,5 @@ export function kaunter(ctx){
     await fs.updateDoc(fs.doc(col(c, 'tempahan'), tp.id), {status: 'ditolak', sebabTolak: sebab || '', ditolakOleh: ctx.pengguna(), masaDitolak: Date.now(), ...T()});
   }
 
-  return {cermin, tukarStatus, tukarBay, akaunHari, beriCop, bayar, terimaTempahan, tolakTempahan};
+  return {cermin, tukarStatus, tukarBay, akaunHari, beriCop, bayar, tebusFW, terimaTempahan, tolakTempahan};
 }

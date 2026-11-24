@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.23-3';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.25-1';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -108,6 +108,7 @@ export const KUASA = [
   {k:'kaunter', ikon:'💳', label:'Kaunter: queue & bayaran', ket:'Terima tempahan, kemas kini progress servis & terima bayaran dalam Apps Pekerja'},
   {k:'progress', ikon:'🔧', label:'Kemas kini progress servis & gambar kenderaan', ket:'Tukar status (Cuci → Kering → QC → Siap), bay, dan ambil gambar keadaan asal kenderaan dalam Queue'},
   {k:'edit', ikon:'✏️', label:'Edit kenderaan dalam Queue', ket:'Betulkan no. plat, jenis kenderaan, pakej, add-on, item & harga tambahan manual dan catatan sebelum bayaran'},
+  {k:'freewash', ikon:'🎁', label:'Tebus Free Wash Safari Members', ket:'Selesaikan order Free Wash ahli dalam Queue Apps Pekerja (sahkan dengan PIN sendiri). Di kaunter, PIN pekerja ini juga diterima untuk tebus Free Wash'},
   {k:'diskaun', ikon:'🎟', label:'Lulus diskaun RM5 / RM10 / RM20', ket:'Beri diskaun terus kepada kenderaan dalam queue (sahkan dengan PIN). Jumlah lain: Dato\' / Datin di Apps Akaun'},
   {k:'tutup',   ikon:'🔐', label:'Tutup kaunter (gambar tunai)', ket:'Ambil gambar wang tunai & kira tunai dalam laci semasa tutup kaunter'},
   {k:'semak',   ikon:'🧮', label:'Semak laporan kewangan', ket:'Semak & sahkan laporan tutup kaunter harian (Daily Sales Report)'},

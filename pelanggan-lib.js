@@ -3,9 +3,9 @@
 // Sumber carian: Safari Members (ahli) + rekod pelanggan lama (MONZ)
 // ctx = {store, fs:{collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, arrayUnion},
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
-//        lihatKad?(a), buatOrder?(plat, ahli), selepasUbah?()}
+//        lihatKad?(a), buatOrder?(plat, ahli), tebusFW?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.23-3';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat } from './safari-lib.js?v=2026.11.25-1';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -108,7 +108,7 @@ export function modulPelanggan(ctx){
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>⭐ ${esc(a.nama || '—')}</h3><button class="small" data-cp-tutup>✕</button></div>
       <div><span class="cp-tag cp-ahli">${esc(a.kod || '')}</span><span class="cp-tag pk-${P.id}">${P.id === 'pride' ? '👑 ' : ''}${esc(P.nama)}</span><span class="cp-tag ${aktif ? 'cp-aktif' : 'cp-belum'}">${aktif ? '✅ Kad aktif' : '🔓 Kad belum aktif'}</span>${a.sumber === 'monz' ? '<span class="cp-tag cp-lama">Import MONZ</span>' : ''}</div>
       <div class="cp-aksi">${AKAUN ? `<a class="wa" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="tel:+${esc(a.telefon)}">📞 Telefon</a>` : ''}
-        ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}
+        ${ctx.buatOrder ? '<button class="pri" data-cp-x="order">➕ Buat order</button>' : ''}${ctx.tebusFW && k.freeWash.length ? `<button class="pri" data-cp-x="tebusfw" style="background:#C9A646;color:#1F3A68;font-weight:800">🎁 Tebus Free Wash (${k.freeWash.length})</button>` : ''}
         ${!AKAUN && ctx.jemput ? '<button class="wa" data-cp-x="wa">💬 WhatsApp</button><button class="pri" data-cp-x="hantar">📤 Hantar kad</button>' : ''}
         ${!AKAUN && ctx.copManual?.() ? '<button data-cp-x="cop">⭐ +1 cop manual 🔒</button>' : ''}
         ${AKAUN ? `<button class="pri" data-cp-x="hantar">📤 Hantar kad</button><button data-cp-x="lihat">👁 Lihat kad</button><button data-cp-x="ubah">✏️ Ubah maklumat</button>
@@ -160,6 +160,7 @@ export function modulPelanggan(ctx){
     const segar = async () => { await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
     const kemas = async (d, tindakan, butiran, msg) => { try{ await fs.updateDoc(fs.doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); log(a, tindakan, butiran); ctx.toast(msg || '✅ Disimpan'); segar(); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
+    if(x('tebusfw')) x('tebusfw').onclick = () => { ctx.tutup(); ctx.tebusFW((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
     if(x('cop')) x('cop').onclick = () => borangCopManual(a);
     if(x('sah')) x('sah').onclick = () => { if(!confirm(`Sahkan ${a.nama} naik ke ${CALON.nama}?\nPelanggan akan dimaklumkan dalam Apps Safari Members & kad dikemas kini di semua apps.`)) return;
       kemas({peringkat: CALON.id, peringkatManual: null, peringkatTolak: null, peringkatSah: {oleh: ctx.pengguna(), masa: Date.now()}, notisPeringkat: {id: CALON.id, masa: Date.now()}}, 'Sahkan naik taraf', CALON.nama, `✅ ${a.nama} kini ${CALON.nama}`);
