@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.25-2">
+<meta name="app-versi" content="2026.11.26-1">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -174,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.25-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.26-1';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.25-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.26-1';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.25-2';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.25-2';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.25-2';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.25-2';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.25-2';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.25-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.25-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.25-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.25-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.26-1';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.26-1';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.26-1';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.26-1';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.26-1';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.26-1';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.26-1';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.26-1';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.26-1';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -1727,6 +1727,7 @@ function bukaBayar(o, pra = null){
   openModal(`<div class="between"><h3 style="margin:0">💳 Bayaran — ${esc(o.plat)}</h3><button class="small" id="mTutup">✕</button></div>
     <div class="muted">${esc(o.no)} · ${esc(o.kenderaan)}${o.nama ? ' · ' + esc(o.nama) : ''}</div><div>${tagAhli(o)}</div>
     <table style="margin:8px 0">${barisItem(o).map(([n,h]) => `<tr><td>${esc(n)}</td><td class="r">${RM(h)}</td></tr>`).join('')}${o.freeWash ? `<tr><td>🎁 Free Wash (nilai ${RM(o.freeWash.nilai)}) — perlu PIN Supervisor / pekerja berkuasa 🎁</td><td class="r">${RM(0)}</td></tr>` : ''}</table>
+    ${o.ahli && !o.freeWash && !latihan && !o.latihan && o.pakejId !== 'bike-wash' ? '<div id="pFWBox"></div>' : ''}
     <label>➕ Item manual (di luar pakej / cucian spot tertentu)</label><div id="pManual"></div>
     <div class="row" style="flex-wrap:nowrap;gap:6px"><input id="pMNama" placeholder="cth: Buang tahi burung bumbung" style="margin:0;flex:1"><input id="pMHarga" type="number" inputmode="decimal" step="0.01" placeholder="RM" style="margin:0;width:90px"><button class="small" id="pMTambah">+ Tambah</button></div>
     <label>🎟 Diskaun</label><div id="pDiskaun"></div>
@@ -1757,6 +1758,28 @@ function bukaBayar(o, pra = null){
     };
   };
   kemasBayar = () => { if(!$('#pDiskaun')) { kemasBayar = null; return; } if(!$('#pMintaBox')) lukisDiskaun(); kira(); };
+  // 🎁 Tebus Free Wash semasa bayaran (order ahli yang dibuat tanpa Free Wash)
+  if($('#pFWBox')) getDoc(doc(store, 'ahli', o.ahli.id)).then(sn => {
+    const box = $('#pFWBox'); if(!box || !sn.exists()) return;
+    const k = keadaanKad({id: sn.id, ...sn.data()}); if(!k.freeWash.length) return;
+    const fwp = pakejFW(), samaPakej = o.pakejId === fwp?.id;
+    box.innerHTML = `<button type="button" class="btn-fw" id="pFW">🎁 TEBUS FREE WASH (${k.freeWash.length} ada)<small>${samaPakej ? `Pakej ${esc(o.pakej)} jadi RM0 · disahkan dengan PIN` : `Free Wash hanya untuk pakej ${esc(fwp?.nama || '')} — order ini ${esc(o.pakej)}`}</small></button>`;
+    $('#pFW').onclick = async () => {
+      if(!samaPakej){
+        if(confirm(`Free Wash hanya untuk pakej ${fwp?.nama || ''}.\nOrder ini pakej ${o.pakej}.\n\nBuka ✏️ Edit order untuk tukar pakej dahulu?`)){ closeModal(); editOrder(semasa()); }
+        return;
+      }
+      const c = semasa();
+      if(c.diskaunBeri || c.diskaunMinta) return toast('Batalkan diskaun dahulu — Free Wash tidak boleh digabung dengan diskaun');
+      const nilai = r2((Number(c.hargaPakej) || 0) + (Number(c.tambahanKenderaan) || 0));
+      if(!confirm(`Tebus Free Wash untuk ${c.plat} (${c.ahli?.kod || ''})?\nPakej ${c.pakej} ${RM(nilai)} → RM0.00`)) return;
+      const fwId = [...k.freeWash].sort((x, y) => x.tamat - y.tamat)[0].id;
+      const upd = {freeWash: {fwId, nilai}, hargaPakej: 0, tambahanKenderaan: 0, jumlahKasar: r2(Math.max(0, (Number(c.jumlahKasar) || 0) - nilai)), jumlah: r2(Math.max(0, (Number(c.jumlahKasar) || 0) - nilai)),
+        ...(c.mo ? {komisen: r2(Math.max(0, (Number(c.komisen) || 0) - (Number(KOMISEN[c.pakejId]) || 0)))} : {}), dikemaskiniOleh: staf.nama};
+      try{ await updateDoc(doc(col('order'), c.id), upd); toast('🎁 Free Wash dipilih — tekan TEBUS FREE WASH untuk sahkan'); closeModal(); bukaBayar({...c, ...upd}, pra); }
+      catch(e){ onErr(e); }
+    };
+  }).catch(() => {});
   const lukisManual = () => { $('#pManual').innerHTML = manual.map((a, i) => `<div class="mrow"><span>${esc(a.nama)}</span><span><b>${RM(a.harga)}</b> <button class="small btn-bad" data-mbuang="${i}">✕</button></span></div>`).join('');
     $$('[data-mbuang]').forEach(b => b.onclick = () => { manual.splice(+b.dataset.mbuang, 1); lukisManual(); kira(); }); };
   const paparInfoBayar = () => { const mod = kaedah === 'QR / eWallet' ? 'qr' : kaedah === 'Transfer' ? 'transfer' : '';
