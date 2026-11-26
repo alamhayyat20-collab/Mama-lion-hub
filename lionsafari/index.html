@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.26-1">
+<meta name="app-versi" content="2026.11.26-2">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -174,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.26-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.26-2';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.26-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.26-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.26-1';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.26-1';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.26-1';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.26-1';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.26-1';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.26-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.26-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.26-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.26-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.26-2';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.26-2';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.26-2';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.26-2';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.26-2';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.26-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.26-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.26-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.26-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -353,12 +353,67 @@ const htmlBayarPel = () => bayarPel.length ? `<div class="card" style="border:2p
   ${bayarPel.map(x => { const o = aktif.find(a => a.id === x.orderId); return `<div class="between" style="padding:8px 0;border-bottom:1px solid #d1fae5;gap:8px">
     <div style="display:flex;gap:8px;align-items:center">${x.bukti ? `<img src="${x.bukti}" data-bpgambar="${x.id}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;cursor:pointer">` : ''}
       <div><b>${esc(x.plat)}</b> <span class="muted">${esc(x.no || '')}</span><br><b>Dibayar ${RM(x.amaunBayar ?? x.jumlah)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''}<br><span class="muted">${fMasa(x.masaPeranti)}${o ? ` · Order ${RM(jumOrder(o))}` : ' · ⚠ order tiada dalam queue'}</span>${o ? `<div style="margin-top:3px">${semakBayarPel(x, o).html}</div>` : ''}</div></div>
-    <div class="row" style="justify-content:flex-end">${o ? `<button class="btn-ok small" data-bpsah="${x.id}">✅ Semak & sahkan</button>` : ''}<button class="small btn-bad" data-bptolak="${x.id}">Tolak</button></div></div>`; }).join('')}</div>` : '';
+    <div class="row" style="justify-content:flex-end">${o ? `<button class="btn-ok small" data-bpsah="${x.id}">✅ Semak & sahkan</button>` : `<button class="btn-ok small" data-bpluar="${x.id}">✅ Semak & sahkan</button>`}<button class="small btn-bad" data-bptolak="${x.id}">Tolak</button></div></div>`; }).join('')}</div>` : '';
 function pasangBayarPel(){
   $$('[data-bpgambar]').forEach(im => im.onclick = () => { const x = bayarPel.find(b => b.id === im.dataset.bpgambar); bukaPaparan(x.bukti, {tajuk: `Bukti bayaran ${x.plat}`, nama: `Bukti-${x.plat.replace(/\s/g,'')}`}); });
   $$('[data-bpsah]').forEach(b => b.onclick = () => { const x = bayarPel.find(y => y.id === b.dataset.bpsah); bukaBayar(aktif.find(o => o.id === x.orderId), x); });
+  $$('[data-bpluar]').forEach(b => b.onclick = () => semakBayarLuar(bayarPel.find(y => y.id === b.dataset.bpluar)));
   $$('[data-bptolak]').forEach(b => b.onclick = async () => { const x = bayarPel.find(y => y.id === b.dataset.bptolak); const sebab = prompt(`Tolak bayaran ${x.plat} (${RM(x.jumlah)})?\nSebab (dimaklumkan kepada pelanggan):`); if(sebab === null) return;
     try{ await updateDoc(doc(col('bayar_pelanggan'), x.id), {status: 'ditolak', sebabTolak: sebab, ditolakOleh: staf.nama, masaTolak: Date.now()}); toast('Bayaran pelanggan ditolak'); }catch(e){ onErr(e); } });
+}
+// ✅ Bayaran Apps Pelanggan bagi order yang tiada dalam queue (sudah dibayar / dibatalkan / hari lain)
+async function semakBayarLuar(x){
+  if(!x) return;
+  const amaun = r2(x.amaunBayar ?? x.jumlah);
+  let o = null; try{ const sn = await getDoc(doc(col('order'), x.orderId)); if(sn.exists()) o = {...sn.data(), id: x.orderId}; }catch(e){ return onErr(e); }
+  const tandaSah = (extra = {}) => updateDoc(doc(col('bayar_pelanggan'), x.id), {status: 'disahkan', disahkanOleh: staf.nama, masaSah: Date.now(), jumlahSah: amaun, no: o?.no || x.no || '', ...extra});
+  const kepala = `<div class="between"><h3 style="margin:0">📲 Semak bayaran — ${esc(x.plat)}</h3><button class="small" id="blTutup">✕</button></div>
+    <div class="notice" style="background:#ecfdf5;border-color:#14532d"><b>Pelanggan bayar ${RM(amaun)}</b> · ${esc(x.kaedah)}${x.rujukan ? ' · Ruj: ' + esc(x.rujukan) : ''} · ${fMasa(x.masaPeranti)}</div>
+    ${x.bukti ? `<img src="${x.bukti}" style="max-width:100%;max-height:260px;border-radius:10px;margin:6px 0">` : ''}`;
+  const pasangTutup = () => { $('#blTutup').onclick = closeModal; };
+  // 1) Order belum dibayar & tidak dibatalkan → borang bayar biasa
+  if(o && !o.bayar && o.status !== 'Batal'){ return bukaBayar(o, x); }
+  // 2) Tiada order / dibatalkan
+  if(!o || o.status === 'Batal'){
+    openModal(kepala + `<div class="notice" style="background:#fef2f2;border-color:#b91c1c">⚠ ${o ? `Order ${esc(o.no)} telah <b>DIBATALKAN</b>${o.batal?.sebab ? ' — ' + esc(o.batal.sebab) : ''}.` : 'Order tidak dijumpai.'}
+      Semak wang masuk di apps bank. Jika pelanggan sudah dicaj melalui order lain, tekan <b>Sahkan (sudah direkod di order lain)</b>; jika wang perlu dipulangkan, tekan <b>Tolak</b>.</div>
+      <label>Catatan *</label><input id="blNota" placeholder="cth: dibayar untuk order 1126-012 / wang dipulangkan">
+      <div class="row" style="margin-top:8px"><button class="btn-ok big" style="flex:1" id="blSah">✅ Sahkan (sudah direkod di order lain)</button><button class="btn-bad big" style="flex:1" id="blTolak">Tolak</button></div>`);
+    pasangTutup();
+    $('#blSah').onclick = async () => { const n = val('#blNota'); if(n.length < 5) return toast('Isi catatan (sekurang-kurangnya 5 aksara)');
+      const lulus = await perluLulus(`Sahkan bayaran ${x.plat} ${RM(amaun)} tanpa order aktif`); if(!lulus) return;
+      try{ await tandaSah({catatanSah: n, lulus}); closeModal(); toast('✅ Bayaran pelanggan disahkan'); }catch(e){ onErr(e); } };
+    $('#blTolak').onclick = () => { closeModal(); document.querySelector(`[data-bptolak="${x.id}"]`)?.click(); };
+    return;
+  }
+  // 3) Order sudah dibayar
+  const b = o.bayar || {}, samaKaedah = b.kaedah === x.kaedah || (b.appsPelanggan && b.kaedah !== 'Tunai'), hariIni = o.tarikhBayar === today();
+  const bezaJ = r2(amaun - (Number(o.jumlah) || 0));
+  openModal(kepala + `<div class="notice">Order <b>${esc(o.no)}</b> sudah <b>DIBAYAR ${RM(o.jumlah)}</b> · ${esc(b.kaedah || '')} · oleh ${esc(o.dibayarOleh || '')} · ${esc(o.tarikhBayar || '')} ${fMasa(o.masaBayar)}</div>
+    ${Math.abs(bezaJ) >= 0.005 ? `<div class="notice" style="background:#fef3c7">⚠ Amaun pelanggan ${bezaJ > 0 ? 'lebih' : 'kurang'} ${RM(Math.abs(bezaJ))} berbanding order.</div>` : ''}
+    ${samaKaedah ? '<p class="muted">Bayaran ini kemungkinan sudah direkod pada order ini. Sahkan untuk keluarkan daripada senarai semakan.</p>'
+      : `<div class="notice" style="background:#fef2f2;border-color:#b91c1c">⚠ Order direkod sebagai <b>${esc(b.kaedah || '')}</b>, tetapi pelanggan bayar <b>${esc(x.kaedah)}</b> melalui apps. Elakkan rekod berganda:
+        jika pelanggan <b>tidak</b> bayar tunai, tekan <b>🔁 Tukar rekod kepada ${esc(x.kaedah)}</b> (tunai laci dikurangkan). Jika pelanggan bayar dua kali, tekan <b>Tolak</b> & pulangkan wang.</div>`}
+    <label style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" id="blSemak" style="width:20px;height:20px;margin:0;flex:none"> Saya telah semak wang masuk ${RM(amaun)} di apps bank</label>
+    <div class="row" style="margin-top:8px;flex-wrap:wrap">${!samaKaedah ? `<button class="btn-gold big" style="flex:1" id="blTukar" ${hariIni ? '' : 'disabled title="Order hari lain — betulkan di Akaun"'}>🔁 Tukar rekod kepada ${esc(x.kaedah)}</button>` : ''}
+      <button class="btn-ok big" style="flex:1" id="blSah">✅ Sahkan (sudah direkod)</button><button class="btn-bad big" style="flex:1" id="blTolak">Tolak</button></div>
+    ${!samaKaedah && !hariIni ? '<div class="muted" style="font-size:12px">Order dibayar pada hari lain — tukar cara bayar perlu dibuat di Apps Akaun.</div>' : ''}`);
+  pasangTutup();
+  $('#blTolak').onclick = () => { closeModal(); document.querySelector(`[data-bptolak="${x.id}"]`)?.click(); };
+  $('#blSah').onclick = async () => { if(!$('#blSemak').checked) return toast('Tandakan "Saya telah semak wang masuk di apps bank"');
+    try{ await tandaSah({catatanSah: `Sudah direkod pada order ${o.no} (${b.kaedah || ''})`}); closeModal(); toast('✅ Bayaran pelanggan disahkan'); }catch(e){ onErr(e); } };
+  if($('#blTukar')) $('#blTukar').onclick = async () => {
+    if(!$('#blSemak').checked) return toast('Tandakan "Saya telah semak wang masuk di apps bank"');
+    const lulus = await perluLulus(`Tukar cara bayar ${o.plat} (${o.no}) dari ${b.kaedah} kepada ${x.kaedah}`); if(!lulus) return;
+    const bayarBaru = {...b, kaedah: x.kaedah, rujukan: x.rujukan || '', bukti: x.bukti || '', diterima: 0, baki: 0, appsPelanggan: true, amaunPelanggan: amaun,
+      ditukar: {dari: b.kaedah || '', oleh: staf.nama, lulus, masa: Date.now()}};
+    try{
+      await updateDoc(doc(col('order'), o.id), {bayar: bayarBaru});
+      KT.cermin({...o, bayar: bayarBaru}, cawD(), {status: o.status, aktif: false});
+      await tandaSah({catatanSah: `Order ${o.no} ditukar dari ${b.kaedah} kepada ${x.kaedah}`, lulus});
+      kemaskiniAkaunHari(o.tarikhBayar); closeModal(); toast(`✅ ${o.plat}: cara bayar kini ${x.kaedah}`);
+    }catch(e){ onErr(e); }
+  };
 }
 const KT = kaunter({store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp}, pengguna: () => staf?.nama || 'Kaunter'});
 // Avatar staf yang dikemas kini sendiri bila gambar profil berubah (tanpa lukis semula skrin)
