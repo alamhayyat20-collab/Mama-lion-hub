@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.29-4">
+<meta name="app-versi" content="2026.11.29-5">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -174,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-4';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-5';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-4';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-5';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-4';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-4';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-4';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-4';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-4';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-4';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-4';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-4';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-4';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-5';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-5';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-5';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-5';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-5';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-5';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-5';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-5';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-5';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -820,6 +820,10 @@ const perluLulus = async sebab => PELULUS.includes(staf.peranan) ? staf.nama : a
 // 🎁 Tebus Free Wash: PIN Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash
 const bolehFW = x => PELULUS.includes(x?.peranan) || adaKuasa(x, 'freewash');
 // Sentiasa minta PIN — rekod nama & ID pekerja yang menerima (accept) Free Wash
+// Ralat bayaran kekal dipapar dalam borang (toast cepat hilang)
+window.addEventListener('unhandledrejection', e => { console.error(e.reason); if($('#pGalat')) galatBayar('⚠ ' + (e.reason?.code || e.reason?.message || e.reason)); });
+window.addEventListener('error', e => { if($('#pGalat')) galatBayar('⚠ ' + e.message); });
+function galatBayar(m){ toast(m); const g = $('#pGalat'); if(g){ g.textContent = m; g.classList.remove('hidden'); g.scrollIntoView({block: 'nearest'}); } }
 function lulusFW(sebab){
   return new Promise(resolve => {
     const ov = $('#lulus'); ov.classList.remove('hidden');
@@ -1832,6 +1836,7 @@ function bukaBayar(o, pra = null){
       <div class="row" id="pCepat"></div><div class="totalbar" style="background:#14532d"><span>Baki dipulangkan</span><b id="pBaki" style="color:#bbf7d0">RM 0.00</b></div></div>
     <div id="pBukan" class="hidden"><div id="pInfoBayar"></div><label>No. rujukan transaksi</label><input id="pRuj" placeholder="cth: 4 digit terakhir / ID transaksi">
       <label>Bukti bayaran (gambar, pilihan)</label><input id="pBukti" type="file" accept="image/*" capture="environment"><img id="pThumb" class="thumb hidden"></div>
+    <div id="pGalat" class="notice hidden" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;margin-top:8px;font-weight:600"></div>
     <div class="row" style="margin-top:6px"><button class="btn-ok big" style="flex:1" id="pSimpan">${o.freeWash ? '🎁 TEBUS FREE WASH' : 'SIMPAN BAYARAN'}</button><button class="btn-gold big" style="flex:1" id="pCetak">${o.freeWash ? '🎁 TEBUS & PAPAR RESIT' : 'SIMPAN & PAPAR RESIT'}</button></div>`);
   const jum = () => Math.max(0, r2(kasar() - dis()));
   const lukisDiskaun = () => { const c = semasa(), d = c.diskaunBeri, m = c.diskaunMinta;
@@ -1929,10 +1934,10 @@ function bukaBayar(o, pra = null){
     let fwLulus = null;
     if(o.freeWash){
       fwLulus = await lulusFW(`Tebus Free Wash ${o.ahli?.kod || ''} — ${o.plat}`);
-      if(!fwLulus) return;
+      if(!fwLulus) return galatBayar('PIN tidak dimasukkan — Free Wash belum ditebus. Tekan butang sekali lagi & masukkan PIN ID pekerja.');
       $('#pSimpan').disabled = $('#pCetak').disabled = true; toast('⏳ Menebus Free Wash…');
       try{ await Promise.race([tebusFreeWash(o, fwLulus.nama), new Promise((_, r) => setTimeout(() => r(new Error('tiada sambungan internet — semak Online & cuba lagi')), 20000))]); }
-      catch(e){ $('#pSimpan').disabled = $('#pCetak').disabled = false; console.error(e); return toast('⚠ Free Wash tidak dapat ditebus: ' + (e.code || e.message)); }
+      catch(e){ $('#pSimpan').disabled = $('#pCetak').disabled = false; console.error(e); return galatBayar('⚠ Free Wash tidak dapat ditebus: ' + (e.code || e.message)); }
     }
     $('#pSimpan').disabled = $('#pCetak').disabled = true;
     const t = today();
@@ -1949,11 +1954,11 @@ function bukaBayar(o, pra = null){
       kemaskiniAkaunHari(t);
       if(o.ahli && !o.freeWash) beriCop({...o, ...data}).then(m => m && toast(m));
       if(o.freeWash) setDoc(doc(collection(store, 'ahli', o.ahli.id, 'sejarah'), o.id), {tarikh: t, cawangan, plat: o.plat, pakej: o.pakej, jumlah: j, freeWash: true, masa: Date.now()}).catch(console.error);
-    }catch(e){ onErr(e); $('#pSimpan').disabled = $('#pCetak').disabled = false;
+    }catch(e){ onErr(e); galatBayar('⚠ Bayaran tidak disimpan: ' + (e.code || e.message)); $('#pSimpan').disabled = $('#pCetak').disabled = false;
       // Order gagal disimpan → pulangkan Free Wash ke kad ahli supaya tidak hilang
       if(o.freeWash && fwLulus) updateDoc(doc(ahliCol(), o.ahli.id), pulangFreeWash((await getDoc(doc(ahliCol(), o.ahli.id))).data() || {}, o.id)).catch(console.error); }
   };
-  const jalan = cetak => simpan(cetak).catch(e => { console.error(e); if($('#pSimpan')) $('#pSimpan').disabled = $('#pCetak').disabled = false; toast('⚠ ' + (e.code || e.message)); });
+  const jalan = cetak => { if($('#pGalat')) $('#pGalat').classList.add('hidden'); return simpan(cetak).catch(e => { console.error(e); if($('#pSimpan')) $('#pSimpan').disabled = $('#pCetak').disabled = false; galatBayar('⚠ ' + (e.code || e.message)); }); };
   $('#pSimpan').onclick = () => jalan(false);
   $('#pCetak').onclick = () => jalan(true);
 }
