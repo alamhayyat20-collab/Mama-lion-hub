@@ -1,5 +1,5 @@
-import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.29-2';
-import { hariOperasi } from './safari-lib.js?v=2026.11.29-2';
+import { bukaPaparan, bukaCetak, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran, simpanFail } from './paparan-lib.js?v=2026.11.29-3';
+import { hariOperasi } from './safari-lib.js?v=2026.11.29-3';
 // =====================================================================
 // laporan-lib.js — Tutup Kaunter / Daily Sales Report (format borang manual Mama Lion & Lion King)
 // Data: lionsafari/{c}/tutup/{YYYY-MM-DD}      (rekod tutup kaunter + snapshot laporan)

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.29-2">
+<meta name="app-versi" content="2026.11.29-3">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -174,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-2';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-3';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-2';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-2';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-2';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-2';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-2';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-2';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-2';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-2';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-2';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-2';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-3';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-3';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-3';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-3';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-3';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-3';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-3';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-3';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-3';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -819,17 +819,17 @@ function mintaLulus(sebab){
 const perluLulus = async sebab => PELULUS.includes(staf.peranan) ? staf.nama : await mintaLulus(sebab);
 // 🎁 Tebus Free Wash: PIN Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash
 const bolehFW = x => PELULUS.includes(x?.peranan) || adaKuasa(x, 'freewash');
+// Sentiasa minta PIN — rekod nama & ID pekerja yang menerima (accept) Free Wash
 function lulusFW(sebab){
-  if(bolehFW(staf)) return Promise.resolve(staf.nama);
   return new Promise(resolve => {
     const ov = $('#lulus'); ov.classList.remove('hidden');
     $('#lulusBox').innerHTML = `<div style="text-align:center"><h3>🎁 TEBUS FREE WASH</h3><div class="notice">${esc(sebab)}</div>
-      <div class="muted">PIN Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash</div><div id="kpFW"></div><button class="small" id="btnTolakFW">Batal</button></div>`;
+      <div class="muted">Masukkan PIN ID pekerja yang menerima Free Wash ini<br>(Supervisor / Manager / Admin atau pekerja berkuasa 🎁 Tebus Free Wash) — nama & ID direkod</div><div id="kpFW"></div><button class="small" id="btnTolakFW">Batal</button></div>`;
     const tutup = v => { ov.classList.add('hidden'); resolve(v); };
     $('#btnTolakFW').onclick = () => tutup(null);
     keypad('#kpFW', async pin => {
       for(const x of stafList.filter(x => x.aktif !== false && bolehFW(x)))
-        if(await hashPin(x.id, pin) === x.pinHash){ tutup(x.nama); return; }
+        if(await hashPin(x.id, pin) === x.pinHash){ tutup({nama: namaPin(x), id: x.id, idStaf: x.idStaf || ''}); return; }
       return 'PIN tidak sah / tiada kuasa tebus Free Wash';
     });
   });
@@ -1488,7 +1488,7 @@ async function muatGambarOrder(){
   }
 }
 const ogThumb = o => o.gambar ? `<span class="ogt"><img data-og="${o.id}|plat" alt=""><img data-og="${o.id}|emblem" alt=""></span>` : '';
-const tagAhli = o => `${o.ahli ? `<span class="tag gold">⭐ ${esc(o.ahli.kod)}</span>` : ''}${o.freeWash ? '<span class="tag ok">🎁 FREE WASH</span>' : ''}${o.mo ? `<span class="tag">MO: ${esc(o.mo.nama)}</span>` : ''}`;
+const tagAhli = o => `${o.ahli ? `<span class="tag gold">⭐ ${esc(o.ahli.kod)}</span>` : ''}${o.freeWash ? `<span class="tag ok">🎁 FREE WASH${o.freeWash.lulus ? ' · diterima ' + esc(o.freeWash.lulus) : ''}</span>` : ''}${o.mo ? `<span class="tag">MO: ${esc(o.mo.nama)}</span>` : ''}`;
 
 // ---------- QUEUE ----------
 let cari = '';
@@ -1851,7 +1851,15 @@ function bukaBayar(o, pra = null){
   // 🎁 Tebus Free Wash semasa bayaran (order ahli yang dibuat tanpa Free Wash)
   if($('#pFWBox')) getDoc(doc(store, 'ahli', o.ahli.id)).then(sn => {
     const box = $('#pFWBox'); if(!box || !sn.exists()) return;
-    const k = keadaanKad({id: sn.id, ...sn.data()}); if(!k.freeWash.length) return;
+    const k = keadaanKad({id: o.ahli.id, ...sn.data()});
+    if(!k.freeWash.length){
+      box.innerHTML = `<div class="card" style="margin:8px 0;padding:10px;border:1px dashed var(--gold,#f59e0b)"><b>🎁 Tebus Free Wash</b> — tiada Free Wash dalam kad digital (${k.bil} cop dalam kad).
+        <div class="muted" style="font-size:12.5px">Pelanggan bawa kad cop lama yang belum direkod? Pindah kad lama dahulu, kemudian tekan 💳 Bayar semula.</div>
+        <div class="row" style="margin-top:6px;gap:6px"><button type="button" class="small btn-gold" id="pFWKadLama">📇 Pindah kad lama 🔒</button><button type="button" class="small" id="pFWCop">⭐ +1 Cop 🔒</button></div></div>`;
+      $('#pFWKadLama').onclick = () => { closeModal(); buatMPS().aksiAhli(o.ahli.id, 'kadlama', o.plat); };
+      $('#pFWCop').onclick = () => { closeModal(); buatMPS().aksiAhli(o.ahli.id, 'cop', o.plat); };
+      return;
+    }
     const fwp = pakejFW(), samaPakej = o.pakejId === fwp?.id;
     box.innerHTML = `<button type="button" class="btn-fw" id="pFW">🎁 TEBUS FREE WASH (${k.freeWash.length} ada)<small>${samaPakej ? `Pakej ${esc(o.pakej)} jadi RM0 · disahkan dengan PIN` : `Free Wash hanya untuk pakej ${esc(fwp?.nama || '')} — order ini ${esc(o.pakej)}`}</small></button>`;
     $('#pFW').onclick = async () => {
@@ -1918,17 +1926,17 @@ function bukaBayar(o, pra = null){
       praSemak = {dakwaPelanggan: r2(pra.amaunBayar ?? pra.jumlah), diterimaSebenar: r2(terimaSebenar), beza: r2(terimaSebenar - j), disemakOleh: staf.nama, masa: Date.now()};
     }
     const diskaunLulus = cur.diskaunBeri ? labelDiskaun(cur.diskaunBeri) : '';
-    let fwLulus = '';
+    let fwLulus = null;
     if(o.freeWash){
       fwLulus = await lulusFW(`Tebus Free Wash ${o.ahli?.kod || ''} — ${o.plat}`);
       if(!fwLulus) return;
-      try{ await tebusFreeWash(o, fwLulus); }catch(e){ return toast('⚠ Free Wash tidak dapat ditebus: ' + e.message); }
+      try{ await tebusFreeWash(o, fwLulus.nama); }catch(e){ return toast('⚠ Free Wash tidak dapat ditebus: ' + e.message); }
     }
     $('#pSimpan').disabled = $('#pCetak').disabled = true;
     const t = today();
     const data = {bayar:{kaedah, rujukan: kaedah==='Tunai' ? '' : val('#pRuj'), bukti: kaedah==='Tunai' ? '' : bukti, diterima, baki, ...(pra ? {appsPelanggan: true, amaunPelanggan: r2(pra.amaunBayar ?? pra.jumlah)} : {}), ...(praSemak ? {semakBeza: praSemak} : {})},
       diskaun: dis_, diskaunLulus, diskaunMinta: null, jumlah: j, itemManual: manual, jumlahKasar: kasar(), status:'Selesai', aktif:false, tarikhBayar:t, bulanBayar:t.slice(0,7), dibayarOleh: staf.nama, masaBayar: Date.now()};
-    if(o.freeWash) data.freeWash = {...o.freeWash, lulus: fwLulus};
+    if(o.freeWash) data.freeWash = {...o.freeWash, lulus: fwLulus.nama, lulusId: fwLulus.id, lulusIdStaf: fwLulus.idStaf, masaLulus: Date.now()};
     try{
       await updateDoc(doc(col('order'), o.id), data);
       KT.cermin({...cur, ...data}, cawD(), {status:'Selesai', aktif:false});
