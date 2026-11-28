@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.29-3">
+<meta name="app-versi" content="2026.11.29-4">
 <meta name="theme-color" content="#1F3A68">
 <title>Akaun Petunjuk Pictures</title>
 <link rel="manifest" href="manifest.json">
@@ -154,20 +154,20 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-3';
-import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.29-3';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-4';
+import { ikB, ikC, teksIk, pasangCssIkon } from '../ikon.js?v=2026.11.29-4';
 pasangCssIkon();
 bannerPelayarDalaman({nama: 'Akaun Petunjuk Pictures'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-3';
-import { KUASA_MANAGER, modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ , STATUS_GAJI, jumlahGaji, htmlSlipGaji, teksSlipGaji, fBulanGaji } from '../pekerja-lib.js?v=2026.11.29-3';
-import { pasangSync } from '../sync-lib.js?v=2026.11.29-3';
-import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.29-3';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-3';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.29-3';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-4';
+import { KUASA_MANAGER, modulPengurusan, CSS_MODUL, fMinit, avatar, fotoProfil, CSS_AVATAR, JENIS_INFO, idBaca, teksKeHtml, CSS_DOK, KUASA, ikonKuasa, adaKuasa, PUSAT, CAW, JENIS_PEKERJA, kadarSejam, kodQRStesen, capGambar, KAT_PJ, SUB_PJ, UNIT_PJ, JENIS_PJ, kiraPJ , STATUS_GAJI, jumlahGaji, htmlSlipGaji, teksSlipGaji, fBulanGaji } from '../pekerja-lib.js?v=2026.11.29-4';
+import { pasangSync } from '../sync-lib.js?v=2026.11.29-4';
+import { modulTutup, CSS_TUTUP, STATUS_TUTUP, senaraiTutup, dibayarAwal, KAEDAH_BAYAR_STAF, modulDuty, hariPT, htmlPT, teksPT, cetak, kongsiWhatsApp } from '../laporan-lib.js?v=2026.11.29-4';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-4';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN } from '../kamus-en.js?v=2026.11.29-4';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER, KAMUS_AKAUN], kunci: 'bahasa', ringkas: true});
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.29-3';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-3';
-import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.29-3';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal, BAR_KEMBALI_CETAK, htmlNaikLampiran, htmlSenaraiLampiran, pasangSenaraiLampiran, bacaLampiran } from '../paparan-lib.js?v=2026.11.29-4';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-4';
+import { cariRekodLama, htmlRekodLama, buatToken, ahliBaru, kunciMasuk, hariOperasi, lepasTengahMalam, keadaanKad, normTelefon, telefonSah, paparTelefon, normPlat, KAD, HARGA_RASMI, hargaPakejK, BANK_MY, htmlTerimaBayar, adaTerimaBayar, pasangTerimaBayar, dataAwam, itemOrder, tambahCop, BIKE_JENIS, BIKE_ASAL, perluSahPeringkat, peringkatAhli as peringkatSah, statLawatan, terapTetapanKad, MEDAN_PROFIL, kadAktif } from '../safari-lib.js?v=2026.11.29-4';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, getDoc, getDocFromServer, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, writeBatch, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
