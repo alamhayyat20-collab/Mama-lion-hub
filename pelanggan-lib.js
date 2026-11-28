@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), tebusFW?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat, pindahKadLama, KAD_LAMA_TAMAT } from './safari-lib.js?v=2026.11.28-2';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat, pindahKadLama, KAD_LAMA_TAMAT } from './safari-lib.js?v=2026.11.29-1';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -199,8 +199,9 @@ export function modulPelanggan(ctx){
   }
 
   // ---------------- COP MANUAL: nota "sebab diberi" wajib + PIN (kaunter) ----------------
-  function borangCopManual(a){
-    const pl = (a.kenderaan?.length ? a.kenderaan.map(v => v.plat) : a.plat || []);
+  function borangCopManual(a, platPilih){
+    let pl = (a.kenderaan?.length ? a.kenderaan.map(v => v.plat) : a.plat || []);
+    if(platPilih) pl = [platPilih, ...pl.filter(p => p !== platPilih)];
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>⭐ Cop manual — ${esc(a.nama || '')}</h3><button class="small" data-cm-tutup>✕</button></div>
       <div class="muted" style="font-size:13px">Cop automatik hanya untuk cucian Luar & Dalam (cop pertama: Promo A ke atas). Guna cop manual untuk pengecualian sahaja — direkod dalam log.</div>
       <label>Kenderaan</label><select data-cm="plat">${pl.map(p => `<option>${esc(p)}</option>`).join('')}<option value="">— Tiada / lain-lain —</option></select>
@@ -470,5 +471,17 @@ export function modulPelanggan(ctx){
     lukis();
   }
 
-  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true), kiraBelumKad, bukaBelumKad, bukaSenaraiKadLama};
+  // Butang ahli dari Queue kaunter: ⭐ cop manual / 📇 kad lama / 👤 profil
+  async function aksiAhli(id, jenis, plat){
+    let a = null; try{ const s = await fs.getDoc(fs.doc(store, 'ahli', id)); if(s.exists()) a = {id, ...s.data()}; }catch(e){ return ctx.toast('⚠ ' + (e.code || e.message)); }
+    if(!a) return ctx.toast('Ahli tidak dijumpai');
+    if(jenis === 'cop') return borangCopManual(a, plat);
+    if(jenis === 'kadlama'){
+      if(a.kadLama) { ctx.toast(`Kad lama ${a.nama || ''} sudah dipindah (${a.kadLama.bilCop} cop). Guna ⭐ +1 Cop untuk cop tertinggal.`); return bukaProfil({ahli: id}); }
+      if(!bolehKadLama(a)) { ctx.toast(`Tarikh akhir pindah kad lama (${fT(KAD_LAMA_TAMAT)}) telah lepas — hubungi Dato' / Datin (Akaun)`); return bukaProfil({ahli: id}); }
+      return borangKadLama(a);
+    }
+    return bukaProfil({ahli: id});
+  }
+  return {htmlKotak, pasang, bukaProfil, profilLama, cari, muatSemula: () => pastikanAhli(true), kiraBelumKad, bukaBelumKad, bukaSenaraiKadLama, aksiAhli};
 }
