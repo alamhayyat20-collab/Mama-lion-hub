@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="app-versi" content="2026.11.29-1">
+<meta name="app-versi" content="2026.11.29-2">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -174,22 +174,22 @@ setTimeout(function(){
 }, 9000);
 </script>
 <script type="module">
-import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-1';
+import { panduanPasang, bannerPelayarDalaman } from '../pasang-lib.js?v=2026.11.29-2';
 bannerPelayarDalaman({nama: 'Lion Safari'});
-import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-1';
+import { firebaseConfig, BRANCH_ID } from '../firebase-config.js?v=2026.11.29-2';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, query, where, orderBy, limit,
   getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, increment, runTransaction, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
-import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-1';
-import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-1';
-import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-1';
-import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-1';
-import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-1';
-import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-1';
-import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-1';
-import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-1';
-import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-1';
+import { bukaPaparan, bukaCetak, kemasModal, lepasModal } from '../paparan-lib.js?v=2026.11.29-2';
+import { cariRekodLama, htmlRekodLama, hariOperasi, lepasTengahMalam, POTONG_JAM, normPlat, paparPlat, normTelefon, telefonSah, paparTelefon, buatToken, ahliBaru, keadaanKad, tambahCop, batalCop, gunaFreeWash, pulangFreeWash, KAD, hargaPakejK, hargaAddonK, gambarAsal, htmlTerimaBayar, pasangTerimaBayar, kunciMasuk, dokMasukAhli, terapTetapanKad, kadAktif, MEDAN_PROFIL, layakCop, peringkatAhli, BIKE_JENIS, BIKE_ASAL, hargaBikeK } from '../safari-lib.js?v=2026.11.29-2';
+import { modulPengurusan, CSS_MODUL, avatar, fotoProfil, kadID, CSS_AVATAR, KUASA, MOHON_BUKAN_WANG, adaKuasa, ikonKuasa, PUSAT, capGambar } from '../pekerja-lib.js?v=2026.11.29-2';
+import { modulTutup, CSS_TUTUP } from '../laporan-lib.js?v=2026.11.29-2';
+import { kaunter, STATUS_TEMPAHAN } from '../kaunter-lib.js?v=2026.11.29-2';
+import { pasangSync, fmtJam } from '../sync-lib.js?v=2026.11.29-2';
+import { modulPelanggan } from '../pelanggan-lib.js?v=2026.11.29-2';
+import { pasangBahasa } from '../i18n-lib.js?v=2026.11.29-2';
+import { KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER } from '../kamus-en.js?v=2026.11.29-2';
 const BHS = pasangBahasa({kamus: [KAMUS_UMUM, KAMUS_PEKERJA, KAMUS_KAUNTER], kunci: 'bahasa', tempat: '.hright', ringkas: true});
 
 // =====================================================================
@@ -679,10 +679,28 @@ const PANDUAN = {
   'Safari Members': {ms: ['Tab ini berkunci — tekan BUKA DENGAN PIN (pekerja berkuasa ⭐ Safari Members atau Admin).', 'Cari pelanggan: nama, telefon, plat atau kod ahli (termasuk rekod lama MONZ).', 'Tekan pelanggan untuk lihat rekod, peringkat kad & sejarah cucian.', 'Hantar jemputan keahlian / kad digital melalui WhatsApp — setiap jemputan direkod dalam log.', 'Tab dikunci semula bila keluar dari tab atau selepas 5 minit.'], en: ['This tab is locked — tap UNLOCK WITH PIN (staff with ⭐ Safari Members permission or Admin).', 'Search customers by name, phone, plate or member code (incl. old MONZ records).', 'Tap a customer to view records, card tier & wash history.', 'Send membership invites / digital cards via WhatsApp — every invite is logged.', 'The tab relocks when you leave it or after 5 minutes.']},
   'Order Baru': {ms: ['Masukkan no. plat kenderaan (atau imbas kad Safari Members).', 'Pilih jenis kenderaan, kemudian pakej. Tambah servis tambahan atau item manual jika perlu.', 'Ambil gambar plat & emblem (wajib) dan calar jika ada.', 'Pilih MO jika order dibawa oleh Marketing Officer.', 'Tekan Simpan — order masuk ke Queue.'],
     en: ['Enter the vehicle plate no. (or scan the Safari Members card).', 'Choose the vehicle type, then the package. Add add-ons or manual items if needed.', 'Take photos of the plate & emblem (required) and any scratches.', 'Choose the MO if the order was brought in by a Marketing Officer.', 'Tap Save — the order goes to the Queue.']},
-  'Queue': {ms: ['Senarai kenderaan sedang diservis. Tekan status (Cuci → Kering → QC → Siap) untuk kemas kini — pelanggan nampak dalam Apps Pelanggan.', 'Pilih Bay untuk setiap kenderaan.', '✏️ Edit untuk betulkan plat, pakej, add-on, item manual atau catatan.', '💲 Betulkan harga perlu PIN Supervisor / pekerja kuasa 🏷 dan sebab.', '📷 Gambar untuk rekod keadaan asal kenderaan sebelum servis.', 'Tempahan dari Apps Pelanggan muncul di atas — tekan Terima atau Tolak.'],
-    en: ['Vehicles being serviced. Tap the status (Washing → Drying → QC → Ready) to update — customers see it in the Customer App.', 'Choose a Bay for each vehicle.', '✏️ Edit to correct the plate, package, add-ons, manual items or notes.', '💲 Correct price needs a Supervisor PIN / staff with 🏷 permission and a reason.', '📷 Photo to record the original vehicle condition before service.', 'Bookings from the Customer App appear at the top — tap Accept or Reject.']},
+  'Queue': {ms: ['Senarai kenderaan sedang diservis. Tekan status (Cuci → Kering → QC → Siap) untuk kemas kini — pelanggan nampak dalam Apps Pelanggan.', 'Pilih Bay untuk setiap kenderaan.', '✏️ Edit untuk betulkan plat, pakej, add-on, item manual atau catatan.', '💲 Betulkan harga perlu PIN Supervisor / pekerja kuasa 🏷 dan sebab.', '📷 Gambar untuk rekod keadaan asal kenderaan sebelum servis.', 'Tempahan dari Apps Pelanggan muncul di atas — tekan Terima atau Tolak.', 'Kenderaan ahli Safari Members ada baris ⭐: +1 Cop 🔒, 📇 Kad lama 🔒, 🎁 Tebus Free Wash & 👤 Kad ahli. Tekan ❓ pada baris itu untuk panduan pelanggan kad lama.'],
+    en: ['Vehicles being serviced. Tap the status (Washing → Drying → QC → Ready) to update — customers see it in the Customer App.', 'Choose a Bay for each vehicle.', '✏️ Edit to correct the plate, package, add-ons, manual items or notes.', '💲 Correct price needs a Supervisor PIN / staff with 🏷 permission and a reason.', '📷 Photo to record the original vehicle condition before service.', 'Bookings from the Customer App appear at the top — tap Accept or Reject.', 'Safari Members vehicles have a ⭐ row: +1 Stamp 🔒, 📇 Old card 🔒, 🎁 Redeem Free Wash & 👤 Member card. Tap ❓ on that row for the old-card guide.']},
   'Bayaran': {ms: ['Kenderaan berstatus Siap menunggu bayaran di sini. Tekan 💳 Bayar.', 'Semak item & jumlah. Diskaun hanya muncul jika diluluskan (🙋 Minta untuk memohon).', 'Pilih cara bayar: Tunai (isi wang diterima), QR / Transfer (semak duit sudah masuk & isi no. rujukan).', 'Tekan SIMPAN & PAPAR RESIT — cetak, PDF atau hantar ke WhatsApp pelanggan. Pilih bahasa resit BM / English.', 'Bayaran dari Apps Pelanggan muncul di atas — semak bukti, kemudian Sahkan atau Tolak.'],
     en: ['Vehicles marked Ready wait for payment here. Tap 💳 Pay.', 'Check the items & total. Discounts only appear when approved (🙋 Request to ask for one).', 'Choose the payment method: Cash (enter cash received), QR / Transfer (check the money has arrived & enter the reference no.).', 'Tap SAVE & SHOW RECEIPT — print, PDF or send to the customer WhatsApp. Choose the receipt language BM / English.', 'Payments from the Customer App appear at the top — check the proof, then Confirm or Reject.']},
+  'Ahli & kad lama': {ms: [
+    'PERATURAN FREE WASH: diberi pada cop ke-5 & ke-10. Pakej Free Wash = Luar, Dalam & Wax — percuma untuk Sedan, SUV, MPV & 4×4 (caj jenis kenderaan juga percuma). Motosikal tidak layak. Add-on & item manual tetap dibayar. Tidak boleh digabung dengan diskaun.',
+    'PELANGGAN BAWA KAD COP LAMA (rekod belum dimasukkan oleh pekerja lama): pastikan pelanggan sudah berdaftar Safari Members. Jika belum, daftar dahulu di tab ⭐ Safari Members.',
+    'Tekan 📇 Kad lama 🔒 → pilih bilangan cop pada kad (0–10) → tanda Free Wash yang SUDAH dituntut → ambil gambar kad (wajib) → pilih tindakan kad fizikal (cop / kutip / koyak) → masukkan PIN Supervisor / Manager / Admin.',
+    'Free Wash kad lama yang belum dituntut terus masuk ke kad digital. Baki cop disambung dalam kad digital. Setiap ahli hanya boleh pindah kad lama SEKALI. Di kaunter: sehingga 31 Disember 2026 — selepas itu hubungi Dato\' / Datin (Akaun).',
+    'Jika pelanggan mahu guna Free Wash hari ini: selepas pindah kad lama, tekan 🎁 Tebus Free Wash → borang bayar dibuka → tekan 🎁 TEBUS FREE WASH → masukkan PIN. Jika pakej order bukan pakej Free Wash, apps minta tukar pakej melalui ✏️ Edit.',
+    'COP TERTINGGAL (cucian Luar & Dalam yang tidak dicop): tekan ⭐ +1 Cop 🔒 → semak plat → tulis sebab (wajib) → PIN Supervisor / Manager / Admin. Beri cop manual untuk pengecualian sahaja — semua direkod dalam log & dilihat oleh pengurusan.',
+    '👤 Kad ahli: lihat profil, bilangan cop, Free Wash yang ada & sejarah cucian pelanggan.',
+    'JANGAN beri cop atau Free Wash tanpa bukti (kad fizikal / resit / rekod). Jika ragu-ragu, rujuk Supervisor atau Manager.'],
+    en: [
+    'FREE WASH RULES: given at the 5th & 10th stamp. Free Wash package = Exterior, Interior & Wax — free for Sedan, SUV, MPV & 4×4 (vehicle-type charge also free). Motorcycles are not eligible. Add-ons & manual items are still charged. Cannot be combined with a discount.',
+    'CUSTOMER BRINGS AN OLD STAMP CARD (not recorded by previous staff): make sure the customer is registered in Safari Members. If not, register first in the ⭐ Safari Members tab.',
+    'Tap 📇 Old card 🔒 → choose the number of stamps on the card (0–10) → tick Free Washes ALREADY claimed → take a photo of the card (required) → choose what to do with the physical card (stamp / collect / tear) → enter a Supervisor / Manager / Admin PIN.',
+    'Unclaimed Free Washes from the old card go straight to the digital card. Remaining stamps continue on the digital card. Each member can transfer an old card ONCE only. At the counter: until 31 December 2026 — after that contact Dato\' / Datin (Account App).',
+    'If the customer wants to use a Free Wash today: after transferring the old card, tap 🎁 Redeem Free Wash → the payment form opens → tap 🎁 REDEEM FREE WASH → enter the PIN. If the order package is not the Free Wash package, the app asks you to change it via ✏️ Edit.',
+    'MISSED STAMP (Exterior & Interior wash not stamped): tap ⭐ +1 Stamp 🔒 → check the plate → write a reason (required) → Supervisor / Manager / Admin PIN. Give manual stamps for exceptions only — everything is logged & seen by management.',
+    '👤 Member card: view the profile, stamps, available Free Washes & wash history.',
+    'DO NOT give stamps or Free Washes without proof (physical card / receipt / record). If unsure, ask the Supervisor or Manager.']},
   'Petty Cash': {ms: ['Petty cash ialah tabung berasingan, bukan laci jualan.', '➕ Top-up bila tabung ditambah. ➖ Belanja untuk setiap perbelanjaan kecil (isi tujuan & amaun).', 'Belanja melebihi had perlu PIN Supervisor.', 'Setiap rekod masuk terus ke Apps Akaun.'],
     en: ['Petty cash is a separate fund, not the sales drawer.', '➕ Top-up when the fund is refilled. ➖ Expense for each small purchase (enter purpose & amount).', 'Expenses above the limit need a Supervisor PIN.', 'Every record goes straight to the Account App.']},
   'Tutup Kaunter': {ms: ['Selesaikan semua kenderaan dalam Queue — bayar atau batalkan.', 'Tanda bayaran staf / advance dari laci & rekod consumables / supplier (lampirkan resit). Minyak kenderaan syarikat yang diambil tunai: rekod di ⛽ Minyak (resit + PIN penyelia).', 'Juruwang tekan 🖨 Cetak Laporan Pra-Tutup — rekod jualan & wang keluar terkini. Jika ada transaksi baru selepas itu, cetak semula.', 'Kiraan 1 (juruwang, kiraan buta): kira semua wang dalam laci termasuk float, isi bilangan keping setiap nilai & simpan. BOP hanya dipaparkan selepas ini.', 'Kiraan 2 (penyelia / pengurus / pekerja kuasa 🔐): kira semula dengan PIN di kaunter atau dalam Apps Pekerja. Jika beza dengan Kiraan 1, kira semula atau tulis sebab.', 'Juruwang & penyelia tandatangan Laporan Pra-Tutup. Ikat wang bersama kertas itu & ambil gambar dalam satu bingkai.', 'Jika ada beza dengan BOP, tulis sebab dalam Nota. Muat naik lampiran lain (slip bank, penyata QR) jika ada.', 'Tekan ✅ TUTUP KAUNTER & HANTAR sebelum 4:00 pagi. Simpan wang & kertas di tempat selamat untuk bank-in.'],
@@ -1509,6 +1527,7 @@ VIEWS['Queue'] = {
         </div>
         ${o.ahli && bolehBayar && !latihan && !o.latihan ? `<div class="row qahli" style="margin-top:6px;gap:6px;flex-wrap:wrap;border-top:1px dashed #e5e7eb;padding-top:6px">
           <span class="muted" style="font-size:12px;align-self:center">⭐ ${esc(o.ahli.kod)}:</span>
+          <button class="small" data-qpanduan title="Panduan pelanggan kad lama & Free Wash">❓</button>
           <button class="small" data-qahli="${o.id}|cop" title="Beri 1 cop manual (PIN Supervisor)">⭐ +1 Cop 🔒</button>
           <button class="small" data-qahli="${o.id}|kadlama" title="Pindah kad cop fizikal lama (PIN Supervisor)">📇 Kad lama 🔒</button>
           ${o.freeWash ? '' : `<button class="small btn-gold" data-qahli="${o.id}|fw" title="Tebus Free Wash pada order ini">🎁 Tebus Free Wash</button>`}
@@ -1522,6 +1541,7 @@ VIEWS['Queue'] = {
     });
     $$('[data-bay]').forEach(s => s.onchange = () => updateDoc(doc(col('order'), s.dataset.bay), {bay:s.value}).catch(onErr));
     $$('[data-bayar]').forEach(b => b.onclick = () => bukaBayar(aktif.find(o => o.id === b.dataset.bayar))); pasangBayarPel();
+    $$('[data-qpanduan]').forEach(b => b.onclick = () => bukaPanduan('Ahli & kad lama'));
     $$('[data-qahli]').forEach(b => b.onclick = () => { const [id, j] = b.dataset.qahli.split('|'), o = aktif.find(x => x.id === id); if(!o?.ahli) return;
       if(j === 'fw') return getDoc(doc(store, 'ahli', o.ahli.id)).then(sn => { const n = sn.exists() ? keadaanKad(sn.data()).freeWash.length : 0;
         if(!n) return toast(`${o.ahli.kod}: tiada Free Wash dalam kad digital. Jika pelanggan bawa kad lama yang penuh, tekan 📇 Kad lama dahulu.`);
