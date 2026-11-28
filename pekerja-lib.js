@@ -1,4 +1,4 @@
-import { bukaPaparan } from './paparan-lib.js?v=2026.11.26-2';
+import { bukaPaparan } from './paparan-lib.js?v=2026.11.28-1';
 // =====================================================================
 // pekerja-lib.js — modul kongsi untuk Apps Pekerja, Lion Safari V2 & Akaun
 // Data: kakitangan/{cawangan}/kehadiran        (punch in/out, tanpa gambar)
@@ -627,3 +627,48 @@ export function teksKeHtml(t){
   return out.join('');
 }
 export const CSS_DOK = `.dok h4{margin:14px 0 4px;font-size:15px}.dok p{margin:6px 0;line-height:1.55}.dok ul{margin:6px 0;padding-left:20px;line-height:1.55}`;
+
+// ================================================================
+// 🧾 PENYATA / SLIP GAJI (akaun/mama-lion/gaji/{bulan}__{stafId})
+// Disediakan Admin Gaji / pemilik di Akaun → diluluskan Dato' / Datin → dibayar.
+// baris: [{k, label, amaun, jenis:'+'|'-', kos:'kurang'|'' , auto, diubah:{dari, sebab, oleh, masa}}]
+// ================================================================
+export const STATUS_GAJI = {
+  draf:     {label:'Draf', warna:'#64748b', bg:'#f1f5f9'},
+  dihantar: {label:'Menunggu kelulusan', warna:'#92400e', bg:'#fef3c7'},
+  lulus:    {label:'Diluluskan', warna:'#1e40af', bg:'#dbeafe'},
+  dibayar:  {label:'Dibayar', warna:'#166534', bg:'#dcfce7'}
+};
+const r2g = n => Math.round((Number(n) || 0) * 100) / 100;
+const RMg = n => 'RM ' + r2g(n).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const escg = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BULAN_G = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+export const fBulanGaji = b => b ? `${BULAN_G[+b.slice(5,7) - 1]} ${b.slice(0,4)}` : '';
+export function jumlahGaji(baris = []){
+  const kasar = r2g(baris.filter(x => x.jenis === '+').reduce((s, x) => s + (Number(x.amaun) || 0), 0));
+  const potong = r2g(baris.filter(x => x.jenis === '-').reduce((s, x) => s + (Number(x.amaun) || 0), 0));
+  const kurangKos = r2g(baris.filter(x => x.jenis === '-' && x.kos === 'kurang').reduce((s, x) => s + (Number(x.amaun) || 0), 0));
+  return {kasar, potong, bersih: r2g(kasar - potong), kos: r2g(kasar - kurangKos)};
+}
+export function htmlSlipGaji(s, {syarikat = 'Petunjuk Pictures Sdn. Bhd.', noSyarikat = '202101007513 (1407812-P)', unit = 'Mama Lion · Lion King'} = {}){
+  const t = jumlahGaji(s.baris), st = STATUS_GAJI[s.status] || STATUS_GAJI.draf;
+  const baris = j => (s.baris || []).filter(x => x.jenis === j && Number(x.amaun)).map(x => `<tr><td>${escg(x.label)}${x.ket ? `<br><small style="color:#64748b">${escg(x.ket)}</small>` : ''}</td><td style="text-align:right">${RMg(x.amaun)}</td></tr>`).join('') || '<tr><td colspan="2" style="color:#94a3b8">—</td></tr>';
+  return `<div class="slip-gaji" style="max-width:640px;margin:0 auto;font-family:system-ui,sans-serif;color:#0f172a;border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;background:#fff">
+    <div style="background:#1F3A68;color:#fff;padding:12px 16px;border-bottom:3px solid #C9A646"><div style="font-size:17px;font-weight:800">${escg(syarikat)}</div>
+      <div style="font-size:12px;color:#E5C97A">${escg(noSyarikat)} · ${escg(unit)}</div><div style="margin-top:6px;font-size:15px;font-weight:700">SLIP GAJI — ${escg(fBulanGaji(s.bulan))}</div></div>
+    <div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:13px;border-bottom:1px solid #e2e8f0">
+      <div><b>Nama:</b> ${escg(s.nama)}</div><div><b>ID staf:</b> ${escg(s.idStaf || '')}</div>
+      <div><b>Jawatan:</b> ${escg(s.jawatan || '-')}</div><div><b>Jenis:</b> ${escg(s.jenisLabel || '')}</div>
+      ${s.ringkas ? `<div style="grid-column:1/-1;color:#475569">${escg(s.ringkas)}</div>` : ''}
+      <div style="grid-column:1/-1"><span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700;color:${st.warna};background:${st.bg}">${st.label}</span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+      <div style="padding:10px 16px;border-right:1px solid #e2e8f0"><b style="color:#166534">Pendapatan</b><table style="width:100%;font-size:13px;border-collapse:collapse">${baris('+')}<tr style="border-top:1px solid #cbd5e1;font-weight:700"><td>Jumlah kasar</td><td style="text-align:right">${RMg(t.kasar)}</td></tr></table></div>
+      <div style="padding:10px 16px"><b style="color:#b91c1c">Potongan</b><table style="width:100%;font-size:13px;border-collapse:collapse">${baris('-')}<tr style="border-top:1px solid #cbd5e1;font-weight:700"><td>Jumlah potongan</td><td style="text-align:right">${RMg(t.potong)}</td></tr></table></div></div>
+    <div style="background:#f8fafc;border-top:2px solid #1F3A68;padding:12px 16px;display:flex;justify-content:space-between;font-size:17px;font-weight:800"><span>GAJI BERSIH</span><span>${RMg(t.bersih)}</span></div>
+    ${s.perkesoMajikan ? `<div style="padding:6px 16px;font-size:12px;color:#475569">Caruman PERKESO majikan: ${RMg(s.perkesoMajikan)} (dibayar syarikat)</div>` : ''}
+    <div style="padding:8px 16px 12px;font-size:12px;color:#475569">${s.lulus ? `Diluluskan oleh ${escg(s.lulus.oleh)} · ` : ''}${s.bayar ? `Dibayar ${escg(s.bayar.tarikh || '')} melalui ${escg(s.bayar.kaedah || '')}${s.bayar.rujukan ? ' (' + escg(s.bayar.rujukan) + ')' : ''}` : 'Belum dibayar'}${s.nota ? `<br>Nota: ${escg(s.nota)}` : ''}</div></div>`;
+}
+export function teksSlipGaji(s){
+  const t = jumlahGaji(s.baris), l = j => (s.baris || []).filter(x => x.jenis === j && Number(x.amaun)).map(x => `  • ${x.label}: ${RMg(x.amaun)}`).join('\n');
+  return `🧾 *SLIP GAJI — ${fBulanGaji(s.bulan)}*\nPetunjuk Pictures Sdn. Bhd. (Mama Lion · Lion King)\n\nNama: ${s.nama} (${s.idStaf || ''})\n\n*Pendapatan*\n${l('+') || '  -'}\nJumlah kasar: ${RMg(t.kasar)}\n\n*Potongan*\n${l('-') || '  -'}\nJumlah potongan: ${RMg(t.potong)}\n\n*GAJI BERSIH: ${RMg(t.bersih)}*\n${s.bayar ? `Dibayar ${s.bayar.tarikh || ''} (${s.bayar.kaedah || ''})` : 'Status: ' + (STATUS_GAJI[s.status]?.label || '')}\n\nSlip penuh juga boleh dilihat dalam Apps Pekerja → 📊 Rekod → Slip gaji.`;
+}

@@ -21,6 +21,29 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/akaun/mama-lion/kewangan/$(request.auth.token.email.lower()))
         && get(/databases/$(database)/documents/akaun/mama-lion/kewangan/$(request.auth.token.email.lower())).data.aktif != false;
     }
+    // 🧾 Admin Gaji (akaun/mama-lion/hr_admin/{emel}): urus pekerja, kehadiran, advance, potongan, dokumen & sediakan penyata gaji
+    function hrAdmin() {
+      return request.auth != null && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/akaun/mama-lion/hr_admin/$(request.auth.token.email.lower()))
+        && get(/databases/$(database)/documents/akaun/mama-lion/hr_admin/$(request.auth.token.email.lower())).data.aktif != false;
+    }
+    match /akaun/mama-lion/hr_admin/{emel} {
+      allow get: if request.auth != null && request.auth.token.email != null && request.auth.token.email.lower() == emel;
+      allow read, write: if pemilikAkaun();
+    }
+    // 🧾 Penyata gaji: Admin Gaji sedia (draf → dihantar), pemilik lulus; Admin boleh tanda dibayar selepas lulus
+    match /akaun/mama-lion/gaji/{id} {
+      allow read, delete: if pemilikAkaun();
+      allow read: if hrAdmin();
+      allow create: if (pemilikAkaun() || hrAdmin()) && request.resource.data.status == 'draf';
+      allow update: if pemilikAkaun()
+        || (hrAdmin() && resource.data.status in ['draf', 'dihantar'] && request.resource.data.status in ['draf', 'dihantar'])
+        || (hrAdmin() && resource.data.status == 'lulus' && request.resource.data.status in ['lulus', 'dibayar']
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'bayar', 'log', 'waDihantar']));
+      allow delete: if hrAdmin() && resource.data.status == 'draf';
+      // Apps Pekerja: slip yang telah diluluskan
+      allow read: if staffApp() && resource.data.status in ['lulus', 'dibayar'];
+    }
     match /akaun/mama-lion/kewangan/{emel} {
       allow get: if request.auth != null && request.auth.token.email != null && request.auth.token.email.lower() == emel;
       allow read, write: if pemilikAkaun();
@@ -45,7 +68,7 @@ service cloud.firestore {
 
     // Dokumen peribadi pekerja (IC, kontrak, sijil) — pemilik Akaun sahaja
     match /dokumen_staf/{id} {
-      allow read, write: if pemilikAkaun();
+      allow read, write: if pemilikAkaun() || hrAdmin();
     }
     match /branches/{branchId} {
       allow read, write: if dalaman();
@@ -266,10 +289,10 @@ service cloud.firestore {
 
     // Rekod pekerja (IC, gaji, bank) & advance/OT manual: pemilik sahaja
     match /akaun/{cawangan}/pekerja/{id} {
-      allow read, write: if pemilikAkaun();
+      allow read, write: if pemilikAkaun() || hrAdmin();
     }
     match /akaun/{cawangan}/hr/{id} {
-      allow read, write: if pemilikAkaun();
+      allow read, write: if pemilikAkaun() || hrAdmin();
     }
 
     // Kakitangan: kehadiran, permohonan, roster (kaunter & Akaun urus semua)
@@ -503,6 +526,10 @@ service cloud.firestore {
         allow get: if signedIn() && request.auth.uid == uid;
       }
       match /entri/{id} {
+        // 🧾 Admin Gaji: kos gaji dari penyata yang dibayar (gaji-{stafId}-{bulan})
+        allow read, delete: if hrAdmin() && id.matches('gaji-.*');
+        allow create, update: if hrAdmin() && id.matches('gaji-.*')
+          && request.resource.data.kategori == 'Gaji & Upah' && request.resource.data.sumber == 'gaji';
         allow read: if owner() || kewanganSyarikat() || assigned(resource.data);
         allow create: if owner() || kewanganSyarikat() || (assigned(request.resource.data) && validEntry(request.resource.data));
         allow update: if owner() || kewanganSyarikat() || (assigned(resource.data) && assigned(request.resource.data)
