@@ -5,7 +5,7 @@
 // ctx = {store, fs:{collection, doc, query, where, getDoc, getDocs, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp},
 //        pengguna: () => nama, tanda: () => ({olehId, olehCaw}) }   (tanda: Apps Pekerja sahaja)
 // =====================================================================
-import { tambahCop, gunaFreeWash, pulangFreeWash, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.29-5';
+import { tambahCop, gunaFreeWash, pulangFreeWash, dataStatus, KAD, dataAwam, normPlat, hariOperasi } from './safari-lib.js?v=2026.11.29-6';
 
 const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const pad = (n, l = 2) => String(n).padStart(l, '0');
