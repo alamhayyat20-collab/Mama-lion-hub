@@ -5,7 +5,7 @@
 //        mod: 'akaun'|'kaunter', buka(html), tutup(), toast, pengguna(), cawangan(), pautanKad(id),
 //        lihatKad?(a), buatOrder?(plat, ahli), tebusFW?(plat, ahli), selepasUbah?()}
 // =====================================================================
-import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat, pindahKadLama, KAD_LAMA_TAMAT } from './safari-lib.js?v=2026.11.29-6';
+import { normPlat, paparTelefon, normTelefon, telefonSah, keadaanKad, kadAktif, KAD, buatToken, ahliBaru, kunciMasuk, tambahCop, profilKurang, MEDAN_PROFIL, muatShardLama, muatSemuaLama, peringkatAhli, statLawatan, PERINGKAT, perluSahPeringkat, pindahKadLama, KAD_LAMA_TAMAT } from './safari-lib.js?v=2026.11.29-7';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const BLN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
@@ -33,6 +33,14 @@ export function modulPelanggan(ctx){
   const hariMY = () => new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Kuala_Lumpur'});
   const bolehKadLama = a => !a.kadLama && (AKAUN || hariMY() <= KAD_LAMA_TAMAT);
   const TINDAKAN_KAD = ['Dicop "DIPINDAH" & dipulangkan kepada pelanggan', 'Dikutip oleh kaunter', 'Dikoyak / dimusnahkan'];
+  // Jimat kuota: kemas kini SATU ahli dalam senarai (bukan muat semula semua ahli selepas setiap tindakan)
+  async function segarSatu(id){
+    if(!ahli) return pastikanAhli();
+    try{ const s = await fs.getDoc(fs.doc(store, 'ahli', id)); const i = ahli.findIndex(x => x.id === id);
+      if(s.exists()){ const v = {id, ...s.data()}; if(i >= 0) ahli[i] = v; else ahli.push(v); } else if(i >= 0) ahli.splice(i, 1);
+    }catch(e){ console.warn('segarSatu', e); }
+    return ahli;
+  }
   async function pastikanAhli(paksa = false){
     if(ahli && !paksa) return ahli;
     if(!muat || paksa) muat = fs.getDocs(fs.collection(store, 'ahli')).then(s => ahli = s.docs.map(d => ({id: d.id, ...d.data()})));
@@ -163,7 +171,7 @@ export function modulPelanggan(ctx){
       }).catch(() => { const el = q('[data-cp-log]'); if(el) el.textContent = '—'; });
     }
     const x = n => document.querySelector(`[data-cp-x="${n}"]`);
-    const segar = async () => { await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
+    const segar = async () => { await segarSatu(id); ctx.selepasUbah?.(); bukaProfil({ahli: id}); };
     const kemas = async (d, tindakan, butiran, msg) => { try{ await fs.updateDoc(fs.doc(store, 'ahli', id), {...d, dikemaskini: Date.now()}); log(a, tindakan, butiran); ctx.toast(msg || '✅ Disimpan'); segar(); }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); } };
     if(x('order')) x('order').onclick = () => { ctx.tutup(); ctx.buatOrder((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
     if(x('tebusfw')) x('tebusfw').onclick = () => { ctx.tutup(); ctx.tebusFW((a.kenderaan?.[0]?.plat) || a.plat?.[0] || '', a); };
@@ -220,7 +228,7 @@ export function modulPelanggan(ctx){
         const r = tambahCop(b, {orderId: 'manual-' + t, plat: plat || 'MANUAL' + t, cawangan: ctx.cawangan(), tarikh: 'manual-' + t, paksa: true});
         await fs.updateDoc(fs.doc(store, 'ahli', a.id), {...r.data, logManual: [...(b.logManual || []), {t, oleh: pelulus, apa: '+1 cop', sebab, plat}], dikemaskini: t});
         log(a, '+1 cop manual', `${sebab}${plat ? ' · ' + plat : ''} · diluluskan ${pelulus}`); ctx.logLuar?.('Cop manual Safari Members', `${a.nama} · ${a.kod} · ${sebab} · lulus ${pelulus}`);
-        ctx.toast(r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
+        ctx.toast(r.dapatFreeWash ? '✅ Cop ditambah — dapat 1 Free Wash' : '✅ Cop ditambah'); await segarSatu(a.id); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
       }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
   }
@@ -282,7 +290,7 @@ export function modulPelanggan(ctx){
         await fs.updateDoc(fs.doc(store, 'ahli', a.id), {...r.data, logManual: [...(b.logManual || []), {t, oleh: pelulus, apa: '📇 Pindah kad lama', sebab: butiran}]});
         log(a, '📇 Pindah kad lama', `${butiran} · diluluskan ${pelulus}`); ctx.logLuar?.('Pindah kad lama Safari Members', `${a.nama} · ${a.kod} · ${butiran} · lulus ${pelulus}`);
         ctx.toast(`✅ Kad lama dipindah — ${r.copMasuk} cop${r.dapatFreeWash ? ' + ' + r.dapatFreeWash + ' Free Wash' : ''}`);
-        await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
+        await segarSatu(a.id); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
       }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); if(btn){ btn.disabled = false; btn.textContent = '📇 PINDAH KAD LAMA'; } }
     };
   }
@@ -296,7 +304,7 @@ export function modulPelanggan(ctx){
   }
   // Senarai kad lama yang sudah dipindah (Akaun)
   async function bukaSenaraiKadLama(){
-    const L = (await pastikanAhli(true)).filter(a => a.kadLama).sort((x, y) => y.kadLama.t - x.kadLama.t);
+    const L = (await pastikanAhli()).filter(a => a.kadLama).sort((x, y) => y.kadLama.t - x.kadLama.t);
     const jCop = L.reduce((s, a) => s + (a.kadLama.bilCop || 0), 0), jFW = L.reduce((s, a) => s + (a.kadLama.fw || 0), 0);
     ctx.buka(`<div class="cp-p"><div class="section-title between"><h3>📇 Kad lama dipindah (${L.length})</h3><button class="small" data-cp-tutup>✕</button></div>
       <p class="muted" style="font-size:13px;margin:4px 0 8px">Jumlah ${jCop} cop kad lama · ${jFW} Free Wash diberi. Kaunter terima kad lama sehingga <b>${esc(fT(KAD_LAMA_TAMAT))}</b>. Tekan nama untuk profil & gambar kad.</p>
@@ -344,7 +352,7 @@ export function modulPelanggan(ctx){
         if(tel !== a.telefon){ await fs.deleteDoc(fs.doc(store, 'ahli_telefon', a.telefon)).catch(() => {}); await fs.setDoc(fs.doc(store, 'ahli_telefon', tel), {token: a.id}); }
         const beza = [v('nama') !== a.nama && 'nama', tel !== a.telefon && 'telefon', plat.join() !== (a.plat || []).join() && 'kenderaan', v('emel') !== (a.emel || '') && 'e-mel'].filter(Boolean);
         log(a, 'Ubah maklumat', beza.join(', ') || 'tiada perubahan utama');
-        ctx.toast('✅ Maklumat dikemas kini'); await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
+        ctx.toast('✅ Maklumat dikemas kini'); await segarSatu(a.id); ctx.selepasUbah?.(); bukaProfil({ahli: a.id});
       }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
   }
@@ -383,7 +391,7 @@ export function modulPelanggan(ctx){
       const t = await fs.getDoc(fs.doc(store, 'ahli_telefon', a.telefon)); if(t.exists() && t.data().token === a.id) await fs.deleteDoc(fs.doc(store, 'ahli_telefon', a.telefon));
       await fs.deleteDoc(fs.doc(store, 'ahli', a.id));
       log(a, 'Padam ahli', `${a.nama} · ${paparTelefon(a.telefon)} · ${(a.plat || []).join(', ')}`);
-      ctx.toast('🗑 Ahli dipadam'); await pastikanAhli(true); ctx.selepasUbah?.(); ctx.tutup();
+      ctx.toast('🗑 Ahli dipadam'); await segarSatu(a.id); ctx.selepasUbah?.(); ctx.tutup();
     }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
   }
 
@@ -428,7 +436,7 @@ export function modulPelanggan(ctx){
         }
         await fs.setDoc(fs.doc(store, 'ahli_masuk', kunciMasuk(tel, plat)), {token});
         log({id: token, kod: a?.kod || ''}, 'Daftar dari rekod lama', `${x.p || x.plat}`);
-        await pastikanAhli(true); ctx.selepasUbah?.(); bukaProfil({ahli: token});
+        await segarSatu(token); ctx.selepasUbah?.(); bukaProfil({ahli: token});
       }catch(e){ ctx.toast('⚠ ' + (e.code || e.message)); }
     };
   }
@@ -436,7 +444,7 @@ export function modulPelanggan(ctx){
   // ---------------- 📋 BELUM TERIMA KAD ----------------
   // Ahli yang didaftar oleh kaunter / Akaun / import rekod lama (bukan daftar sendiri) & kad digital belum dihantar.
   async function senaraiBelumKad(){
-    const list = await pastikanAhli(true), c = ctx.cawangan?.();
+    const list = await pastikanAhli(), c = ctx.cawangan?.();
     return list.filter(a => !a.kadDihantar && a.daftarOleh && a.daftarOleh !== 'pelanggan' && telefonSah(a.telefon) && (!c || !a.cawanganUtama || a.cawanganUtama === c))
       .sort((x, y) => (y.daftarMasa || 0) - (x.daftarMasa || 0));
   }
